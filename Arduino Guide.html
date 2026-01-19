@@ -496,8 +496,18 @@ p{
 }
 
 /* RIGHT */
-.hardware-right{
-  position:relative;
+.hardware-right {
+  position: sticky;
+  top: 80px;
+}
+
+.hardware-left {
+  max-width: 520px;
+}
+
+.hardware-right {
+  border-left: 2px dashed #2a2a2a;
+  padding-left: 24px;
 }
 
 .wiring-card{
@@ -520,10 +530,10 @@ p{
   border-radius:8px;
 }
 
-/* EXTRA SPACING CONTROL */
+/* EXTRA SPACING CONTROL
 .spacer-1{ margin-top:60px; }
 .spacer-2{ margin-top:140px; }
-.spacer-3{ margin-top:220px; }
+.spacer-3{ margin-top:220px; }*/
 
 .led-container {
   transform-origin: center;
@@ -537,7 +547,6 @@ p{
 .led-frame {
   position: absolute;
   top: 0;
-  left: 100%;
   width: 100px;
   height: 100px;
   opacity: 0;
@@ -546,6 +555,57 @@ p{
 
 .led-frame.active {
   opacity: 1;
+}
+
+.form-panel {
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  padding: 24px;
+  box-shadow: 0 0 15px rgba(0,255,0,0.15);
+}
+
+.form-panel h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.form-panel p {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* ===== FORM ===== */
+label {
+  display: block;
+  margin-top: 14px;
+  font-weight: bold;
+}
+
+input,
+textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  font-family: monospace;
+  font-size: 1rem;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  background: #fffff;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+textarea {
+  resize: vertical;
 }
 
 </style>
@@ -582,7 +642,7 @@ p{
 
     <span class="nav-spacer"></span>
 
-    <a href="#temp3">Temp-C</a>
+    <a href="#contact">Contact</a>
 
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
@@ -604,18 +664,18 @@ p{
 <main>
 
 <section id="home" class="page active">
-  <h2>Welcome</h2>
+  <h2>Welcome to Learn Arduino visually — even without owning one.</h2>
 
   <p>
     This website is a <b>visual Arduino guide</b> designed to help you understand
     both <b>hardware</b> and <b>code</b> at the same time.
     Instead of reading long manuals, you learn by clicking, exploring,
-    and seeing how things connect.
+    and seeing how everything connects.
   </p>
 
   <p>
     The guide focuses on <b>clarity</b>, <b>speed</b>, and <b>simplicity</b>.
-    Everything is contained in a single fast-loading website that works offline
+    Everything is contained in a single, fast-loading website that works offline
     and runs even on older computers.
   </p>
 
@@ -623,7 +683,7 @@ p{
   <ul>
     <li>What each Arduino pin does and when to use it</li>
     <li>How code controls real electronic components</li>
-    <li>How to connect LEDs, buttons, sensors, motors, and screens</li>
+    <li>How to connect LEDs, buttons, sensors, motors, and displays</li>
     <li>How Arduino communicates using Serial, I²C, and SPI</li>
   </ul>
 <p></p>
@@ -631,20 +691,20 @@ p{
   <p>
     The guide is built around <b>visual interaction</b>.
     You can click on pins, open examples, and read explanations
-    next to the hardware they belong to.
+    directly next to the hardware they belong to.
   </p>
 
   <ul>
-    <li>Click pins on the board to see what they do</li>
-    <li>Select pin groups to highlight related pins</li>
-    <li>Open code examples with line-by-line explanations</li>
-    <li>See wiring diagrams drawn in MS Paint style</li>
+    <li>Click pins on the board to see their purpose</li>
+    <li>Select pin groups to highlight related functionality</li>
+    <li>Open code examples with clear, line-by-line explanations</li>
+    <li>View wiring diagrams drawn in a simple MS Paint style</li>
   </ul>
 <p></p>
   <h3>Who This Guide Is For</h3>
   <ul>
     <li>Beginners learning Arduino for the first time</li>
-    <li>People who prefer visual learning over long text</li>
+    <li>People who prefer visual learning over long documentation</li>
     <li>Students, hobbyists, and self-taught makers</li>
     <li>Anyone who wants a fast, offline Arduino reference</li>
   </ul>
@@ -653,12 +713,12 @@ p{
   <p>
     Most Arduino tutorials explain code or hardware separately.
     This guide shows <b>both together</b>, so you understand
-    <i>why</i> something works, not just <i>how</i>.
+    <i>why</i> something works — not just <i>how</i>.
   </p>
 
   <p>
     No frameworks. No heavy scripts. No clutter.
-    Just clear explanations and practical examples.
+    Just clear explanations, visual learning, and practical examples.
   </p>
 
   <p>
@@ -668,7 +728,7 @@ p{
 </section>
 
 <section id="board" class="page">
-  <h2>Arduino Board</h2>
+  <h2>About the Arduino Board</h2>
 
   <p>
     The <b>Arduino Uno</b> is a beginner-friendly microcontroller board designed
@@ -677,15 +737,18 @@ p{
   </p>
 
   <p>
-    At its core is the <b>ATmega328P</b> microcontroller. Unlike a PC CPU,
-    this chip runs a single sketch (program) in a loop and directly controls
-    hardware pins.
+    At its core is the <b>ATmega328P</b> microcontroller.
+    Unlike a PC CPU, this chip runs a single sketch (program) in a loop
+    and directly controls hardware pins.
   </p>
+
+  <img src="Images/Arduino-uno.png" alt="Arduino Uno board"
+       style="max-width:100%; border-radius:8px; margin-top:10px;">
 
   <h3>Memory Overview</h3>
   <ul>
     <li><b>Flash:</b> 32 KB – Stores your program (sketch)</li>
-    <li><b>SRAM:</b> 2 KB – Used while the program is running (variables)</li>
+    <li><b>SRAM:</b> 2 KB – Used while the program is running (variables, buffers)</li>
     <li><b>EEPROM:</b> 1 KB – Stores data even when power is off</li>
   </ul>
 
@@ -697,8 +760,8 @@ p{
   <h3>Clock & Speed</h3>
   <ul>
     <li><b>Clock speed:</b> 16 MHz</li>
-    <li>1 instruction roughly every 62.5 ns</li>
-    <li>No multitasking or background processes</li>
+    <li>Deterministic timing (no background tasks)</li>
+    <li>No multitasking or operating system</li>
   </ul>
 
   <p>
@@ -708,7 +771,7 @@ p{
 
   <h3>Power & Connectivity</h3>
   <ul>
-    <li>Powered via USB or external supply (7–12V)</li>
+    <li>Powered via USB or external supply (7–12V recommended)</li>
     <li>Onboard voltage regulator</li>
     <li>USB-to-Serial interface for programming</li>
   </ul>
@@ -720,13 +783,13 @@ p{
   <h3>What the Board Is Good At</h3>
   <ul>
     <li>Reading sensors (temperature, light, distance)</li>
-    <li>Controlling LEDs, relays, motors, and screens</li>
-    <li>Talking to other devices (I²C, SPI, UART)</li>
-    <li>Running simple logic reliably for years</li>
+    <li>Controlling LEDs, relays, motors, and displays</li>
+    <li>Communicating with other devices (I²C, SPI, UART)</li>
+    <li>Running simple logic reliably for long periods</li>
   </ul>
 
   <p>
-    The Arduino board acts as the bridge between software and real-world
+    The Arduino board acts as a bridge between software and real-world
     electronics.
   </p>
 </section>
@@ -753,11 +816,12 @@ p{
 
     <ul>
       <li>Executes your program line by line</li>
+      <li>Runs the loop() function continuously</li>
       <li>Reads inputs from pins</li>
       <li>Controls outputs like LEDs and motors</li>
     </ul>
 
-    <img src="Microcontroler.png" alt="Arduino microcontroller"
+    <img src="Images/Microcontroler.png" alt="Arduino microcontroller"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 <p></p>
@@ -769,24 +833,26 @@ p{
 
     <ul>
       <li><b>USB</b> – 5V from computer</li>
-      <li><b>VIN</b> – 7–12V external supply</li>
+      <li><b>VIN</b> – 7–12V external supply raw input voltage (goes through regulator)</li>
       <li><b>5V pin</b> – regulated output (limited current)</li>
       <li><b>GND</b> – ground (must always be connected)</li>
     </ul>
 
-    <img src="Arduino-power.png" alt="Arduino power pins"
+    <img src="Images/Arduino-power.png" alt="Arduino power pins"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
 
     <p><b>Important:</b> Never power motors directly from Arduino 5V.</p>
+    <p><b>Rule:</b> Arduino controls signals, not power.</p>
   </details>
 <p></p>
   <!-- DIGITAL PINS -->
 <details>
   <summary><strong>Digital Pins (0–13)</strong></summary>
 
-  <p>
-    Digital pins can be either <b>ON (HIGH)</b> or <b>OFF (LOW)</b>. Code on the Examples page    <a href="#examples">Visit us</a> LED example.
-  </p>
+<p>
+  Digital pins can be either <b>ON (HIGH)</b> or <b>OFF (LOW)</b>.
+  See the LED example on the <a href="#examples">Examples</a> page.
+</p>
 
   <ul>
     <li>Used for buttons, LEDs, relays</li>
@@ -794,7 +860,7 @@ p{
     <li>Pin 13 has a built-in LED</li>
   </ul>
 
-<img src="Arduino-LED.png" alt="Arduino digital pins" style="max-width:100%; border-radius:8px; margin-top:10px;">
+<img src="Images/Arduino-LED.png" alt="Arduino digital pins" style="max-width:100%; border-radius:8px; margin-top:10px;">
 
 </details>
 
@@ -809,11 +875,11 @@ p{
 
     <ul>
       <li>Range: 0–5V</li>
-      <li>Values: 0–1023</li>
+      <li>Values: 0–1023 (10-bit resolution)</li>
       <li>A4 = SDA, A5 = SCL (I²C)</li>
     </ul>
 
-    <img src="Arduino-OLED4.png" alt="Analog sensor connection"
+    <img src="Images/Arduino-OLED4.png" alt="Analog sensor connection"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
 
   </details>
@@ -830,10 +896,10 @@ p{
       <li>Used with LEDs</li>
       <li>Typical values: 220Ω, 330Ω, 1kΩ, 10kΩ</li>
       <li>Direction does NOT matter</li>
-      <li>Connect it on the positive end of a component</li>
+      <li>Can be placed on either side of an LED</li>
     </ul>
 
-    <img src="LED-Wiring.png" alt="LED resistor wiring"
+    <img src="Images/LED-Wiring.png" alt="LED resistor wiring"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 <p></p>
@@ -852,7 +918,7 @@ p{
       <li>Used near motors and power</li>
     </ul>
 
-    <img src="capacitor.png" alt="Capacitor polarity"
+    <img src="Images/capacitor.png" alt="Capacitor polarity"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 <p></p>
@@ -868,9 +934,10 @@ p{
       <li>Use motor driver or transistor</li>
       <li>External battery required</li>
       <li>Common GND with Arduino</li>
+      <li>Use flyback diode for DC motors</li>
     </ul>
 
-    <img src="Mortor.png" alt="Motor driver wiring"
+    <img src="Images/Mortor.png" alt="Motor driver wiring"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 <p></p>
@@ -888,23 +955,28 @@ p{
       <li>Light sensors</li>
     </ul>
 
-    <img src="HC-SRO4.png" alt="Sensor wiring"
+    <img src="Images/HC-SRO4.png" alt="Sensor wiring"
          style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 </section>
 
 <section id="hardwarevi" class="page">
-
+  <div class="hardware-layout">
   <!-- LEFT COLUMN -->
   <div class="hardware-left">
     <h2>Arduino Board Hardware and Components Visual</h2>
+<p class="page-intro">
+  This page connects <b>real wiring</b> with <b>hardware concepts</b>.
+  Open an example on the right to see how physical components
+  connect to the Arduino board.
+</p>
 
     <p>
       Arduino boards are built around a microcontroller and include
       power regulation, communication pins, and headers for expansion.
     </p>
 
-    <img src="Arduino-uno.png" alt="Arduino board">
+    <img src="Images/Arduino-uno.png" alt="Arduino board">
 
     <h3>Core Parts</h3>
     <ul>
@@ -922,24 +994,33 @@ p{
 
 <!-- RIGHT COLUMN -->
 <div class="hardware-right">
-
+<h3 class="examples-title">Common Wiring Examples</h3>
+<p class="examples-note">
+  These examples show how hardware connects in real projects.
+  Click to expand and study each one.
+  Hover/Click to zoom-in.
+</p>
+<h3>Wiring Led to the Board</h3>
   <details class="wiring-card">
     <summary>LED Wiring</summary>
     <p>LED with current-limiting resistor. click on <a href="#examples">Blink LED</a> example</p>
 
-<div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px;">
-  <img class="led-frame" src="Arduino-LED-off.png">
-  <img class="led-frame" src="Arduino-LED-on.png">
+<div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <img class="led-frame" src="Images/Arduino-LED-off.png">
+  <img class="led-frame" src="Images/Arduino-LED-on.png">
 </div>
+<p>  Connect pin 13 to the LED through a resistor, and connect the other LED leg to GND.</p>
   </details>
-
+<h3>Oled 4 Pin wiring layout</h3>
 <details class="wiring-card spacer1">
       <summary>Screen (I²C)</summary>
       <p>OLED / LCD using SDA and SCL.</p>
-<div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px;">
-  <img class="led-frame" src="Arduino-Oled4-off.png" alt="OLED Off">
-  <img class="led-frame" src="Arduino-Oled4-on.png" alt="OLED On">
+<div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <img class="led-frame" src="Images/Arduino-Oled4-off.png" alt="OLED Off">
+  <img class="led-frame" src="Images/Arduino-Oled4-on.png" alt="OLED On">
 </div>
+<p>connect + and 3.3/5v, gnd and -, SDA and A4, SCL and A5</p>
+<p><b>Important:</b>  Use 3.3V unless your OLED explicitly supports 5V.</p>
     </details>
 
     <details class="wiring-card spacer-2">
@@ -958,27 +1039,8 @@ p{
         <button onclick="stepperNext()">▶</button>
       </div>
     </details>
-  </div>
+  </div></div>
 </section>
-
-<script>
-let stepperIndex = 0;
-const stepperImages = [
-  "images/stepper-1.png",
-  "images/stepper-2.png"
-];
-
-function stepperNext(){
-  stepperIndex = (stepperIndex + 1) % stepperImages.length;
-  document.getElementById("stepperImg").src = stepperImages[stepperIndex];
-}
-
-function stepperPrev(){
-  stepperIndex--;
-  if(stepperIndex < 0) stepperIndex = stepperImages.length - 1;
-  document.getElementById("stepperImg").src = stepperImages[stepperIndex];
-}
-</script>
 
 <section id="uno" class="page special-layout">
   <h2>Arduino Uno Board Image</h2>
@@ -987,14 +1049,14 @@ function stepperPrev(){
 
     <!-- Image container with clickable pin -->
     <div style="position:relative; flex:1 1 300px;">
-      <img src="Arduino-uno.jfif" alt="Arduino Uno Board" style="width:100%; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <img src="Images/Arduino-uno.jfif" alt="Arduino Uno Board" style="width:100%; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
 
       <!-- Clickable pin: adjust top/left % to position it on the image -->
       <div
         class="pin"
         style="position:absolute; top:10%; left:19%; width:24px; height:24px; cursor:pointer;"
         title="Reset Button / Power Pin"
-        onclick="showPinInfo('Reset Button / Power Pin', 'This button restarts the Arduino but doesnt rease the code.')"
+        onclick="showPinInfo('Reset Button', 'Restarts the Arduino immediately. The program (sketch) is NOT erased. Used when code freezes or after wiring changes. Same as power-cycling the board.')"
      ></div>
       <div
         class="pin"
@@ -1002,7 +1064,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:89%; width:12px; height:12px; cursor:pointer;"
         title="0 (RX) Pin"
-        onclick="showPinInfo('0 (RX)  Digital / Serial', 'Serial receive (Connected to USB-serial chip internally)')"
+        onclick="showPinInfo('0 (RX)  Digital / Serial', 'Used for USB serial communication. Receives data from computer. Avoid using when Serial Monitor is active.')"
       ></div>
       <div
         class="pin"
@@ -1010,7 +1072,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:86%; width:12px; height:12px; cursor:pointer;"
         title="1 (TX) Pin"
-        onclick="showPinInfo('1 (TX)  Digital / Serial', 'Serial transmit (Connected to USB-serial chip internally)')"
+        onclick="showPinInfo('1 (TX)  Digital / Serial', 'Used for USB serial communication. Sends data to computer. Avoid using when Serial Monitor is active. ')"
       ></div>
       <div
         class="pin"
@@ -1018,7 +1080,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:83%; width:12px; height:12px; cursor:pointer;"
         title="2 Digital Pin"
-        onclick="showPinInfo('2	Digital', 'Normal digital I/O')"
+        onclick="showPinInfo('2	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
       ></div>
 	<div
         class="pin"
@@ -1026,7 +1088,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:80%; width:12px; height:12px; cursor:pointer;"
         title="3 Digital Pin"
-        onclick="showPinInfo('3	Digital / PWM', 'Digital I/O + PWM')"
+        onclick="showPinInfo('3	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
       ></div>
       <div
         class="pin"
@@ -1034,7 +1096,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:77%; width:12px; height:12px; cursor:pointer;"
         title="4 Digital Pin"
-        onclick="showPinInfo('4	Digital', 'Normal digital I/O')"
+        onclick="showPinInfo('4	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
       ></div>
       <div
         class="pin"
@@ -1042,7 +1104,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:74%; width:12px; height:12px; cursor:pointer;"
         title="5 Digital / PWM Pin"
-        onclick="showPinInfo('5	Digital / PWM', 'Digital I/O + PWM')"
+        onclick="showPinInfo('5	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
       ></div>
 	<div
         class="pin"
@@ -1050,7 +1112,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:71%; width:12px; height:12px; cursor:pointer;"
         title="6 Digital / PWM Pin"
-        onclick="showPinInfo('6	Digital / PWM', 'Digital I/O + PWM')"
+        onclick="showPinInfo('6	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
       ></div>
       <div
         class="pin"
@@ -1058,7 +1120,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:68%; width:12px; height:12px; cursor:pointer;"
         title="7 Digital Pin"
-        onclick="showPinInfo('7	Digital', 'Normal digital I/O')"
+        onclick="showPinInfo('7	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
       ></div>
       <div
         class="pin"
@@ -1066,7 +1128,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:62%; width:12px; height:12px; cursor:pointer;"
         title="8 Digital Pin"
-        onclick="showPinInfo('8	Digital', 'Normal digital I/O')"
+        onclick="showPinInfo('8	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
       ></div>
 	<div
         class="pin"
@@ -1074,7 +1136,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:59%; width:12px; height:12px; cursor:pointer;"
         title="9 Digital / PWM Pin"
-        onclick="showPinInfo('9	Digital / PWM', 'Digital I/O + PWM')"
+        onclick="showPinInfo('9	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
       ></div>
       <div
         class="pin"
@@ -1082,7 +1144,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:56%; width:12px; height:12px; cursor:pointer;"
         title="10 Digital / PWM /SPI Pin"
-        onclick="showPinInfo('10 Digital / PWM / SPI', 'PWM + SPI (SS)')"
+        onclick="showPinInfo('10 Digital / PWM / SPI (SS)', 'PWM capable. SPI Slave Select pin. Used with SPI devices.')"
       ></div>
       <div
         class="pin"
@@ -1090,7 +1152,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:53%; width:12px; height:12px; cursor:pointer;"
         title="11 Digital / PWM / SPI Pin"
-        onclick="showPinInfo('11 Digital / PWM / SPI', 'PWM + SPI (MOSI)')"
+        onclick="showPinInfo('11 Digital / PWM / MOSI', 'PWM capable. SPI Master-Out-Slave-In. Data sent FROM Arduino.')"
       ></div>
 	<div
         class="pin"
@@ -1098,7 +1160,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:50%; width:12px; height:12px; cursor:pointer;"
         title="12 Digital / SPI Pin"
-        onclick="showPinInfo('12 Digital / SPI', 'SPI (MISO)')"
+        onclick="showPinInfo('12 Digital / SPI (MISO)', 'SPI Master-In-Slave-Out. Data received BY Arduino.')"
       ></div>
       <div
         class="pin"
@@ -1106,7 +1168,7 @@ function stepperPrev(){
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:47%; width:12px; height:12px; cursor:pointer;"
         title="13 Digital Pin"
-        onclick="showPinInfo('13 Digital', 'Built-in LED connected')"
+        onclick="showPinInfo('13 Digital / LED', 'Connected to built-in LED. Good for testing and Blink example. LED is internally connected through resistor.')"
       ></div>
       <div
         class="pin"
@@ -1114,7 +1176,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:9%; left:44%; width:12px; height:12px; cursor:pointer;"
         title="Ground Pin"
-        onclick="showPinInfo('GND', 'Ground (-)')"
+        onclick="showPinInfo('GND (-)', 'Electrical reference point (0V). All components MUST share GND with Arduino. Multiple GND pins are internally connected.')"
       ></div>
       <div
         class="pin"
@@ -1122,7 +1184,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:60%; width:12px; height:12px; cursor:pointer;"
         title="Ground Pin"
-        onclick="showPinInfo('GND', 'Ground (-)')"
+        onclick="showPinInfo('GND (-)', 'Electrical reference point (0V). All components MUST share GND with Arduino. Multiple GND pins are internally connected.')"
       ></div>
        <div
         class="pin"
@@ -1130,7 +1192,7 @@ function stepperPrev(){
         data-label="ANALOG"
         style="position:absolute; top:87%; left:72%; width:12px; height:12px; cursor:pointer;"
         title="Analog A0 Pin"
-        onclick="showPinInfo('A0', 'Read sensors (0–5V)')"
+        onclick="showPinInfo('A0 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
       ></div>
        <div
         class="pin"
@@ -1138,7 +1200,7 @@ function stepperPrev(){
         data-label="ANALOG"
         style="position:absolute; top:87%; left:75%; width:12px; height:12px; cursor:pointer;"
         title="Analog A1 Pin"
-        onclick="showPinInfo('A1 Analog', 'Read sensors')"
+        onclick="showPinInfo('A1 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
       ></div>
        <div
         class="pin"
@@ -1146,7 +1208,7 @@ function stepperPrev(){
         data-label="ANALOG"
         style="position:absolute; top:87%; left:78%; width:12px; height:12px; cursor:pointer;"
         title="Analog A2 Pin"
-        onclick="showPinInfo('A2 Analog', 'Read sensors')"
+        onclick="showPinInfo('A2 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
       ></div>
        <div
         class="pin"
@@ -1154,7 +1216,7 @@ function stepperPrev(){
         data-label="ANALOG"
         style="position:absolute; top:87%; left:81%; width:12px; height:12px; cursor:pointer;"
         title="Analog A3 Pin"
-        onclick="showPinInfo('A3 Analog', 'Read sensors')"
+        onclick="showPinInfo('A3 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
       ></div>
        <div
         class="pin"
@@ -1162,7 +1224,7 @@ function stepperPrev(){
         data-label="ANALOG"
         style="position:absolute; top:87%; left:84%; width:12px; height:12px; cursor:pointer;"
         title="Analog A4 Pin"
-        onclick="showPinInfo('A4 Analog / I²C', 'SDA (I²C data)')"
+        onclick="showPinInfo('A4 – SDA (I²C Data)', 'I²C data line. Used with OLEDs, RTCs, sensors. Shared bus – multiple devices allowed.')"
       ></div>
        <div
         class="pin"
@@ -1170,7 +1232,7 @@ function stepperPrev(){
         data-label="ANALOG"
         style="position:absolute; top:87%; left:87%; width:12px; height:12px; cursor:pointer;"
         title="Analog A5 Pin"
-        onclick="showPinInfo('A5 Analog / I²C', 'SCL (I²C clock)')"
+        onclick="showPinInfo('A5 – SCL (I²C Clock)', 'I²C clock line. Controls timing for I²C devices. Used together with SDA.')"
       ></div>
       <div
         class="pin"
@@ -1178,7 +1240,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:63%; width:12px; height:12px; cursor:pointer;"
         title="Ground Pin"
-        onclick="showPinInfo('GND', 'Ground (-)')"
+        onclick="showPinInfo('GND (-)', 'Electrical reference point (0V). All components MUST share GND with Arduino. Multiple GND pins are internally connected.')"
       ></div>
       <div
         class="pin"
@@ -1186,7 +1248,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:57%; width:12px; height:12px; cursor:pointer;"
         title="5V "
-        onclick="showPinInfo('5V', 'Outputs 5 volts')"
+        onclick="showPinInfo('5V', 'Provides regulated 5V power. Used to power sensors and modules. Limited current – do NOT power motors. Can also be used to supply 5V externally (careful).')"
       ></div>
       <div
         class="pin"
@@ -1194,7 +1256,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:54%; width:12px; height:12px; cursor:pointer;"
         title="3.3V "
-        onclick="showPinInfo('3.3V', 'Outputs 3.3 volts (most used in led screens/small mortors/oled displays)')"
+        onclick="showPinInfo('3.3V', 'Provides regulated 3.3V power. Lower current than 5V (~50mA). Used for OLEDs, sensors, logic modules. Do NOT overload.')"
       ></div>
       <div
         class="pin"
@@ -1202,7 +1264,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:51%; width:12px; height:12px; cursor:pointer;"
         title="Reset Pin "
-        onclick="showPinInfo('Reset Pin', 'Used to reset the arduino')"
+        onclick="showPinInfo('Reset Pin', 'Pulling this pin LOW restarts the Arduino. Used by shields or external reset buttons. Does NOT erase the program.')"
       ></div>
       <div
         class="pin"
@@ -1210,7 +1272,7 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:48%; width:12px; height:12px; cursor:pointer;"
         title="5V "
-        onclick="showPinInfo('5V', 'Outputs 5 volts')"
+        onclick="showPinInfo('5V', 'Provides regulated 5V power. Used to power sensors and modules. Limited current – do NOT power motors. Can also be used to supply 5V externally (careful).')"
       ></div>
       <div
         class="pin"
@@ -1218,14 +1280,14 @@ function stepperPrev(){
         data-label="POWER"
         style="position:absolute; top:87%; left:66%; width:12px; height:12px; cursor:pointer;"
         title="VIN "
-        onclick="showPinInfo('VIN (V)', 'Outputs 7/12 volts (depends on code)')"
+        onclick="showPinInfo('VIN (V)', 'External power input (7–12V recommended). Feeds the onboard voltage regulator. NOT a stable output pin. Do not connect 5V here.')"
       ></div>
       <div
         class="pin"
         data-group="analog"
         style="position:absolute; top:9%; left:41%; width:12px; height:12px; cursor:pointer;"
         title="AREF Pin"
-        onclick="showPinInfo('AREF', 'Only reference voltage and how analogRead measures voltage')"
+        onclick="showPinInfo('AREF – Analog Reference', 'Sets reference voltage for analogRead(). Used for precise measurements. Advanced use – beginners can ignore.')"
       ></div>
       <div
         class="pin"
@@ -1431,7 +1493,7 @@ function showPinInfo(title, description) {
     <summary>📍 <strong>Pin Layout</strong></summary>
     <p>Arduino Uno pins are grouped by function:</p>
 <p></p>
-    <h4>Digital Pins (0–13)</h4>  <button onclick="selectGroup('digital')">Show Digital Pins</button><br>
+    <h4>Digital Pins (0–13)</h4>  <button onclick="selectGroup('digital')">Show Digital Pins on 3D Arduino Uno</button><br>
     <ul>
       <li>Read HIGH / LOW</li>
       <li>Some support PWM (~)</li>
@@ -1439,17 +1501,19 @@ function showPinInfo(title, description) {
     </ul>
 <p></p>
     <h4>Analog Pins (A0–A5)</h4>
-  <button onclick="selectGroup('analog')">Show Analog Pins</button><br>
+  <button onclick="selectGroup('analog')">Show Analog Pins on 3D Arduino Uno</button><br>
     <ul>
-      <li>Read voltage (0–5V)</li>
+      <li>Read voltage (0–5V by default)</li>
+      <li>Resolution: 10-bit (0–1023)</li>
+      <li>AREF can change reference voltage</li>
       <li>Mapped to values 0–1023</li>
       <li>A4 = SDA, A5 = SCL (I²C)</li>
     </ul>
 <p></p>
     <h4>Power Pins</h4>
-  <button onclick="selectGroup('power')">Show Power Pins</button><br>
+  <button onclick="selectGroup('power')">Show Power Pins on 3D Arduino Uno</button><br>
     <ul>
-      <li><b>5V</b> – regulated output</li>
+      <li><b>5V</b> – Regulated output (limited current, do NOT power motors)</li>
       <li><b>3.3V</b> – low power devices</li>
       <li><b>GND</b> – ground</li>
       <li><b>VIN</b> – external power input</li>
@@ -1471,9 +1535,15 @@ function showPinInfo(title, description) {
     </li>
 <p></p>
     <li>
-      <b>SPI</b> – SS, MOSI, MISO, SCK<br>
-      Very fast communication for displays, SD cards, memory chips.
-    </li>
+<b>SPI</b> – SS, MOSI, MISO, SCK<br>
+Pins on Uno:
+<ul>
+  <li>SS → D10</li>
+  <li>MOSI → D11</li>
+  <li>MISO → D12</li>
+  <li>SCK → D13</li>
+</ul>
+
   </ul>
 <p></p>
   <p><i>Tip: I²C is easiest for beginners, SPI is fastest.</i></p>
@@ -1510,9 +1580,7 @@ function showPinInfo(title, description) {
       <b>USB (5V)</b> – Easiest and safest for beginners
     </li>
 <p></p>
-    <li>
-      <b>VIN (7–12V)</b> – External power supply or battery
-    </li>
+<li><b>VIN</b> – External power input (recommended 7–12V)</li>
 <p></p>
     <li>
       <b>5V Pin</b> – Direct regulated power (advanced users)
@@ -1523,6 +1591,9 @@ function showPinInfo(title, description) {
     <b>Never exceed voltage limits.</b><br>
     Motors and high-power devices need separate power.
   </p>
+
+<li>Max per pin: ~20mA (40mA absolute max)</li>
+<li>Total MCU limit: ~200mA</li>
 </details>
 
 <details>
@@ -1555,10 +1626,10 @@ function showPinInfo(title, description) {
 <p></p>
     <li>
       <b>Commands:</b>
-      <p>
-      compile:  arduino-cli.exe compile --fqbn arduino:avr:uno --libraries libraries blink</p>
-      <p>
-      upload:   arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink</p>
+<pre>
+arduino-cli.exe compile --fqbn arduino:avr:uno blink
+arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
+</pre>
     </li>
   </ul>
 
@@ -1721,6 +1792,34 @@ function showPinInfo(title, description) {
 
 </section>
 
+
+<section id="contact" class="page">
+
+  <h1>CONTACT US</h1>
+  <p>Arduino Guide Community Support</p>
+
+  <div class="form-panel">
+    <h2>CONTACT FORM</h2>
+    <p>Type your message below and your mail, client will open.</p>
+
+    <form onsubmit="sendMail(); return false;">
+      <label>YOUR NAME:</label>
+      <input type="text" id="name" required>
+
+      <label>YOUR EMAIL:</label>
+      <input type="email" id="email" required>
+
+      <label>SUBJECT:</label>
+      <input type="text" id="subject" required>
+
+      <label>MESSAGE:</label>
+      <textarea id="message" rows="5"></textarea>
+
+      <button type="submit">SEND MESSAGE</button>
+    </form>
+  </div>
+
+</section>
 </main>
 
 <footer>
@@ -1756,6 +1855,36 @@ window.addEventListener('hashchange', () => {
     // 🔝 Instantly scroll to top
     window.scrollTo(0, 0);
   }
+});
+
+function toggleDropdown(btn, e){
+  e.stopPropagation();
+
+  // close all other dropdowns
+  document.querySelectorAll(".dropdown").forEach(d=>{
+    if(d !== btn.closest(".dropdown")){
+      d.classList.remove("open");
+      d.querySelector(".dropdown-menu").classList.remove("open");
+    }
+  });
+
+  const dropdown = btn.closest(".dropdown");
+  dropdown.classList.toggle("open");
+  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
+}
+
+function selectLink(link){
+  const dropdown = link.closest(".dropdown");
+  dropdown.classList.remove("open");
+  dropdown.querySelector(".dropdown-menu").classList.remove("open");
+}
+
+/* close all on outside click */
+document.addEventListener("click", ()=>{
+  document.querySelectorAll(".dropdown").forEach(d=>{
+    d.classList.remove("open");
+    d.querySelector(".dropdown-menu").classList.remove("open");
+  });
 });
 
 function loadExample(type){
@@ -2058,39 +2187,6 @@ function copyCode(btn){
   });
 }
 
-function toggleDropdown(btn, e){
-  e.stopPropagation();
-
-  // close all other dropdowns
-  document.querySelectorAll(".dropdown").forEach(d=>{
-    if(d !== btn.closest(".dropdown")){
-      d.classList.remove("open");
-      d.querySelector(".dropdown-menu").classList.remove("open");
-    }
-  });
-
-  const dropdown = btn.closest(".dropdown");
-  dropdown.classList.toggle("open");
-  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
-}
-
-function selectLink(link){
-  const dropdown = link.closest(".dropdown");
-  dropdown.classList.remove("open");
-  dropdown.querySelector(".dropdown-menu").classList.remove("open");
-}
-
-/* close all on outside click */
-document.addEventListener("click", ()=>{
-  document.querySelectorAll(".dropdown").forEach(d=>{
-    d.classList.remove("open");
-    d.querySelector(".dropdown-menu").classList.remove("open");
-  });
-});
-
-</script>
-
-<script>
 document.querySelectorAll('.led-container').forEach(container => {
   const frames = container.querySelectorAll('.led-frame');
   let index = 0;
@@ -2103,6 +2199,23 @@ document.querySelectorAll('.led-container').forEach(container => {
     frames[index].classList.add('active');
   }, 1000);
 });
+
+        function sendMail(form) {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+
+            // Format mailto link
+            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n\n" +
+                "Message:\n" + message
+            )}`;
+
+            // Open user's email client
+            window.location.href = mailtoLink;
+        }
 </script>
 
 </body>
