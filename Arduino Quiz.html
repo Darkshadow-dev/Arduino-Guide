@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Arduino Quizzes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+/* ==== ARDUINO STYLE ==== */
+:root{
+  --bg:#0f1419;
+  --panel:#1c232b;
+  --accent:#4CAF50;
+  --text:#e6e6e6;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ==== NAV ==== */
+nav{
+  display:flex;
+  gap:15px;
+  padding:10px 20px;
+  background:#0b0f14;
+  border-bottom:2px solid var(--accent);
+}
+
+nav a{
+  color:var(--text);
+  text-decoration:none;
+  padding:8px 12px;
+  border-radius:6px;
+}
+
+nav a:hover{
+  background:var(--accent);
+  color:#fff;
+}
+
+/* ==== PAGES ==== */
+.page{
+  display:none;
+  padding:20px;
+}
+
+.page.active{
+  display:block;
+}
+
+/* ==== EXPANDABLE QUIZ LIST ==== */
+.expandable{
+  cursor:pointer;
+  background:var(--accent);
+  color:white;
+  padding:12px;
+  border:none;
+  width:100%;
+  text-align:left;
+  font-size:1.1em;
+  border-radius:8px;
+  margin-top:15px;
+}
+
+.sub-list{
+  display:none;
+  list-style:none;
+  padding:0;
+  margin:10px 0;
+  background:var(--panel);
+  border-radius:8px;
+}
+
+.sub-list li{
+  padding:12px;
+  border-bottom:1px solid #333;
+}
+
+.sub-list li a{
+  color:var(--text);
+  text-decoration:none;
+}
+
+.sub-list li:hover{
+  background:#2a333d;
+}
+
+.expandable.active + .sub-list{
+  display:block;
+}
+
+/* ==== QUIZ ==== */
+.quiz{
+  text-align:center;
+}
+
+.options label{
+  display:block;
+  padding:12px;
+  margin:8px auto;
+  max-width:320px;
+  border-radius:8px;
+  background:var(--panel);
+  border:2px solid var(--accent);
+  cursor:pointer;
+}
+
+.options input{
+  display:none;
+}
+
+.options input:checked + label{
+  background:var(--accent);
+  color:#fff;
+}
+
+.correct{background:#1e7e34;}
+.incorrect{background:#842029;}
+
+button{
+  padding:10px 20px;
+  background:var(--accent);
+  border:none;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="#home">Home</a>
+  <a href="#quizzes">Quizzes</a>
+  <a href="#progress">Progress</a>
+</nav>
+<main>
+<section id="home" class="page active">
+  <h1>Arduino Quizzes</h1>
+  <p>Test your Arduino knowledge step by step.</p>
+</section>
+<section id="quizzes" class="page">
+  <h2>Select Difficulty</h2>
+
+  <button class="expandable">🟢 Basics</button>
+  <ul class="sub-list">
+    <li><a href="#quiz-basic-1">Basics Quiz 1 (3Q)</a></li>
+    <li><a href="#quiz-basic-2">Basics Quiz 2 (5Q)</a></li>
+    <li><a href="#quiz-basic-3">Basics Quiz 3 (7Q)</a></li>
+  </ul>
+
+  <button class="expandable">🟡 Intermediate</button>
+  <ul class="sub-list">
+    <li>Locked</li>
+  </ul>
+
+  <button class="expandable">🔴 Advanced</button>
+  <ul class="sub-list">
+    <li>Locked</li>
+  </ul>
+</section>
+<section id="quiz-basic-1" class="page quiz">
+  <h2>Basics Quiz 1</h2>
+
+  <div class="question">
+    <h3>Arduino is mainly used for?</h3>
+    <div class="options">
+      <input type="radio" id="q1a" name="q1">
+      <label for="q1a">Websites</label>
+
+      <input type="radio" id="q1b" name="q1" data-correct>
+      <label for="q1b">Hardware</label>
+
+      <input type="radio" id="q1c" name="q1">
+      <label for="q1c">Games</label>
+    </div>
+  </div>
+
+  <button onclick="location.hash='#quizzes'">Finish</button>
+</section>
+</main>
+
+<footer>
+  Arduino Guide Ⓖ 2026
+</footer>
+<script>
+/* PAGE SWITCH + MEMORY + 404 */
+
+function showPage(id){
+  const page = document.getElementById(id);
+  if(!page){
+    id = "home"; // 404 fallback
+  }
+
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+
+  localStorage.setItem("lastPage", id);
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll("nav a, .sub-list a").forEach(a=>{
+  a.onclick = e=>{
+    const href = a.getAttribute("href");
+    if(!href) return;
+
+    if(href.startsWith("#")){
+      e.preventDefault();
+      history.pushState(null,"",href);
+      showPage(href.substring(1));
+    }
+  }
+});
+
+window.addEventListener("load", ()=>{
+  const saved = localStorage.getItem("lastPage");
+  const hash = location.hash.substring(1);
+  showPage(hash || saved || "home");
+});
+
+window.addEventListener("hashchange", ()=>{
+  showPage(location.hash.substring(1));
+});
+
+/* EXPANDABLE */
+document.querySelectorAll(".expandable").forEach(btn=>{
+  btn.onclick=()=>{
+    btn.classList.toggle("active");
+  };
+});
+</script>
+</body>
+</html>

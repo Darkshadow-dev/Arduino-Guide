@@ -516,7 +516,7 @@ p{
   border-radius:12px;
   padding:12px;
   color:#dff1ff;
-  margin-bottom:120px; /* vertical spacing */
+  margin-bottom:10px; /* vertical spacing */
 }
 
 .wiring-card summary{
@@ -529,11 +529,6 @@ p{
   margin-top:10px;
   border-radius:8px;
 }
-
-/* EXTRA SPACING CONTROL
-.spacer-1{ margin-top:60px; }
-.spacer-2{ margin-top:140px; }
-.spacer-3{ margin-top:220px; }*/
 
 .led-container {
   transform-origin: center;
@@ -649,13 +644,12 @@ textarea {
     Select Example <span>▾</span>
   </button>
 
-  <div class="dropdown-menu">
-    <div onclick="selectItem(this, 'Select Example')">None</div>
-    <div onclick="selectItem(this, 'Blink LED')">Blink LED</div>
-    <div onclick="selectItem(this, 'Button Input')">Button Input</div>
-    <div onclick="selectItem(this, 'PWM Output')">PWM Output</div>
-    <div onclick="selectItem(this, 'Serial Print')">Serial Print</div>
-  </div>
+<div class="dropdown-menu">
+  <a href="Arduino Quiz.html">Quizes</a>
+  <a href="#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
+  <a href="#hardwe" onclick="selectLink(this)">Hardware</a>
+  <a href="#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+</div>
 </div>
 
   </nav>
@@ -994,6 +988,12 @@ Get Started:
       Components connect directly to these pins using jumper wires
       or breadboards.
     </p>
+<details>
+<summary>More about Components</summary>
+<p>The longer pin of LED's are the (<b>+</b>) positive ends.</p>
+<p>The shorter pin of the LED's are (<b>-</b>) negative ends and go the GND (<b>-</b>) on the Arduino all the time.</p>
+<p>You can connect all Negative ends of LED's, Display's and even mortors together then to one GND pin (Recomended only connect all LED's or all displays or one/two mortors to one GND not all together)!</p>
+</details>
   </div>
 
 <!-- RIGHT COLUMN -->
@@ -1013,8 +1013,37 @@ Get Started:
   <img class="led-frame" src="Images/Arduino-LED-off.png">
   <img class="led-frame" src="Images/Arduino-LED-on.png">
 </div>
-<p>  Connect pin 13 to the LED through a resistor, and connect the other LED leg to GND.</p>
   </details>
+<details>
+<summary>Wiring explaind</summary>
+<p>  <b>Connect</b> pin 13 to one end of the resistor!</p>
+<p> Then connect the positive end of the LED to the other part of the a 220ohm!</p>
+<p> At last connect the other LED leg (The shorter one) to common GND of the Arduino!</p>
+</details> 
+
+<div style="height:10vh;"></div>
+<h3>Wiring Multi LED's to the Board</h3>
+  <details class="wiring-card">
+    <summary>LED Wiring</summary>
+    <p>LED with current-limiting resistor. click on <a href="#examples">Multi LED's</a> example</p>
+<div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <img class="led-frame" src="Images/Arduino-LED's-off.png">
+  <img class="led-frame" src="Images/Arduino-LED's-on1.png">
+  <img class="led-frame" src="Images/Arduino-LED's-on2.png">
+  <img class="led-frame" src="Images/Arduino-LED's-on3.png">
+</div>
+  </details>
+
+<details>
+<summary>Wiring explaind</summary>
+<p>  <b>Connect</b> pin 13 to one end of the first Resistor!</p>
+<p> <b>Connect</b> pin 12 to one end of the second Resistor!</p>
+<p> <b>Connect</b> pin 11 to one end of the third Resistor!</p>
+<p> All positive ends of the LED's need to go through the other end's of the 220ohm resistor's!</p>
+<p> Then connect all other LED leg's (one - per leg) to common GND on the Arduino (all negative ends can be conected together then to the GND).</p>
+</details> 
+
+<div style="height:10vh;"></div>
 <h3>Oled 4 Pin wiring layout</h3>
 <details class="wiring-card spacer1">
       <summary>Screen (I²C)</summary>
@@ -1824,49 +1853,98 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   </div>
 
 </section>
+
+<section id="notfound" class="page">
+    <h2>404 – Page Not Found</h2>
+    <p>The section you tried to open does not exist.</p>
+    <button onclick="goHome()">Go Home</button>
+</section>
+
 </main>
 
 <footer>
   Arduino Guide Ⓖ 2026
 </footer>
-
 <script>
-/* PAGE SWITCH */
+const STORAGE_KEY = "arduino-last-page";
 
+/* ACTIVATE PAGE */
+function activatePage(id, save = true) {
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.remove("active")
+  );
+
+  if (target) {
+    target.classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, id);
+  } else {
+    document.getElementById("notfound").classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
+  }
+
+  window.scrollTo(0, 0);
+}
+
+/* HOME BUTTON */
+function goHome() {
+  activatePage("home");
+  history.pushState(null, "", "#home");
+}
+
+/* NAV LINK HANDLING */
 document.querySelectorAll("nav a").forEach(a => {
-  a.onclick = e => {
-    e.preventDefault();
-    let id = a.getAttribute("href").substring(1);
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("http")) return;
 
-    // Update URL hash without jumping page
-    history.pushState(null, "", "#" + id);
+    // #section
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const id = href.substring(1);
+      activatePage(id);
+      history.pushState(null, "", href);
+      return;
+    }
 
-    // Switch visible page
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-
-    // 🔝 Instantly scroll to top
-    window.scrollTo(0, 0);
-  };
+    // page.html#section
+    if (href.includes(".html#")) {
+      const [page, hash] = href.split("#");
+      if (location.pathname.endsWith(page)) {
+        e.preventDefault();
+        activatePage(hash);
+        history.pushState(null, "", "#" + hash);
+      }
+    }
+  });
 });
 
-window.addEventListener('hashchange', () => {
-  let id = location.hash.substring(1);
-  if (document.getElementById(id)) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+/* BACK / FORWARD */
+window.addEventListener("hashchange", () => {
+  const id = location.hash.substring(1);
+  activatePage(id, false);
+});
 
-    // 🔝 Instantly scroll to top
-    window.scrollTo(0, 0);
+/* RESTORE LAST PAGE ON LOAD */
+window.addEventListener("load", () => {
+  const hash = location.hash.substring(1);
+  const last = localStorage.getItem(STORAGE_KEY) || "home";
+
+  if (hash) {
+    activatePage(hash);
+  } else {
+    activatePage(last);
+    history.replaceState(null, "", "#" + last);
   }
 });
 
-function toggleDropdown(btn, e){
+/* DROPDOWNS (unchanged) */
+function toggleDropdown(btn, e) {
   e.stopPropagation();
 
-  // close all other dropdowns
-  document.querySelectorAll(".dropdown").forEach(d=>{
-    if(d !== btn.closest(".dropdown")){
+  document.querySelectorAll(".dropdown").forEach(d => {
+    if (d !== btn.closest(".dropdown")) {
       d.classList.remove("open");
       d.querySelector(".dropdown-menu").classList.remove("open");
     }
@@ -1877,19 +1955,21 @@ function toggleDropdown(btn, e){
   dropdown.querySelector(".dropdown-menu").classList.toggle("open");
 }
 
-function selectLink(link){
+function selectLink(link) {
   const dropdown = link.closest(".dropdown");
   dropdown.classList.remove("open");
   dropdown.querySelector(".dropdown-menu").classList.remove("open");
 }
 
-/* close all on outside click */
-document.addEventListener("click", ()=>{
-  document.querySelectorAll(".dropdown").forEach(d=>{
+document.addEventListener("click", () => {
+  document.querySelectorAll(".dropdown").forEach(d => {
     d.classList.remove("open");
     d.querySelector(".dropdown-menu").classList.remove("open");
   });
 });
+</script>
+
+<script>
 
 function loadExample(type){
   const box = document.getElementById("exampleBox");
@@ -2023,20 +2103,25 @@ analogWrite(9, 128); // ~50% brightness
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
-// Set pin 8 as OUTPUT (LED 1)
-pinMode(8, OUTPUT);
+// Set pin 13 as OUTPUT (LED 1)
+pinMode(13, OUTPUT);
 
-// Set pin 9 as OUTPUT (LED 2)
-pinMode(9, OUTPUT);
+// Set pin 12 as OUTPUT (LED 2)
+pinMode(12, OUTPUT);
 
-// Turn ON LED connected to pin 8
-digitalWrite(8, HIGH);
+// Set pin 11 as OUTPUT (LED 3)
+pinMode(11, OUTPUT);
 
-// Turn OFF LED connected to pin 9
-digitalWrite(9, LOW);
+// Turn ON LED connected to pin 13
+digitalWrite(13, HIGH);
 
-// Both pins are controlled independently
+// Turn OFF LED connected to pin 12
+digitalWrite(12, LOW);
 
+// Turn OFF LED connected to pin 11
+digitalWrite(11, LOW);
+
+// All three pins are controlled independently
         </pre>
       </div>
     `;
