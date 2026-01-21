@@ -1,0 +1,163 @@
+<script>
+  const player = document.getElementById('music-player');
+  const bgMusic = document.getElementById('bg-music');
+  const playBtn = document.getElementById('play-btn');
+  const pauseBtn = document.getElementById('pause-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const volumeControl = document.getElementById('volume-control');
+  const trackInfo = document.getElementById('track-info');
+  const minimizeBtn = document.getElementById('minimize-btn');
+  const playerBody = document.getElementById('player-body');
+  const playerHeader = document.getElementById('player-header');
+
+  const playlist = [
+    { src: 'audio/Music.mp3', name: 'Song 1' },
+    { src: 'audio/song2.mp3', name: 'Song 2' },
+    { src: 'audio/song3.mp3', name: 'Song 3' },
+    { src: 'audio/song4.mp3', name: 'Song 4' },
+    { src: 'audio/song5.mp3', name: 'Song 5' }
+  ];
+
+  let currentTrackIndex = 0;
+
+  function loadTrack(index) {
+    if(index < 0) index = playlist.length - 1;
+    else if(index >= playlist.length) index = 0;
+    currentTrackIndex = index;
+
+    bgMusic.src = playlist[index].src;
+    trackInfo.textContent = `Now playing: ${playlist[index].name}`;
+    bgMusic.play();
+  }
+
+  playBtn.addEventListener('click', () => bgMusic.play());
+  pauseBtn.addEventListener('click', () => bgMusic.pause());
+  prevBtn.addEventListener('click', () => loadTrack(currentTrackIndex - 1));
+  nextBtn.addEventListener('click', () => loadTrack(currentTrackIndex + 1));
+  volumeControl.addEventListener('input', () => bgMusic.volume = volumeControl.value);
+
+  minimizeBtn.addEventListener('click', () => {
+    player.classList.toggle('minimized');
+  });
+
+  // Auto load first track
+  loadTrack(currentTrackIndex);
+
+  // Dragging
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // Drag only when grabbing header, so user can click buttons without dragging
+  playerHeader.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - player.getBoundingClientRect().left;
+    offsetY = e.clientY - player.getBoundingClientRect().top;
+    player.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    player.style.cursor = 'grab';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    let x = e.clientX - offsetX;
+    let y = e.clientY - offsetY;
+
+    // Keep inside viewport
+    const maxX = window.innerWidth - player.offsetWidth;
+    const maxY = window.innerHeight - player.offsetHeight;
+
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    if (x > maxX) x = maxX;
+    if (y > maxY) y = maxY;
+
+    player.style.left = x + 'px';
+    player.style.top = y + 'px';
+  });
+</script>
+
+
+
+
+<div id="music-player">
+  <div id="player-header">
+    <div>🎵 Music Player</div>
+    <button id="minimize-btn" title="Minimize/Restore">_</button>
+  </div>
+  <div id="player-body">
+    <div id="track-info">Loading...</div>
+    <audio id="bg-music" loop></audio>
+    <div id="player-controls">
+      <button id="prev-btn">⏮️ Prev</button>
+      <button id="play-btn">▶️ Play</button>
+      <button id="pause-btn">⏸️ Pause</button>
+      <button id="next-btn">⏭️ Next</button>
+    </div>
+    <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5" title="Volume control" />
+  </div>
+</div>
+
+
+
+
+
+  #music-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    height:140px;
+    background: #222;
+    color: white;
+    border-radius: 8px;
+    padding: 12px 15px;
+    cursor: grab;
+    z-index: 1000;
+    user-select: none;
+    box-shadow: 0 0 12px rgba(0,0,0,0.8);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  #music-player:active {
+    cursor: grabbing;
+  }
+  #player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    cursor: grab;
+  }
+  #player-header:active {
+    cursor: grabbing;
+  }
+  #volume-control {
+    width: 100%;
+    margin-top: 10px;
+  }
+  #track-info {
+    font-weight: bold;
+    font-size: 15px;
+  }
+  #player-controls {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Minimized style */
+  #music-player.minimized {
+    width: 50px;
+    height: 50px;
+    padding: 8px 12px;
+    cursor: grab;
+  }
+  #music-player.minimized #player-body {
+    display: none;
+  }

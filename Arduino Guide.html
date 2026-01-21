@@ -704,7 +704,7 @@ textarea {
   <a href="#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
 </div>
 </div>
-    <a href="#more">More</a>
+    <a href="#more">Arduino Explained</a>
     <a href="#examples">Examples</a>
 
     <span class="nav-spacer"></span>
@@ -713,12 +713,12 @@ textarea {
 
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
-    Select Example <span>▾</span>
+    More <span>▾</span>
   </button>
 
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
-  
+    <a href="#breadboards">Breadboards</a>
 <div class="submenu-wrapper">
   <span class="submenu-toggle">More of all</span>
   <div class="side-dropdown">
@@ -2023,6 +2023,10 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   </p>
 </section>
 
+
+<!-- NEW SECTION BELOW -->
+
+
 <section id="resistors" class="page">
   <h2>Resistors</h2>
 
@@ -2081,6 +2085,10 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   <p>Resistors limit current and protect components by controlling voltage and current flow.</p>
   <p>Always verify resistor values and power ratings before integrating into your circuit.</p>
 </section>
+
+
+<!-- NEW SECTION BELOW -->
+
 
 <section id="capacitors" class="page">
   <h2>Capacitors</h2>
@@ -2141,6 +2149,10 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   <p>Always check polarity and voltage ratings when using capacitors.</p>
 </section>
 
+
+<!-- NEW SECTION BELOW -->
+
+
 <section id="wires" class="page">
   <h2>Wires</h2>
 
@@ -2199,6 +2211,10 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   <p>Wires connect your circuit components and must be chosen carefully to ensure safety and performance.</p>
   <p>Use proper gauge and insulation for your project’s requirements.</p>
 </section>
+
+
+<!-- NEW SECTION BELOW -->
+
 
 <section id="pins-code" class="page">
   <h2>Using Arduino Pins in Code</h2>
@@ -2298,6 +2314,258 @@ void loop() {
     If the pin number is wrong, the hardware will not work — even if your wiring is correct.
   </p>
 </section>
+
+
+<!-- NEW SECTION BELOW -->
+
+<section id="breadboards" class="page">
+  <h2>Breadboards</h2>
+<a href="#breadboard-3d">3D Breadboard</a>
+  <p>
+    A breadboard is a reusable prototyping board that allows you to build and
+    test electronic circuits without soldering. It is one of the most important
+    tools for learning electronics and Arduino.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The term “breadboard” comes from early electronics hobbyists who literally
+    built circuits on wooden breadboards in the 1970s.  
+    Modern breadboards use metal spring clips under the plastic holes to make
+    temporary electrical connections.
+  </p>
+
+  <h3>How a Breadboard Works</h3><a href="#breadboard-how">More on How</a>
+  <p>
+    Inside a breadboard, metal strips connect groups of holes together.
+    When you push a wire or component leg into a hole, it electrically connects
+    to all other holes in the same strip.
+  </p>
+
+  <img src="Images/Breadboard1.png" alt="Breadboard internal connections"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Power Rails</summary>
+    <p>
+      The long lines on the sides are called <b>power rails</b>.
+      They are usually marked with red (+) and blue (−).
+    </p>
+    <ul>
+      <li>Red rail → connect to 5V or 3.3V</li>
+      <li>Blue rail → connect to GND</li>
+      <li>Some breadboards have broken rails in the middle</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Center Rows</summary>
+    <p>
+      The middle area is split into two sides.  
+      Each row of 5 holes is connected <b>vertically</b>.
+    </p>
+    <ul>
+      <li>Left side rows are separate from right side</li>
+      <li>Used for placing ICs and components</li>
+      <li>The center gap holds DIP chips (like microcontrollers)</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Testing Arduino projects</li>
+      <li>Learning electronics</li>
+      <li>Temporary circuit building</li>
+      <li>Debugging hardware</li>
+      <li>Classroom and hobby projects</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li>Always connect GND and power rails first</li>
+      <li>Use short jumper wires to avoid noise</li>
+      <li>Double-check which holes are connected</li>
+      <li>Label power rails when using multiple voltages</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Assuming all long rails are connected end to end</li>
+      <li>Placing both legs of a component in the same row</li>
+      <li>Forgetting to connect the ground rail</li>
+      <li>Shorting power rails together</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>
+    Breadboards do not provide power by themselves — they only connect wires.
+    You must supply power from the Arduino or an external source.
+  </p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="breadboard-how" class="page">
+  <h2>How Breadboards Work (In Detail)</h2>
+
+  <p>
+    A breadboard works by internally connecting holes using hidden metal clips.
+    These clips allow electrical current to flow between connected points without soldering.
+  </p>
+
+  <h3>Internal Connections</h3>
+  <p>
+    Under the plastic surface, thin metal strips run beneath specific rows and columns.
+    When a wire or component leg is inserted, it is clamped by a metal contact.
+  </p>
+
+  <img src="Images/Breadboard.png"
+       alt="Breadboard connection layout"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Row Connections</summary>
+    <p>
+      In the center area, each row of <b>5 holes</b> is electrically connected.
+      This allows components like resistors or LEDs to share voltage or signals.
+    </p>
+    <ul>
+      <li>Connections run vertically</li>
+      <li>Left and right sides are isolated</li>
+      <li>Center gap separates IC pins</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Power Distribution</summary>
+    <p>
+      Power rails distribute voltage across the board.
+      These rails make it easy to supply power to many components.
+    </p>
+    <ul>
+      <li>Red rail = VCC (5V / 3.3V)</li>
+      <li>Blue rail = GND</li>
+      <li>Rails may be split in the middle</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Why Breadboards Are Safe for Learning</summary>
+    <ul>
+      <li>No soldering required</li>
+      <li>Easy to change circuits</li>
+      <li>Low risk of permanent damage</li>
+      <li>Reusable for thousands of insertions</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Limitations</summary>
+    <ul>
+      <li>Not suitable for high current</li>
+      <li>Not reliable for high-frequency signals</li>
+      <li>Loose wires can cause unstable behavior</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Important:</b>
+  <p>
+    Breadboards are designed for testing and learning.
+    Final projects should be soldered to perfboards or PCBs.
+  </p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="breadboard-3d" class="page">
+  <h2>Breadboard 3D View</h2>
+
+  <p>
+    Viewing a breadboard in 3D helps you understand how holes, rails,
+    and internal connections are arranged in physical space.
+  </p>
+
+  <p>
+    Rotate and zoom the model to see how components fit,
+    where the center gap is located, and how power rails run along the sides.
+  </p>
+
+  <div style="height:5vh;"></div>
+
+<div id="uno3d-wrap">
+  <model-viewer 
+      src="arduino_breadboard.glb"
+      alt="Breadboard 3D Model"
+    auto-rotate
+    camera-controls
+    exposure="1"
+    shadow-intensity="0.6"
+    style="width:100%; height:100%; background:transparent;">
+    </model-viewer>
+  </div>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>What to Look For</summary>
+    <ul>
+      <li>Side power rails</li>
+      <li>Center gap for ICs</li>
+      <li>Hole alignment</li>
+      <li>Component spacing</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Learning Tip</summary>
+    <p>
+      Try matching a real breadboard with the 3D model.
+      Insert wires and components while rotating the model
+      to understand how connections form.
+    </p>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <p><i>
+    Tip: Combine this 3D view with wiring examples to fully understand circuit layout.
+  </i></p>
+</section>
+
 
 <!-- NEW SECTION BELOW -->
 
