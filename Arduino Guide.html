@@ -249,6 +249,48 @@ transition:
   z-index:999;
 }
 
+.submenu-wrapper {
+  position: relative;
+}
+
+.side-dropdown {
+  display: none;
+  position: absolute;
+  right: 100%;  /* Position to the left of the button */
+  top: 0;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  min-width: 180px;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.submenu-wrapper:hover .side-dropdown {
+  display: flex;
+}
+
+.side-dropdown a {
+  padding: 8px 12px;
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.side-dropdown a:hover {
+  background-color: #444;
+}
+
+.submenu-toggle {
+  color:var(--accent);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.submenu-toggle:hover {
+  background-color: white; /* same hover effect as other links */
+}
+
 .dropdown-btn span{
   display:inline-block;
   transition:transform .25s ease;
@@ -552,6 +594,22 @@ p{
   opacity: 1;
 }
 
+#uno3d-wrap {
+  width: 100%;
+  height: 80vh;
+  max-height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+#uno3d {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
 .form-panel {
   width: 100%;
   max-width: var(--max-width);
@@ -603,6 +661,20 @@ textarea {
   resize: vertical;
 }
 
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.btn:hover {
+  background-color: #005fa3;
+}
+
 </style>
 </head>
 
@@ -646,10 +718,20 @@ textarea {
 
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
-  <a href="#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
-  <a href="#hardwe" onclick="selectLink(this)">Hardware</a>
-  <a href="#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+  
+<div class="submenu-wrapper">
+  <span class="submenu-toggle">More of all</span>
+  <div class="side-dropdown">
+    <a href="#leds" onclick="selectLink(this)">LEDs</a>
+    <a href="#resistors" onclick="selectLink(this)">Resistors</a>
+    <a href="#capacitors" onclick="selectLink(this)">Capacitors</a>
+    <a href="#wires" onclick="selectLink(this)">Wires</a>
+    <a href="#pins-code" onclick="selectLink(this)">Pins</a>
+  </div>
 </div>
+
+</div>
+
 </div>
 
   </nav>
@@ -1057,10 +1139,10 @@ textarea {
   <p>LEDs with current-limiting resistors. Click on the <a href="#examples">Multi LED</a> example.</p>
 
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
-    <img class="led-frame" src="Images/Arduino-LEDs-off.png" alt="Multiple LEDs off">
-    <img class="led-frame" src="Images/Arduino-LEDs-on1.png" alt="Multiple LEDs on step 1">
-    <img class="led-frame" src="Images/Arduino-LEDs-on2.png" alt="Multiple LEDs on step 2">
-    <img class="led-frame" src="Images/Arduino-LEDs-on3.png" alt="Multiple LEDs on step 3">
+    <img class="led-frame" src="Images/Arduino-LED's-off.png" alt="Multiple LEDs off">
+    <img class="led-frame" src="Images/Arduino-LED's-on1.png" alt="Multiple LEDs on step 1">
+    <img class="led-frame" src="Images/Arduino-LED's-on2.png" alt="Multiple LEDs on step 2">
+    <img class="led-frame" src="Images/Arduino-LED's-on3.png" alt="Multiple LEDs on step 3">
   </div>
 </details>
 
@@ -1334,14 +1416,7 @@ textarea {
         title="Reset Pin "
         onclick="showPinInfo('Reset Pin', 'Pulling this pin LOW restarts the Arduino. Used by shields or external reset buttons. Does NOT erase the program.')"
       ></div>
-      <div
-        class="pin"
-        data-group="power"
-        data-label="POWER"
-        style="position:absolute; top:87%; left:48%; width:12px; height:12px; cursor:pointer;"
-        title="5V "
-        onclick="showPinInfo('5V', 'Provides regulated 5V power. Used to power sensors and modules. Limited current – do NOT power motors. Can also be used to supply 5V externally (careful).')"
-      ></div>
+
       <div
         class="pin"
         data-group="power"
@@ -1378,6 +1453,23 @@ textarea {
       <p>Click the pin on the image to see details here.</p>
     </div>
   </div>
+<p>3D Model Below: Zoom/Drag/Look Around to see it better!</p>
+<div id="uno3d-wrap">
+  <model-viewer 
+    src="arduino_uno.glb"
+    alt="Arduino Uno 3D Model"
+    auto-rotate
+    camera-controls
+    exposure="1"
+    shadow-intensity="0.6"
+    style="width:100%; height:100%; background:transparent;">
+  </model-viewer>
+</div>
+
+<script type="module"
+  src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+</script>
+
 </section>
 <script>
 const groupInfo = {
@@ -1546,7 +1638,7 @@ function showPinInfo(title, description) {
       automating tasks, and creating interactive devices.
     </p>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>🧩 <strong>Main Components on the Board:</strong></summary>
     <ul>
@@ -1558,7 +1650,7 @@ function showPinInfo(title, description) {
       <li><b>Resistors</b> – limit current</li>
     </ul>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>📍 <strong>Pin Layout</strong></summary>
     <p>Arduino Uno pins are grouped by function:</p>
@@ -1595,7 +1687,7 @@ function showPinInfo(title, description) {
     <pre>A0–A5 → Analog</pre>
     <pre>5V, 3.3V, GND → Power</pre>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>🔌 <strong>Communication Methods</strong></summary>
     <ul>
@@ -1623,7 +1715,7 @@ function showPinInfo(title, description) {
 
     <p><i>Tip: I²C is easiest for beginners; SPI is fastest.</i></p>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>💾 <strong>Memory Inside Arduino</strong></summary>
     <ul>
@@ -1645,7 +1737,7 @@ function showPinInfo(title, description) {
 
     <p><i>Warning: Running out of SRAM causes crashes.</i></p>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>⚡ <strong>Powering Arduino</strong></summary>
     <ul>
@@ -1655,7 +1747,7 @@ function showPinInfo(title, description) {
     </ul>
     <p><b>Never exceed voltage limits.</b><br>Motors and high-power devices need separate power.</p>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>💻 <strong>Software & Downloads</strong></summary>
     <ul>
@@ -1699,7 +1791,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
     <p><i>Tip: The Arduino IDE internally uses the same tools as Arduino CLI.</i></p>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>🛠️ <strong>What Can You Build?</strong></summary>
     <ul>
@@ -1712,7 +1804,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
       <li>Data loggers and monitors</li>
     </ul>
   </details>
-
+<div style="height:5vh;"></div>
   <details>
     <summary>⚠️ <strong>Common Beginner Mistakes</strong></summary>
     <ul>
@@ -1821,7 +1913,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
   <div class="form-panel">
     <h2>CONTACT FORM</h2>
-    <p>Type your message below and your mail, client will open.</p>
+    <p>Type your message below and your mail client will open.</p>
 
     <form onsubmit="sendMail(); return false;">
       <label>YOUR NAME:</label>
@@ -1840,8 +1932,368 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
     </form>
   </div>
 
+  <!-- Contact info and buttons below the form -->
+  <div class="contact-info" style="margin-top: 30px; text-align: center;">
+    <p>Email: <a href="mailto:guidecommunity.contacts@gmail.com">guidecommunity.contacts@gmail.com</a></p>
+
+    <div class="social-buttons" style="margin: 15px 0;">
+      <a href="https://instagram.com/darkshadow_web_dev" target="_blank" class="btn" style="margin-right: 10px;">Instagram</a>
+      <a href="https://github.com/darkshadow-dev" target="_blank" class="btn">GitHub</a>
+    </div>
+
+<div style="text-align: center; margin-top: 20px;">
+  <img id="qrCode" src="QR-Code.png" alt="QR Code" style="max-width: 200px;">
+
+  <br>
+
+  <a href="QR-Code.png" download="ArduinoGuideQRCode.png">
+<button onclick="downloadQRCode()">Download QR Code</button>
+
+  </a>
+</div>
+
+  </div>
+
 </section>
 
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="leds" class="page">
+  <h2>LEDs (Light Emitting Diodes)</h2>
+
+  <p>
+    LEDs are semiconductor devices that emit light when an electric current passes through them. Invented in the early 1960s, LEDs have revolutionized lighting and display technologies due to their efficiency, long lifespan, and small size.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The first visible-spectrum LED was created in 1962 by Nick Holonyak Jr., often called the "father of the LED." Initially, LEDs emitted only red light and were primarily used as indicator lights. Over the decades, advances produced LEDs in many colors, including white, enabling their use in lighting, displays, and more.
+  </p>
+
+  <h3>How LEDs Work</h3>
+  <p>
+    LEDs allow current to flow in one direction — from the positive anode (longer leg) to the negative cathode (shorter leg). When electrons recombine with holes inside the semiconductor material, energy is released in the form of photons (light).
+  </p>
+  
+  <img src="Images/LED-Structure-Diagram.png" alt="LED structure diagram" style="max-width:100%; margin:15px 0; border-radius:8px;">
+<p>Image from BYJUs</p>
+<div style="height:5vh;"></div>
+<details>
+  <summary>Usage and Applications</summary>
+  <ul>
+    <li>Indicator lights in electronics</li>
+    <li>Displays and screens</li>
+    <li>Lighting (homes, streetlights, automotive)</li>
+    <li>Optical communication</li>
+    <li>Decorative and wearable tech</li>
+  </ul>
+</details>
+<div style="height:5vh;"></div>
+<details>
+  <summary>Important Tips</summary>
+  <ul>
+    <li><b>Polarity matters:</b> The longer leg is the anode (+), and the shorter leg is the cathode (−). Connecting LEDs backward prevents them from lighting.</li>
+    <li><b>Use a current-limiting resistor:</b> LEDs require a resistor in series to prevent excessive current, which can damage the LED or your Arduino.</li>
+    <li><b>Common Ground:</b> You can connect all negative legs of LEDs, displays, and motors to a common GND pin. However, avoid overloading a single GND line with too many devices.</li>
+    <li><b>Calculate resistor values:</b> Use Ohm’s law to pick the right resistor based on your supply voltage and LED forward voltage/current.</li>
+  </ul>
+</details>
+<div style="height:5vh;"></div>
+<details>
+  <summary>Common Mistakes</summary>
+  <ul>
+    <li>Connecting LEDs without resistors — leads to burning out</li>
+    <li>Reversing polarity — LED won’t light</li>
+    <li>Connecting too many LEDs to one GND line causing unstable circuits</li>
+  </ul>
+</details>
+<div style="height:5vh;"></div>
+<b>Remember :</b>
+  <p>The longer pin of LEDs is the (<b>+</b>) positive end.</p>
+  <p>The shorter pin of LEDs is the (<b>−</b>) negative end and should always be connected to the Arduino's GND (<b>−</b>).</p>
+  <p>
+    You can connect all negative ends of LEDs, displays, and even motors together to one GND pin.
+    <b>Note:</b> It is recommended to connect all LEDs, all displays, or one or two motors to a single GND—not all devices combined on the same GND line.
+  </p>
+</section>
+
+<section id="resistors" class="page">
+  <h2>Resistors</h2>
+
+  <p>
+    Resistors are passive electrical components that limit or regulate the flow of electrical current in a circuit. They are essential for protecting sensitive components and controlling voltage and current levels.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The resistor concept dates back to the 19th century, following the discovery of Ohm’s Law by Georg Simon Ohm in 1827. Since then, resistors have become fundamental components in virtually all electronic devices.
+  </p>
+
+  <h3>How Resistors Work</h3>
+  <p>
+    Resistors oppose the flow of electric current, dissipating energy as heat. Their resistance is measured in ohms (Ω), and the amount of resistance determines how much current is reduced.
+  </p>
+  
+  <img src="Images/Resistor-color-code.png" alt="Resistor color code" style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p>Image from Utmel</p>
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Limit current to LEDs and other components</li>
+      <li>Create voltage dividers</li>
+      <li>Set bias points in transistors and amplifiers</li>
+      <li>Pull-up or pull-down resistors in digital circuits</li>
+      <li>Signal conditioning and filtering</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Know your resistance:</b> Check the resistor's value using color codes or a multimeter before use.</li>
+      <li><b>Power rating matters:</b> Ensure the resistor can handle the power (watts) it will dissipate.</li>
+      <li><b>Use appropriate tolerance:</b> Higher precision resistors are important in sensitive circuits.</li>
+      <li><b>Don't overload resistors:</b> Excess heat can damage them or cause circuit failure.</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Using wrong resistance value causing incorrect current flow</li>
+      <li>Ignoring power rating leading to resistor overheating</li>
+      <li>Not considering tolerance causing circuit inaccuracies</li>
+      <li>Connecting resistors in the wrong configuration (series vs parallel)</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <b>Remember :</b>
+  <p>Resistors limit current and protect components by controlling voltage and current flow.</p>
+  <p>Always verify resistor values and power ratings before integrating into your circuit.</p>
+</section>
+
+<section id="capacitors" class="page">
+  <h2>Capacitors</h2>
+
+  <p>
+    Capacitors store and release electrical energy in a circuit. They consist of two conductive plates separated by an insulator, and are widely used for filtering, timing, and energy storage.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The capacitor's origins date to the 18th century with the invention of the Leyden jar. Modern capacitors became common in the 20th century, enabling advances in radio, computers, and power electronics.
+  </p>
+
+  <h3>How Capacitors Work</h3>
+  <p>
+    Capacitors accumulate electric charge on their plates when voltage is applied. They resist changes in voltage and can smooth power supplies, store energy briefly, or block direct current while allowing alternating current.
+  </p>
+  
+  <img src="Images/Capacitor-types.png" alt="Various capacitor types" style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p>Image from www.aictech-inc.com</p>
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Power supply filtering and smoothing</li>
+      <li>Timing circuits with resistors</li>
+      <li>Coupling and decoupling signals</li>
+      <li>Energy storage in flash cameras and power electronics</li>
+      <li>Tuning circuits in radios</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Observe polarity:</b> Electrolytic capacitors have polarity; reversing them can damage the capacitor.</li>
+      <li><b>Check voltage rating:</b> Never exceed the capacitor’s rated voltage.</li>
+      <li><b>Choose correct type:</b> Different capacitor types suit different uses (ceramic, electrolytic, film, etc.).</li>
+      <li><b>Discharge before handling:</b> Capacitors can hold charge even after power is off—discharge safely.</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Reversing polarity on electrolytic capacitors</li>
+      <li>Using capacitors with voltage ratings too low for the circuit</li>
+      <li>Not discharging capacitors before working on a circuit</li>
+      <li>Incorrect type choice causing poor performance or failure</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <b>Remember :</b>
+  <p>Capacitors store electrical energy and are essential for filtering, timing, and energy management in circuits.</p>
+  <p>Always check polarity and voltage ratings when using capacitors.</p>
+</section>
+
+<section id="wires" class="page">
+  <h2>Wires</h2>
+
+  <p>
+    Wires are conductors used to connect components in an electronic circuit. The choice of wire affects current capacity, signal integrity, and flexibility.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    Copper wire has been used since the early days of electricity. Over time, wire insulation and different gauges have improved safety and efficiency in electronic designs.
+  </p>
+
+  <h3>How Wires Work</h3>
+  <p>
+    Wires carry electric current between components. The thickness (gauge) determines how much current can safely flow without excessive heating or voltage drop.
+  </p>
+  
+  <img src="Images/Wire-gauge.png" alt="Wire gauge chart" style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p>Image from InterNACHI</p>
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Connecting sensors, modules, and power supply</li>
+      <li>Prototyping with breadboards and jumper wires</li>
+      <li>Signal transmission in data and audio cables</li>
+      <li>Power wiring in devices and appliances</li>
+      <li>Grounding and shielding to reduce noise</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Choose the right gauge:</b> Thicker wires carry more current safely.</li>
+      <li><b>Use proper insulation:</b> Prevent shorts and protect from environmental damage.</li>
+      <li><b>Keep wires organized:</b> Use color coding and tidy routing for easier debugging.</li>
+      <li><b>Avoid long runs without boosting voltage:</b> Long wires can cause voltage drops.</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Using wires too thin for the current load causing overheating</li>
+      <li>Poor insulation leading to shorts or damage</li>
+      <li>Messy wiring causing confusion and errors</li>
+      <li>Not securing wires, leading to loose connections</li>
+    </ul>
+  </details>
+  
+  <div style="height:5vh;"></div>
+  <b>Remember :</b>
+  <p>Wires connect your circuit components and must be chosen carefully to ensure safety and performance.</p>
+  <p>Use proper gauge and insulation for your project’s requirements.</p>
+</section>
+
+<section id="pins-code" class="page">
+  <h2>Using Arduino Pins in Code</h2>
+
+  <p>
+    In Arduino, you don’t control hardware by names like “LED” or “Button” —
+    you control it by **pin numbers**.  
+    Each physical pin on the board has a number you use in your code.
+  </p>
+
+  <h3>How Pin Numbers Work</h3>
+  <p>
+    When you write Arduino code, you refer to pins using their labels:
+    <b>D0–D13</b> for digital pins and <b>A0–A5</b> for analog pins.
+    These numbers tell the microcontroller which physical pin to use.
+  </p>
+
+  <img src="Images/Arduino-uno-Pins.png" alt="Arduino pin map"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+<p>Red=Power, Blue=Digital, Purple=Analog!</p>
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Basic Pin Functions</summary>
+    <ul>
+      <li><b>pinMode(pin, mode)</b> → Sets a pin as INPUT, OUTPUT, or INPUT_PULLUP</li>
+      <li><b>digitalWrite(pin, value)</b> → Sends HIGH or LOW to a digital pin</li>
+      <li><b>digitalRead(pin)</b> → Reads HIGH or LOW from a digital pin</li>
+      <li><b>analogRead(pin)</b> → Reads 0–1023 from analog pins</li>
+      <li><b>analogWrite(pin, value)</b> → Outputs PWM (0–255) on supported pins</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Example: LED on Pin 13</summary>
+<pre>
+int led = 13;
+
+void setup() {
+  pinMode(led, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(led, HIGH); // ON
+  delay(500);
+  digitalWrite(led, LOW);  // OFF
+  delay(500);
+}
+</pre>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Using Analog Pins</summary>
+    <ul>
+      <li><b>analogRead(A0)</b> → reads sensor value</li>
+      <li><b>A4 = SDA</b> → I²C data</li>
+      <li><b>A5 = SCL</b> → I²C clock</li>
+      <li>Analog pins can also be used as digital pins (A0 = D14)</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>PWM Pins (~)</summary>
+    <p>
+      Pins with a <b>~</b> symbol can simulate analog output using PWM.
+      Use <b>analogWrite()</b> on these pins:
+    </p>
+    <ul>
+      <li>~3, ~5, ~6, ~9, ~10, ~11</li>
+      <li>Value range: 0–255</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Forgetting to set pinMode()</li>
+      <li>Using analogRead() on digital pins</li>
+      <li>Using digitalWrite() on analog-only pins</li>
+      <li>Using pins 0 and 1 while uploading</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember :</b>
+  <p>
+    The number in your code directly matches the physical pin on the board.
+    If the pin number is wrong, the hardware will not work — even if your wiring is correct.
+  </p>
+</section>
 
 <!-- NEW SECTION BELOW -->
 
@@ -1962,6 +2414,28 @@ document.addEventListener("click", () => {
 </script>
 
 <script>
+
+function downloadQRCode() {
+  fetch('QR-Code.png')
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ArduinoGuideQRCode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert('Failed to download QR code'));
+}
+
+function toggleSubmenu(event) {
+  event.preventDefault();
+  const wrapper = event.target.parentElement;
+  wrapper.classList.toggle('open');
+}
 
 function loadExample(type){
   const box = document.getElementById("exampleBox");
@@ -2388,7 +2862,15 @@ document.querySelectorAll('.led-container').forEach(container => {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-</script>
 
+renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("uno3d"),
+  antialias: true,
+  alpha: true // <- this removes black background
+});
+
+renderer.setClearColor(0x000000, 0); // fully transparent
+</script>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </body>
 </html>
