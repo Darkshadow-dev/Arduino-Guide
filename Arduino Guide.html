@@ -104,7 +104,7 @@ main{
 }
 
 main{
-  padding-bottom:260px; /* 200px clearance + footer height */
+  padding-bottom:15vh;
 }
 
 /* ROOT HEIGHT */
@@ -136,7 +136,7 @@ html, body{
   background:white;
   border-right:4px solid var(--accent2);
   padding:12px;
-  overflow-y:auto;     /* scrolls if text is long */
+  overflow-y:auto;
 }
 
 /* MAIN CONTENT – 80% WIDTH, FULL HEIGHT */
@@ -145,7 +145,7 @@ html, body{
   height:100%;
   background:white;
   padding:24px;
-  overflow-y:auto;     /* scrolls independently */
+  overflow-y:auto;
 }
 
 .examples-menu div:hover{
@@ -217,8 +217,8 @@ html, body{
   text-align:left;
   font-size:14px;
   outline:none;
-  border:none;              /* remove default border */
-  border-radius:8px;        /* curved corners */
+  border:none;
+  border-radius:8px;
 }
 
 .dropdown-btn:hover{
@@ -256,7 +256,7 @@ transition:
 .side-dropdown {
   display: none;
   position: absolute;
-  right: 100%;  /* Position to the left of the button */
+  right: 100%;
   top: 0;
   background:white;
   box-shadow:0 6px 14px rgba(0,0,0,.12);
@@ -288,7 +288,7 @@ transition:
 }
 
 .submenu-toggle:hover {
-  background-color: white; /* same hover effect as other links */
+  background-color: white;
 }
 
 .dropdown-btn span{
@@ -438,77 +438,15 @@ p{
   display: block;
 }
 
-/* MOBILE */
-@media(max-width:600px){
-  h2{font-size:20px}
-}
-
-@media(max-width:600px){
-  .logo{ height:24px; }
-  .title{ font-size:18px; }
-}
-
-@media(max-width:900px){
-  #examples{
-    position:relative;
-    top:auto;
-    bottom:auto;
-    height:auto;
-    display:block;
-  }
-
-  .examples-layout{
-    flex-direction:column;
-    height:auto;
-  }
-
-  .examples-menu{
-    width:100%;
-    height:auto;
-    border-right:none;
-    border-bottom:4px solid var(--accent2);
-  }
-
-  .examples-content{
-    width:100%;
-    height:auto;
-  }
-}
-
-@media(max-width:600px){
-  .dropdown{
-    width:100%;
-  }
-}
-
-@media(max-width:600px){
-  .dropdown-menu div{
-    padding:14px 16px;
-    font-size:16px;
-  }
-}
-/* Mobile layout */
-@media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-  }
-
-  #pinInfoDisplay {
-    padding-left: 0 !important;
-    margin-top: 16px;
-  }
-}
-
 .special-layout .content {
   display: flex;
   align-items: right;
   gap: 20px;
-  /* Ensure content wraps nicely on small screens */
   flex-wrap: wrap;
 }
 
 .special-layout .content p {
-  flex: 1 1 300px; /* grows, shrinks, base width */
+  flex: 1 1 300px;
   order: 2;
   font-size: 16px;
   line-height: 1.5;
@@ -558,7 +496,7 @@ p{
   border-radius:12px;
   padding:12px;
   color:#dff1ff;
-  margin-bottom:10px; /* vertical spacing */
+  margin-bottom:10px;
 }
 
 .wiring-card summary{
@@ -638,8 +576,7 @@ label {
   font-weight: bold;
 }
 
-input,
-textarea {
+input,textarea {
   width: 100%;
   margin-top: 6px;
   padding: 8px;
@@ -675,6 +612,213 @@ textarea {
   background-color: #005fa3;
 }
 
+/* MOBILE */
+@media(max-width:600px){
+  h2{font-size:20px}
+}
+
+@media(max-width:600px){
+  .logo{ height:24px; }
+  .title{ font-size:18px; }
+}
+
+@media(max-width:900px){
+  #examples{
+    position:relative;
+    top:auto;
+    bottom:auto;
+    height:auto;
+    display:block;
+  }
+
+  .examples-layout{
+    flex-direction:column;
+    height:auto;
+  }
+
+  .examples-menu{
+    width:100%;
+    height:auto;
+    border-right:none;
+    border-bottom:4px solid var(--accent2);
+  }
+
+  .examples-content{
+    width:100%;
+    height:auto;
+  }
+}
+
+@media(max-width:600px){
+  .dropdown{
+    width:100%;
+  }
+}
+
+@media(max-width:600px){
+  .dropdown-menu div{
+    padding:14px 16px;
+    font-size:16px;
+  }
+}
+/* Mobile layout */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+
+  #pinInfoDisplay {
+    padding-left: 0 !important;
+    margin-top: 16px;
+  }
+}
+
+.quick-links {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0 25px;
+  flex-wrap: wrap;
+}
+
+.quick-links a {
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.quick-links a:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+
+/* START BOX */
+
+.start-box {
+  margin: 40px auto 10px;
+  padding: 20px;
+  max-width: 420px;
+  text-align: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.start-box p {
+  margin: 0 0 12px;
+  font-size: 1.1em;
+}
+
+.start-btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 25px;
+  background: #fff;
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.start-btn:hover {
+  background: var(--panel);
+  transform: scale(1.05);
+}
+
+
+/* INFO BLOCK */
+
+.info-block {
+  background: var(--panel);
+  border-left: 5px solid var(--accent);
+  padding: 15px 18px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  color: var(--text);
+}
+
+.info-block b {
+  color: var(--accent);
+}
+
+.board-img{
+  max-width:100%;
+  border-radius:10px;
+  margin:10px 0;
+}
+
+.divider{
+  height:5vh;
+}
+
+.spec-grid{
+  display:grid;
+  grid-template-columns:  1fr 2.0f;
+  gap:12px;
+  background:var(--panel);
+  padding:15px;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.spec-grid div{
+  background:#fff;
+  border-radius:8px;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+}
+
+.spec-grid span{
+  color:var(--accent);
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+.compare{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.compare th{
+  background:var(--accent);
+  color:#fff;
+  padding:10px;
+  text-align:left;
+}
+
+.compare td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+}
+
+.compare tr:nth-child(even){
+  background:#f5faff;
+}
+
+.next-link{
+  margin-top:20px;
+  font-weight:bold;
+}
+
+
 </style>
 </head>
 
@@ -683,14 +827,10 @@ textarea {
 <header>
   <div class="topbar">
     <img src="logo-left.png" class="logo left">
-
     <div class="title">Arduino Guide</div>
-
-    <img src="logo-right.png" class="logo right">
-  </div>
+    <img src="logo-right.png" class="logo right"> </div>
 
   <nav>
-
     <a href="#home">Home</a>
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
@@ -727,31 +867,39 @@ textarea {
     <a href="#capacitors" onclick="selectLink(this)">Capacitors</a>
     <a href="#wires" onclick="selectLink(this)">Wires</a>
     <a href="#pins-code" onclick="selectLink(this)">Pins</a>
-  </div>
-</div>
-
-</div>
-
-</div>
-
-  </nav>
-</header>
+  </div></div>
+</div></div>
+  </nav></header>
 
 <main>
-
-
 
 <!-- NEW SECTION BELOW -->
 
 
 <section id="home" class="page active">
   <h2>Welcome to Learn Arduino visually — even without owning one.</h2>
-<p><i>No installation, no simulators — just click and learn.</i></p>
-<p><b>Get Started:</b></p>
-<ul>
-  <li><a href="#board">What is Arduino?</a></li>
-  <li><a href="#examples">Try Your First Example</a></li>
-</ul>
+<div class="info-block">
+
+  <b>What is this?</b>
+  <p>A visual Arduino guide that teaches hardware + code together.</p>
+
+  <b>How is it different?</b>
+  <p>You see the pin, the wire, and the code at the same time.</p>
+
+  <b>What do I need?</b>
+  <p>Nothing. No Arduino, no installs, works offline.</p>
+</div>
+
+<div class="quick-links">
+  <a href="#board">What is Arduino?</a>
+  <a href="#examples">Try Your First Example</a>
+</div>
+
+<div class="start-box">
+  <p><b>Start in under 30 seconds:</b></p>
+  <a href="#board" class="start-btn">Explore the Arduino Board</a>
+</div>
+
 <div style="height:5vh;"></div>
   <p>
     This website is a <b>visual Arduino guide</b> designed to help you understand
@@ -765,6 +913,18 @@ textarea {
     Everything is contained in a single, fast-loading website that works offline
     and runs even on older computers.
   </p>
+
+<div style="height:5vh;"></div>
+<details>
+  <summary><b>For advanced users</b></summary>
+  <ul>
+    <li>Pin function overlays (PWM, SPI, I²C, UART)</li>
+    <li>Protocol-level explanations</li>
+    <li>Code → hardware signal flow</li>
+    <li>Real-world usage patterns</li>
+  </ul>
+</details>
+
 <div style="height:5vh;"></div>
   <h3>What You Will Learn</h3>
   <ul>
@@ -812,6 +972,7 @@ textarea {
     Use the menu to explore the board, pins, examples, and wiring diagrams.
     Start anywhere and learn at your own pace.
   </p>
+
 </section>
 
 
@@ -824,69 +985,121 @@ textarea {
   <p>
     The <b>Arduino Uno</b> is a beginner-friendly microcontroller board designed
     to interact with the physical world. It can read sensors, control outputs,
-    and run the same program continuously without an operating system.
+    and run a program continuously without an operating system.
   </p>
+
   <p>
     At its core is the <b>ATmega328P</b> microcontroller.
-    Unlike a PC CPU, this chip runs a single sketch (program) in a loop
+    Unlike a PC CPU, this chip runs a single sketch in a loop
     and directly controls hardware pins.
   </p>
 
-  <img src="Images/Arduino-uno.png" alt="Arduino Uno board"
-       style="max-width:100%; border-radius:8px; margin-top:10px;">
-  <p>
-    The Arduino board acts as a bridge between software and real-world
-    electronics.
-  </p>
-<div style="height:5vh;"></div>
-<details>
-<summary>About the Board</summary>
-<div style="height:5vh;"></div>
-  <h3>Memory Overview</h3>
-  <ul>
-    <li><b>Flash:</b> 32 KB – Stores your program (sketch)</li>
-    <li><b>SRAM:</b> 2 KB – Used while the program is running (variables, buffers)</li>
-    <li><b>EEPROM:</b> 1 KB – Stores data even when power is off</li>
-  </ul>
+  <img src="Images/Arduino-uno.png" alt="Arduino Uno board" class="board-img">
 
   <p>
-    Because memory is limited, efficient code and simple data structures
-    are important when working with Arduino.
+    Think of Arduino as a tiny computer built only to control electronics.
+    No apps, no windows — just code and signals.
   </p>
-<div style="height:5vh;"></div>
-  <h3>Clock & Speed</h3>
+
+  <div class="divider"></div>
+
+  <details open>
+    <summary><b>Arduino Uno Specs</b></summary>
+
+    <div class="spec-grid">
+      <div><b>Microcontroller</b><span>ATmega328P</span></div>
+      <div><b>Clock Speed</b><span>16 MHz</span></div>
+      <div><b>Flash</b><span>32 KB</span></div>
+      <div><b>SRAM</b><span>2 KB</span></div>
+      <div><b>EEPROM</b><span>1 KB</span></div>
+      <div><b>Digital Pins</b><span>14 (6 PWM)</span></div>
+      <div><b>Analog Inputs</b><span>6</span></div>
+      <div><b>Operating Voltage</b><span>5V</span></div>
+      <div><b>Power</b><span>USB / 7–12V</span></div>
+    </div>
+  </details>
+
+  <div class="divider"></div>
+
+  <h3>What the Uno Is Best For</h3>
   <ul>
-    <li><b>Clock speed:</b> 16 MHz</li>
-    <li>Deterministic timing (no background tasks)</li>
-    <li>No multitasking or operating system</li>
+    <li>Learning electronics & microcontrollers</li>
+    <li>Simple robots, sensors, LEDs, motors</li>
+    <li>Serial, I²C, SPI communication</li>
+    <li>Offline embedded projects</li>
   </ul>
 
-  <p>
-    The fixed clock speed makes timing predictable, which is ideal for
-    electronics, motors, and communication protocols.
-  </p>
-<div style="height:5vh;"></div>
-  <h3>Power & Connectivity</h3>
-  <ul>
-    <li>Powered via USB or external supply (7–12V recommended)</li>
-    <li>Onboard voltage regulator</li>
-    <li>USB-to-Serial interface for programming</li>
-  </ul>
+  <div class="divider"></div>
 
-  <p>
-    Once programmed, the Arduino can run standalone without a computer.
+  <h3>Arduino Family Comparison</h3>
+
+  <div class="table-wrap">
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Board</th>
+          <th>CPU</th>
+          <th>Clock</th>
+          <th>Flash</th>
+          <th>SRAM</th>
+          <th>Voltage</th>
+          <th>Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Uno</b></td>
+          <td>ATmega328P</td>
+          <td>16 MHz</td>
+          <td>32 KB</td>
+          <td>2 KB</td>
+          <td>5V</td>
+          <td>Beginners, basic projects</td>
+        </tr>
+        <tr>
+          <td><b>Nano</b></td>
+          <td>ATmega328P</td>
+          <td>16 MHz</td>
+          <td>32 KB</td>
+          <td>2 KB</td>
+          <td>5V</td>
+          <td>Small builds, breadboards</td>
+        </tr>
+        <tr>
+          <td><b>Mega</b></td>
+          <td>ATmega2560</td>
+          <td>16 MHz</td>
+          <td>256 KB</td>
+          <td>8 KB</td>
+          <td>5V</td>
+          <td>Big projects, many pins</td>
+        </tr>
+        <tr>
+          <td><b>Leonardo</b></td>
+          <td>ATmega32u4</td>
+          <td>16 MHz</td>
+          <td>32 KB</td>
+          <td>2.5 KB</td>
+          <td>5V</td>
+          <td>USB HID, keyboards</td>
+        </tr>
+        <tr>
+          <td><b>ESP32</b></td>
+          <td>Dual-core Xtensa</td>
+          <td>240 MHz</td>
+          <td>4 MB</td>
+          <td>520 KB</td>
+          <td>3.3V</td>
+          <td>WiFi, Bluetooth, IoT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="next-link">
+    Ready to explore the pins?  
+    <a href="#uno">See what each pin does →</a>
   </p>
-<div style="height:5vh;"></div>
-  <h3>What the Board Is Good At</h3>
-  <ul>
-    <li>Reading sensors (temperature, light, distance)</li>
-    <li>Controlling LEDs, relays, motors, and displays</li>
-    <li>Communicating with other devices (I²C, SPI, UART)</li>
-    <li>Running simple logic reliably for long periods</li>
-  </ul>
-</details>
-<div style="height:5vh;"></div>
-<p>Ready to explore the pins? <a href="#uno">See the pins and check what they do.</a></p>
 </section>
 
 
@@ -1115,9 +1328,10 @@ textarea {
 </p>
 
 <h3>Wiring LED to the Board</h3>
+<p> Click on the <a href="#examples">Blink LED</a> example.</p>
 <details class="wiring-card">
   <summary>LED Wiring</summary>
-  <p>LED with current-limiting resistor. Click on the <a href="#examples">Blink LED</a> example.</p>
+  <p>LED with current-limiting resistor.</p>
 
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
     <img class="led-frame" src="Images/Arduino-LED-off.png" alt="LED off">
@@ -1135,9 +1349,10 @@ textarea {
 <div style="height:10vh;"></div>
 
 <h3>Wiring Multiple LEDs to the Board</h3>
+<p> Click on the <a href="#examples">Multi LED</a> example</p>
 <details class="wiring-card">
   <summary>Multiple LED Wiring</summary>
-  <p>LEDs with current-limiting resistors. Click on the <a href="#examples">Multi LED</a> example.</p>
+  <p>LEDs with current-limiting resistors..</p>
 
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
     <img class="led-frame" src="Images/Arduino-LED's-off.png" alt="Multiple LEDs off">
@@ -1159,6 +1374,7 @@ textarea {
 <div style="height:10vh;"></div>
 
 <h3>OLED 4-Pin Wiring Layout</h3>
+<p> Click on the <a href="#examples">Oled 4-Pin Display</a> example.</p>
 <details class="wiring-card spacer1">
   <summary>Screen (I²C)</summary>
   <p>OLED / LCD using SDA and SCL lines.</p>
@@ -1166,9 +1382,15 @@ textarea {
     <img class="led-frame" src="Images/Arduino-Oled4-off.png" alt="OLED off">
     <img class="led-frame" src="Images/Arduino-Oled4-on.png" alt="OLED on">
   </div>
-  <p>Connect + to 3.3V or 5V, GND to ground, SDA to A4, and SCL to A5.</p>
-  <p><b>Important:</b> Use 3.3V unless your OLED explicitly supports 5V.</p>
 </details>
+<details>
+  <summary>Wiring Explained</summary>
+  <p><b>Connect</b> the VSS to the 3.3v Power pin (Or to 5v depending on you oled model<b> safest to go to 3.3v</b>)</p>
+  <p><b>Why:</b> the VSS on the oled might be 3.3v and you don't risk damaging your screen on 3.3v <b>IF</b> it dosent power on connect it to 5v!</p>
+  <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
+  <p><b>Connect</b> SDA to A4 and SCL to A5 <b>IF</b> you connect it incorectly you risk damaging you oled be careful.</p>
+</details>
+<div style="height:10vh;"></div>
 
     <details class="wiring-card spacer-2">
       <summary>DC Motor</summary>
@@ -1825,6 +2047,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   <p><i>Tip: Click parts on the 3D Arduino to see matching info here.</i></p>
 </section>
 
+
 <!-- NEW SECTION BELOW -->
 
 
@@ -1878,8 +2101,8 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   </div>
 
   <div class="example-item" onclick="loadExample('oled')">
-    <strong>Oled Display 4 pin</strong>
-    <span>Oled display 4 pin</span>
+    <strong>Oled 4-Pin Display</strong>
+    <span>Oled 4-Pin Display</span>
   </div>
 
   <h3>Advanced</h3>
@@ -2683,9 +2906,6 @@ document.addEventListener("click", () => {
     d.querySelector(".dropdown-menu").classList.remove("open");
   });
 });
-</script>
-
-<script>
 
 function downloadQRCode() {
   fetch('QR-Code.png')
@@ -2708,6 +2928,52 @@ function toggleSubmenu(event) {
   const wrapper = event.target.parentElement;
   wrapper.classList.toggle('open');
 }
+
+function copyCode(btn){
+  const code = btn.nextElementSibling.innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.textContent="✓";
+    setTimeout(()=>btn.textContent="Copy",900);
+  });
+}
+
+document.querySelectorAll('.led-container').forEach(container => {
+  const frames = container.querySelectorAll('.led-frame');
+  let index = 0;
+
+  frames[index].classList.add('active');
+
+  setInterval(() => {
+    frames[index].classList.remove('active');
+    index = (index + 1) % frames.length;
+    frames[index].classList.add('active');
+  }, 1000);
+});
+
+        function sendMail(form) {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+
+            // Format mailto link
+            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n\n" +
+                "Message:\n" + message
+            )}`;
+
+            // Open user's email client
+            window.location.href = mailtoLink;
+        }
+
+renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("uno3d"),
+  antialias: true,
+  alpha: true // <- this removes black background
+});
+
+renderer.setClearColor(0x000000, 0); // fully transparent
 
 function loadExample(type){
   const box = document.getElementById("exampleBox");
@@ -3073,43 +3339,6 @@ void loop(){
   }
 }
 
-function copyCode(btn){
-  const code = btn.nextElementSibling.innerText;
-  navigator.clipboard.writeText(code).then(()=>{
-    btn.textContent="✓";
-    setTimeout(()=>btn.textContent="Copy",900);
-  });
-}
-
-document.querySelectorAll('.led-container').forEach(container => {
-  const frames = container.querySelectorAll('.led-frame');
-  let index = 0;
-
-  frames[index].classList.add('active');
-
-  setInterval(() => {
-    frames[index].classList.remove('active');
-    index = (index + 1) % frames.length;
-    frames[index].classList.add('active');
-  }, 1000);
-});
-
-        function sendMail(form) {
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const subject = document.getElementById("subject").value;
-            const message = document.getElementById("message").value;
-
-            // Format mailto link
-            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-                "Name: " + name + "\n" +
-                "Email: " + email + "\n\n" +
-                "Message:\n" + message
-            )}`;
-
-            // Open user's email client
-            window.location.href = mailtoLink;
-        }
 </script>
 
 <script type="module">
@@ -3134,14 +3363,6 @@ document.querySelectorAll('.led-container').forEach(container => {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-
-renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("uno3d"),
-  antialias: true,
-  alpha: true // <- this removes black background
-});
-
-renderer.setClearColor(0x000000, 0); // fully transparent
 
 </script>
 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Arduino Hub</title>
+<style>
+body{margin:0;font-family:arial;background:#111;color:#eee}
+header{
+  background:#000;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+}
+#profile{text-align:right;font-size:12px}
+#layout{display:flex;height:100vh}
+#servers{width:150px;background:#000;padding:10px}
+#servers button{width:100%;margin-bottom:5px}
+#main{flex:1;padding:10px;overflow:auto}
+.post{background:#222;margin:10px 0;padding:10px;border-radius:6px}
+textarea,input{width:100%;background:#000;color:#0f0;border:1px solid #333;padding:5px}
+button{background:#333;color:#fff;border:0;padding:5px 10px;margin:2px;cursor:pointer}
+.owner{color:#0f0;font-size:12px}
+.comment{background:#111;padding:5px;margin:5px;border-left:2px solid #0f0}
+</style>
+</head>
+<body>
+
+<header>
+  <div>🔥 Arduino Hub</div>
+  <div id="profile"></div>
+</header>
+
+<div id="layout">
+  <div id="servers">
+    <b>Servers</b><br><br>
+    <button onclick="setServer('main')">Main</button>
+    <button onclick="setServer('private1')">Private 1</button>
+    <button onclick="setServer('private2')">Private 2</button>
+  </div>
+
+  <div id="main">
+    <input id="title" placeholder="Post title">
+    <textarea id="code" rows="4" placeholder="Arduino code..."></textarea>
+    <button onclick="addPost()">Post</button>
+    <div id="feed"></div>
+  </div>
+</div>
+
+<script>
+// USER (local only)
+let user = JSON.parse(localStorage.getItem("user"));
+let count = localStorage.getItem("userCount") || 1;
+if(!user){
+  user = { id:"ID-"+Math.floor(Math.random()*9999), name:"user"+count, votes:{} };
+  localStorage.setItem("user",JSON.stringify(user));
+  localStorage.setItem("userCount",++count);
+}
+
+function rename(){
+  let n = prompt("New name:",user.name);
+  if(n){ user.name=n; save(); showProfile(); }
+}
+function showProfile(){
+  profile.innerHTML = `${user.name}<br><small>${user.id}</small><br>
+  <button onclick="rename()">Rename</button>`;
+}
+showProfile();
+
+// POSTS
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+let currentServer = "main";
+
+function save(){
+  localStorage.setItem("posts",JSON.stringify(posts));
+  localStorage.setItem("user",JSON.stringify(user));
+}
+
+function setServer(s){ currentServer=s; render(); }
+
+function addPost(){
+  if(!title.value||!code.value) return;
+  posts.unshift({
+    id:"post_"+Date.now(),
+    title:title.value,
+    code:code.value,
+    author:user.id,
+    authorName:user.name,
+    server:currentServer,
+    likes:0,dislikes:0,
+    comments:[]
+  });
+  title.value=""; code.value="";
+  save(); render();
+}
+
+function vote(i,t){
+  let p=posts[i], prev=user.votes[p.id];
+  if(prev===t) return;
+  if(prev==="like") p.likes--;
+  if(prev==="dislike") p.dislikes--;
+  if(t==="like") p.likes++;
+  if(t==="dislike") p.dislikes++;
+  user.votes[p.id]=t;
+  save(); render();
+}
+
+function addComment(i){
+  let txt=document.getElementById("c"+i).value;
+  if(!txt) return;
+  posts[i].comments.push(user.name+": "+txt);
+  document.getElementById("c"+i).value="";
+  save(); render();
+}
+
+function del(i){
+  if(posts[i].author!==user.id) return;
+  if(confirm("Delete post?")){ posts.splice(i,1); save(); render(); }
+}
+
+function render(){
+  feed.innerHTML="";
+  posts.forEach((p,i)=>{
+    if(p.server!==currentServer) return;
+    let v=user.votes[p.id]||"";
+    let box=document.createElement("div");
+    box.className="post";
+    box.innerHTML=`
+<b>${p.title}</b>
+<div class="owner">by ${p.authorName}</div>
+<pre>${p.code}</pre>
+👍 ${p.likes} | 👎 ${p.dislikes}<br>
+<button onclick="vote(${i},'like')" ${v==="like"?"disabled":""}>Like</button>
+<button onclick="vote(${i},'dislike')" ${v==="dislike"?"disabled":""}>Dislike</button>
+${p.author===user.id?`<button onclick="del(${i})">Delete</button>`:""}
+<hr>
+<b>Comments</b>
+${p.comments.map(c=>`<div class="comment">${c}</div>`).join("")}
+<input id="c${i}" placeholder="Comment...">
+<button onclick="addComment(${i})">Send</button>
+`;
+    feed.appendChild(box);
+  });
+}
+render();
+</script>
+</body>
+</html>

@@ -1,236 +1,721 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Arduino Quizzes</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<title>Arduino Quiz Hubbb</title>
 <style>
-/* ==== ARDUINO STYLE ==== */
 :root{
-  --bg:#0f1419;
-  --panel:#1c232b;
-  --accent:#4CAF50;
-  --text:#e6e6e6;
+  --bg:#f5faff;
+  --panel:#e9f4ff;
+  --accent:#00979d;
+  --accent2:#00c853;
+  --text:#0b1c2d;
+  --max:1100px;
+  --font: system-ui, Arial;
 }
 
 body{
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family:var(--font);
   background:var(--bg);
   color:var(--text);
 }
 
-/* ==== NAV ==== */
 nav{
   display:flex;
-  gap:15px;
-  padding:10px 20px;
-  background:#0b0f14;
-  border-bottom:2px solid var(--accent);
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
 }
+
+.nav-spacer{
+  flex:1;
+}
+
+nav::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{display:none}
 
 nav a{
-  color:var(--text);
-  text-decoration:none;
+  display:inline-block;
+  margin:0 6px;
   padding:8px 12px;
+  text-decoration:none;
+  color:var(--accent);
   border-radius:6px;
+  font-weight:600;
 }
-
 nav a:hover{
-  background:var(--accent);
-  color:#fff;
+  background:rgba(0,151,157,.15);
 }
 
-/* ==== PAGES ==== */
-.page{
-  display:none;
+/* DROPDOWN WRAPPER */
+.dropdown{
+  position:relative;
+  width:160px;
+  font-family:var(--font);
+}
+
+/* BUTTON */
+.dropdown-btn{
+  width:100%;
+  background:#050814;
+  color:var(--accent);
+  padding:10px 14px;
+  font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  font-size:14px;
+  outline:none;
+  border:none;
+  border-radius:8px;
+}
+
+.dropdown-btn:hover{
+  background:rgba(0,151,157,.15);
+}
+.dropdown-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* MENU */
+.dropdown-menu{
+  position:absolute;
+  top:110%;
+  left:0;
+  width:100%;
+  background:#050814;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+
+transition:
+  opacity .25s ease,
+  transform .25s ease;
+
+  z-index:999;
+}
+
+.submenu-wrapper {
+  position: relative;
+}
+
+.side-dropdown {
+  display: none;
+  position: absolute;
+  right: 100%;
+  top: 0;
+  background:#050814;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  min-width: 180px;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.submenu-wrapper:hover .side-dropdown {
+  display: flex;
+}
+
+.side-dropdown a {
+  padding: 8px 12px;
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.side-dropdown a:hover {
+  background-color:rgba(0,151,157,.15);
+}
+
+.submenu-toggle {
+  color:var(--accent);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.submenu-toggle:hover {
+  background-color:rgba(0,151,157,.15);
+}
+
+.dropdown-btn span{
+  display:inline-block;
+  transition:transform .25s ease;
+}
+
+.dropdown.open .dropdown-btn span{
+  transform:rotate(180deg);
+}
+
+/* OPEN STATE */
+.dropdown-menu.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px 14px;
+  text-decoration:none;
+  font-weight:600;
+  color:var(--accent);
+}
+
+.dropdown-menu a:hover{
+  background:rgba(0,151,157,.15);
+}
+
+/* Dropdown spacing */
+#more details {
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background: #050814;
+  padding: 6px 10px;
+}
+
+#app{display:flex;height:100vh}
+
+#topbar{
+  height:50px;
+  background:#050814;
+  border-bottom:2px solid #1f2a44;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 15px;
+}
+
+#topbar .left{
+  font-weight:bold;
+  color:#1a2cff;
+}
+
+#topbar .right span{
+  margin-left:15px;
+  color:#aaa;
+  cursor:pointer;
+}
+
+#topbar .right span:hover{
+  color:white;
+}
+
+/* Sidebar */
+#sidebar{
+  width:230px;background:#050814;border-right:2px solid #1f2a44
+}
+#sidebar h2{text-align:center;padding:12px;border-bottom:1px solid #1f2a44}
+.cat{
+  display:block;width:100%;background:none;border:none;color:#aaa;
+  padding:12px;text-align:left;cursor:pointer;border-bottom:1px solid #1a2238
+}
+.cat:hover{background:#3e4cf7;color:#fff}
+#controls button{
+  background:#1a2cff;
+}
+.cat.active{
+  background:#1a2cff;
+}
+
+.correct { background-color: #d4f8d4; } /* light green */
+.wrong { background-color: #f8d4d4; }   /* light red */
+.partial { background-color: #f8f4d4; } /* light yellow */
+
+/* Main */
+#main{flex:1;overflow-y:auto}
+#quizSelect button{
+  margin:4px;padding:8px 14px;border:1px solid #1f2a44;
+  background:#121a2e;color:#fff;cursor:pointer
+}
+
+#mainContent{
   padding:20px;
 }
 
-.page.active{
-  display:block;
+#quizSelect button.active{background:#1a2cff}
+
+.answers button{
+  display:block;width:100%;margin:4px 0;
+  background:#0f1629;border:1px solid #1f2a44;color:#fff;padding:8px;cursor:pointer
 }
 
-/* ==== EXPANDABLE QUIZ LIST ==== */
-.expandable{
-  cursor:pointer;
-  background:var(--accent);
-  color:white;
-  padding:12px;
-  border:none;
-  width:100%;
-  text-align:left;
-  font-size:1.1em;
-  border-radius:8px;
-  margin-top:15px;
+#controls{margin-top:20px}
+#controls button{
+  padding:10px 18px;margin-right:10px;border:none;
+  background:#1a2cff;color:white;cursor:pointer
 }
 
-.sub-list{
-  display:none;
-  list-style:none;
-  padding:0;
-  margin:10px 0;
+.correct { color:#1fa64a; font-weight:bold; }
+.wrong { color:#c0392b; font-weight:bold; }
+
+input[type=radio] {
+  accent-color: #888;
+}
+
+.correct input[type=radio] {
+  accent-color: #1fa64a;
+}
+
+.wrong input[type=radio] {
+  accent-color: #c0392b;
+}
+
+#statsPanel{
+  position:absolute;
+  top:56px;
+  right:20px;
+  width:230px;
   background:var(--panel);
-  border-radius:8px;
-}
-
-.sub-list li{
-  padding:12px;
-  border-bottom:1px solid #333;
-}
-
-.sub-list li a{
   color:var(--text);
-  text-decoration:none;
-}
-
-.sub-list li:hover{
-  background:#2a333d;
-}
-
-.expandable.active + .sub-list{
-  display:block;
-}
-
-/* ==== QUIZ ==== */
-.quiz{
-  text-align:center;
-}
-
-.options label{
-  display:block;
-  padding:12px;
-  margin:8px auto;
-  max-width:320px;
-  border-radius:8px;
-  background:var(--panel);
-  border:2px solid var(--accent);
-  cursor:pointer;
-}
-
-.options input{
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.12);
   display:none;
+  z-index:999;
+  overflow:hidden;
+  animation:drop .25s ease;
 }
 
-.options input:checked + label{
-  background:var(--accent);
-  color:#fff;
+@keyframes drop{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
-.correct{background:#1e7e34;}
-.incorrect{background:#842029;}
-
-button{
-  padding:10px 20px;
-  background:var(--accent);
-  border:none;
-  color:white;
-  border-radius:8px;
-  cursor:pointer;
+.statRow{
+  padding:10px 14px;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  font-size:14px;
+  font-weight:600;
+  display:flex;
+  justify-content:space-between;
 }
+
+.statRow span{
+  color:var(--accent);
+  font-weight:700;
+}
+
 </style>
 </head>
+
 <body>
-<nav>
-  <a href="#home">Home</a>
-  <a href="#quizzes">Quizzes</a>
-  <a href="#progress">Progress</a>
-</nav>
-<main>
-<section id="home" class="page active">
-  <h1>Arduino Quizzes</h1>
-  <p>Test your Arduino knowledge step by step.</p>
-</section>
-<section id="quizzes" class="page">
-  <h2>Select Difficulty</h2>
+<div id="app">
 
-  <button class="expandable">🟢 Basics</button>
-  <ul class="sub-list">
-    <li><a href="#quiz-basic-1">Basics Quiz 1 (3Q)</a></li>
-    <li><a href="#quiz-basic-2">Basics Quiz 2 (5Q)</a></li>
-    <li><a href="#quiz-basic-3">Basics Quiz 3 (7Q)</a></li>
-  </ul>
+<div id="sidebar">
+<h2>QUIZ HUB</h2>
+<button class="cat active" onclick="loadCategory('pins',this)">Pins</button>
+<button class="cat" onclick="loadCategory('hardware',this)">Hardware</button>
+<button class="cat" onclick="loadCategory('software',this)">Software</button>
+</div>
+<div id="statsPanel">
+  <div class="statRow" id="statOverall"></div>
+  <div class="statRow" id="statPins"></div>
+  <div class="statRow" id="statHardware"></div>
+  <div class="statRow" id="statSoftware"></div>
+</div>
+<div id="main">
 
-  <button class="expandable">🟡 Intermediate</button>
-  <ul class="sub-list">
-    <li>Locked</li>
-  </ul>
+  <div id="topbar">
+    <div class="left">Arduino Quiz Hub</div>
+  <nav>
+    <a href="Arduino%20Guide.html#home">Home</a>
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    Board <span>▾</span>
+  </button>
 
-  <button class="expandable">🔴 Advanced</button>
-  <ul class="sub-list">
-    <li>Locked</li>
-  </ul>
-</section>
-<section id="quiz-basic-1" class="page quiz">
-  <h2>Basics Quiz 1</h2>
+<div class="dropdown-menu">
+  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>
+  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
+  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>
+  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+</div>
+</div>
+    <a href="Arduino%20Guide.html#more">Arduino Explained</a>
+    <a href="Arduino%20Guide.html#examples">Examples</a>
 
-  <div class="question">
-    <h3>Arduino is mainly used for?</h3>
-    <div class="options">
-      <input type="radio" id="q1a" name="q1">
-      <label for="q1a">Websites</label>
+    <span class="nav-spacer"></span>
 
-      <input type="radio" id="q1b" name="q1" data-correct>
-      <label for="q1b">Hardware</label>
+    <a href="Arduino%20Guide.html#contact">Contact</a>
 
-      <input type="radio" id="q1c" name="q1">
-      <label for="q1c">Games</label>
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    More <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino Quiz.html">Quizes</a>
+    <a href="Arduino%20Guide.html#breadboards">Breadboards</a>
+<div class="submenu-wrapper">
+  <span class="submenu-toggle">More of all</span>
+  <div class="side-dropdown">
+    <a href="Arduino%20Guide.html#leds" onclick="selectLink(this)">LEDs</a>
+    <a href="Arduino%20Guide.html#resistors" onclick="selectLink(this)">Resistors</a>
+    <a href="Arduino%20Guide.html#capacitors" onclick="selectLink(this)">Capacitors</a>
+    <a href="Arduino%20Guide.html#wires" onclick="selectLink(this)">Wires</a>
+    <a href="Arduino%20Guide.html#pins-code" onclick="selectLink(this)">Pins</a>
+  </div></div>
+</div></div>
+  </nav>
+    <div class="right">
+<span id="statsBtn">Stats ▾</span>
     </div>
   </div>
 
-  <button onclick="location.hash='#quizzes'">Finish</button>
-</section>
-</main>
+  <div id="mainContent">
 
-<footer>
-  Arduino Guide Ⓖ 2026
-</footer>
+<h2 id="title">Pins</h2>
+<div id="quizSelect"></div>
+<div id="quizArea"></div>
+
+<div id="controls">
+<button id="submitBtn" onclick="submitQuiz()">Submit</button>
+<button id="retakeBtn" onclick="retake()" disabled>Retake</button>
+</div>
+<div id="quizBox"></div>
+<button onclick="nextQ()">Next</button>
+<div id="scoreBox"></div>
+</div>
+</div>
+</div>
 <script>
-/* PAGE SWITCH + MEMORY + 404 */
+let progress = JSON.parse(localStorage.getItem("quizProgress")) || {};
 
-function showPage(id){
-  const page = document.getElementById(id);
-  if(!page){
-    id = "home"; // 404 fallback
-  }
+const data = {
+  /* =================== PINS =================== */
+  pins:[
+    [
+      {type:"mc",q:"Which pins are Serial?",a:["D0 & D1","A0 & A1","D13 & D12"],c:0},
+      {type:"mc",q:"Which pin is built-in LED?",a:["D13","D8","A0"],c:0},
+      {type:"mc",q:"PWM symbol is?",a:["~","!","#"],c:0},
+      {type:"mc",q:"Total digital pins?",a:["14","10","6"],c:0},
+      {type:"fill",q:"Analog input pin starts with __",c:"A"}
+    ],
+    [
+      {type:"fill",q:"I2C SDA pin is __",c:"A4"},
+      {type:"fill",q:"I2C SCL pin is __",c:"A5"},
+      {type:"fill",q:"SPI MOSI pin is __",c:"11"},
+      {type:"mcm",q:"Which are PWM pins?",a:["D3","D5","D8","A0"],c:[0,1]},
+      {type:"mc",q:"Which is RX?",a:["D0","D1","D2"],c:0},
+      {type:"mc",q:"Which is TX?",a:["D1","D0","D3"],c:0},
+      {type:"mc",q:"Which pin is GND?",a:["GND","5V","VIN"],c:0}
+    ],
+    [
+      {type:"fill",q:"ADC resolution is __ bits",c:"10"},
+      {type:"fill",q:"Default clock is __ MHz",c:"16"},
+      {type:"fill",q:"PWM max is __",c:"255"},
+      {type:"fill",q:"Analog pin count is __",c:"6"},
+      {type:"mcm",q:"Which are SPI pins?",a:["D10","D11","D12","D13"],c:[0,1,2,3]},
+      {type:"mcm",q:"Which are analog pins?",a:["A0","A1","D2","D5"],c:[0,1]},
+      {type:"mc",q:"PinMode sets?",a:["Direction","Voltage","Clock"],c:0},
+      {type:"mc",q:"HIGH equals?",a:["5V","3V","0V"],c:0},
+      {type:"mc",q:"LOW equals?",a:["0V","5V","3V"],c:0}
+    ]
+  ],
 
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  /* =================== HARDWARE =================== */
+  hardware:[
+    [
+      {type:"fill",q:"Arduino USB chip is __",c:"CH340"},
+      {type:"fill",q:"Voltage regulator outputs __V",c:"5"},
+      {type:"fill",q:"Crystal frequency __ MHz",c:"16"},
+      {type:"fill",q:"Flash size __ KB",c:"32"},
+      {type:"fill",q:"SRAM size __ KB",c:"2"},
+      {type:"fill",q:"EEPROM size __ KB",c:"1"},
+      {type:"fill",q:"Reset pin name is __",c:"RESET"},
+      {type:"mc",q:"Regulator does?",a:["Controls voltage","Stores data","Boosts"],c:0},
+      {type:"mc",q:"Capacitor does?",a:["Smooth power","Store code","Boost"],c:0},
+      {type:"mc",q:"Crystal does?",a:["Clock","Power","Reset"],c:0},
+      {type:"mc",q:"ATmega is?",a:["Microcontroller","CPU","Sensor"],c:0},
+      {type:"logic",q:"If crystal fails?",a:["No boot","Faster","More power"],c:0},
+      {type:"logic",q:"If regulator fails?",a:["Board off","LED on","USB works"],c:0},
+      {type:"logic",q:"If short on 5V?",a:["Board resets","Nothing","Overheats"],c:2}
+    ],
+    [
+      {type:"fill",q:"UNO uses __ USB",c:"serial"},
+      {type:"fill",q:"VIN accepts __V",c:"7-12"},
+      {type:"fill",q:"ICSP is for __",c:"SPI"},
+      {type:"fill",q:"Bootloader uses __",c:"USB"},
+      {type:"fill",q:"Reset pulls __",c:"LOW"},
+      {type:"mc",q:"Which part runs code?",a:["ATmega328P","USB chip","Crystal"],c:0},
+      {type:"mc",q:"Which stores code?",a:["Flash","SRAM","EEPROM"],c:0},
+      {type:"mc",q:"Which resets board?",a:["RESET","5V","GND"],c:0},
+      {type:"logic",q:"If reset held LOW?",a:["Restarts","Stops","Runs"],c:1},
+      {type:"logic",q:"If VIN too high?",a:["Overheat","Faster","Nothing"],c:0},
+      {type:"logic",q:"If USB removed?",a:["Stops","Continues","Overvoltage"],c:0}
+    ]
+  ],
 
-  localStorage.setItem("lastPage", id);
-  window.scrollTo(0,0);
-}
+  /* =================== SOFTWARE =================== */
+  software:[
+    [
+      {type:"fill",q:"setup() runs __ time(s)",c:"once"},
+      {type:"fill",q:"loop() runs __",c:"forever"},
+      {type:"fill",q:"Serial begin speed is __",c:"9600"},
+      {type:"mc",q:"pinMode sets?",a:["Direction","Voltage","Clock"],c:0},
+      {type:"mc",q:"digitalWrite sets?",a:["State","Speed","Mode"],c:0},
+      {type:"code",q:"Fix this: pinMode(13, IN);",c:"pinMode(13, OUTPUT);"}
+    ],
+    [
+      {type:"fill",q:"delay uses __",c:"milliseconds"},
+      {type:"fill",q:"HIGH equals __",c:"1"},
+      {type:"fill",q:"LOW equals __",c:"0"},
+      {type:"mc",q:"Which prints?",a:["Serial.print","pinMode","delay"],c:0},
+      {type:"mc",q:"Which loops?",a:["loop","setup","main"],c:0},
+      {type:"code",q:"Fix: digitalWrite(13, ON);",c:"digitalWrite(13, HIGH);"},
+      {type:"code",q:"Fix: if(x=5)",c:"if(x==5)"}
+    ]
+  ]
+};
 
-document.querySelectorAll("nav a, .sub-list a").forEach(a=>{
-  a.onclick = e=>{
-    const href = a.getAttribute("href");
-    if(!href) return;
+/* ===== ENGINE ===== */
+let currentCat = "pins";
+let currentQuiz = 0;
+let userAns = [];
+let currentSet = [];
 
-    if(href.startsWith("#")){
-      e.preventDefault();
-      history.pushState(null,"",href);
-      showPage(href.substring(1));
+function updateStats() {
+  let totalCorrect = 0, totalQuestions = 0;
+  let catStats = {
+    pins: {correct: 0, total: 0},
+    hardware: {correct: 0, total: 0},
+    software: {correct: 0, total: 0}
+  };
+
+  for (const cat in catStats) {
+    if (progress[cat]) {
+      const catProgress = progress[cat];
+      const quizzes = data[cat];
+      for (const key in catProgress) {
+        const i = Number(key);
+        if (!isNaN(i) && quizzes[i]) {
+          const score = catProgress[key];
+          if (score !== undefined) {
+            catStats[cat].correct += score;
+            catStats[cat].total += quizzes[i].length;
+          }
+        }
+      }
     }
   }
-});
 
-window.addEventListener("load", ()=>{
-  const saved = localStorage.getItem("lastPage");
-  const hash = location.hash.substring(1);
-  showPage(hash || saved || "home");
-});
+  for (const cat in catStats) {
+    totalCorrect += catStats[cat].correct;
+    totalQuestions += catStats[cat].total;
+  }
 
-window.addEventListener("hashchange", ()=>{
-  showPage(location.hash.substring(1));
-});
-
-/* EXPANDABLE */
-document.querySelectorAll(".expandable").forEach(btn=>{
-  btn.onclick=()=>{
-    btn.classList.toggle("active");
+  const setText = (id, label, correct, total) => {
+    const el = document.getElementById(id);
+    el.textContent = `${label}  ${total ? correct : 0} / ${total}`;
   };
+
+  // Show Overall first, then Pins, Hardware, Software          clear all local:localStorage.removeItem("quizProgress");location.reload();
+  setText("statOverall", "Overall", totalCorrect, totalQuestions);
+  setText("statPins", "Pins", catStats.pins.correct, catStats.pins.total);
+  setText("statHardware", "Hardware", catStats.hardware.correct, catStats.hardware.total);
+  setText("statSoftware", "Software", catStats.software.correct, catStats.software.total);
+
+  const statsPanel = document.getElementById("statsPanel");
+  if (statsPanel.style.display === "none") {
+    statsPanel.style.display = "block";
+  }
+}
+
+function loadCategory(cat, btn) {
+  currentCat = cat;
+  currentQuiz = 0;
+  document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("title").innerText = cat.toUpperCase();
+  buildQuizButtons();
+  loadQuiz(0);
+}
+
+function buildQuizButtons() {
+  let qs = data[currentCat];
+  let div = document.getElementById("quizSelect");
+  div.innerHTML = "";
+  qs.forEach((q, i) => {
+    let b = document.createElement("button");
+    let s = progress[currentCat]?.[i];
+    b.innerText = "Quiz " + (i + 1) + (s !== undefined ? " (" + s + "/" + q.length + ")" : "");
+    b.onclick = () => loadQuiz(i);
+    if (i === currentQuiz) b.classList.add("active");
+    div.appendChild(b);
+  });
+}
+
+function loadQuiz(i){
+  currentQuiz = i;
+  userAns = [];
+
+  document.querySelectorAll("#quizSelect button").forEach((b,n)=>b.classList.toggle("active", n === i));
+
+  let q = data[currentCat][i];
+
+  // Deep copy to not mess original data
+  let qCopy = JSON.parse(JSON.stringify(q));
+  
+  // Shuffle questions order
+  currentSet = shuffleArray(qCopy);
+
+  let area = document.getElementById("quizArea");
+  area.innerHTML = "";
+
+  currentSet.forEach((o, qi) => {
+    let d = document.createElement("div");
+    d.className = "question";
+    d.innerHTML = "<p><strong>" + (qi + 1) + ".</strong> " + o.q + "</p>";
+
+    if(o.type==="mc"||o.type==="logic"){
+      o.a.forEach((t, ai) => {
+        let r = document.createElement("input");
+        r.type = "radio"; 
+        r.name = "q" + qi;
+        r.onchange = () => userAns[qi] = ai;
+        d.append(r," ",t,document.createElement("br"));
+      });
+    }
+
+    if(o.type==="mcm"){
+      o.a.forEach((t, ai) => {
+        let c = document.createElement("input");
+        c.type = "checkbox";
+        c.onchange = () => {
+          userAns[qi] = [...(userAns[qi] || [])];
+          if(c.checked) userAns[qi].push(ai);
+          else userAns[qi] = userAns[qi].filter(x => x !== ai);
+        };
+        d.append(c," ",t,document.createElement("br"));
+      });
+    }
+
+    if(o.type==="fill"||o.type==="code"){
+      let inp = o.type==="code"?document.createElement("textarea"):document.createElement("input");
+      inp.oninput = e => userAns[qi] = e.target.value.trim();
+      d.appendChild(inp);
+    }
+
+    area.appendChild(d);
+  });
+
+  // RESET Submit and Retake buttons every time a quiz loads
+  document.getElementById("submitBtn").disabled = false;
+  document.getElementById("retakeBtn").disabled = true;
+}
+
+function submitQuiz() {
+  let score = 0;
+
+  currentSet.forEach((o, i) => {
+    let user = userAns[i];
+    let correctAnswer = o.c;
+
+    let correct = false;
+    let partial = false;
+
+    if (o.type === "fill" || o.type === "code") {
+      correct = user?.toLowerCase() === correctAnswer.toLowerCase();
+    } else if (o.type === "mcm") {
+      let a = (user || []).sort().join();
+      let c = correctAnswer.sort().join();
+      if (a === c) correct = true;
+      else if (a.length > 0 && c.includes(a)) partial = true;
+    } else {
+      correct = user === correctAnswer;
+    }
+
+    if (correct) score++;
+
+    // Color question
+    let qDiv = document.querySelectorAll("#quizArea .question")[i];
+    qDiv.classList.remove("correct", "wrong", "partial");
+    if (correct) qDiv.classList.add("correct");
+    else if (partial) qDiv.classList.add("partial");
+    else qDiv.classList.add("wrong");
+  });
+
+  saveScore(score);
+
+  // Disable Submit and enable Retake
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("retakeBtn").disabled = false;
+}
+
+function retake() {
+  loadQuiz(currentQuiz);
+  // Enable Submit and disable Retake
+  document.getElementById("submitBtn").disabled = false;
+  document.getElementById("retakeBtn").disabled = true;
+}
+
+function shuffleArray(arr) {
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function saveScore(score) {
+  if (!progress[currentCat]) progress[currentCat] = {};
+  progress[currentCat][currentQuiz] = score;
+  localStorage.setItem("quizProgress", JSON.stringify(progress));
+  buildQuizButtons();
+  updateStats();
+}
+
+function nextQ() {
+  if (currentQuiz + 1 < data[currentCat].length) {
+    loadQuiz(currentQuiz + 1);
+  }
+}
+
+// Setup initial UI and stats
+buildQuizButtons();
+loadQuiz(0);
+updateStats();
+
+// Stats panel toggle button
+document.getElementById("statsBtn").addEventListener("click", () => {
+  const sp = document.getElementById("statsPanel");
+  sp.style.display = sp.style.display === "block" ? "none" : "block";
+});
+</script>
+
+<script>
+/* DROPDOWNS (unchanged) */
+function toggleDropdown(btn, e) {
+  e.stopPropagation();
+
+  document.querySelectorAll(".dropdown").forEach(d => {
+    if (d !== btn.closest(".dropdown")) {
+      d.classList.remove("open");
+      d.querySelector(".dropdown-menu").classList.remove("open");
+    }
+  });
+
+  const dropdown = btn.closest(".dropdown");
+  dropdown.classList.toggle("open");
+  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
+}
+
+function selectLink(link) {
+  const dropdown = link.closest(".dropdown");
+  dropdown.classList.remove("open");
+  dropdown.querySelector(".dropdown-menu").classList.remove("open");
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".dropdown").forEach(d => {
+    d.classList.remove("open");
+    d.querySelector(".dropdown-menu").classList.remove("open");
+  });
 });
 </script>
 </body>
 </html>
+
