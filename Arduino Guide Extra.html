@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Arduino Guide</title>
+
+<style>
+:root{
+  --bg:#f5faff;
+  --panel:#e9f4ff;
+  --accent:#00979d;
+  --accent2:#00c853;
+  --text:#0b1c2d;
+  --max:1100px;
+  --font: system-ui, Arial;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  position:fixed;
+  top:0;left:0;right:0;
+  background:var(--panel);
+  padding:12px 16px;
+  z-index:1000;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+/* NAV */
+nav{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+}
+
+.nav-spacer{
+  flex:1;
+}
+
+nav::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{display:none}
+
+nav a{
+  display:inline-block;
+  margin:0 6px;
+  padding:8px 12px;
+  text-decoration:none;
+  color:var(--accent);
+  border-radius:6px;
+  font-weight:600;
+}
+nav a:hover{
+  background:rgba(0,151,157,.15);
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.title{
+  font-size:20px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.logo{
+  position:absolute;
+  height:36px;
+  width:36px;
+  border-radius:50%;
+  object-fit:cover;
+  background:white;
+  padding:2px;
+  font-size:20px;
+  font-weight:700;
+  color:var(--accent);
+  text-align:center;
+}
+
+.logo.left{ left:12px; }
+.logo.right{ right:12px; }
+
+/* MAIN */
+main{
+  max-width:var(--max);
+  margin:auto;
+  padding:120px 16px 80px;
+}
+
+main{
+  padding-bottom:15vh;
+}
+
+/* ROOT HEIGHT */
+html, body{
+  height:100%;
+}
+
+/* Examples page ONLY when active */
+#examples.active{
+  position:fixed;
+  top:120px;
+  bottom:60px;
+  left:0;
+  right:0;
+  display:flex;
+}
+
+/* LAYOUT */
+.examples-layout{
+  display:flex;
+  width:100%;
+  height:100%;
+}
+
+/* LEFT MENU – 20% WIDTH, FULL HEIGHT */
+.examples-menu{
+  width:20%;
+  height:100%;
+  background:white;
+  border-right:4px solid var(--accent2);
+  padding:12px;
+  overflow-y:auto;
+}
+
+/* MAIN CONTENT – 80% WIDTH, FULL HEIGHT */
+.examples-content{
+  width:80%;
+  height:100%;
+  background:white;
+  padding:24px;
+  overflow-y:auto;
+}
+
+.examples-menu div:hover{
+  background:rgba(0,151,157,.12);
+}
+
+.example-item,
+.example-item * {
+  cursor: pointer;
+  user-select: none;
+}
+
+.examples-menu h3{
+  margin: 16px 0 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+.code-block{
+  position:relative;
+  background:#0e1a24;
+  color:#b9f6ca;
+  padding:16px;
+  border-radius:6px;
+  margin-top:16px;
+  overflow:auto;
+}
+
+.code-block pre{
+  margin:0;
+  font-family:monospace;
+  font-size:15px;
+}
+
+/* COPY BUTTON */
+.copy-btn{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:var(--accent2);
+  border:none;
+  color:#003;
+  font-weight:700;
+  padding:6px 10px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.copy-btn:hover{
+  background:#00e676;
+}
+
+/* DROPDOWN WRAPPER */
+.dropdown{
+  position:relative;
+  width:160px;
+  font-family:var(--font);
+}
+
+/* BUTTON */
+.dropdown-btn{
+  width:100%;
+  background:var(--panel);
+  color:var(--accent);
+  padding:10px 14px;
+  font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  font-size:14px;
+  outline:none;
+  border:none;
+  border-radius:8px;
+}
+
+.dropdown-btn:hover{
+  background:rgba(0,151,157,.15);
+}
+.dropdown-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* MENU */
+.dropdown-menu{
+  position:absolute;
+  top:110%;
+  left:0;
+  width:100%;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+
+transition:
+  opacity .25s ease,
+  transform .25s ease;
+
+  z-index:999;
+}
+
+.submenu-wrapper {
+  position: relative;
+}
+
+.side-dropdown {
+  display: none;
+  position: absolute;
+  right: 100%;
+  top: 0;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  min-width: 180px;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.submenu-wrapper:hover .side-dropdown {
+  display: flex;
+}
+
+.side-dropdown a {
+  padding: 8px 12px;
+  color: var(--accent);
+  text-decoration: none;
+  display: block;
+}
+
+.side-dropdown a:hover {
+  background-color: #444;
+}
+
+.submenu-toggle {
+  color:var(--accent);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.submenu-toggle:hover {
+  background-color: white;
+}
+
+.dropdown-btn span{
+  display:inline-block;
+  transition:transform .25s ease;
+}
+
+.dropdown.open .dropdown-btn span{
+  transform:rotate(180deg);
+}
+
+/* OPEN STATE */
+.dropdown-menu.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px 14px;
+  text-decoration:none;
+  font-weight:600;
+  color:var(--accent);
+}
+
+.dropdown-menu a:hover{
+  background:rgba(0,151,157,.12);
+}
+
+/* Dropdown spacing */
+#more details {
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background: #f9fbff;
+  padding: 6px 10px;
+}
+
+/* Make summary look clickable */
+summary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+}
+
+/* Remove text-cursor feeling */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom arrow */
+summary::before{
+  content:"";
+  margin-right:6px;
+  transition:transform .2s;
+}
+details[open] summary::before{
+  transform:rotate(90deg);
+}
+
+footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:60px;
+  background:var(--panel);
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  box-shadow:0 -2px 6px rgba(0,0,0,.1);
+}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* SECTIONS */
+h2{
+  color:var(--accent);
+  margin-bottom:10px;
+}
+p{
+  line-height:1.6;
+  margin-bottom:14px;
+}
+
+/* IMAGE PIN MAP */
+.pin-map{
+  position:relative;
+  max-width:500px;
+  margin:20px auto;
+}
+.pin-map img{
+  width:100%;
+  display:block;
+  border-radius:10px;
+}
+
+/* CLICKABLE PIN */
+.pin{
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:var(--accent2);
+  border:2px solid white;
+  cursor:pointer;
+}
+
+/* INFO BOX */
+#pinInfo{
+  background:white;
+  border-left:4px solid var(--accent);
+  padding:12px;
+  margin-top:15px;
+  display:none;
+}
+
+.pin {
+  border-radius: 50%;
+  background: rgba(0,0,0,0.15);
+}
+
+.pin.active { background: #ff3b3b; box-shadow: 0 0 8px #ff3b3b; }
+
+.pin-label {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: none;
+  pointer-events: none;
+}
+
+.pin.active .pin-label {
+  display: block;
+}
+
+.special-layout .content {
+  display: flex;
+  align-items: right;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.special-layout .content p {
+  flex: 1 1 300px;
+  order: 2;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.special-layout .content img {
+  flex: 1 1 300px;
+  order: 1;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.hardware-layout{
+  display:grid;
+  grid-template-columns: 1fr 0.9fr;
+  gap:40px;
+  align-items:start;
+}
+
+/* LEFT */
+.hardware-left img{
+  max-width:100%;
+  margin:16px 0;
+  border-radius:10px;
+}
+
+/* RIGHT */
+.hardware-right {
+  position: sticky;
+  top: 80px;
+}
+
+.hardware-left {
+  max-width: 520px;
+}
+
+.hardware-right {
+  border-left: 2px dashed #2a2a2a;
+  padding-left: 24px;
+}
+
+.wiring-card{
+  background:#0e1a24;
+  border:1px solid #2a4a63;
+  border-radius:12px;
+  padding:12px;
+  color:#dff1ff;
+  margin-bottom:10px;
+}
+
+.wiring-card summary{
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.wiring-card img{
+  width:100%;
+  margin-top:10px;
+  border-radius:8px;
+}
+
+.led-container {
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.led-container:hover {
+  transform: scale(4);
+}
+
+.led-frame {
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100px;
+  opacity: 0;
+  border-radius: 8px;
+}
+
+.led-frame.active {
+  opacity: 1;
+}
+
+#uno3d-wrap {
+  width: 80%;
+  height: 80vh;
+  max-height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+#uno3d {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.form-panel {
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  padding: 24px;
+  box-shadow: 0 0 15px rgba(0,255,0,0.15);
+}
+
+.form-panel h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.form-panel p {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* ===== FORM ===== */
+label {
+  display: block;
+  margin-top: 14px;
+  font-weight: bold;
+}
+
+input,textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  font-family: monospace;
+  font-size: 1rem;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  background: #ffffff;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.btn:hover {
+  background-color: #005fa3;
+}
+
+#examples.active{
+  overflow:auto;
+}
+
+.quick-links {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0 25px;
+  flex-wrap: wrap;
+}
+
+.quick-links a {
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.quick-links a:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+
+/* START BOX */
+
+.start-box {
+  margin: 40px auto 10px;
+  padding: 20px;
+  max-width: 420px;
+  text-align: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.start-box p {
+  margin: 0 0 12px;
+  font-size: 1.1em;
+}
+
+.start-btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 25px;
+  background: #fff;
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.start-btn:hover {
+  background: var(--panel);
+  transform: scale(1.05);
+}
+
+
+/* INFO BLOCK */
+
+.info-block {
+  background: var(--panel);
+  border-left: 5px solid var(--accent);
+  padding: 15px 18px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  color: var(--text);
+}
+
+.info-block b {
+  color: var(--accent);
+}
+
+.board-img{
+  max-width:100%;
+  border-radius:10px;
+  margin:10px 0;
+}
+
+.divider{
+  height:5vh;
+}
+
+.spec-grid{
+  display:grid;
+  grid-template-columns:  1fr 2f;
+  gap:12px;
+  background:var(--panel);
+  padding:15px;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.spec-grid div{
+  background:#fff;
+  border-radius:8px;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+}
+
+.spec-grid span{
+  color:var(--accent);
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+.compare{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.compare th{
+  background:var(--accent);
+  color:#fff;
+  padding:10px;
+  text-align:left;
+}
+
+.compare td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+}
+
+.compare tr:nth-child(even){
+  background:#f5faff;
+}
+
+.next-link{
+  margin-top:20px;
+  font-weight:bold;
+}
+
+/* ================= MOBILE FIX PACK ================= */
+
+@media (max-width:900px){
+
+  main{
+    padding:110px 12px 100px;
+  }
+
+  nav{
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  .nav-spacer{display:none;}
+
+  /* examples page */
+  #examples{
+    position:relative;
+    top:auto;
+    bottom:auto;
+    height:auto;
+    display:block;
+  }
+
+  .examples-layout{
+    flex-direction:column;
+    height:auto;
+  }
+
+  .examples-menu{
+    width:100%;
+    height:auto;
+    border-right:none;
+    border-bottom:4px solid var(--accent2);
+  }
+
+  .examples-content{
+    width:100%;
+    height:auto;
+  }
+
+  /* hardware grid stacks */
+  .hardware-layout{
+    grid-template-columns:1fr;
+  }
+
+  .hardware-right{
+    position:static;
+    border-left:none;
+    padding-left:0;
+    border-top:2px dashed #2a2a2a;
+    margin-top:20px;
+  }
+
+  /* spec grid */
+  .spec-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width:600px){
+
+  h2{font-size:20px}
+  p{font-size:15px}
+
+  .logo{height:24px;width:24px;}
+  .title{font-size:18px;}
+
+  header{
+    padding:10px;
+  }
+
+  footer{
+    height:50px;
+    font-size:14px;
+  }
+
+  .dropdown{
+    width:100%;
+  }
+
+  .dropdown-menu a{
+    padding:14px 16px;
+    font-size:16px;
+  }
+
+  .pin{
+    width:14px;
+    height:14px;
+  }
+
+  .pin-label{
+    font-size:9px;
+  }
+
+  .quick-links a{
+    min-width:100%;
+  }
+
+  .start-box{
+    margin:20px auto;
+    padding:16px;
+  }
+
+  .start-btn{
+    width:100%;
+  }
+}
+
+/* TABLET */
+@media (max-width:768px){
+  .content{
+    flex-direction:column;
+  }
+
+  #pinInfoDisplay{
+    padding-left:0 !important;
+    margin-top:16px;
+  }
+}
+
+/* ============ TABLET & SMALL LAPTOP ============ */
+@media (min-width:901px) and (max-width:1200px){
+
+  main{
+    max-width:900px;
+    padding:120px 24px 90px;
+  }
+
+  nav a{
+    padding:6px 10px;
+    font-size:14px;
+  }
+
+  .title{
+    font-size:19px;
+  }
+
+  /* Examples page */
+  .examples-menu{
+    width:28%;
+  }
+
+  .examples-content{
+    width:72%;
+    padding:18px;
+  }
+
+  /* Hardware layout balance */
+  .hardware-layout{
+    grid-template-columns:1.1fr 0.9fr;
+    gap:24px;
+  }
+
+  .hardware-right{
+    top:90px;
+  }
+
+  /* Spec grid */
+  .spec-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  /* Cards */
+  .wiring-card{
+    padding:10px;
+  }
+
+  /* Code blocks */
+  .code-block pre{
+    font-size:14px;
+  }
+
+  /* Pin labels */
+  .pin-label{
+    font-size:11px;
+  }
+
+  /* Quick links */
+  .quick-links a{
+    min-width:200px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="topbar">
+    <img src="logo-left.png" class="logo left">
+    <div class="title">Arduino Guide</div>
+    <img src="logo-right.png" class="logo right"> </div>
+
+  <nav>
+    <a href="Arduino%20Guide.html#home">Home</a>
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    Board <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>
+  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
+  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>
+  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+</div>
+</div>
+    <a href="Arduino%20Guide.html#more">Arduino Explained</a>
+    <a href="Arduino%20Guide.html#examples">Examples</a>
+
+    <span class="nav-spacer"></span>
+
+    <a href="#contact">Contact</a>
+
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    More <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino Quiz.html">Quizes</a>
+    <a href="#breadboards">Breadboards</a>
+<div class="submenu-wrapper">
+  <span class="submenu-toggle">More of all</span>
+  <div class="side-dropdown">
+    <a href="#leds" onclick="selectLink(this)">LEDs</a>
+    <a href="#resistors" onclick="selectLink(this)">Resistors</a>
+    <a href="#capacitors" onclick="selectLink(this)">Capacitors</a>
+    <a href="#wires" onclick="selectLink(this)">Wires</a>
+    <a href="#pins-code" onclick="selectLink(this)">Pins</a>
+  </div></div>
+</div></div>
+  </nav></header>
+
+<main>
+
+<section id="contact" class="page">
+
+  <h1>CONTACT US</h1>
+  <p>Arduino Guide Community Support</p>
+
+  <div class="form-panel">
+    <h2>CONTACT FORM</h2>
+    <p>Type your message below and your mail client will open.</p>
+
+    <form onsubmit="sendMail(); return false;">
+      <label>YOUR NAME:</label>
+      <input type="text" id="name" required>
+
+      <label>YOUR EMAIL:</label>
+      <input type="email" id="email" required>
+
+      <label>SUBJECT:</label>
+      <input type="text" id="subject" required>
+
+      <label>MESSAGE:</label>
+      <textarea id="message" rows="5"></textarea>
+
+      <button type="submit">SEND MESSAGE</button>
+    </form>
+  </div>
+
+  <!-- Contact info and buttons below the form -->
+  <div class="contact-info" style="margin-top: 30px; text-align: center;">
+    <p>Email: <a href="mailto:guidecommunity.contacts@gmail.com">guidecommunity.contacts@gmail.com</a></p>
+
+    <div class="social-buttons" style="margin: 15px 0;">
+      <a href="https://instagram.com/darkshadow_web_dev" target="_blank" class="btn" style="margin-right: 10px;">Instagram</a>
+      <a href="https://github.com/darkshadow-dev" target="_blank" class="btn">GitHub</a>
+    </div>
+
+<div style="text-align: center; margin-top: 20px;">
+  <img id="qrCode" src="QR-Code.png" alt="QR Code" style="max-width: 200px;">
+
+  <br>
+
+  <a href="QR-Code.png" download="ArduinoGuideQRCode.png">
+<button onclick="downloadQRCode()">Download QR Code</button>
+
+  </a>
+</div>
+
+  </div>
+
+</section>
+
+
+<section id="leds" class="page">
+  <h2>LEDs (Light Emitting Diodes)</h2>
+
+  <p>
+    LEDs are semiconductor devices that emit light when an electric current passes through them.
+    Invented in the early 1960s, LEDs later revolutionized lighting and display technology thanks to
+    their efficiency, long lifespan, and small size.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The first visible-spectrum LED was created in 1962 by Nick Holonyak Jr.,
+    often called the “father of the LED.”  
+    Early LEDs produced only red light and were used mainly as indicator lamps.
+    Over time, new materials allowed LEDs to emit many colors, including white,
+    making them suitable for lighting, displays, and communication systems.
+  </p>
+
+  <h3>How LEDs Work</h3>
+  <p>
+    An LED allows current to flow in only one direction — from the positive
+    <b>anode</b> (longer leg) to the negative <b>cathode</b> (shorter leg).
+    When electrons recombine with holes inside the semiconductor,
+    energy is released as light (photons).
+  </p>
+
+  <img src="Images/LED-Structure-Diagram.png" alt="LED structure diagram"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p><small>Image source: BYJU’S</small></p>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Indicator lights in electronics</li>
+      <li>Displays and screens</li>
+      <li>Lighting (homes, streetlights, automotive)</li>
+      <li>Optical communication</li>
+      <li>Decorative and wearable technology</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Polarity matters:</b> The longer leg is the anode (+) and the shorter leg is the cathode (−). Reversing them will prevent the LED from lighting.</li>
+      <li><b>Always use a resistor:</b> LEDs must have a current-limiting resistor in series to avoid damage.</li>
+      <li><b>Common ground:</b> Multiple LEDs can share the same GND, but avoid connecting too many high-current devices to one pin.</li>
+      <li><b>Calculate resistor values:</b> Use Ohm’s law based on supply voltage and LED forward voltage/current.</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Connecting LEDs without resistors (burns them out)</li>
+      <li>Reversing polarity (LED will not light)</li>
+      <li>Connecting too many devices to a single GND line</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>The longer leg of an LED is the <b>(+)</b> anode.</p>
+  <p>The shorter leg is the <b>(−)</b> cathode and should be connected to Arduino GND.</p>
+  <p>
+    You may connect multiple negative ends to one GND pin, but do not power all motors,
+    displays, and LEDs from the same GND line.
+  </p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="resistors" class="page">
+  <h2>Resistors</h2>
+
+  <p>
+    Resistors are passive electrical components that limit and control the flow
+    of current in a circuit. They protect sensitive components and help control
+    voltage and current levels.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The concept of resistance comes from Ohm’s Law, discovered in 1827 by
+    Georg Simon Ohm. Since then, resistors have become one of the most
+    important parts of modern electronics.
+  </p>
+
+  <h3>How Resistors Work</h3>
+  <p>
+    Resistors oppose the flow of electric current and convert excess electrical
+    energy into heat. Their resistance is measured in ohms (Ω). A higher
+    resistance means less current can flow.
+  </p>
+
+  <img src="Images/Resistor-color-code.png" alt="Resistor color code"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p><small>Image source: Utmel</small></p>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Limit current for LEDs and sensors</li>
+      <li>Create voltage dividers</li>
+      <li>Set bias points in transistors and amplifiers</li>
+      <li>Pull-up and pull-down resistors in digital circuits</li>
+      <li>Signal conditioning and filtering</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Check the value:</b> Read the color code or use a multimeter.</li>
+      <li><b>Power rating matters:</b> Choose a resistor that can safely handle the heat.</li>
+      <li><b>Use the correct tolerance:</b> Precision circuits need low-tolerance resistors.</li>
+      <li><b>Avoid overheating:</b> Too much current can permanently damage a resistor.</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Using the wrong resistance value</li>
+      <li>Ignoring the power rating</li>
+      <li>Choosing the wrong tolerance</li>
+      <li>Wiring resistors incorrectly (series vs. parallel)</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>Resistors control current and protect components in your circuit.</p>
+  <p>Always verify resistance values and power ratings before using them.</p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="capacitors" class="page">
+  <h2>Capacitors</h2>
+
+  <p>
+    Capacitors store and release electrical energy in a circuit.
+    They consist of two conductive plates separated by an insulator
+    and are widely used for filtering, timing, and short-term energy storage.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The earliest capacitor was the Leyden jar, invented in the 18th century.
+    Modern capacitors became common in the 20th century and helped enable
+    radios, computers, and power electronics.
+  </p>
+
+  <h3>How Capacitors Work</h3>
+  <p>
+    Capacitors store electrical charge when voltage is applied.
+    They resist sudden changes in voltage, smooth power supplies,
+    block direct current, and allow alternating current to pass.
+  </p>
+
+  <img src="Images/Capacitor-types.png" alt="Various capacitor types"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p><small>Image source: aictech-inc.com</small></p>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Power supply filtering and smoothing</li>
+      <li>Timing circuits with resistors</li>
+      <li>Signal coupling and decoupling</li>
+      <li>Short-term energy storage</li>
+      <li>Radio tuning circuits</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Observe polarity:</b> Electrolytic capacitors must be connected correctly.</li>
+      <li><b>Check voltage ratings:</b> Never exceed the rated voltage.</li>
+      <li><b>Choose the right type:</b> Ceramic, electrolytic, and film capacitors serve different roles.</li>
+      <li><b>Discharge before handling:</b> Large capacitors can hold dangerous charge.</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Reversing polarity</li>
+      <li>Using a capacitor with too low voltage rating</li>
+      <li>Not discharging before touching</li>
+      <li>Using the wrong capacitor type</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>Capacitors store energy and stabilize voltage in electronic circuits.</p>
+  <p>Always check polarity and voltage ratings before connecting them.</p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="wires" class="page">
+  <h2>Wires</h2>
+
+  <p>
+    Wires are conductors used to connect components in an electronic circuit.
+    The type and thickness of a wire affect how much current it can safely carry,
+    how flexible it is, and how reliable the connection will be.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    Copper has been used for electrical wiring since the early days of
+    electricity. Over time, better insulation materials and standardized wire
+    gauges improved safety and efficiency in electronic systems.
+  </p>
+
+  <h3>How Wires Work</h3>
+  <p>
+    Wires carry electric current between components. The thickness of a wire,
+    called its <b>gauge</b>, determines how much current can flow safely without
+    overheating or causing a voltage drop.
+  </p>
+
+  <img src="Images/Wire-Gauge.png" alt="Wire gauge chart"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p><small>Image source: InterNACHI</small></p>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Connecting sensors, modules, and power supplies</li>
+      <li>Prototyping with breadboards and jumper wires</li>
+      <li>Signal transmission in data and audio cables</li>
+      <li>Power wiring inside devices and appliances</li>
+      <li>Grounding and shielding to reduce electrical noise</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li><b>Choose the correct gauge:</b> Thicker wires carry more current safely.</li>
+      <li><b>Use proper insulation:</b> Prevent short circuits and damage.</li>
+      <li><b>Keep wires organized:</b> Color coding helps with debugging.</li>
+      <li><b>Avoid very long runs:</b> Long wires can cause voltage drops.</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Using wires that are too thin for the current</li>
+      <li>Damaged or missing insulation</li>
+      <li>Messy wiring causing confusion and errors</li>
+      <li>Loose connections that disconnect easily</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>Wires are the paths that electricity follows in your circuit.</p>
+  <p>Always choose the correct gauge and insulation for your project.</p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="pins-code" class="page">
+  <h2>Using Arduino Pins in Code</h2>
+
+  <p>
+    In Arduino, you do not control parts by names like “LED” or “Button”.
+    You control them using <b>pin numbers</b>.
+    Each physical pin on the board has a number that you reference in your code.
+  </p>
+
+  <h3>How Pin Numbers Work</h3>
+  <p>
+    Arduino boards label pins as:
+    <b>D0–D13</b> for digital pins and <b>A0–A5</b> for analog pins.
+    These labels tell the microcontroller which physical pin to use.
+  </p>
+
+  <img src="Images/Arduino-uno-Pins.png" alt="Arduino pin map"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+  <p><small>Red = Power, Blue = Digital, Purple = Analog</small></p>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Basic Pin Functions</summary>
+    <ul>
+      <li><b>pinMode(pin, mode)</b> → Sets a pin as INPUT, OUTPUT, or INPUT_PULLUP</li>
+      <li><b>digitalWrite(pin, value)</b> → Sends HIGH or LOW</li>
+      <li><b>digitalRead(pin)</b> → Reads HIGH or LOW</li>
+      <li><b>analogRead(pin)</b> → Reads values from 0 to 1023</li>
+      <li><b>analogWrite(pin, value)</b> → Outputs PWM from 0 to 255</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Example: LED on Pin 13</summary>
+<pre>
+int led = 13;
+
+void setup() {
+  pinMode(led, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(led, HIGH); // ON
+  delay(500);
+  digitalWrite(led, LOW);  // OFF
+  delay(500);
+}
+</pre>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Using Analog Pins</summary>
+    <ul>
+      <li><b>analogRead(A0)</b> → Reads sensor values</li>
+      <li><b>A4 = SDA</b> → I²C data</li>
+      <li><b>A5 = SCL</b> → I²C clock</li>
+      <li>Analog pins can also act as digital pins (A0 = D14)</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>PWM Pins (~)</summary>
+    <p>
+      Pins with a <b>~</b> symbol can simulate analog output using PWM.
+      Use <b>analogWrite()</b> on these pins.
+    </p>
+    <ul>
+      <li>~3, ~5, ~6, ~9, ~10, ~11</li>
+      <li>Value range: 0–255</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Forgetting to use pinMode()</li>
+      <li>Using analogRead() on digital-only pins</li>
+      <li>Using digitalWrite() on analog-only pins</li>
+      <li>Using pins 0 and 1 while uploading code</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>
+    The pin number in your code must match the physical pin on the board.
+    If the number is wrong, the circuit will not work.
+  </p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+<section id="breadboards" class="page">
+  <h2>Breadboards</h2>
+<a href="#breadboard-3d">3D Breadboard</a>
+  <p>
+    A breadboard is a reusable prototyping board that allows you to build and
+    test electronic circuits without soldering. It is one of the most important
+    tools for learning electronics and Arduino.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The term “breadboard” comes from early electronics hobbyists who literally
+    built circuits on wooden breadboards in the 1970s.  
+    Modern breadboards use metal spring clips under the plastic holes to make
+    temporary electrical connections.
+  </p>
+
+  <h3>How a Breadboard Works</h3><a href="#breadboard-how">More on How</a>
+  <p>
+    Inside a breadboard, metal strips connect groups of holes together.
+    When you push a wire or component leg into a hole, it electrically connects
+    to all other holes in the same strip.
+  </p>
+
+  <img src="Images/Breadboard1.png" alt="Breadboard internal connections"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Power Rails</summary>
+    <p>
+      The long lines on the sides are called <b>power rails</b>.
+      They are usually marked with red (+) and blue (−).
+    </p>
+    <ul>
+      <li>Red rail → connect to 5V or 3.3V</li>
+      <li>Blue rail → connect to GND</li>
+      <li>Some breadboards have broken rails in the middle</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Center Rows</summary>
+    <p>
+      The middle area is split into two sides.  
+      Each row of 5 holes is connected <b>vertically</b>.
+    </p>
+    <ul>
+      <li>Left side rows are separate from right side</li>
+      <li>Used for placing ICs and components</li>
+      <li>The center gap holds DIP chips (like microcontrollers)</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Usage and Applications</summary>
+    <ul>
+      <li>Testing Arduino projects</li>
+      <li>Learning electronics</li>
+      <li>Temporary circuit building</li>
+      <li>Debugging hardware</li>
+      <li>Classroom and hobby projects</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Important Tips</summary>
+    <ul>
+      <li>Always connect GND and power rails first</li>
+      <li>Use short jumper wires to avoid noise</li>
+      <li>Double-check which holes are connected</li>
+      <li>Label power rails when using multiple voltages</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Common Mistakes</summary>
+    <ul>
+      <li>Assuming all long rails are connected end to end</li>
+      <li>Placing both legs of a component in the same row</li>
+      <li>Forgetting to connect the ground rail</li>
+      <li>Shorting power rails together</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Remember:</b>
+  <p>
+    Breadboards do not provide power by themselves — they only connect wires.
+    You must supply power from the Arduino or an external source.
+  </p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="breadboard-how" class="page">
+  <h2>How Breadboards Work (In Detail)</h2>
+
+  <p>
+    A breadboard works by internally connecting holes using hidden metal clips.
+    These clips allow electrical current to flow between connected points without soldering.
+  </p>
+
+  <h3>Internal Connections</h3>
+  <p>
+    Under the plastic surface, thin metal strips run beneath specific rows and columns.
+    When a wire or component leg is inserted, it is clamped by a metal contact.
+  </p>
+
+  <img src="Images/Breadboard.png"
+       alt="Breadboard connection layout"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Row Connections</summary>
+    <p>
+      In the center area, each row of <b>5 holes</b> is electrically connected.
+      This allows components like resistors or LEDs to share voltage or signals.
+    </p>
+    <ul>
+      <li>Connections run vertically</li>
+      <li>Left and right sides are isolated</li>
+      <li>Center gap separates IC pins</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Power Distribution</summary>
+    <p>
+      Power rails distribute voltage across the board.
+      These rails make it easy to supply power to many components.
+    </p>
+    <ul>
+      <li>Red rail = VCC (5V / 3.3V)</li>
+      <li>Blue rail = GND</li>
+      <li>Rails may be split in the middle</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Why Breadboards Are Safe for Learning</summary>
+    <ul>
+      <li>No soldering required</li>
+      <li>Easy to change circuits</li>
+      <li>Low risk of permanent damage</li>
+      <li>Reusable for thousands of insertions</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Limitations</summary>
+    <ul>
+      <li>Not suitable for high current</li>
+      <li>Not reliable for high-frequency signals</li>
+      <li>Loose wires can cause unstable behavior</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <b>Important:</b>
+  <p>
+    Breadboards are designed for testing and learning.
+    Final projects should be soldered to perfboards or PCBs.
+  </p>
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="breadboard-3d" class="page">
+  <h2>Breadboard 3D View</h2>
+
+  <p>
+    Viewing a breadboard in 3D helps you understand how holes, rails,
+    and internal connections are arranged in physical space.
+  </p>
+
+  <p>
+    Rotate and zoom the model to see how components fit,
+    where the center gap is located, and how power rails run along the sides.
+  </p>
+
+  <div style="height:5vh;"></div>
+
+<div id="uno3d-wrap">
+  <model-viewer 
+      src="arduino_breadboard.glb"
+      alt="Breadboard 3D Model"
+    auto-rotate
+    camera-controls
+    exposure="1"
+    shadow-intensity="0.6"
+    style="width:100%; height:100%; background:transparent;">
+    </model-viewer>
+  </div>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>What to Look For</summary>
+    <ul>
+      <li>Side power rails</li>
+      <li>Center gap for ICs</li>
+      <li>Hole alignment</li>
+      <li>Component spacing</li>
+    </ul>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <details>
+    <summary>Learning Tip</summary>
+    <p>
+      Try matching a real breadboard with the 3D model.
+      Insert wires and components while rotating the model
+      to understand how connections form.
+    </p>
+  </details>
+
+  <div style="height:5vh;"></div>
+
+  <p><i>
+    Tip: Combine this 3D view with wiring examples to fully understand circuit layout.
+  </i></p>
+</section>
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="notfound" class="page">
+    <h2>404 – Page Not Found</h2>
+    <p>The section you tried to open does not exist.</p>
+    <button onclick="goHome()">Go Home</button>
+</section>
+
+</main>
+
+<footer>
+  Arduino Guide Ⓖ 2026
+</footer>
+<script>
+const STORAGE_KEY = "arduino-last-page";
+
+/* ACTIVATE PAGE */
+function activatePage(id, save = true) {
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.remove("active")
+  );
+
+  if (target) {
+    target.classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, id);
+  } else {
+    document.getElementById("notfound").classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
+  }
+
+  window.scrollTo(0, 0);
+}
+
+/* HOME BUTTON */
+function goHome() {
+  activatePage("home");
+  history.pushState(null, "", "#home");
+}
+
+/* NAV LINK HANDLING */
+document.querySelectorAll("nav a").forEach(a => {
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("http")) return;
+
+    // #section
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const id = href.substring(1);
+      activatePage(id);
+      history.pushState(null, "", href);
+      return;
+    }
+
+    // page.html#section
+    if (href.includes(".html#")) {
+      const [page, hash] = href.split("#");
+      if (location.pathname.endsWith(page)) {
+        e.preventDefault();
+        activatePage(hash);
+        history.pushState(null, "", "#" + hash);
+      }
+    }
+  });
+});
+
+/* BACK / FORWARD */
+window.addEventListener("hashchange", () => {
+  const id = location.hash.substring(1);
+  activatePage(id, false);
+});
+
+/* RESTORE LAST PAGE ON LOAD */
+window.addEventListener("load", () => {
+  const hash = location.hash.substring(1);
+  const last = localStorage.getItem(STORAGE_KEY) || "home";
+
+  if (hash) {
+    activatePage(hash);
+  } else {
+    activatePage(last);
+    history.replaceState(null, "", "#" + last);
+  }
+});
+
+/* DROPDOWNS (unchanged) */
+function toggleDropdown(btn, e) {
+  e.stopPropagation();
+
+  document.querySelectorAll(".dropdown").forEach(d => {
+    if (d !== btn.closest(".dropdown")) {
+      d.classList.remove("open");
+      d.querySelector(".dropdown-menu").classList.remove("open");
+    }
+  });
+
+  const dropdown = btn.closest(".dropdown");
+  dropdown.classList.toggle("open");
+  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
+}
+
+function selectLink(link) {
+  const dropdown = link.closest(".dropdown");
+  dropdown.classList.remove("open");
+  dropdown.querySelector(".dropdown-menu").classList.remove("open");
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".dropdown").forEach(d => {
+    d.classList.remove("open");
+    d.querySelector(".dropdown-menu").classList.remove("open");
+  });
+});
+
+function downloadQRCode() {
+  fetch('QR-Code.png')
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ArduinoGuideQRCode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert('Failed to download QR code'));
+}
+
+function toggleSubmenu(event) {
+  event.preventDefault();
+  const wrapper = event.target.parentElement;
+  wrapper.classList.toggle('open');
+}
+
+function copyCode(btn){
+  const code = btn.nextElementSibling.innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.textContent="✓";
+    setTimeout(()=>btn.textContent="Copy",900);
+  });
+}
+
+document.querySelectorAll('.led-container').forEach(container => {
+  const frames = container.querySelectorAll('.led-frame');
+  let index = 0;
+
+  frames[index].classList.add('active');
+
+  setInterval(() => {
+    frames[index].classList.remove('active');
+    index = (index + 1) % frames.length;
+    frames[index].classList.add('active');
+  }, 1000);
+});
+
+        function sendMail(form) {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+
+            // Format mailto link
+            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n\n" +
+                "Message:\n" + message
+            )}`;
+
+            // Open user's email client
+            window.location.href = mailtoLink;
+        }
+
+renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("uno3d"),
+  antialias: true,
+  alpha: true // <- this removes black background
+});
+
+renderer.setClearColor(0x000000, 0); // fully transparent
+
+</script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
+    authDomain: "arduino-guideg.firebaseapp.com",
+    projectId: "arduino-guideg",
+    storageBucket: "arduino-guideg.firebasestorage.app",
+    messagingSenderId: "146740789054",
+    appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
+    measurementId: "G-V3ZB157P0R"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+</script>
+
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
