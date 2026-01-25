@@ -967,7 +967,7 @@ textarea {
 </div>
 </div>
     <a href="Arduino%20Guide.html#more">Arduino Explained</a>
-    <a href="Arduino%20Guide.html#examples">Examples</a>
+    <a href="Examples.html#examples">Examples</a>
 
     <span class="nav-spacer"></span>
 
@@ -1455,6 +1455,7 @@ void loop() {
 
 <!-- NEW SECTION BELOW -->
 
+
 <section id="breadboards" class="page">
   <h2>Breadboards</h2>
 <a href="#breadboard-3d">3D Breadboard</a>
@@ -1702,6 +1703,93 @@ void loop() {
     Tip: Combine this 3D view with wiring examples to fully understand circuit layout.
   </i></p>
 </section>
+
+<section id="breadboard-how" class="page">
+  <h2>How Breadboards Work (Inside)</h2>
+
+  <p>
+    A breadboard works by connecting holes together using hidden metal clips.
+    These clips clamp wires and component legs to form electrical paths.
+  </p>
+
+  <img src="Images/Breadboard.png" alt="Breadboard connection layout"
+       style="max-width:100%; margin:15px 0; border-radius:8px;">
+
+  <details>
+    <summary>Row Connections</summary>
+    <ul>
+      <li>Each row of 5 holes is connected</li>
+      <li>Connections run vertically</li>
+      <li>Left and right sides are separate</li>
+      <li>Center gap isolates IC pins</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Power Distribution</summary>
+    <ul>
+      <li>Red rail = VCC</li>
+      <li>Blue rail = GND</li>
+      <li>Rails may be split</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Limitations</summary>
+    <ul>
+      <li>Not for high current</li>
+      <li>Not for high frequency</li>
+      <li>Loose wires cause errors</li>
+    </ul>
+  </details>
+
+  <b>Important:</b>
+  <p>
+    Breadboards are for learning.
+    Final projects should be soldered.
+  </p>
+</section>
+
+
+<section id="breadboard-3d" class="page">
+  <h2>Breadboard 3D Model</h2>
+
+  <p>
+    This interactive 3D model helps you understand how a breadboard is built.
+    Rotate, zoom, and inspect the rails, center gap, and hole layout.
+  </p>
+
+  <div id="uno3d-wrap" style="height:60vh;">
+    <model-viewer 
+      src="arduino_breadboard.glb"
+      alt="Breadboard 3D Model"
+      auto-rotate
+      camera-controls
+      exposure="1"
+      shadow-intensity="0.6"
+      style="width:100%; height:100%; background:transparent;">
+    </model-viewer>
+  </div>
+
+  <details>
+    <summary>What to Explore</summary>
+    <ul>
+      <li>Side power rails</li>
+      <li>Center gap for ICs</li>
+      <li>Hole spacing</li>
+      <li>Component fit</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Learning Tip</summary>
+    <p>
+      Place parts on a real breadboard while rotating the model
+      to understand internal connections.
+    </p>
+  </details>
+</section>
+
 
 <!-- NEW SECTION BELOW -->
 
