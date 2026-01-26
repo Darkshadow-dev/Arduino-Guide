@@ -760,6 +760,30 @@ textarea {
 /* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
 @media (max-width:900px){
 
+.led-container {
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.led-container:hover {
+  transform: scale(4);
+}
+
+.led-frame {
+  position: absolute;
+  top: 0;
+  right:30%;
+  width: 100px;
+  height: 100px;
+  opacity: 0;
+  border-radius: 8px;
+}
+
+.led-frame.active {
+  opacity: 1;
+}
+
+
   /* NAV SCROLL BAR */
   nav{
     display:flex;

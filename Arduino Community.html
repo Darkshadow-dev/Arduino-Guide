@@ -113,7 +113,7 @@
 </header>
 
 <nav>
-  <a href="Arduino%20Guide.html">🏠 Home</a>
+  <a href="Arduino%20Guide.html#home">🏠 Home</a>
   <a href="Arduino%20Guide%20Extra.html#contact">📩 Contact</a>
 </nav>
 
@@ -124,11 +124,6 @@
     <input type="text" id="username" placeholder="Your Name" required />
     <input type="text" id="postTitle" placeholder="Title" required />
     <textarea id="postContent" placeholder="Write your question or feedback..." rows="5" required></textarea>
-
-    <label for="file_upload">Attach Files (optional)</label>
-    <input type="file" id="file_upload" multiple />
-    <div id="dropArea">💾 Drag & Drop files here</div>
-    <div id="filePreview"></div>
 
     <button type="submit">Submit</button>
   </form>
@@ -161,7 +156,6 @@
 
   // References
   const db = firebase.database();
-  const storage = firebase.storage();
 </script>
 
 <script>
@@ -172,23 +166,8 @@ if (!userId) { userId = "u" + Math.random().toString(36).substr(2,9); localStora
 // ---------- DOM ----------
 const form = document.getElementById("uploadForm");
 const communityPosts = document.getElementById("communityPosts");
-const fileInput = document.getElementById("file_upload");
-const filePreview = document.getElementById("filePreview");
 const dropArea = document.getElementById("dropArea");
 const searchBar = document.getElementById("searchBar");
-let droppedFiles = [];
-
-// ---------- Drag & Drop + preview ----------
-dropArea.addEventListener("dragover", e => { e.preventDefault(); dropArea.classList.add("dragover"); });
-dropArea.addEventListener("dragleave", e => { e.preventDefault(); dropArea.classList.remove("dragover"); });
-dropArea.addEventListener("drop", e => {
-  e.preventDefault();
-  dropArea.classList.remove("dragover");
-  droppedFiles = Array.from(e.dataTransfer.files);
-  updateFilePreview();
-});
-fileInput.addEventListener("change", () => { droppedFiles = Array.from(fileInput.files); updateFilePreview(); });
-function updateFilePreview(){ filePreview.innerHTML = droppedFiles.length ? `<b>Selected:</b> ${droppedFiles.map(f=>f.name).join(", ")}` : ""; }
 
 // ---------- Listen posts (realtime) ----------
 db.ref("posts").on("value", snapshot => {
@@ -220,7 +199,6 @@ if (!username || !title || !content)
   await db.ref("posts/" + postId).set(post);
   form.reset();
   droppedFiles = [];
-  updateFilePreview();
 });
 
 // ---------- Render posts ----------
