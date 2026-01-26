@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" type="image/png" href="Website-Guide.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Arduino Guide</title>
@@ -756,63 +757,73 @@ textarea {
   font-weight:bold;
 }
 
-/* ================= MOBILE FIX PACK ================= */
-
+/* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
 @media (max-width:900px){
 
-  main{
-    padding:110px 12px 100px;
-  }
-
+  /* NAV SCROLL BAR */
   nav{
+    display:flex;
+    align-items:center;
+    gap:8px;
     overflow-x:auto;
+    overflow-y:visible;
     white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    position:relative;
   }
+  nav::-webkit-scrollbar{display:none}
 
   .nav-spacer{display:none;}
 
-  /* examples page */
-  #examples{
-    position:relative;
-    top:auto;
-    bottom:auto;
-    height:auto;
+  /* DROPDOWN CONTAINER */
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
+
+  /* BUTTON SIZE */
+  .dropdown-btn{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  /* MENU FLOATING */
+  .dropdown-menu{
+  position:fixed; /* escape header */
+  top:60px;
+  left:10%;
+    min-width:180px;
+    max-width:240px;
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
+  }
+
+  /* OPEN STATE */
+  .dropdown.open .dropdown-menu{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  /* LINKS */
+  .dropdown-menu a{
     display:block;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--accent);
   }
-
-  .examples-layout{
-    flex-direction:column;
-    height:auto;
-  }
-
-  .examples-menu{
-    width:100%;
-    height:auto;
-    border-right:none;
-    border-bottom:4px solid var(--accent2);
-  }
-
-  .examples-content{
-    width:100%;
-    height:auto;
-  }
-
-  /* hardware grid stacks */
-  .hardware-layout{
-    grid-template-columns:1fr;
-  }
-
-  .hardware-right{
-    position:static;
-    border-left:none;
-    padding-left:0;
-    border-top:2px dashed #2a2a2a;
-    margin-top:20px;
-  }
-
-  /* spec grid */
-  .spec-grid{
-    grid-template-columns:1fr;
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
   }
 }
 
@@ -834,9 +845,11 @@ textarea {
     font-size:14px;
   }
 
-  .dropdown{
-    width:100%;
-  }
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
 
   .dropdown-menu a{
     padding:14px 16px;
@@ -878,66 +891,60 @@ textarea {
   }
 }
 
-/* ============ TABLET & SMALL LAPTOP ============ */
-@media (min-width:901px) and (max-width:1200px){
+/* ===== MOBILE DROPDOWN OVERRIDE (NO CONFLICT) ===== */
+@media (max-width:900px){
 
-  main{
-    max-width:900px;
-    padding:120px 24px 90px;
+  .dropdown{
+    position:relative;
+    flex:0 0 auto;
+    width:auto;
   }
 
-  nav a{
-    padding:6px 10px;
+  .dropdown-btn{
+    padding:8px 12px;
     font-size:14px;
+    border-radius:8px;
   }
 
-  .title{
-    font-size:19px;
+  .dropdown-menu{
+    position:fixed; /* escape header */
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
   }
 
-  /* Examples page */
-  .examples-menu{
-    width:28%;
+  /* USE SAME OPEN STATE AS DESKTOP */
+  .dropdown-menu.open{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
   }
 
-  .examples-content{
-    width:72%;
-    padding:18px;
+  /* ARROW ROTATION */
+  .dropdown-btn span{
+    display:inline-block;
+    transition:transform .25s ease;
+  }
+  .dropdown.open .dropdown-btn span{
+    transform:rotate(180deg);
   }
 
-  /* Hardware layout balance */
-  .hardware-layout{
-    grid-template-columns:1.1fr 0.9fr;
-    gap:24px;
-  }
-
-  .hardware-right{
-    top:90px;
-  }
-
-  /* Spec grid */
-  .spec-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  /* Cards */
-  .wiring-card{
-    padding:10px;
-  }
-
-  /* Code blocks */
-  .code-block pre{
+  .dropdown-menu a{
+    display:block;
+    padding:8px 12px;
     font-size:14px;
+    color:var(--accent);
   }
 
-  /* Pin labels */
-  .pin-label{
-    font-size:11px;
-  }
-
-  /* Quick links */
-  .quick-links a{
-    min-width:200px;
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
   }
 }
 
@@ -980,6 +987,7 @@ textarea {
 
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
+  <a href="Arduino Community.html">Community</a>
     <a href="#breadboards">Breadboards</a>
 <div class="submenu-wrapper">
   <span class="submenu-toggle">More of all</span>

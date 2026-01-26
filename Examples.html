@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="Website-Guide.png">
 
 <title>Arduino Guide</title>
 
@@ -941,6 +942,197 @@ textarea {
   }
 }
 
+/* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
+@media (max-width:900px){
+
+  /* NAV SCROLL BAR */
+  nav{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    overflow-x:auto;
+    overflow-y:visible;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    position:relative;
+  }
+  nav::-webkit-scrollbar{display:none}
+
+  .nav-spacer{display:none;}
+
+  /* DROPDOWN CONTAINER */
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
+
+  /* BUTTON SIZE */
+  .dropdown-btn{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  /* MENU FLOATING */
+  .dropdown-menu{
+  position:fixed; /* escape header */
+  top:60px;
+  left:10%;
+    min-width:180px;
+    max-width:240px;
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
+  }
+
+  /* OPEN STATE */
+  .dropdown.open .dropdown-menu{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  /* LINKS */
+  .dropdown-menu a{
+    display:block;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--accent);
+  }
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width:600px){
+
+  h2{font-size:20px}
+  p{font-size:15px}
+
+  .logo{height:24px;width:24px;}
+  .title{font-size:18px;}
+
+  header{
+    padding:10px;
+  }
+
+  footer{
+    height:50px;
+    font-size:14px;
+  }
+
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
+
+  .dropdown-menu a{
+    padding:14px 16px;
+    font-size:16px;
+  }
+
+  .pin{
+    width:14px;
+    height:14px;
+  }
+
+  .pin-label{
+    font-size:9px;
+  }
+
+  .quick-links a{
+    min-width:100%;
+  }
+
+  .start-box{
+    margin:20px auto;
+    padding:16px;
+  }
+
+  .start-btn{
+    width:100%;
+  }
+}
+
+/* TABLET */
+@media (max-width:768px){
+  .content{
+    flex-direction:column;
+  }
+
+  #pinInfoDisplay{
+    padding-left:0 !important;
+    margin-top:16px;
+  }
+}
+
+/* ===== MOBILE DROPDOWN OVERRIDE (NO CONFLICT) ===== */
+@media (max-width:900px){
+
+  .dropdown{
+    position:relative;
+    flex:0 0 auto;
+    width:auto;
+  }
+
+  .dropdown-btn{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  .dropdown-menu{
+    position:fixed; /* escape header */
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
+  }
+
+  /* USE SAME OPEN STATE AS DESKTOP */
+  .dropdown-menu.open{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  /* ARROW ROTATION */
+  .dropdown-btn span{
+    display:inline-block;
+    transition:transform .25s ease;
+  }
+  .dropdown.open .dropdown-btn span{
+    transform:rotate(180deg);
+  }
+
+  .dropdown-menu a{
+    display:block;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--accent);
+  }
+
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
+  }
+}
+
 </style>
 </head>
 
@@ -980,6 +1172,7 @@ textarea {
 
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
+  <a href="Arduino Community.html">Community</a>
     <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
 <div class="submenu-wrapper">
   <span class="submenu-toggle">More of all</span>

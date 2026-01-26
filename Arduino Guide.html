@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="Website-Guide.png">
 
 <title>Arduino Guide</title>
 
@@ -756,63 +757,73 @@ textarea {
   font-weight:bold;
 }
 
-/* ================= MOBILE FIX PACK ================= */
-
+/* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
 @media (max-width:900px){
 
-  main{
-    padding:110px 12px 100px;
-  }
-
+  /* NAV SCROLL BAR */
   nav{
+    display:flex;
+    align-items:center;
+    gap:8px;
     overflow-x:auto;
+    overflow-y:visible;
     white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    position:relative;
   }
+  nav::-webkit-scrollbar{display:none}
 
   .nav-spacer{display:none;}
 
-  /* examples page */
-  #examples{
-    position:relative;
-    top:auto;
-    bottom:auto;
-    height:auto;
+  /* DROPDOWN CONTAINER */
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
+
+  /* BUTTON SIZE */
+  .dropdown-btn{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  /* MENU FLOATING */
+  .dropdown-menu{
+  position:fixed; /* escape header */
+  top:60px;
+  left:10%;
+    min-width:180px;
+    max-width:240px;
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
+  }
+
+  /* OPEN STATE */
+  .dropdown.open .dropdown-menu{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  /* LINKS */
+  .dropdown-menu a{
     display:block;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--accent);
   }
-
-  .examples-layout{
-    flex-direction:column;
-    height:auto;
-  }
-
-  .examples-menu{
-    width:100%;
-    height:auto;
-    border-right:none;
-    border-bottom:4px solid var(--accent2);
-  }
-
-  .examples-content{
-    width:100%;
-    height:auto;
-  }
-
-  /* hardware grid stacks */
-  .hardware-layout{
-    grid-template-columns:1fr;
-  }
-
-  .hardware-right{
-    position:static;
-    border-left:none;
-    padding-left:0;
-    border-top:2px dashed #2a2a2a;
-    margin-top:20px;
-  }
-
-  /* spec grid */
-  .spec-grid{
-    grid-template-columns:1fr;
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
   }
 }
 
@@ -834,9 +845,11 @@ textarea {
     font-size:14px;
   }
 
-  .dropdown{
-    width:100%;
-  }
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
 
   .dropdown-menu a{
     padding:14px 16px;
@@ -878,66 +891,60 @@ textarea {
   }
 }
 
-/* ============ TABLET & SMALL LAPTOP ============ */
-@media (min-width:901px) and (max-width:1200px){
+/* ===== MOBILE DROPDOWN OVERRIDE (NO CONFLICT) ===== */
+@media (max-width:900px){
 
-  main{
-    max-width:900px;
-    padding:120px 24px 90px;
+  .dropdown{
+    position:relative;
+    flex:0 0 auto;
+    width:auto;
   }
 
-  nav a{
-    padding:6px 10px;
+  .dropdown-btn{
+    padding:8px 12px;
     font-size:14px;
+    border-radius:8px;
   }
 
-  .title{
-    font-size:19px;
+  .dropdown-menu{
+    position:fixed; /* escape header */
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
   }
 
-  /* Examples page */
-  .examples-menu{
-    width:28%;
+  /* USE SAME OPEN STATE AS DESKTOP */
+  .dropdown-menu.open{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
   }
 
-  .examples-content{
-    width:72%;
-    padding:18px;
+  /* ARROW ROTATION */
+  .dropdown-btn span{
+    display:inline-block;
+    transition:transform .25s ease;
+  }
+  .dropdown.open .dropdown-btn span{
+    transform:rotate(180deg);
   }
 
-  /* Hardware layout balance */
-  .hardware-layout{
-    grid-template-columns:1.1fr 0.9fr;
-    gap:24px;
-  }
-
-  .hardware-right{
-    top:90px;
-  }
-
-  /* Spec grid */
-  .spec-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  /* Cards */
-  .wiring-card{
-    padding:10px;
-  }
-
-  /* Code blocks */
-  .code-block pre{
+  .dropdown-menu a{
+    display:block;
+    padding:8px 12px;
     font-size:14px;
+    color:var(--accent);
   }
 
-  /* Pin labels */
-  .pin-label{
-    font-size:11px;
-  }
-
-  /* Quick links */
-  .quick-links a{
-    min-width:200px;
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
   }
 }
 
@@ -980,6 +987,7 @@ textarea {
 
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
+  <a href="Arduino Community.html">Community</a>
     <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
 <div class="submenu-wrapper">
   <span class="submenu-toggle">More of all</span>
@@ -2329,371 +2337,6 @@ renderer = new THREE.WebGLRenderer({
 });
 
 renderer.setClearColor(0x000000, 0); // fully transparent
-
-function loadExample(type){
-  const box = document.getElementById("exampleBox");
-
-  if(type === "blink"){
-    box.innerHTML = `
-      <h2>Blink LED</h2>
-      <p>Basic digital output example.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// This code runs repeatedly on the Arduino
-// It makes the built-in LED blink on and off
-
-// Set digital pin 13 as an OUTPUT
-// Pin 13 has a built-in LED on most Arduino boards
-pinMode(13, OUTPUT);
-
-// Turn the LED ON by setting the pin HIGH (5V)
-digitalWrite(13, HIGH);
-
-// Pause the program for 1000 milliseconds (1 second)
-delay(1000);
-
-// Turn the LED OFF by setting the pin LOW (0V)
-digitalWrite(13, LOW);
-
-// Pause again for 1 second
-delay(1000);
-
-// After this, the code repeats forever
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "button"){
-    box.innerHTML = `
-      <h2>Button Input</h2>
-      <p>Read a button using a digital pin.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Set pin 2 as an INPUT pin
-// This pin will read HIGH (5V) or LOW (0V)
-pinMode(2, INPUT);
-
-// Read the current state of the button
-// HIGH = button pressed (depending on wiring)
-// LOW  = button not pressed
-int value = digitalRead(2);
-
-// NOTE:
-// Without a pull-up or pull-down resistor,
-// the value may randomly change (floating pin)
-
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "button-led"){
-    box.innerHTML = `
-      <h2>Button + LED</h2>
-      <p>Turn an LED on when a button is pressed.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Configure pin 2 to read button input
-pinMode(2, INPUT);
-
-// Configure pin 13 to control the LED
-pinMode(13, OUTPUT);
-
-// Read the button state
-// If pin 2 reads HIGH, the button is pressed
-if(digitalRead(2) == HIGH){
-
-  // Button is pressed → turn LED ON
-  digitalWrite(13, HIGH);
-
-}else{
-
-  // Button not pressed → turn LED OFF
-  digitalWrite(13, LOW);
-}
-
-// This code should be inside loop()
-// so it continuously checks the button
-
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "pwm"){
-    box.innerHTML = `
-      <h2>PWM LED (Fade)</h2>
-      <p>Control LED brightness using PWM (~ pins).</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Set pin 9 as OUTPUT
-// Pin 9 supports PWM (~ symbol on Arduino)
-pinMode(9, OUTPUT);
-
-// Write a PWM value to the pin
-// 0   = always OFF
-// 255 = always ON
-// Values in between simulate brightness
-analogWrite(9, 128); // ~50% brightness
-
-// NOTE:
-// PWM is NOT true analog voltage
-// It rapidly switches the pin ON and OFF
-
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "multi-led"){
-    box.innerHTML = `
-      <h2>Multiple LEDs</h2>
-      <p>Control more than one LED.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Set pin 13 as OUTPUT (LED 1)
-pinMode(13, OUTPUT);
-
-// Set pin 12 as OUTPUT (LED 2)
-pinMode(12, OUTPUT);
-
-// Set pin 11 as OUTPUT (LED 3)
-pinMode(11, OUTPUT);
-
-// Turn ON LED connected to pin 13
-digitalWrite(13, HIGH);
-
-// Turn OFF LED connected to pin 12
-digitalWrite(12, LOW);
-
-// Turn OFF LED connected to pin 11
-digitalWrite(11, LOW);
-
-// All three pins are controlled independently
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "buzzer"){
-    box.innerHTML = `
-      <h2>Buzzer Sound</h2>
-      <p>Make sound using a buzzer.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Set pin 6 as OUTPUT
-// Buzzer signal pin is connected here
-pinMode(6, OUTPUT);
-
-// Generate a sound at 1000 Hz (1 kHz)
-// Works with passive buzzers
-tone(6, 1000);
-
-// Keep the sound playing for 500 ms
-delay(500);
-
-// Stop the sound
-noTone(6);
-
-// NOTE:
-// Active buzzers do NOT need tone()
-// They only need HIGH or LOW
-
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "analog"){
-    box.innerHTML = `
-      <h2>Analog Sensor</h2>
-      <p>Read a sensor value (0–1023).</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Read analog voltage from pin A0
-// Arduino converts voltage to a number:
-// 0   = 0V
-// 1023 = reference voltage (usually 5V)
-int value = analogRead(A0);
-
-// Example:
-// ~512 ≈ 2.5V (half of 5V)
-
-// NOTE:
-// analogRead does NOT measure current
-// Only voltage
-
-        </pre>
-      </div>
-    `;
-  }
-
-if(type === "joystick"){
-  box.innerHTML = `
-    <h2>Joystick (Analog + Button)</h2>
-    <p>
-      Read X/Y movement and button press from a joystick module.
-      Uses analog pins and one digital pin.
-    </p>
-
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>
-// Joystick connections
-// VRx -> A0
-// VRy -> A1
-// SW  -> Pin 2
-
-void setup(){
-  pinMode(2, INPUT_PULLUP); // Joystick button
-  Serial.begin(9600);
-}
-
-void loop(){
-  int x = analogRead(A0); // X-axis (0–1023)
-  int y = analogRead(A1); // Y-axis (0–1023)
-  int button = digitalRead(2); // LOW when pressed
-
-  Serial.print("X: ");
-  Serial.print(x);
-  Serial.print("  Y: ");
-  Serial.print(y);
-  Serial.print("  Button: ");
-  Serial.println(button == LOW ? "Pressed" : "Released");
-
-  delay(200);
-}
-      </pre>
-    </div>
-  `;
-}
-
-if(type === "oled"){
-  box.innerHTML = `
-    <h2>OLED Display (4-Pin I²C)</h2>
-    <p>
-      Display text on a small OLED screen using I²C.
-      Uses only SDA and SCL pins.
-    </p>
-
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
-
-void setup(){
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)){
-    while(true); // Stop if OLED not found
-  }
-
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println("Arduino OLED");
-  display.println("4-pin I2C");
-  display.display();
-}
-
-void loop(){
-  // Nothing here for now
-}
-      </pre>
-    </div>
-
-    <p><i>
-      Wiring: VCC → 5V / 3.3V, GND → GND, SDA → A4, SCL → A5
-    </i></p>
-  `;
-}
-
-  if(type === "serial"){
-    box.innerHTML = `
-      <h2>Serial Monitor</h2>
-      <p>Send data to the PC via USB.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Setup runs once
-void setup(){
-  // Start serial communication at 9600 baud rate
-  Serial.begin(9600);
-}
-
-// Loop runs repeatedly
-void loop(){
-  // Print "Hello" to serial monitor
-  Serial.println("Hello");
-  
-  // Wait 1 second
-  delay(1000);
-}
-        </pre>
-      </div>
-    `;
-  }
-
-  if(type === "timer"){
-    box.innerHTML = `
-      <h2>Timers (millis)</h2>
-      <p>Run code without blocking.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
-// Store the last time the action happened
-// unsigned long is required for millis()
-unsigned long t = 0;
-
-void loop(){
-
-  // millis() returns time since Arduino started (ms)
-  // This checks if 1 second has passed
-  if(millis() - t > 1000){
-
-    // Update the timer
-    t = millis();
-
-    // Toggle LED state:
-    // If ON → OFF
-    // If OFF → ON
-    digitalWrite(13, !digitalRead(13));
-  }
-
-  // Code here keeps running without delay()
-}
-
-// This method allows multitasking
-
-        </pre>
-      </div>
-    `;
-  }
-}
-
 </script>
 
 <script type="module">
@@ -2720,7 +2363,6 @@ void loop(){
   const analytics = getAnalytics(app);
 
 </script>
-
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </body>
 </html>
