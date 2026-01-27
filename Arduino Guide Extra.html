@@ -757,6 +757,32 @@ textarea {
   font-weight:bold;
 }
 
+/* ZOOM BOX */
+.zoom-box{
+  position:relative;
+  border-radius:10px;
+}
+
+.zoom-box img{
+  width:100%;
+  display:block;
+  transition:transform .25s ease;
+  transform-origin: center center; /* FIX drift */
+}
+
+/* ZOOM */
+.zoom-box:hover img{
+  transform:scale(2);
+  cursor:zoom-out;
+}
+
+/* MOBILE STACK */
+@media(max-width:900px){
+  .dual-image-row{
+    grid-template-columns:1fr;
+  }
+}
+
 /* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
 @media (max-width:900px){
 
@@ -1080,8 +1106,10 @@ textarea {
     energy is released as light (photons).
   </p>
 
+  <div class="zoom-box">
   <img src="Images/LED-Structure-Diagram.png" alt="LED structure diagram"
-       style="max-width:100%; margin:15px 0; border-radius:8px;">
+       style="position: relative; width: 30%; height: 30%; margin:15px 0; border-radius:8px; left:10%;">
+</div>
   <p><small>Image source: BYJU’S</small></p>
 
   <div style="height:5vh;"></div>
@@ -1158,8 +1186,10 @@ textarea {
     resistance means less current can flow.
   </p>
 
+  <div class="zoom-box">
   <img src="Images/Resistor-color-code.png" alt="Resistor color code"
-       style="max-width:100%; margin:15px 0; border-radius:8px;">
+       style="position: relative; width: 30%; height: 30%; margin:15px 0; border-radius:8px; left:10%;">
+</div>
   <p><small>Image source: Utmel</small></p>
 
   <div style="height:5vh;"></div>
@@ -1233,8 +1263,10 @@ textarea {
     block direct current, and allow alternating current to pass.
   </p>
 
+  <div class="zoom-box">
   <img src="Images/Capacitor-types.png" alt="Various capacitor types"
-       style="max-width:100%; margin:15px 0; border-radius:8px;">
+       style="position: relative; width: 30%; height: 30%; margin:15px 0; border-radius:8px; left:10%;">
+</div>
   <p><small>Image source: aictech-inc.com</small></p>
 
   <div style="height:5vh;"></div>
@@ -1308,8 +1340,10 @@ textarea {
     overheating or causing a voltage drop.
   </p>
 
+  <div class="zoom-box">
   <img src="Images/Wire-Gauge.png" alt="Wire gauge chart"
-       style="max-width:100%; margin:15px 0; border-radius:8px;">
+       style="position: relative; width: 30%; height: 30%; margin:15px 0; border-radius:8px; left:10%;">
+</div>
   <p><small>Image source: InterNACHI</small></p>
 
   <div style="height:5vh;"></div>
@@ -1377,7 +1411,7 @@ textarea {
   </p>
 
   <img src="Images/Arduino-uno-Pins.png" alt="Arduino pin map"
-       style="max-width:100%; margin:15px 0; border-radius:8px;">
+       style="position: relative; width: 30%; height: 30%; margin:15px 0; border-radius:8px;">
   <p><small>Red = Power, Blue = Digital, Purple = Analog</small></p>
 
   <div style="height:5vh;"></div>

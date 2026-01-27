@@ -459,7 +459,7 @@ p{
 
 .hardware-layout{
   display:grid;
-  grid-template-columns: 1fr 0.9fr;
+  grid-template-columns: 1fr 1fr;
   gap:40px;
   align-items:start;
 }
@@ -501,9 +501,46 @@ p{
 }
 
 .wiring-card img{
-  width:100%;
+  width:120%;
   margin-top:10px;
   border-radius:8px;
+  left:38%;
+  top:-15%;
+}
+
+/* INSIDE WIRING CARD */
+.dual-image-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:12px;
+}
+
+/* ZOOM BOX */
+.zoom-box{
+  position:relative;
+  border-radius:10px;
+  background:#000;
+}
+
+.zoom-box img{
+  width:100%;
+  display:block;
+  transition:transform .25s ease;
+  transform-origin: center center; /* FIX drift */
+}
+
+/* ZOOM */
+.zoom-box:hover img{
+  transform:scale(4);
+  cursor:zoom-out;
+}
+
+/* MOBILE STACK */
+@media(max-width:900px){
+  .dual-image-row{
+    grid-template-columns:1fr;
+  }
 }
 
 .led-container {
@@ -511,13 +548,9 @@ p{
   transition: transform 0.3s ease;
 }
 
-.led-container:hover {
-  transform: scale(4);
-}
-
 .led-frame {
   position: absolute;
-  top: 0;
+  top: 0px;
   width: 100px;
   height: 100px;
   opacity: 0;
@@ -1317,9 +1350,7 @@ textarea {
 
 <p>
   Digital pins can be either <b>ON (HIGH)</b> or <b>OFF (LOW)</b>.
-<div class="quick-links">
   See the LED example on the <a href="#examples">Examples</a> page.
-</div>
 </p>
 
   <ul>
@@ -1484,61 +1515,82 @@ textarea {
 </p>
 
 <h3>Wiring LED to the Board</h3>
-<p> Click on the <a href="#examples">Blink LED</a> example.</p>
+<p> Click on the <a href="Examples.html#examples">Blink LED</a> example.</p>
+
 <details class="wiring-card">
   <summary>LED Wiring</summary>
   <p>LED with current-limiting resistor.</p>
-
+  <div class="dual-image-row">
+    <div class="zoom-box">
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
     <img class="led-frame" src="Images/Arduino-LED-off.png" alt="LED off">
     <img class="led-frame" src="Images/Arduino-LED-on.png" alt="LED on">
   </div>
+    </div>
+    <div class="zoom-box">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+      <img src="Images/arduino-LED-circuit.png" alt="Circuit Diagram">
+    </div></div>
 </details>
 
 <details>
   <summary>Wiring Explained</summary>
   <p><b>Connect</b> pin 13 to one end of the resistor.</p>
-  <p>Then connect the positive end of the LED (longer leg) to the other end of the 220Ω resistor.</p>
+  <p>Then connect the positive end of the LED (longer leg) to the other end of the 220Ω resistor. (R=220Ω)</p>
   <p>Finally, connect the shorter leg of the LED to the Arduino's common GND.</p>
 </details>
 
 <div style="height:10vh;"></div>
 
 <h3>Wiring Multiple LEDs to the Board</h3>
-<p> Click on the <a href="#examples">Multi LED</a> example</p>
+<p> Click on the <a href="Examples.html#examples">Multi LED</a> example</p>
+
 <details class="wiring-card">
   <summary>Multiple LED Wiring</summary>
   <p>LEDs with current-limiting resistors..</p>
-
+  <div class="dual-image-row">
+    <div class="zoom-box">
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
     <img class="led-frame" src="Images/Arduino-LED's-off.png" alt="Multiple LEDs off">
     <img class="led-frame" src="Images/Arduino-LED's-on1.png" alt="Multiple LEDs on step 1">
     <img class="led-frame" src="Images/Arduino-LED's-on2.png" alt="Multiple LEDs on step 2">
     <img class="led-frame" src="Images/Arduino-LED's-on3.png" alt="Multiple LEDs on step 3">
   </div>
+    </div>
+    <div class="zoom-box">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+      <img src="Images/arduino-LED's-circuit.png" alt="Circuit Diagram">
+    </div></div></div>
 </details>
 
 <details>
   <summary>Wiring Explained</summary>
-  <p><b>Connect</b> pin 13 to one end of the first resistor.</p>
-  <p><b>Connect</b> pin 12 to one end of the second resistor.</p>
-  <p><b>Connect</b> pin 11 to one end of the third resistor.</p>
+  <p><b>Connect</b> pin 13 to one end of the first resistor. (R1=220Ω)</p>
+  <p><b>Connect</b> pin 12 to one end of the second resistor. (R2=220Ω)</p>
+  <p><b>Connect</b> pin 11 to one end of the third resistor. (R3=220Ω)</p>
   <p>All positive ends of the LEDs must go through their respective 220Ω resistors.</p>
   <p>Then connect all the negative legs (one per LED) together to a common GND on the Arduino.</p>
 </details>
 
 <div style="height:10vh;"></div>
-
 <h3>OLED 4-Pin Wiring Layout</h3>
-<p> Click on the <a href="#examples">Oled 4-Pin Display</a> example.</p>
-<details class="wiring-card spacer1">
+<p> Click on the <a href="Examples.html#examples">Oled 4-Pin Display</a> example.</p>
+<details class="wiring-card">
   <summary>Screen (I²C)</summary>
   <p>OLED / LCD using SDA and SCL lines.</p>
+  <div class="dual-image-row">
+    <div class="zoom-box">
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
     <img class="led-frame" src="Images/Arduino-Oled4-off.png" alt="OLED off">
     <img class="led-frame" src="Images/Arduino-Oled4-on.png" alt="OLED on">
   </div>
+    </div>
+    <div class="zoom-box">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+      <img src="Images/arduino-OLED-circuit.png" alt="Circuit Diagram">
+    </div></div></div>
 </details>
+
 <details>
   <summary>Wiring Explained</summary>
   <p><b>Connect</b> the VSS to the 3.3v Power pin (Or to 5v depending on you oled model<b> safest to go to 3.3v</b>)</p>
@@ -1546,8 +1598,33 @@ textarea {
   <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
   <p><b>Connect</b> SDA to A4 and SCL to A5 <b>IF</b> you connect it incorectly you risk damaging you oled be careful.</p>
 </details>
-<div style="height:10vh;"></div>
 
+<div style="height:10vh;"></div>
+<h3>Buzzer+Arduino Wiring Layout</h3>
+<p> Click on the <a href="Examples.html#examples">Buzzer/Speaker</a> example.</p>
+<details class="wiring-card">
+  <summary>Buzzer (Passive)</summary>
+  <p>Buzzer Connect lines.</p>
+  <div class="dual-image-row">
+    <div class="zoom-box">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+    <img class="led-frame" src="Images/Arduino-Buzzer.png" alt="Buzzer image">
+    <img class="led-frame" src="Images/Arduino-Buzzer-active.png" alt="Buzzer image">
+  </div>
+    </div>
+    <div class="zoom-box">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+      <img src="Images/Arduino-Buzzer-circuit.png" alt="Circuit Diagram">
+    </div></div></div>
+</details>
+<details>
+  <summary>Wiring Explained</summary>
+  <p><b>Connect</b> the Pin 6 to one end of a 1k resistor (lower the resistance if it dosen't work).</p>
+  <p><b>Why:</b> only passive buzzers need resistors active ones don't need resistors first try with a resistor then a lower one then without any!</p>
+  <p><b>Connect</b> The end of the resistor (if you need to use one) to the + of the buzzer/speaker</p>
+  <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
+</details>
+<div style="height:10vh;"></div>
     <details class="wiring-card spacer-2">
       <summary>DC Motor</summary>
       <p>Motor driver required.</p>
@@ -2343,8 +2420,9 @@ function copyCode(btn){
 
 document.querySelectorAll('.led-container').forEach(container => {
   const frames = container.querySelectorAll('.led-frame');
-  let index = 0;
+  if (frames.length < 2) return; // nothing to animate
 
+  let index = 0;
   frames[index].classList.add('active');
 
   setInterval(() => {

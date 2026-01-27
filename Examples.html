@@ -1398,27 +1398,6 @@ function copyCode(btn){
   });
 }
 
-document.querySelectorAll('.led-container').forEach(container => {
-  const frames = container.querySelectorAll('.led-frame');
-  let index = 0;
-
-  frames[index].classList.add('active');
-
-  setInterval(() => {
-    frames[index].classList.remove('active');
-    index = (index + 1) % frames.length;
-    frames[index].classList.add('active');
-  }, 1000);
-});
-
-renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("uno3d"),
-  antialias: true,
-  alpha: true // <- this removes black background
-});
-
-renderer.setClearColor(0x000000, 0); // fully transparent
-
 function loadExample(type){
   const box = document.getElementById("exampleBox");
 
@@ -1426,10 +1405,10 @@ function loadExample(type){
     box.innerHTML = `
       <h2>Blink LED</h2>
       <p>Basic digital output example.</p>
-
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // This code runs repeatedly on the Arduino
 // It makes the built-in LED blink on and off
 
@@ -1463,6 +1442,7 @@ delay(1000);
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Set pin 2 as an INPUT pin
 // This pin will read HIGH (5V) or LOW (0V)
 pinMode(2, INPUT);
@@ -1489,6 +1469,7 @@ int value = digitalRead(2);
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Configure pin 2 to read button input
 pinMode(2, INPUT);
 
@@ -1524,6 +1505,7 @@ if(digitalRead(2) == HIGH){
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Set pin 9 as OUTPUT
 // Pin 9 supports PWM (~ symbol on Arduino)
 pinMode(9, OUTPUT);
@@ -1551,6 +1533,7 @@ analogWrite(9, 128); // ~50% brightness
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Set pin 13 as OUTPUT (LED 1)
 pinMode(13, OUTPUT);
 
@@ -1583,6 +1566,7 @@ digitalWrite(11, LOW);
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Set pin 6 as OUTPUT
 // Buzzer signal pin is connected here
 pinMode(6, OUTPUT);
@@ -1614,6 +1598,7 @@ noTone(6);
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Read analog voltage from pin A0
 // Arduino converts voltage to a number:
 // 0   = 0V
@@ -1643,6 +1628,7 @@ if(type === "joystick"){
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       <pre>
+
 // Joystick connections
 // VRx -> A0
 // VRy -> A1
@@ -1683,6 +1669,7 @@ if(type === "oled"){
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this)">Copy</button>
       <pre>
+
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -1726,6 +1713,7 @@ void loop(){
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Setup runs once
 void setup(){
   // Start serial communication at 9600 baud rate
@@ -1753,6 +1741,7 @@ void loop(){
       <div class="code-block">
         <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         <pre>
+
 // Store the last time the action happened
 // unsigned long is required for millis()
 unsigned long t = 0;
