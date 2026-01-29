@@ -123,7 +123,8 @@
   <form id="uploadForm">
     <input type="text" id="username" placeholder="Your Name" required />
     <input type="text" id="postTitle" placeholder="Title" required />
-    <textarea id="postContent" placeholder="Write your question or feedback..." rows="5" required></textarea>
+    <textarea id="postContent" placeholder="Write your question or feedback..." rows="5"></textarea>
+<textarea id="postCode" placeholder="Paste Arduino code here..." rows="6"></textarea>
 
     <button type="submit">Submit</button>
   </form>
@@ -176,30 +177,38 @@ db.ref("posts").on("value", snapshot => {
   const arr = Object.values(posts).sort((a,b)=> (b.timestamp||0) - (a.timestamp||0));
   displayPosts(arr);
 });
-
+const code = document.getElementById("postCode").value.trim();
 // ---------- Create post (upload files first) ----------
+
 form.addEventListener("submit", async e => {
   e.preventDefault();
   const username = document.getElementById("username").value.trim();
   const title = document.getElementById("postTitle").value.trim();
   const content = document.getElementById("postContent").value.trim();
-if (!username || !title || !content)
+  const code = document.getElementById("postCode").value.trim();
+
+  if (!username || !title || !content && !code)
     return alert("Please fill all fields!");
 
   const postId = Date.now().toString();
-  const post = { id: postId, username, title, content, userId, timestamp: Date.now(), files: [], likes: {}, dislikes: {}, replies: {} };
-  // upload files (if any)
-  for (let file of droppedFiles) {
-    const fileRef = storage.ref(`uploads/${postId}/${file.name}`);
-    await fileRef.put(file);
-    const url = await fileRef.getDownloadURL();
-    post.files.push({ name: file.name, url });
-  }
+  const post = { 
+    id: postId, 
+    username, 
+    title, 
+    content, 
+    code,
+    userId, 
+    timestamp: Date.now(), 
+    files: [], 
+    likes: {}, 
+    dislikes: {}, 
+    replies: {} 
+  };
 
   await db.ref("posts/" + postId).set(post);
   form.reset();
-  droppedFiles = [];
 });
+
 
 // ---------- Render posts ----------
 function displayPosts(postsArray){
@@ -208,33 +217,70 @@ function displayPosts(postsArray){
     const div = document.createElement("div");
     div.className = "post";
     div.id = "post-" + p.id;
-
     const owner = p.userId === userId;
     const likeCount = p.likes ? Object.keys(p.likes).length : 0;
     const dislikeCount = p.dislikes ? Object.keys(p.dislikes).length : 0;
+    const hasText = p.content && p.content.trim().length > 0;
+    const hasCode = p.code && p.code.trim().length > 0;
 
-    div.innerHTML = `
-      ${owner ? `<button class="btn-small edit-btn" onclick="editPost('${p.id}')">Edit</button>
-                 <button class="btn-small delete-btn" onclick="deletePost('${p.id}')">Delete</button>` : ""}
-      <h3>${escapeHtml(p.title)} <span class="meta">by ${escapeHtml(p.username)}</span></h3>
-      <div class="meta">${new Date(p.timestamp).toLocaleString()}</div>
-      <p id="content-${p.id}">${escapeHtml(p.content).replace(/\n/g,'<br>')}</p>
-      ${p.files && p.files.length ? `<div><strong>Attachments:</strong><ul>${p.files.map(f=>`<li><a href="${f.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(f.name)}</a></li>`).join("")}</ul></div>` : ""}
-      <div style="margin-top:10px;">
-<button class="btn-small like-btn" onclick="toggleLike('${p.id}')">👍 ${likeCount}</button>
-<button class="btn-small dislike-btn" onclick="toggleDislike('${p.id}')">👎 ${dislikeCount}</button>
-        <button class="btn-small" onclick="toggleReplyBox('${p.id}')">💬 Comment</button>
-        <button class="btn-small" onclick="showReplies('${p.id}')">Show/Hide 💬</button>
-      </div>
+div.innerHTML = `
+${owner ? `
+  <button class="btn-small edit-btn" onclick="editPost('${p.id}')">Edit</button>
+  <button class="btn-small delete-btn" onclick="deletePost('${p.id}')">Delete</button>
+` : ""}
 
-      <div id="replyBox-${p.id}" style="display:none;margin-top:10px;">
-        <input type="text" id="replyUser-${p.id}" placeholder="Your name" style="width:100%;margin-bottom:6px;" />
-        <textarea id="replyText-${p.id}" rows="2" placeholder="Write a reply..." style="width:100%;"></textarea>
-        <button class="btn-small" onclick="sendReply('${p.id}')">Send Reply</button>
-      </div>
+<h3>${escapeHtml(p.title)}</h3>
+<div class="meta">by ${escapeHtml(p.username)} • ${new Date(p.timestamp).toLocaleString()}</div>
 
-      <div id="replies-${p.id}" style="margin-top:10px;padding-left:12px;border-left:2px solid #eee; display:none;"></div>
-    `;
+${hasText ? `
+<div id="text-${p.id}" style="max-height:5.6em; overflow:hidden; position:relative;">
+  ${parseCommandsToHTML(p.content)}
+</div>
+
+${p.content.split("\n").length > 4 ? `
+<button class="btn-small" onclick="toggleText('${p.id}', this)">Show more</button>
+` : ""}
+` : ""}
+
+${hasCode ? `
+<div style="margin-top:12px;">
+  ${hasText ? `
+  <button class="btn-small" onclick="toggleCode('${p.id}', this)">Show code</button>
+  ` : ""}
+
+  <div id="codeWrap-${p.id}" style="
+    display:${hasText ? "none":"block"};
+    background:#0b0f1a;
+    color:#0f0;
+    padding:12px;
+    border-radius:6px;
+    margin-top:8px;
+    position:relative;
+  ">
+    <pre id="code-${p.id}" style="margin:0;white-space:pre-wrap;">${escapeHtml(p.code)}</pre>
+    <button class="btn-small" style="position:absolute;top:6px;right:6px;"
+      onclick="copyCode('${p.id}', this)">📋 Copy</button>
+  </div>
+</div>
+` : ""}
+
+<div style="margin-top:14px;">
+  <button class="btn-small like-btn" onclick="toggleLike('${p.id}')">👍 ${likeCount}</button>
+  <button class="btn-small dislike-btn" onclick="toggleDislike('${p.id}')">👎 ${dislikeCount}</button>
+  <button class="btn-small" onclick="toggleReplyBox('${p.id}')">💬 Comment</button>
+  <button class="btn-small" onclick="showReplies('${p.id}')">Show/Hide 💬</button>
+</div>
+
+<div id="replyBox-${p.id}" style="display:none;margin-top:12px;">
+  <input type="text" id="replyUser-${p.id}" placeholder="Your name" style="width:100%;margin-bottom:6px;" />
+  <input type="text" id="replyTitle-${p.id}" placeholder="Title (optional)" style="width:100%;margin-bottom:6px;" />
+  <textarea id="replyText-${p.id}" rows="3" placeholder="Text (optional)" style="width:100%;"></textarea>
+  <textarea id="replyCode-${p.id}" rows="4" placeholder="Code (optional)" style="width:100%;margin-top:6px;"></textarea>
+  <button class="btn-small" onclick="sendReply('${p.id}')">Send Reply</button>
+</div>
+
+<div id="replies-${p.id}" style="margin-top:10px;padding-left:12px;border-left:2px solid #eee; display:none;"></div>
+`;
     communityPosts.appendChild(div);
   });
   runClientFilter(); // re-apply search filter if any
@@ -245,6 +291,18 @@ async function toggleFavorite(postId){
   if (snap.exists()) ref.remove();
   else ref.set(true);
 }
+function toggleCode(postId, btn){
+  const wrap = document.getElementById("codeWrap-" + postId);
+  const open = wrap.style.display === "none";
+  wrap.style.display = open ? "block" : "none";
+  btn.innerText = open ? "Hide code" : "Show code";
+}
+function toggleText(postId, btn){
+  const box = document.getElementById("text-" + postId);
+  const open = box.style.maxHeight !== "5.6em";
+  box.style.maxHeight = open ? "5.6em" : "none";
+  btn.innerText = open ? "Show more" : "Show less";
+}
 // ---------- Replies handling ----------
 function toggleReplyBox(postId){
   const box = document.getElementById("replyBox-" + postId);
@@ -252,42 +310,167 @@ function toggleReplyBox(postId){
 }
 async function sendReply(postId){
   const name = document.getElementById("replyUser-"+postId).value.trim();
+  const title = document.getElementById("replyTitle-"+postId).value.trim();
   const text = document.getElementById("replyText-"+postId).value.trim();
-  if (!name || !text) return alert("Please enter name and comment.");
+  const code = document.getElementById("replyCode-"+postId).value.trim();
+
+if (!name) 
+  return alert("Name is required.");
+
+if (!text && !code)
+  return alert("You must write text or code (at least one).");
 
   const replyId = Date.now().toString();
-  const reply = { id: replyId, username: name, text, userId, timestamp: Date.now() };
+  const reply = {
+    id: replyId,
+    username: name,
+    title,
+    text,
+    code,
+    userId,
+    timestamp: Date.now()
+  };
+
   await db.ref(`posts/${postId}/replies/${replyId}`).set(reply);
 
-  document.getElementById("replyUser-"+postId).value = "";
-  document.getElementById("replyText-"+postId).value = "";
+  ["User","Title","Text","Code"].forEach(k=>{
+    document.getElementById(`reply${k}-${postId}`).value="";
+  });
+
   showReplies(postId);
 }
+
 function showReplies(postId){
-  const container = document.getElementById("replies-"+postId);
+  const container = document.getElementById("replies-" + postId);
+  // Toggle visibility
   container.style.display = container.style.display === "none" ? "block" : "none";
 
-  // Fetch replies once (live updates come from main listener anyway)
-  db.ref(`posts/${postId}/replies`).once("value").then(snap=>{
-    const replies = snap.val();
+  if(container.style.display === "none"){
+    // If hiding replies, just clear content and stop
     container.innerHTML = "";
-    if (!replies) { container.innerHTML = "<p style='color:#777;'>No comments yet.</p>"; return; }
-    Object.entries(replies).sort((a,b)=> (b[1].timestamp||0)-(a[1].timestamp||0)).forEach(([id,r])=>{
-      const el = document.createElement("div");
-      el.className = "reply";
+    return;
+  }
+
+  // Clear container before filling
+  container.innerHTML = "";
+
+  db.ref(`posts/${postId}/replies`).once("value").then(snap => {
+    const replies = snap.val();
+    if (!replies) return;
+
+    Object.values(replies).forEach(r => {
+      const id = r.id;
       const owner = r.userId === userId;
-      el.id = `reply-${id}`;
+
+      const el = document.createElement("div");
+      el.id = "reply-" + id;
+      el.style.marginBottom = "14px";
+
       el.innerHTML = `
-        <b>${escapeHtml(r.username)}</b> <span class="meta" style="color:#666;font-size:12px;">• ${new Date(r.timestamp).toLocaleString()}</span>
-        <div id="replyText-${id}" style="margin-top:6px;">${escapeHtml(r.text).replace(/\n/g,'<br>')}</div>
-        ${owner ? `<div style="margin-top:6px;">
-          <button class="btn-small" onclick="editReply('${postId}','${id}')">✏️ Edit</button>
-          <button class="btn-small" onclick="deleteReply('${postId}','${id}')">🗑️ Delete</button>
-        </div>` : ""}
+        <b>${escapeHtml(r.username)}</b>
+        ${r.title ? ` • <i>${escapeHtml(r.title)}</i>` : ""}
+        <span style="color:#666;font-size:12px;">
+          • ${new Date(r.timestamp).toLocaleString()}
+        </span>
+
+        ${
+          r.text ? `
+          <div id="rtext-${id}" style="max-height:5.6em; overflow:hidden; margin-top:6px;">
+            ${parseCommandsToHTML(r.text)}
+          </div>
+          ${r.text.split("\n").length > 4 ? `
+            <button class="btn-small" onclick="toggleReplyText('${id}', this)">Show more</button>
+          ` : ""}
+          ` : ""
+        }
+
+        ${
+          r.code ? `
+          <div style="margin-top:8px;">
+            ${
+              r.text ? `
+              <button class="btn-small" onclick="toggleReplyCode('${id}', this)">Show code</button>
+              ` : ""
+            }
+            <div id="rcode-${id}" style="
+              display: ${r.text ? "none" : "block"};
+              background:#0b0f1a;
+              color:#0f0;
+              padding:10px;
+              border-radius:6px;
+              margin-top:6px;
+              position:relative;
+            ">
+              <pre style="margin:0; white-space:pre-wrap;">${escapeHtml(r.code)}</pre>
+              <button class="btn-small" style="position:absolute;top:6px;right:6px;"
+                onclick="copyReplyCode('${id}', this)">📋 Copy</button>
+            </div>
+          </div>
+          ` : ""
+        }
+
+        ${
+          owner ? `
+          <div style="margin-top:8px;">
+            <button class="btn-small" onclick="editReplyInline('${postId}', '${id}')">✏️ Edit</button>
+            <button class="btn-small" onclick="deleteReply('${postId}', '${id}')">🗑️ Delete</button>
+          </div>
+          ` : ""
+        }
       `;
+
       container.appendChild(el);
     });
   });
+}
+
+function toggleReplyCode(id, btn){
+  const box = document.getElementById("rcode-"+id);
+  const open = box.style.display === "none";
+  box.style.display = open ? "block" : "none";
+  btn.innerText = open ? "Hide code" : "Show code";
+}
+
+function toggleReplyText(id, btn){
+  const box = document.getElementById("rtext-"+id);
+  const open = box.style.maxHeight !== "5.6em";
+  box.style.maxHeight = open ? "5.6em" : "none";
+  btn.innerText = open ? "Show more" : "Show less";
+}
+
+function copyReplyCode(id, btn){
+  const text = document.querySelector("#rcode-"+id+" pre").innerText;
+  navigator.clipboard.writeText(text);
+  btn.innerText="✔";
+  setTimeout(()=>btn.innerText="📋 Copy",1000);
+}
+function editReplyInline(postId, replyId){
+  const wrap = document.getElementById("reply-"+replyId);
+
+  db.ref(`posts/${postId}/replies/${replyId}`).once("value").then(snap=>{
+    const r = snap.val();
+    if (!r || r.userId !== userId) return;
+
+    wrap.innerHTML = `
+      <input id="er-title" value="${escapeHtml(r.title||"")}" style="width:100%;">
+      <textarea id="er-text" rows="3" style="width:100%;">${escapeHtml(r.text||"")}</textarea>
+      <textarea id="er-code" rows="4" style="width:100%;">${escapeHtml(r.code)}</textarea>
+      <button class="btn-small" onclick="saveReplyEdit('${postId}','${replyId}')">Save</button>
+      <button class="btn-small" onclick="showReplies('${postId}')">Cancel</button>
+    `;
+  });
+}
+
+function saveReplyEdit(postId, replyId){
+  const title = document.getElementById("er-title").value;
+  const text = document.getElementById("er-text").value;
+  const code = document.getElementById("er-code").value;
+
+if (!text && !code)
+  return alert("Text or code required.");
+
+  db.ref(`posts/${postId}/replies/${replyId}`).update({title,text,code});
+  showReplies(postId);
 }
 function editReply(postId, replyId){
   db.ref(`posts/${postId}/replies/${replyId}`).once("value").then(snap=>{
@@ -310,18 +493,49 @@ function deleteReply(postId, replyId){
 
 
 // -------------------- POST EDITING --------------------
-function editPost(postId){
-  db.ref("posts/" + postId).once("value").then(snap=>{
-    const p = snap.val();
-    if (!p || p.userId !== userId) return alert("You can only edit your own post.");
+function editPost(postId) {
+  db.ref("posts/" + postId).once("value").then(snap => {
+    const post = snap.val();
+    if (!post || post.userId !== userId) return alert("You can only edit your own post.");
 
-    const newTitle = prompt("Edit title:", p.title);
-    if (newTitle === null) return;
+    const postDiv = document.getElementById("post-" + postId);
 
-    const newContent = prompt("Edit content:", p.content);
-    if (newContent === null) return;
+    postDiv.innerHTML = `
+      <h3>Edit Post</h3>
 
-    db.ref("posts/" + postId).update({ title:newTitle, content:newContent });
+      <input id="edit-title-${postId}" value="${escapeHtml(post.title)}" style="width:100%;margin-bottom:8px;">
+
+      <textarea id="edit-content-${postId}" rows="4" style="width:100%;">${escapeHtml(post.content)}</textarea>
+
+      <textarea id="edit-code-${postId}" rows="6" style="width:100%;margin-top:8px;">${escapeHtml(post.code)}</textarea>
+
+      <button class="btn-small" onclick="savePostEdit('${postId}')">💾 Save</button>
+      <button class="btn-small" onclick="cancelPostEdit('${postId}')">Cancel</button>
+    `;
+  });
+}
+
+function savePostEdit(postId){
+  const newTitle = document.getElementById("edit-title-" + postId).value.trim();
+  const newContent = document.getElementById("edit-content-" + postId).value.trim();
+  const newCode = document.getElementById("edit-code-" + postId).value.trim();
+
+if(!newTitle) 
+  return alert("Title required.");
+
+if(!newContent && !newCode)
+  return alert("Text or code required.");
+
+  db.ref("posts/" + postId).update({
+    title: newTitle,
+    content: newContent,
+    code: newCode
+  });
+}
+
+function cancelPostEdit(postId){
+  db.ref("posts").once("value").then(snap=>{
+    displayPosts(Object.values(snap.val()));
   });
 }
 
@@ -367,49 +581,184 @@ const searchResults = document.getElementById("searchResults");
 
 searchInput.addEventListener("input", runClientFilter);
 
-function runClientFilter(){
-  const filter = searchInput.value.toLowerCase();
+function runClientFilter() {
+  const filter = searchInput.value.toLowerCase().trim();
   const posts = Array.from(communityPosts.children);
   searchResults.innerHTML = "";
 
-  if (filter.length === 0){
-    posts.forEach(el=>el.style.display="block");
+  if (filter.length === 0) {
+    // Show all posts if no filter
+    posts.forEach(el => el.style.display = "block");
     return;
   }
 
-  posts.forEach(el=>{
+  posts.forEach(el => {
     const title = el.querySelector("h3")?.innerText.toLowerCase() || "";
-    const content = el.querySelector("p")?.innerText.toLowerCase() || "";
+    const textEl = el.querySelector(`[id^="text-"]`);
+    const codeEl = el.querySelector(`[id^="code-"]`);
 
-    const match = title.includes(filter) || content.includes(filter);
-    el.style.display = match ? "block":"none";
+    const text = textEl ? textEl.innerText.toLowerCase() : "";
+    const code = codeEl ? codeEl.innerText.toLowerCase() : "";
 
-    if (match){
+    const matchInTitle = title.includes(filter);
+    const matchInText = text.includes(filter);
+    const matchInCode = code.includes(filter);
+
+    const match = matchInTitle || matchInText || matchInCode;
+
+    el.style.display = match ? "block" : "none";
+
+    if (match) {
+      let preview = "";
+
+      if (matchInText && text) {
+        preview = highlightText(text.substring(0, 80), filter);
+      } else if (matchInCode && code) {
+        preview = `<code>${highlightText(code.substring(0, 80), filter)}</code>`;
+      }
+
       searchResults.innerHTML += `
         <button onclick="scrollToPost('${el.id}')">
           <div class="title">${highlightText(title, filter)}</div>
-          <div class="content">${highlightText(content.substring(0,80), filter)}...</div>
+          <div class="content">${preview}${preview ? "..." : ""}</div>
         </button>`;
     }
   });
 }
 
-function scrollToPost(id){
-  document.getElementById(id).scrollIntoView({ behavior:"smooth" });
+function scrollToPost(id) {
+  const postEl = document.getElementById(id);
+  if (!postEl) return;
+
+  // Scroll post into view
+  postEl.scrollIntoView({ behavior: "smooth" });
+
+  // Get username of the clicked post
+  const username = postEl.querySelector(".meta")?.innerText.match(/by (.+?) •/)?.[1];
+  if (!username) return;
+
+  // Hide all posts except those by this username and the clicked post
+  const posts = Array.from(communityPosts.children);
+  posts.forEach(el => {
+    const userMeta = el.querySelector(".meta")?.innerText;
+    if (userMeta && userMeta.includes(`by ${username} `)) {
+      el.style.display = "block";
+    } else {
+      el.style.display = "none";
+    }
+  });
 }
 
-function highlightText(text, word){
-  const reg = new RegExp(`(${word})`, "gi");
+function highlightText(text, word) {
+  if (!word) return text;
+  const reg = new RegExp(`(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi");
   return text.replace(reg, `<mark>$1</mark>`);
 }
 
+function copyCode(postId, btn){
+  const codeEl = document.getElementById("code-" + postId);
+  const text = codeEl.innerText;
+
+  navigator.clipboard.writeText(text);
+
+  const old = btn.innerText;
+  btn.innerText = "✔ copied";
+  btn.style.background = "#27ae60";
+
+  setTimeout(()=>{
+    btn.innerText = old;
+    btn.style.background = "";
+  }, 1200);
+}
+
+// --- Auto-insert closing command tags in input/textarea ---
+function handleCommandInsertion(inputEl) {
+  const commands = ["/t/", "/o/", "/b/"];
+  const val = inputEl.value;
+  const pos = inputEl.selectionStart;
+
+  for (const cmd of commands) {
+    // If user just typed opening command at cursor, insert closing after cursor
+    if (val.substring(pos - cmd.length, pos) === cmd) {
+      const before = val.substring(0, pos);
+      const after = val.substring(pos);
+      const closingCmd = cmd; // same for open/close here
+
+      inputEl.value = before + closingCmd + after;
+      inputEl.selectionStart = inputEl.selectionEnd = pos; // cursor between
+      return;
+    }
+  }
+
+  // Handle color command: detect /c("color")/ before cursor and insert closing
+  const colorOpenMatch = val.substring(0, pos).match(/\/c\("([^"]+)"\)\/$/);
+  if (colorOpenMatch) {
+    const closingCmd = `/c("${colorOpenMatch[1]}")/`;
+    const before = val.substring(0, pos);
+    const after = val.substring(pos);
+    inputEl.value = before + closingCmd + after;
+    inputEl.selectionStart = inputEl.selectionEnd = pos;
+  }
+}
+
+// Attach listeners on relevant inputs dynamically (including future reply boxes)
+function attachCommandListeners() {
+  // Post content & code inputs
+  const inputs = [
+    document.getElementById("postContent"),
+    document.getElementById("postCode"),
+    ...Array.from(document.querySelectorAll('textarea[id^="replyText-"]')),
+    ...Array.from(document.querySelectorAll('textarea[id^="replyCode-"]'))
+  ].filter(Boolean);
+
+  inputs.forEach(input => {
+    input.removeEventListener("input", onInputHandler);
+    input.addEventListener("input", onInputHandler);
+  });
+}
+function onInputHandler(e) {
+  handleCommandInsertion(e.target);
+}
+
+// Attach initially
+attachCommandListeners();
+
+function parseCommandsToHTML(text) {
+  if (!text) return "";
+
+  text = escapeHtml(text);
+
+  const patterns = [
+    { regex: /\/t\/(.*?)\/t\//gs, replace: "<i>$1</i>" },
+    { regex: /\/o\/(.*?)\/o\//gs, replace: "<u>$1</u>" },
+    { regex: /\/b\/(.*?)\/b\//gs, replace: "<b>$1</b>" },
+    {
+      regex: /\/c\("([^"]+)"\)\/([\s\S]+?)\/c\//g,
+      replace: (match, color, inner) => {
+        console.log("Color command found:", {match, color, inner});
+        if (!color) return match;
+        return `<span style="color:${color}">${inner}</span>`;
+      }
+    }
+  ];
+
+  patterns.forEach(({ regex, replace }) => {
+    text = text.replace(regex, replace);
+  });
+
+  return text.replace(/\n/g, "<br>");
+}
+
+function escapeHtml(text){
+  const map = { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
 
 // -------------------- SAFE HTML ESCAPE --------------------
 function escapeHtml(text){
   const map = { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" };
   return text.replace(/[&<>"']/g, m => map[m]);
 }
-
 
 // expose some to global so buttons can call them
 window.toggleReplyBox = toggleReplyBox;

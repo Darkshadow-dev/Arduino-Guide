@@ -2,192 +2,214 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Arduino Canvas Simulator</title>
+<title>2D Arduino Simulator</title>
+
 <style>
-body {
-  margin: 0;
-  background: #1e1e1e;
-  color: white;
-  font-family: monospace;
+body{margin:0;background:#111;color:white;font-family:Arial}
+#top{padding:10px;background:#000}
+#canvas{
+  position:relative;
+  width:900px;
+  height:400px;
+  margin:20px auto;
+  border:2px solid #333;
+  background:#1a1a1a;
 }
-#sidebar {
-  width: 200px;
-  height: 100vh;
-  background: #111;
-  position: fixed;
-  left: 0;
-  top: 0;
-  padding: 10px;
+
+/* COMPONENT */
+.comp{
+  position:absolute;
+  cursor:move;
 }
-.btn {
-  background: #222;
-  border: 1px solid #555;
-  padding: 8px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  text-align: center;
+.comp img{width:60px}
+
+/* SNAP NODE */
+.node{
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:red;
+  border:2px solid white;
+  transform:translate(-50%,-50%);
+  cursor:pointer;
+  z-index:5;
 }
-canvas {
-  margin-left: 200px;
-  background: #2a2a2a;
+
+/* WIRE */
+.wire{
+  position:absolute;
+  height:6px;
+  background:#00e5ff;
+  border-radius:6px;
+  box-shadow:0 0 8px #00e5ff;
+  transform-origin:0 50%;
+  pointer-events:none;
 }
 </style>
 </head>
-
 <body>
 
-<div id="sidebar">
-  <div class="btn" onclick="spawn('led')">LED</div>
-  <div class="btn" onclick="spawn('resistor')">Resistor</div>
-  <div class="btn" onclick="spawn('wire')">Wire</div>
+<div id="top">
+<select id="tool">
+  <option value="">Add...</option>
+  <option value="led">LED</option>
+  <option value="wire">Wire</option>
+</select>
 </div>
 
-<canvas id="c" width="1200" height="700"></canvas>
+<div id="canvas">
+  <img src="Images/Arduino-uno.png" width="500" height="200">
+
+  <!-- Arduino nodes -->
+  <div class="node" id="pin13" style="left:420px; top:70px;"></div>
+  <div class="node" id="gnd"   style="left:420px; top:110px;"></div>
+</div>
 
 <script>
-const ctx = c.getContext("2d");
+const SNAP=15;
+let nodes=[];
+let wires=[];
+let mode="";
+let activeNode=null;
+const canvas=document.getElementById("canvas");
+const tool=document.getElementById("tool");
 
-let pins = [];
-let parts = [];
-let wires = [];
-let drag = null;
-
-// ---------- LOAD IMAGES ----------
-const imgLED = new Image();
-imgLED.src = "led.png";
-
-const imgRes = new Image();
-imgRes.src = "resistor.png";
-
-// ---------- ARDUINO PIN MAP ----------
-function createPins() {
-  let x = 500;
-  let y = 150;
-
-  // Digital 0–13
-  for (let i = 0; i <= 13; i++) {
-    pins.push({
-      name: "D" + i,
-      x: x,
-      y: y + i * 25
-    });
-  }
-
-  // Power pins
-  let py = y + 14 * 25 + 20;
-  ["GND", "5V", "3V3", "VIN"].forEach(p => {
-    pins.push({ name: p, x: x, y: py });
-    py += 25;
-  });
-
-  // Analog A0–A5
-  let ax = x + 200;
-  let ay = y;
-  for (let i = 0; i <= 5; i++) {
-    pins.push({
-      name: "A" + i,
-      x: ax,
-      y: ay + i * 25
-    });
-  }
+/* TOOL */
+tool.onchange=e=>{
+  mode=e.target.value;
 }
 
-// ---------- SPAWN PARTS ----------
-function spawn(type) {
-  parts.push({
-    type,
-    x: 200,
-    y: 200,
-    rot: 0
-  });
+/* ADD LED */
+function addLED(){
+  const led=document.createElement("div");
+  led.className="comp";
+  led.style.left="200px";
+  led.style.top="200px";
+  led.innerHTML='<img src="Images/LED.png">';
+  canvas.appendChild(led);
+  drag(led);
+
+  // 2 legs
+  makeNode(led,10,30).id="led-node-1";
+  makeNode(led,50,30).id="led-node-2";
 }
 
-// ---------- DRAW ----------
-function draw() {
-  ctx.clearRect(0, 0, c.width, c.height);
+/* ADD NODE */
+function makeNode(parent,x,y){
+  const n=document.createElement("div");
+  n.className="node";
+  n.style.left=x+"px";
+  n.style.top=y+"px";
+  parent.appendChild(n);
+  nodes.push(n);
 
-  // Arduino body
-  ctx.fillStyle = "#00695c";
-  ctx.fillRect(450, 120, 300, 420);
+  n.onclick=()=>{
+    if(mode=="wire") startWire(n);
+  }
+  return n;
+}
 
-  // Pins
-  ctx.fillStyle = "yellow";
-  pins.forEach(p => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillText(p.name, p.x - 40, p.y + 4);
-  });
-
-  // Wires
-  ctx.strokeStyle = "#2196f3";
-  ctx.lineWidth = 3;
-  wires.forEach(w => {
-    ctx.beginPath();
-    ctx.moveTo(w.x1, w.y1);
-    ctx.lineTo(w.x2, w.y2);
-    ctx.stroke();
-  });
-
-  // Parts
-  parts.forEach(p => {
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.rot);
-
-    if (p.type === "led")
-      ctx.drawImage(imgLED, -20, -10, 40, 20);
-
-    if (p.type === "resistor")
-      ctx.drawImage(imgRes, -30, -8, 60, 16);
-
-    if (p.type === "wire") {
-      ctx.strokeStyle = "#90caf9";
-      ctx.beginPath();
-      ctx.moveTo(-50, 0);
-      ctx.lineTo(50, 0);
-      ctx.stroke();
+/* DRAG COMPONENT */
+function drag(el){
+  el.onmousedown=e=>{
+    const ox=e.offsetX, oy=e.offsetY;
+    document.onmousemove=m=>{
+      el.style.left=(m.clientX-canvas.offsetLeft-ox)+"px";
+      el.style.top=(m.clientY-canvas.offsetTop-oy)+"px";
+      redraw();
     }
-
-    ctx.restore();
-  });
-
-  requestAnimationFrame(draw);
+    document.onmouseup=()=>document.onmousemove=null;
+  }
 }
 
-// ---------- MOUSE ----------
-c.onmousedown = e => {
-  const r = c.getBoundingClientRect();
-  const mx = e.clientX - r.left;
-  const my = e.clientY - r.top;
+/* START WIRE */
+function startWire(n){
+  const w=document.createElement("div");
+  w.className="wire";
+  canvas.appendChild(w);
 
-  parts.forEach(p => {
-    if (Math.abs(mx - p.x) < 30 && Math.abs(my - p.y) < 20) {
-      drag = p;
+  const free=document.createElement("div");
+  free.className="node";
+  free.style.left=n.offsetLeft+"px";
+  free.style.top=n.offsetTop+"px";
+  canvas.appendChild(free);
+
+  nodes.push(free);
+  dragNode(free);
+  wires.push({w,a:n,b:free});
+}
+
+/* DRAG FREE NODE */
+function dragNode(n){
+  n.onmousedown=e=>activeNode=n;
+}
+
+document.onmousemove=e=>{
+  if(activeNode){
+    activeNode.style.left=(e.clientX-canvas.offsetLeft)+"px";
+    activeNode.style.top=(e.clientY-canvas.offsetTop)+"px";
+    snap(activeNode);
+    redraw();
+  }
+}
+document.onmouseup=()=>activeNode=null;
+
+/* SNAP */
+function snap(n){
+  nodes.forEach(p=>{
+    if(p===n) return;
+    const dx=p.offsetLeft-n.offsetLeft;
+    const dy=p.offsetTop-n.offsetTop;
+    if(Math.hypot(dx,dy)<SNAP){
+      n.style.left=p.offsetLeft+"px";
+      n.style.top=p.offsetTop+"px";
     }
   });
-};
+}
 
-c.onmousemove = e => {
-  if (!drag) return;
-  const r = c.getBoundingClientRect();
-  drag.x = e.clientX - r.left;
-  drag.y = e.clientY - r.top;
-};
+/* REDRAW */
+function redraw(){
+  wires.forEach(w=>{
+    const a=w.a,b=w.b;
+    const ax=a.offsetLeft, ay=a.offsetTop;
+    const bx=b.offsetLeft, by=b.offsetTop;
+    const dx=bx-ax, dy=by-ay;
+    const len=Math.hypot(dx,dy);
+    const ang=Math.atan2(dy,dx)*180/Math.PI;
+    w.w.style.left=ax+"px";
+    w.w.style.top=ay+"px";
+    w.w.style.width=len+"px";
+    w.w.style.transform=`rotate(${ang}deg)`;
+  });
+}
 
-c.onmouseup = () => drag = null;
+/* CONNECTION CHECK */
+function isConnected(id1,id2){
+  const a=document.getElementById(id1);
+  const b=document.getElementById(id2);
+  if(!a||!b) return false;
+  return Math.hypot(
+    a.offsetLeft-b.offsetLeft,
+    a.offsetTop-b.offsetTop
+  )<2;
+}
 
-// Rotate with R key
-document.onkeydown = e => {
-  if (e.key === "r" && drag) {
-    drag.rot += Math.PI / 2;
+/* LED LOGIC */
+setInterval(()=>{
+  if(
+    isConnected("pin13","led-node-1") &&
+    isConnected("gnd","led-node-2")
+  ){
+    console.log("LED ON");
   }
-};
+},500);
 
-// ---------- START ----------
-createPins();
-draw();
+/* TOOL ACTION */
+tool.onchange=e=>{
+  mode=e.target.value;
+  if(mode=="led") addLED();
+}
 </script>
-
 </body>
 </html>
