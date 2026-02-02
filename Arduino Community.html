@@ -728,19 +728,20 @@ function parseCommandsToHTML(text) {
 
   text = escapeHtml(text);
 
-  const patterns = [
-    { regex: /\/t\/(.*?)\/t\//gs, replace: "<i>$1</i>" },
-    { regex: /\/o\/(.*?)\/o\//gs, replace: "<u>$1</u>" },
-    { regex: /\/b\/(.*?)\/b\//gs, replace: "<b>$1</b>" },
-    {
-      regex: /\/c\("([^"]+)"\)\/([\s\S]+?)\/c\//g,
-      replace: (match, color, inner) => {
-        console.log("Color command found:", {match, color, inner});
-        if (!color) return match;
-        return `<span style="color:${color}">${inner}</span>`;
-      }
-    }
-  ];
+const patterns = [
+  { regex: /\/t\/(.*?)\/t\//gs, replace: "<i>$1</i>" },
+  { regex: /\/o\/(.*?)\/o\//gs, replace: "<u>$1</u>" },
+  { regex: /\/b\/(.*?)\/b\//gs, replace: "<b>$1</b>" },
+
+  { regex: /\/c\s*\(?["']?([#\w]+)["']?\)?\/(.*?)\/c\//gs,
+    replace: (m, color, inner) =>
+      `<span style="color:${color}">${inner}</span>` },
+
+  { regex: /\/r\((\d+)\)\/(.*?)\/r\//gs,
+    replace: (m, size, inner) =>
+      `<span style="font-size:${size}px">${inner}</span>` }
+];
+
 
   patterns.forEach(({ regex, replace }) => {
     text = text.replace(regex, replace);
