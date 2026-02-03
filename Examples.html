@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/png" href="Website-Guide.png">
+<link rel="icon" type="image/png" href="Images/Website-Guide.png">
 
 <title>Arduino Guide</title>
 
@@ -325,28 +325,6 @@ transition:
   padding: 6px 10px;
 }
 
-/* Make summary look clickable */
-summary {
-  cursor: pointer;
-  user-select: none;
-  font-size: 16px;
-}
-
-/* Remove text-cursor feeling */
-summary::-webkit-details-marker {
-  display: none;
-}
-
-/* Custom arrow */
-summary::before{
-  content:"";
-  margin-right:6px;
-  transition:transform .2s;
-}
-details[open] summary::before{
-  transform:rotate(90deg);
-}
-
 footer{
   position:fixed;
   bottom:0;
@@ -376,387 +354,6 @@ p{
   margin-bottom:14px;
 }
 
-/* IMAGE PIN MAP */
-.pin-map{
-  position:relative;
-  max-width:500px;
-  margin:20px auto;
-}
-.pin-map img{
-  width:100%;
-  display:block;
-  border-radius:10px;
-}
-
-/* CLICKABLE PIN */
-.pin{
-  position:absolute;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  background:var(--accent2);
-  border:2px solid white;
-  cursor:pointer;
-}
-
-/* INFO BOX */
-#pinInfo{
-  background:white;
-  border-left:4px solid var(--accent);
-  padding:12px;
-  margin-top:15px;
-  display:none;
-}
-
-.pin {
-  border-radius: 50%;
-  background: rgba(0,0,0,0.15);
-}
-
-.pin.active { background: #ff3b3b; box-shadow: 0 0 8px #ff3b3b; }
-
-.pin-label {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  background: rgba(0,0,0,0.75);
-  color: #fff;
-  padding: 2px 4px;
-  border-radius: 4px;
-  white-space: nowrap;
-  display: none;
-  pointer-events: none;
-}
-
-.pin.active .pin-label {
-  display: block;
-}
-
-.special-layout .content {
-  display: flex;
-  align-items: right;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.special-layout .content p {
-  flex: 1 1 300px;
-  order: 2;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.special-layout .content img {
-  flex: 1 1 300px;
-  order: 1;
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.hardware-layout{
-  display:grid;
-  grid-template-columns: 1fr 0.9fr;
-  gap:40px;
-  align-items:start;
-}
-
-/* LEFT */
-.hardware-left img{
-  max-width:100%;
-  margin:16px 0;
-  border-radius:10px;
-}
-
-/* RIGHT */
-.hardware-right {
-  position: sticky;
-  top: 80px;
-}
-
-.hardware-left {
-  max-width: 520px;
-}
-
-.hardware-right {
-  border-left: 2px dashed #2a2a2a;
-  padding-left: 24px;
-}
-
-.wiring-card{
-  background:#0e1a24;
-  border:1px solid #2a4a63;
-  border-radius:12px;
-  padding:12px;
-  color:#dff1ff;
-  margin-bottom:10px;
-}
-
-.wiring-card summary{
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.wiring-card img{
-  width:100%;
-  margin-top:10px;
-  border-radius:8px;
-}
-
-.led-container {
-  transform-origin: center;
-  transition: transform 0.3s ease;
-}
-
-.led-container:hover {
-  transform: scale(4);
-}
-
-.led-frame {
-  position: absolute;
-  top: 0;
-  width: 100px;
-  height: 100px;
-  opacity: 0;
-  border-radius: 8px;
-}
-
-.led-frame.active {
-  opacity: 1;
-}
-
-#uno3d-wrap {
-  width: 80%;
-  height: 80vh;
-  max-height: 60%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-}
-
-#uno3d {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-.form-panel {
-  width: 100%;
-  max-width: var(--max-width);
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  padding: 24px;
-  box-shadow: 0 0 15px rgba(0,255,0,0.15);
-}
-
-.form-panel h2 {
-  text-align: center;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-
-.form-panel p {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-}
-
-/* ===== FORM ===== */
-label {
-  display: block;
-  margin-top: 14px;
-  font-weight: bold;
-}
-
-input,textarea {
-  width: 100%;
-  margin-top: 6px;
-  padding: 8px;
-  background: var(--panel);
-  color: var(--accent);
-  border: 2px solid var(--accent);
-  font-family: monospace;
-  font-size: 1rem;
-  outline: none;
-}
-
-input:focus,
-textarea:focus {
-  background: #ffffff;
-  box-shadow: 0 0 8px var(--accent);
-}
-
-textarea {
-  resize: vertical;
-}
-
-.btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #0077cc;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-.btn:hover {
-  background-color: #005fa3;
-}
-
-#examples.active{
-  overflow:auto;
-}
-
-.quick-links {
-  display: flex;
-  gap: 12px;
-  margin: 15px 0 25px;
-  flex-wrap: wrap;
-}
-
-.quick-links a {
-  flex: 1;
-  min-width: 180px;
-  text-align: center;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  color: var(--accent);
-  font-weight: bold;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.quick-links a:hover {
-  background: var(--accent);
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-
-/* START BOX */
-
-.start-box {
-  margin: 40px auto 10px;
-  padding: 20px;
-  max-width: 420px;
-  text-align: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.start-box p {
-  margin: 0 0 12px;
-  font-size: 1.1em;
-}
-
-.start-btn {
-  display: inline-block;
-  padding: 12px 22px;
-  border-radius: 25px;
-  background: #fff;
-  color: var(--accent);
-  font-weight: bold;
-  text-decoration: none;
-  transition: all 0.25s ease;
-}
-
-.start-btn:hover {
-  background: var(--panel);
-  transform: scale(1.05);
-}
-
-
-/* INFO BLOCK */
-
-.info-block {
-  background: var(--panel);
-  border-left: 5px solid var(--accent);
-  padding: 15px 18px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  color: var(--text);
-}
-
-.info-block b {
-  color: var(--accent);
-}
-
-.board-img{
-  max-width:100%;
-  border-radius:10px;
-  margin:10px 0;
-}
-
-.divider{
-  height:5vh;
-}
-
-.spec-grid{
-  display:grid;
-  grid-template-columns:  1fr 2f;
-  gap:12px;
-  background:var(--panel);
-  padding:15px;
-  border-radius:10px;
-  margin-top:10px;
-}
-
-.spec-grid div{
-  background:#fff;
-  border-radius:8px;
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-  font-weight:600;
-}
-
-.spec-grid span{
-  color:var(--accent);
-}
-
-.table-wrap{
-  overflow-x:auto;
-}
-
-.compare{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  background:#fff;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.compare th{
-  background:var(--accent);
-  color:#fff;
-  padding:10px;
-  text-align:left;
-}
-
-.compare td{
-  padding:10px;
-  border-bottom:1px solid #ddd;
-}
-
-.compare tr:nth-child(even){
-  background:#f5faff;
-}
-
-.next-link{
-  margin-top:20px;
-  font-weight:bold;
-}
-
 /* ================= MOBILE FIX PACK ================= */
 
 @media (max-width:900px){
@@ -771,50 +368,6 @@ textarea {
   }
 
   .nav-spacer{display:none;}
-
-  /* examples page */
-  #examples{
-    position:relative;
-    top:auto;
-    bottom:auto;
-    height:auto;
-    display:block;
-  }
-
-  .examples-layout{
-    flex-direction:column;
-    height:auto;
-  }
-
-  .examples-menu{
-    width:100%;
-    height:auto;
-    border-right:none;
-    border-bottom:4px solid var(--accent2);
-  }
-
-  .examples-content{
-    width:100%;
-    height:auto;
-  }
-
-  /* hardware grid stacks */
-  .hardware-layout{
-    grid-template-columns:1fr;
-  }
-
-  .hardware-right{
-    position:static;
-    border-left:none;
-    padding-left:0;
-    border-top:2px dashed #2a2a2a;
-    margin-top:20px;
-  }
-
-  /* spec grid */
-  .spec-grid{
-    grid-template-columns:1fr;
-  }
 }
 
 /* SMALL PHONES */
@@ -843,28 +396,6 @@ textarea {
     padding:14px 16px;
     font-size:16px;
   }
-
-  .pin{
-    width:14px;
-    height:14px;
-  }
-
-  .pin-label{
-    font-size:9px;
-  }
-
-  .quick-links a{
-    min-width:100%;
-  }
-
-  .start-box{
-    margin:20px auto;
-    padding:16px;
-  }
-
-  .start-btn{
-    width:100%;
-  }
 }
 
 /* TABLET */
@@ -873,10 +404,6 @@ textarea {
     flex-direction:column;
   }
 
-  #pinInfoDisplay{
-    padding-left:0 !important;
-    margin-top:16px;
-  }
 }
 
 /* ============ TABLET & SMALL LAPTOP ============ */
@@ -904,41 +431,6 @@ textarea {
   .examples-content{
     width:72%;
     padding:18px;
-  }
-
-  /* Hardware layout balance */
-  .hardware-layout{
-    grid-template-columns:1.1fr 0.9fr;
-    gap:24px;
-  }
-
-  .hardware-right{
-    top:90px;
-  }
-
-  /* Spec grid */
-  .spec-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  /* Cards */
-  .wiring-card{
-    padding:10px;
-  }
-
-  /* Code blocks */
-  .code-block pre{
-    font-size:14px;
-  }
-
-  /* Pin labels */
-  .pin-label{
-    font-size:11px;
-  }
-
-  /* Quick links */
-  .quick-links a{
-    min-width:200px;
   }
 }
 
@@ -1040,39 +532,12 @@ textarea {
     padding:14px 16px;
     font-size:16px;
   }
-
-  .pin{
-    width:14px;
-    height:14px;
-  }
-
-  .pin-label{
-    font-size:9px;
-  }
-
-  .quick-links a{
-    min-width:100%;
-  }
-
-  .start-box{
-    margin:20px auto;
-    padding:16px;
-  }
-
-  .start-btn{
-    width:100%;
-  }
 }
 
 /* TABLET */
 @media (max-width:768px){
   .content{
     flex-direction:column;
-  }
-
-  #pinInfoDisplay{
-    padding-left:0 !important;
-    margin-top:16px;
   }
 }
 
@@ -1140,9 +605,9 @@ textarea {
 
 <header>
   <div class="topbar">
-    <img src="logo-left.png" class="logo left">
+    <img src="Images/logo-left.png" class="logo left">
     <div class="title">Arduino Guide</div>
-    <img src="logo-right.png" class="logo right"> </div>
+    <img src="Images/logo-right.png" class="logo right"> </div>
 
   <nav>
     <a href="Arduino%20Guide.html#home">Home</a>
@@ -1159,11 +624,11 @@ textarea {
 </div>
 </div>
     <a href="Arduino%20Guide.html#more">Arduino Explained</a>
-    <a href="#examples">Examples</a>
+    <a href="Examples.html#examples">Examples</a>
 
     <span class="nav-spacer"></span>
 
-    <a href="Arduino%20Guide%20Extra.html#contact">Contact</a>
+    <a href="Feedback.html#about">Feedback</a>
 
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
@@ -1391,11 +856,39 @@ function toggleSubmenu(event) {
 }
 
 function copyCode(btn){
-  const code = btn.nextElementSibling.innerText;
+  const code = btn.parentElement.querySelector("pre").innerText;
   navigator.clipboard.writeText(code).then(()=>{
     btn.textContent="✓";
     setTimeout(()=>btn.textContent="Copy",900);
   });
+}
+function downloadCode(btn){
+  const old = btn.innerText;
+  btn.innerText = "Downloading...";
+
+  const block = btn.parentElement;
+  const code = block.querySelector("pre").innerText;
+  const name = block.dataset.filename || "code";
+
+  downloadFile(code, name + ".ino");
+
+  setTimeout(()=>{
+    downloadFile(code, name + ".txt");
+    btn.innerText = "✔ Downloaded";
+    setTimeout(()=> btn.innerText = old, 1500);
+  }, 1000);
+}
+
+function downloadFile(content, filename){
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
 
 function loadExample(type){
@@ -1405,9 +898,10 @@ function loadExample(type){
     box.innerHTML = `
       <h2>Blink LED</h2>
       <p>Basic digital output example.</p>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // This code runs repeatedly on the Arduino
 // It makes the built-in LED blink on and off
@@ -1438,10 +932,10 @@ delay(1000);
     box.innerHTML = `
       <h2>Button Input</h2>
       <p>Read a button using a digital pin.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Set pin 2 as an INPUT pin
 // This pin will read HIGH (5V) or LOW (0V)
@@ -1465,10 +959,10 @@ int value = digitalRead(2);
     box.innerHTML = `
       <h2>Button + LED</h2>
       <p>Turn an LED on when a button is pressed.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Configure pin 2 to read button input
 pinMode(2, INPUT);
@@ -1529,10 +1023,10 @@ analogWrite(9, 128); // ~50% brightness
     box.innerHTML = `
       <h2>Multiple LEDs</h2>
       <p>Control more than one LED.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Set pin 13 as OUTPUT (LED 1)
 pinMode(13, OUTPUT);
@@ -1562,10 +1056,10 @@ digitalWrite(11, LOW);
     box.innerHTML = `
       <h2>Buzzer Sound</h2>
       <p>Make sound using a buzzer.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Set pin 6 as OUTPUT
 // Buzzer signal pin is connected here
@@ -1594,10 +1088,10 @@ noTone(6);
     box.innerHTML = `
       <h2>Analog Sensor</h2>
       <p>Read a sensor value (0–1023).</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Read analog voltage from pin A0
 // Arduino converts voltage to a number:
@@ -1624,10 +1118,10 @@ if(type === "joystick"){
       Read X/Y movement and button press from a joystick module.
       Uses analog pins and one digital pin.
     </p>
-
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Joystick connections
 // VRx -> A0
@@ -1665,10 +1159,10 @@ if(type === "oled"){
       Display text on a small OLED screen using I²C.
       Uses only SDA and SCL pins.
     </p>
-
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-      <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -1709,10 +1203,10 @@ void loop(){
     box.innerHTML = `
       <h2>Serial Monitor</h2>
       <p>Send data to the PC via USB.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Setup runs once
 void setup(){
@@ -1737,10 +1231,10 @@ void loop(){
     box.innerHTML = `
       <h2>Timers (millis)</h2>
       <p>Run code without blocking.</p>
-
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre>
+<div class="code-block" data-filename="blink.ino">
+  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
 
 // Store the last time the action happened
 // unsigned long is required for millis()

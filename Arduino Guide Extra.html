@@ -376,224 +376,6 @@ p{
   margin-bottom:14px;
 }
 
-/* IMAGE PIN MAP */
-.pin-map{
-  position:relative;
-  max-width:500px;
-  margin:20px auto;
-}
-.pin-map img{
-  width:100%;
-  display:block;
-  border-radius:10px;
-}
-
-/* CLICKABLE PIN */
-.pin{
-  position:absolute;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  background:var(--accent2);
-  border:2px solid white;
-  cursor:pointer;
-}
-
-/* INFO BOX */
-#pinInfo{
-  background:white;
-  border-left:4px solid var(--accent);
-  padding:12px;
-  margin-top:15px;
-  display:none;
-}
-
-.pin {
-  border-radius: 50%;
-  background: rgba(0,0,0,0.15);
-}
-
-.pin.active { background: #ff3b3b; box-shadow: 0 0 8px #ff3b3b; }
-
-.pin-label {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  background: rgba(0,0,0,0.75);
-  color: #fff;
-  padding: 2px 4px;
-  border-radius: 4px;
-  white-space: nowrap;
-  display: none;
-  pointer-events: none;
-}
-
-.pin.active .pin-label {
-  display: block;
-}
-
-.special-layout .content {
-  display: flex;
-  align-items: right;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.special-layout .content p {
-  flex: 1 1 300px;
-  order: 2;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.special-layout .content img {
-  flex: 1 1 300px;
-  order: 1;
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.hardware-layout{
-  display:grid;
-  grid-template-columns: 1fr 0.9fr;
-  gap:40px;
-  align-items:start;
-}
-
-/* LEFT */
-.hardware-left img{
-  max-width:100%;
-  margin:16px 0;
-  border-radius:10px;
-}
-
-/* RIGHT */
-.hardware-right {
-  position: sticky;
-  top: 80px;
-}
-
-.hardware-left {
-  max-width: 520px;
-}
-
-.hardware-right {
-  border-left: 2px dashed #2a2a2a;
-  padding-left: 24px;
-}
-
-.wiring-card{
-  background:#0e1a24;
-  border:1px solid #2a4a63;
-  border-radius:12px;
-  padding:12px;
-  color:#dff1ff;
-  margin-bottom:10px;
-}
-
-.wiring-card summary{
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.wiring-card img{
-  width:100%;
-  margin-top:10px;
-  border-radius:8px;
-}
-
-.led-container {
-  transform-origin: center;
-  transition: transform 0.3s ease;
-}
-
-.led-container:hover {
-  transform: scale(4);
-}
-
-.led-frame {
-  position: absolute;
-  top: 0;
-  width: 100px;
-  height: 100px;
-  opacity: 0;
-  border-radius: 8px;
-}
-
-.led-frame.active {
-  opacity: 1;
-}
-
-#uno3d-wrap {
-  width: 80%;
-  height: 80vh;
-  max-height: 60%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-}
-
-#uno3d {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-.form-panel {
-  width: 100%;
-  max-width: var(--max-width);
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  padding: 24px;
-  box-shadow: 0 0 15px rgba(0,255,0,0.15);
-}
-
-.form-panel h2 {
-  text-align: center;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-
-.form-panel p {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-}
-
-/* ===== FORM ===== */
-label {
-  display: block;
-  margin-top: 14px;
-  font-weight: bold;
-}
-
-input,textarea {
-  width: 100%;
-  margin-top: 6px;
-  padding: 8px;
-  background: var(--panel);
-  color: var(--accent);
-  border: 2px solid var(--accent);
-  font-family: monospace;
-  font-size: 1rem;
-  outline: none;
-}
-
-input:focus,
-textarea:focus {
-  background: #ffffff;
-  box-shadow: 0 0 8px var(--accent);
-}
-
-textarea {
-  resize: vertical;
-}
-
 .btn {
   display: inline-block;
   padding: 10px 20px;
@@ -607,73 +389,6 @@ textarea {
 .btn:hover {
   background-color: #005fa3;
 }
-
-#examples.active{
-  overflow:auto;
-}
-
-.quick-links {
-  display: flex;
-  gap: 12px;
-  margin: 15px 0 25px;
-  flex-wrap: wrap;
-}
-
-.quick-links a {
-  flex: 1;
-  min-width: 180px;
-  text-align: center;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  color: var(--accent);
-  font-weight: bold;
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-.quick-links a:hover {
-  background: var(--accent);
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-
-/* START BOX */
-
-.start-box {
-  margin: 40px auto 10px;
-  padding: 20px;
-  max-width: 420px;
-  text-align: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.start-box p {
-  margin: 0 0 12px;
-  font-size: 1.1em;
-}
-
-.start-btn {
-  display: inline-block;
-  padding: 12px 22px;
-  border-radius: 25px;
-  background: #fff;
-  color: var(--accent);
-  font-weight: bold;
-  text-decoration: none;
-  transition: all 0.25s ease;
-}
-
-.start-btn:hover {
-  background: var(--panel);
-  transform: scale(1.05);
-}
-
 
 /* INFO BLOCK */
 
@@ -881,39 +596,12 @@ textarea {
     padding:14px 16px;
     font-size:16px;
   }
-
-  .pin{
-    width:14px;
-    height:14px;
-  }
-
-  .pin-label{
-    font-size:9px;
-  }
-
-  .quick-links a{
-    min-width:100%;
-  }
-
-  .start-box{
-    margin:20px auto;
-    padding:16px;
-  }
-
-  .start-btn{
-    width:100%;
-  }
 }
 
 /* TABLET */
 @media (max-width:768px){
   .content{
     flex-direction:column;
-  }
-
-  #pinInfoDisplay{
-    padding-left:0 !important;
-    margin-top:16px;
   }
 }
 
@@ -981,9 +669,9 @@ textarea {
 
 <header>
   <div class="topbar">
-    <img src="logo-left.png" class="logo left">
+    <img src="Images/logo-left.png" class="logo left">
     <div class="title">Arduino Guide</div>
-    <img src="logo-right.png" class="logo right"> </div>
+    <img src="Images/logo-right.png" class="logo right"> </div>
 
   <nav>
     <a href="Arduino%20Guide.html#home">Home</a>
@@ -1004,7 +692,7 @@ textarea {
 
     <span class="nav-spacer"></span>
 
-    <a href="#contact">Contact</a>
+    <a href="Feedback.html#about">Feedback</a>
 
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
@@ -1014,71 +702,20 @@ textarea {
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
   <a href="Arduino Community.html">Community</a>
-    <a href="#breadboards">Breadboards</a>
+    <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
 <div class="submenu-wrapper">
   <span class="submenu-toggle">More of all</span>
   <div class="side-dropdown">
-    <a href="#leds" onclick="selectLink(this)">LEDs</a>
-    <a href="#resistors" onclick="selectLink(this)">Resistors</a>
-    <a href="#capacitors" onclick="selectLink(this)">Capacitors</a>
-    <a href="#wires" onclick="selectLink(this)">Wires</a>
-    <a href="#pins-code" onclick="selectLink(this)">Pins</a>
+    <a href="Arduino%20Guide%20Extra.html#leds" onclick="selectLink(this)">LEDs</a>
+    <a href="Arduino%20Guide%20Extra.html#resistors" onclick="selectLink(this)">Resistors</a>
+    <a href="Arduino%20Guide%20Extra.html#capacitors" onclick="selectLink(this)">Capacitors</a>
+    <a href="Arduino%20Guide%20Extra.html#wires" onclick="selectLink(this)">Wires</a>
+    <a href="Arduino%20Guide%20Extra.html#pins-code" onclick="selectLink(this)">Pins</a>
   </div></div>
 </div></div>
   </nav></header>
 
 <main>
-
-<section id="contact" class="page">
-
-  <h1>CONTACT US</h1>
-  <p>Arduino Guide Community Support</p>
-
-  <div class="form-panel">
-    <h2>CONTACT FORM</h2>
-    <p>Type your message below and your mail client will open.</p>
-
-    <form onsubmit="sendMail(); return false;">
-      <label>YOUR NAME:</label>
-      <input type="text" id="name" required>
-
-      <label>YOUR EMAIL:</label>
-      <input type="email" id="email" required>
-
-      <label>SUBJECT:</label>
-      <input type="text" id="subject" required>
-
-      <label>MESSAGE:</label>
-      <textarea id="message" rows="5"></textarea>
-
-      <button type="submit">SEND MESSAGE</button>
-    </form>
-  </div>
-
-  <!-- Contact info and buttons below the form -->
-  <div class="contact-info" style="margin-top: 30px; text-align: center;">
-    <p>Email: <a href="mailto:guidecommunity.contacts@gmail.com">guidecommunity.contacts@gmail.com</a></p>
-
-    <div class="social-buttons" style="margin: 15px 0;">
-      <a href="https://instagram.com/darkshadow_web_dev" target="_blank" class="btn" style="margin-right: 10px;">Instagram</a>
-      <a href="https://github.com/darkshadow-dev" target="_blank" class="btn">GitHub</a>
-    </div>
-
-<div style="text-align: center; margin-top: 20px;">
-  <img id="qrCode" src="QR-Code.png" alt="QR Code" style="max-width: 200px;">
-
-  <br>
-
-  <a href="QR-Code.png" download="ArduinoGuideQRCode.png">
-<button onclick="downloadQRCode()">Download QR Code</button>
-
-  </a>
-</div>
-
-  </div>
-
-</section>
-
 
 <section id="leds" class="page">
   <h2>LEDs (Light Emitting Diodes)</h2>
@@ -1803,7 +1440,7 @@ void loop() {
 
   <div id="uno3d-wrap" style="height:60vh;">
     <model-viewer 
-      src="arduino_breadboard.glb"
+      src="3D/arduino_breadboard.glb"
       alt="Breadboard 3D Model"
       auto-rotate
       camera-controls
@@ -1950,22 +1587,6 @@ document.addEventListener("click", () => {
   });
 });
 
-function downloadQRCode() {
-  fetch('QR-Code.png')
-    .then(response => response.blob())
-    .then(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ArduinoGuideQRCode.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    })
-    .catch(() => alert('Failed to download QR code'));
-}
-
 function toggleSubmenu(event) {
   event.preventDefault();
   const wrapper = event.target.parentElement;
@@ -1992,31 +1613,6 @@ document.querySelectorAll('.led-container').forEach(container => {
     frames[index].classList.add('active');
   }, 1000);
 });
-
-        function sendMail(form) {
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const subject = document.getElementById("subject").value;
-            const message = document.getElementById("message").value;
-
-            // Format mailto link
-            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-                "Name: " + name + "\n" +
-                "Email: " + email + "\n\n" +
-                "Message:\n" + message
-            )}`;
-
-            // Open user's email client
-            window.location.href = mailtoLink;
-        }
-
-renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("uno3d"),
-  antialias: true,
-  alpha: true // <- this removes black background
-});
-
-renderer.setClearColor(0x000000, 0); // fully transparent
 
 </script>
 

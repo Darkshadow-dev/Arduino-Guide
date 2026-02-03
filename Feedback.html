@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="Website-Guide.png">
+
+<title>Arduino Guide</title>
+
+<style>
+:root{
+  --bg:#f5faff;
+  --panel:#e9f4ff;
+  --accent:#00979d;
+  --accent2:#00c853;
+  --text:#0b1c2d;
+  --max:1100px;
+  --font: system-ui, Arial;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  position:fixed;
+  top:0;left:0;right:0;
+  background:var(--panel);
+  padding:12px 16px;
+  z-index:1000;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+/* NAV */
+nav{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+}
+
+.nav-spacer{
+  flex:1;
+}
+
+nav::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{display:none}
+
+nav a{
+  display:inline-block;
+  margin:0 6px;
+  padding:8px 12px;
+  text-decoration:none;
+  color:var(--accent);
+  border-radius:6px;
+  font-weight:600;
+}
+nav a:hover{
+  background:rgba(0,151,157,.15);
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.title{
+  font-size:20px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.logo{
+  position:absolute;
+  height:36px;
+  width:36px;
+  border-radius:50%;
+  object-fit:cover;
+  background:white;
+  padding:2px;
+  font-size:20px;
+  font-weight:700;
+  color:var(--accent);
+  text-align:center;
+}
+
+.logo.left{ left:12px; }
+.logo.right{ right:12px; }
+
+/* MAIN */
+main{
+  max-width:var(--max);
+  margin:auto;
+  padding:120px 16px 80px;
+}
+
+main{
+  padding-bottom:15vh;
+}
+
+/* ROOT HEIGHT */
+html, body{
+  height:100%;
+}
+
+/* DROPDOWN WRAPPER */
+.dropdown{
+  position:relative;
+  width:160px;
+  font-family:var(--font);
+}
+
+/* BUTTON */
+.dropdown-btn{
+  width:100%;
+  background:var(--panel);
+  color:var(--accent);
+  padding:10px 14px;
+  font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  font-size:14px;
+  outline:none;
+  border:none;
+  border-radius:8px;
+}
+
+.dropdown-btn:hover{
+  background:rgba(0,151,157,.15);
+}
+.dropdown-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* MENU */
+.dropdown-menu{
+  position:absolute;
+  top:110%;
+  left:0;
+  width:100%;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+
+transition:
+  opacity .25s ease,
+  transform .25s ease;
+
+  z-index:999;
+}
+
+.submenu-wrapper {
+  position: relative;
+}
+
+.side-dropdown {
+  display: none;
+  position: absolute;
+  right: 100%;
+  top: 0;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  min-width: 180px;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.submenu-wrapper:hover .side-dropdown {
+  display: flex;
+}
+
+.side-dropdown a {
+  padding: 8px 12px;
+  color: var(--accent);
+  text-decoration: none;
+  display: block;
+}
+
+.side-dropdown a:hover {
+  background-color: #444;
+}
+
+.submenu-toggle {
+  color:var(--accent);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.submenu-toggle:hover {
+  background-color: white;
+}
+
+.dropdown-btn span{
+  display:inline-block;
+  transition:transform .25s ease;
+}
+
+.dropdown.open .dropdown-btn span{
+  transform:rotate(180deg);
+}
+
+/* OPEN STATE */
+.dropdown-menu.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px 14px;
+  text-decoration:none;
+  font-weight:600;
+  color:var(--accent);
+}
+
+.dropdown-menu a:hover{
+  background:rgba(0,151,157,.12);
+}
+
+/* Dropdown spacing */
+#more details {
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background: #f9fbff;
+  padding: 6px 10px;
+}
+
+footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:60px;
+  background:var(--panel);
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  box-shadow:0 -2px 6px rgba(0,0,0,.1);
+}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* SECTIONS */
+h2{
+  color:var(--accent);
+  margin-bottom:10px;
+}
+p{
+  line-height:1.6;
+  margin-bottom:14px;
+}
+
+.form-panel {
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  padding: 24px;
+  box-shadow: 0 0 15px rgba(0,255,0,0.15);
+}
+
+.form-panel h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.form-panel p {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* ===== FORM ===== */
+label {
+  display: block;
+  margin-top: 14px;
+  font-weight: bold;
+}
+
+input,textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  font-family: monospace;
+  font-size: 1rem;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  background: #ffffff;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.btn:hover {
+  background-color: #005fa3;
+}
+
+.divider{
+  height:5vh;
+}
+
+/* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
+@media (max-width:900px){
+
+  /* NAV SCROLL BAR */
+  nav{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    overflow-x:auto;
+    overflow-y:visible;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
+    position:relative;
+  }
+  nav::-webkit-scrollbar{display:none}
+
+  .nav-spacer{display:none;}
+
+  /* DROPDOWN CONTAINER */
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
+
+  /* BUTTON SIZE */
+  .dropdown-btn{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  /* MENU FLOATING */
+  .dropdown-menu{
+  position:fixed; /* escape header */
+  top:60px;
+  left:10%;
+    min-width:180px;
+    max-width:240px;
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
+  }
+
+  /* OPEN STATE */
+  .dropdown.open .dropdown-menu{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  /* LINKS */
+  .dropdown-menu a{
+    display:block;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--accent);
+  }
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width:600px){
+
+  h2{font-size:20px}
+  p{font-size:15px}
+
+  .logo{height:24px;width:24px;}
+  .title{font-size:18px;}
+
+  header{
+    padding:10px;
+  }
+
+  footer{
+    height:50px;
+    font-size:14px;
+  }
+
+.dropdown{
+  position:relative;
+  flex:0 0 auto;
+  width:auto;
+}
+
+  .dropdown-menu a{
+    padding:14px 16px;
+    font-size:16px;
+  }
+}
+
+/* TABLET */
+@media (max-width:768px){
+  .content{
+    flex-direction:column;
+  }
+}
+
+/* ===== MOBILE DROPDOWN OVERRIDE (NO CONFLICT) ===== */
+@media (max-width:900px){
+
+  .dropdown{
+    position:relative;
+    flex:0 0 auto;
+    width:auto;
+  }
+
+  .dropdown-btn{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  .dropdown-menu{
+    position:fixed; /* escape header */
+    background:white;
+    border-radius:10px;
+    padding:6px 0;
+    box-shadow:0 6px 14px rgba(0,0,0,.25);
+    z-index:9999;
+
+    opacity:0;
+    transform:translateY(-6px);
+    pointer-events:none;
+    transition:.2s ease;
+  }
+
+  /* USE SAME OPEN STATE AS DESKTOP */
+  .dropdown-menu.open{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  /* ARROW ROTATION */
+  .dropdown-btn span{
+    display:inline-block;
+    transition:transform .25s ease;
+  }
+  .dropdown.open .dropdown-btn span{
+    transform:rotate(180deg);
+  }
+
+  .dropdown-menu a{
+    display:block;
+    padding:8px 12px;
+    font-size:14px;
+    color:var(--accent);
+  }
+
+  .dropdown-menu a:hover{
+    background:rgba(0,151,157,.15);
+  }
+}
+
+.mini-nav{
+  position:absolute;
+  right:40%;
+  display:flex;
+  gap:12px;
+}
+
+.mini-nav a{
+  font-size:20px;
+  text-decoration:none;
+  color:var(--accent);
+  font-weight:600;
+}
+
+.mini-nav a:hover{
+  text-decoration:none;
+}
+
+select{
+  width:100%;
+  margin-top:6px;
+  padding:8px;
+  border:2px solid var(--accent);
+  background:white;
+  color:var(--accent);
+  font-family:monospace;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="topbar">
+    <img src="logo-left.png" class="logo left">
+    <div class="title">Arduino Guide</div>
+    <img src="logo-right.png" class="logo right"> </div>
+
+  <nav>
+    <a href="Arduino%20Guide.html#home">Home</a>
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    Board <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>
+  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
+  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>
+  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+</div>
+</div>
+    <a href="Arduino%20Guide.html#more">Arduino Explained</a>
+    <a href="Examples.html#examples">Examples</a>
+
+    <span class="nav-spacer"></span>
+
+    <a href="Arduino%20Guide%20Extra.html#contact">Contact</a>
+
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    More <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino Quiz.html">Quizes</a>
+  <a href="Arduino Community.html">Community</a>
+    <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
+<div class="submenu-wrapper">
+  <span class="submenu-toggle">More of all</span>
+  <div class="side-dropdown">
+    <a href="Arduino%20Guide%20Extra.html#leds" onclick="selectLink(this)">LEDs</a>
+    <a href="Arduino%20Guide%20Extra.html#resistors" onclick="selectLink(this)">Resistors</a>
+    <a href="Arduino%20Guide%20Extra.html#capacitors" onclick="selectLink(this)">Capacitors</a>
+    <a href="Arduino%20Guide%20Extra.html#wires" onclick="selectLink(this)">Wires</a>
+    <a href="Arduino%20Guide%20Extra.html#pins-code" onclick="selectLink(this)">Pins</a>
+  </div></div>
+</div></div>
+  </nav></header>
+
+<main>
+
+  <h1>CONTACT US</h1>
+  <p>Arduino Guide Community Support</p>
+<div class="mini-nav">
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+  <a href="#feedback">Feedback</a>
+</div>
+
+
+<section id="about" class="page active">
+  <h2>About Arduino Guide</h2>
+
+    <b>Arduino Guide</b> is a community-driven project made to explain
+    Arduino in a simple visual way.  
+    No boring theory – only real examples, wiring, and code.
+
+  <p>
+    This site is built for beginners and self-learners who want to
+    understand electronics by actually seeing how things connect.
+  </p>
+</section>
+
+
+<section id="contact" class="page">
+  <h2>Contact</h2>
+
+  <div class="form-panel">
+    <h2>CONTACT FORM</h2>
+    <p>Type your message below and your mail client will open.</p>
+
+    <form onsubmit="sendMail(); return false;">
+      <label>YOUR NAME:</label>
+      <input type="text" id="name" required>
+
+      <label>YOUR EMAIL:</label>
+      <input type="email" id="email" required>
+
+      <label>SUBJECT:</label>
+      <input type="text" id="subject" required>
+
+      <label>MESSAGE:</label>
+      <textarea id="message" rows="5"></textarea>
+
+      <button type="submit">SEND MESSAGE</button>
+    </form>
+  </div>
+
+  <!-- Contact info and buttons below the form -->
+  <div class="contact-info" style="margin-top: 30px; text-align: center;">
+    <p>Email: <a href="mailto:guidecommunity.contacts@gmail.com">guidecommunity.contacts@gmail.com</a></p>
+    </form>
+  </div>
+
+  <div class="quick-links">
+    <a href="https://instagram.com/darkshadow_web_dev" target="_blank">Instagram</a>
+    <a href="https://github.com/darkshadow-dev" target="_blank">GitHub</a>
+  </div>
+</section>
+
+
+<section id="feedback" class="page">
+  <h2>Feature Request</h2>
+  <p>Help shape the future of Arduino Guide.</p>
+
+  <div class="form-panel">
+
+    <label>What should we add?</label>
+    <select id="type">
+      <option>New feature</option>
+      <option>Bug fix</option>
+      <option>UI change</option>
+      <option>Performance</option>
+    </select>
+
+    <label>Describe it</label>
+    <textarea id="idea" rows="6"></textarea>
+
+    <label>Your nickname (optional)</label>
+    <input id="user">
+
+    <button class="btn" onclick="submitFeedback()">Submit</button>
+
+    <p id="formStatus"></p>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+<section id="notfound" class="page">
+    <h2>404 – Page Not Found</h2>
+    <p>The section you tried to open does not exist.</p>
+    <button onclick="goHome()">Go Home</button>
+</section>
+
+</main>
+
+<footer>
+  Arduino Guide Ⓖ 2026
+</footer>
+<script>
+        function sendMail(form) {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+
+            // Format mailto link
+            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n\n" +
+                "Message:\n" + message
+            )}`;
+
+            // Open user's email client
+            window.location.href = mailtoLink;
+        }
+</script>
+
+<script>
+function submitFeedback(){
+
+  const type = document.getElementById("type").value;
+  const idea = document.getElementById("idea").value;
+  const user = document.getElementById("user").value || "Anonymous";
+
+  const subject = "Arduino Guide Feedback: " + type;
+
+  const body =
+    "Type: " + type + "\n" +
+    "User: " + user + "\n\n" +
+    "Message:\n" + idea;
+
+  const mailtoLink =
+    `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  window.location.href = mailtoLink;
+}
+</script>
+
+<script>
+function downloadQRCode() {
+  fetch('QR-Code.png')
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ArduinoGuideQRCode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert('Failed to download QR code'));
+}
+</script>
+
+<script>
+const STORAGE_KEY = "arduino-last-page";
+
+/* ACTIVATE PAGE */
+function activatePage(id, save = true) {
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.remove("active")
+  );
+
+  if (target) {
+    target.classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, id);
+  } else {
+    document.getElementById("notfound").classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
+  }
+
+  window.scrollTo(0, 0);
+}
+
+/* HOME BUTTON */
+function goHome() {
+  activatePage("home");
+  history.pushState(null, "", "#home");
+}
+
+/* NAV LINK HANDLING */
+document.querySelectorAll("nav a").forEach(a => {
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("http")) return;
+
+    // #section
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const id = href.substring(1);
+      activatePage(id);
+      history.pushState(null, "", href);
+      return;
+    }
+
+    // page.html#section
+    if (href.includes(".html#")) {
+      const [page, hash] = href.split("#");
+      if (location.pathname.endsWith(page)) {
+        e.preventDefault();
+        activatePage(hash);
+        history.pushState(null, "", "#" + hash);
+      }
+    }
+  });
+});
+
+/* BACK / FORWARD */
+window.addEventListener("hashchange", () => {
+  const id = location.hash.substring(1);
+  activatePage(id, false);
+});
+
+/* RESTORE LAST PAGE ON LOAD */
+window.addEventListener("load", () => {
+  const hash = location.hash.substring(1);
+  const last = localStorage.getItem(STORAGE_KEY) || "home";
+
+  if (hash) {
+    activatePage(hash);
+  } else {
+    activatePage(last);
+    history.replaceState(null, "", "#" + last);
+  }
+});
+
+/* DROPDOWNS (unchanged) */
+function toggleDropdown(btn, e) {
+  e.stopPropagation();
+
+  document.querySelectorAll(".dropdown").forEach(d => {
+    if (d !== btn.closest(".dropdown")) {
+      d.classList.remove("open");
+      d.querySelector(".dropdown-menu").classList.remove("open");
+    }
+  });
+
+  const dropdown = btn.closest(".dropdown");
+  dropdown.classList.toggle("open");
+  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
+}
+
+function selectLink(link) {
+  const dropdown = link.closest(".dropdown");
+  dropdown.classList.remove("open");
+  dropdown.querySelector(".dropdown-menu").classList.remove("open");
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".dropdown").forEach(d => {
+    d.classList.remove("open");
+    d.querySelector(".dropdown-menu").classList.remove("open");
+  });
+});
+
+function toggleSubmenu(event) {
+  event.preventDefault();
+  const wrapper = event.target.parentElement;
+  wrapper.classList.toggle('open');
+}
+
+function copyCode(btn){
+  const code = btn.nextElementSibling.innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.textContent="✓";
+    setTimeout(()=>btn.textContent="Copy",900);
+  });
+}
+
+document.querySelectorAll('.led-container').forEach(container => {
+  const frames = container.querySelectorAll('.led-frame');
+  if (frames.length < 2) return; // nothing to animate
+
+  let index = 0;
+  frames[index].classList.add('active');
+
+  setInterval(() => {
+    frames[index].classList.remove('active');
+    index = (index + 1) % frames.length;
+    frames[index].classList.add('active');
+  }, 1000);
+});
+
+renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("uno3d"),
+  antialias: true,
+  alpha: true // <- this removes black background
+});
+
+renderer.setClearColor(0x000000, 0); // fully transparent
+</script>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
+    authDomain: "arduino-guideg.firebaseapp.com",
+    projectId: "arduino-guideg",
+    storageBucket: "arduino-guideg.firebasestorage.app",
+    messagingSenderId: "146740789054",
+    appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
+    measurementId: "G-V3ZB157P0R"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+</script>

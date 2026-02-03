@@ -1,215 +1,254 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>2D Arduino Simulator</title>
-
+<meta charset="utf-8">
+<title>Grid Wire Prototype</title>
 <style>
-body{margin:0;background:#111;color:white;font-family:Arial}
-#top{padding:10px;background:#000}
-#canvas{
-  position:relative;
-  width:900px;
-  height:400px;
-  margin:20px auto;
-  border:2px solid #333;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0b0f1a;
+  color:white;
+  overflow:hidden;
+}
+
+/* Topbar */
+#topbar{
+  height:60px;
+  display:flex;
+  background:#111;
+  border-bottom:2px solid #222;
+}
+#top-logo{
+  width:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
   background:#1a1a1a;
 }
-
-/* COMPONENT */
-.comp{
-  position:absolute;
-  cursor:move;
+#nav{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding-left:20px;
 }
-.comp img{width:60px}
+#nav a{
+  color:#aaa;
+  text-decoration:none;
+}
+#nav a:hover{color:white}
 
-/* SNAP NODE */
-.node{
-  position:absolute;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  background:red;
-  border:2px solid white;
-  transform:translate(-50%,-50%);
+/* Layout */
+#container{
+  display:flex;
+  height:calc(100vh - 60px);
+}
+
+/* Sidebar */
+#sidebar{
+  width:200px;
+  background:#111;
+  border-right:2px solid #222;
+  padding:10px;
+}
+#sidebar h3{
+  margin-top:0;
+}
+.tool{
+  background:#222;
+  padding:8px;
+  margin-top:8px;
   cursor:pointer;
-  z-index:5;
+  border-radius:4px;
+}
+.tool.active{background:#3498db}
+
+/* Main */
+#main{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-/* WIRE */
-.wire{
-  position:absolute;
-  height:6px;
-  background:#00e5ff;
-  border-radius:6px;
-  box-shadow:0 0 8px #00e5ff;
-  transform-origin:0 50%;
-  pointer-events:none;
+/* Canvas */
+canvas{
+  background:#000;
+  border:2px solid #333;
+  cursor:crosshair;
 }
 </style>
 </head>
 <body>
 
-<div id="top">
-<select id="tool">
-  <option value="">Add...</option>
-  <option value="led">LED</option>
-  <option value="wire">Wire</option>
-</select>
+<div id="topbar">
+  <div id="top-logo">LOGO</div>
+  <div id="nav">
+    <a href="#">Home</a>
+    <a href="#">Editor</a>
+    <a href="#">Docs</a>
+  </div>
 </div>
 
-<div id="canvas">
-  <img src="Images/Arduino-uno.png" width="500" height="200">
+<div id="container">
+  <div id="sidebar">
+    <h3>Tools</h3>
+    <div class="tool active" onclick="setTool('draw')">Draw Wire</div>
+    <div class="tool" onclick="setTool('select')">Select</div>
 
-  <!-- Arduino nodes -->
-  <div class="node" id="pin13" style="left:420px; top:70px;"></div>
-  <div class="node" id="gnd"   style="left:420px; top:110px;"></div>
+    <h3 style="margin-top:20px">Sidebar</h3>
+    <div>Work in progress…</div>
+  </div>
+
+  <div id="main">
+    <canvas id="c" width="500" height="500"></canvas>
+  </div>
 </div>
 
 <script>
-const SNAP=15;
-let nodes=[];
-let wires=[];
-let mode="";
-let activeNode=null;
-const canvas=document.getElementById("canvas");
-const tool=document.getElementById("tool");
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
 
-/* TOOL */
-tool.onchange=e=>{
-  mode=e.target.value;
+const grid = 20;
+let tool = "draw";
+let items = [];
+let selected = null;
+let drawing = false;
+let startPoint = null;
+let mouse = null;
+
+/* Tools */
+function setTool(t){
+  tool = t;
+  document.querySelectorAll(".tool").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
 }
 
-/* ADD LED */
-function addLED(){
-  const led=document.createElement("div");
-  led.className="comp";
-  led.style.left="200px";
-  led.style.top="200px";
-  led.innerHTML='<img src="Images/LED.png">';
-  canvas.appendChild(led);
-  drag(led);
+/* Helpers */
+function snap(v){ return Math.round(v/grid)*grid; }
 
-  // 2 legs
-  makeNode(led,10,30).id="led-node-1";
-  makeNode(led,50,30).id="led-node-2";
-}
-
-/* ADD NODE */
-function makeNode(parent,x,y){
-  const n=document.createElement("div");
-  n.className="node";
-  n.style.left=x+"px";
-  n.style.top=y+"px";
-  parent.appendChild(n);
-  nodes.push(n);
-
-  n.onclick=()=>{
-    if(mode=="wire") startWire(n);
+function drawGrid(){
+  ctx.strokeStyle="#111";
+  for(let x=0;x<=500;x+=grid){
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,500);
+    ctx.stroke();
   }
-  return n;
-}
-
-/* DRAG COMPONENT */
-function drag(el){
-  el.onmousedown=e=>{
-    const ox=e.offsetX, oy=e.offsetY;
-    document.onmousemove=m=>{
-      el.style.left=(m.clientX-canvas.offsetLeft-ox)+"px";
-      el.style.top=(m.clientY-canvas.offsetTop-oy)+"px";
-      redraw();
-    }
-    document.onmouseup=()=>document.onmousemove=null;
+  for(let y=0;y<=500;y+=grid){
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(500,y);
+    ctx.stroke();
   }
 }
 
-/* START WIRE */
-function startWire(n){
-  const w=document.createElement("div");
-  w.className="wire";
-  canvas.appendChild(w);
-
-  const free=document.createElement("div");
-  free.className="node";
-  free.style.left=n.offsetLeft+"px";
-  free.style.top=n.offsetTop+"px";
-  canvas.appendChild(free);
-
-  nodes.push(free);
-  dragNode(free);
-  wires.push({w,a:n,b:free});
+function drawWire(w,alpha=1){
+  ctx.save();
+  ctx.globalAlpha=alpha;
+  ctx.translate(w.x,w.y);
+  ctx.rotate(w.a*Math.PI/180);
+  ctx.fillStyle="#f1c40f";
+  ctx.fillRect(0,0,w.w*grid,w.h*grid);
+  ctx.restore();
 }
 
-/* DRAG FREE NODE */
-function dragNode(n){
-  n.onmousedown=e=>activeNode=n;
-}
-
-document.onmousemove=e=>{
-  if(activeNode){
-    activeNode.style.left=(e.clientX-canvas.offsetLeft)+"px";
-    activeNode.style.top=(e.clientY-canvas.offsetTop)+"px";
-    snap(activeNode);
-    redraw();
-  }
-}
-document.onmouseup=()=>activeNode=null;
-
-/* SNAP */
-function snap(n){
-  nodes.forEach(p=>{
-    if(p===n) return;
-    const dx=p.offsetLeft-n.offsetLeft;
-    const dy=p.offsetTop-n.offsetTop;
-    if(Math.hypot(dx,dy)<SNAP){
-      n.style.left=p.offsetLeft+"px";
-      n.style.top=p.offsetTop+"px";
-    }
+function hitTest(x,y){
+  return items.find(w=>{
+    return x>w.x && x<w.x+w.w*grid &&
+           y>w.y && y<w.y+w.h*grid;
   });
 }
 
-/* REDRAW */
-function redraw(){
-  wires.forEach(w=>{
-    const a=w.a,b=w.b;
-    const ax=a.offsetLeft, ay=a.offsetTop;
-    const bx=b.offsetLeft, by=b.offsetTop;
-    const dx=bx-ax, dy=by-ay;
-    const len=Math.hypot(dx,dy);
-    const ang=Math.atan2(dy,dx)*180/Math.PI;
-    w.w.style.left=ax+"px";
-    w.w.style.top=ay+"px";
-    w.w.style.width=len+"px";
-    w.w.style.transform=`rotate(${ang}deg)`;
-  });
-}
+/* Mouse */
+canvas.onmousedown = e=>{
+  const x = snap(e.offsetX);
+  const y = snap(e.offsetY);
 
-/* CONNECTION CHECK */
-function isConnected(id1,id2){
-  const a=document.getElementById(id1);
-  const b=document.getElementById(id2);
-  if(!a||!b) return false;
-  return Math.hypot(
-    a.offsetLeft-b.offsetLeft,
-    a.offsetTop-b.offsetTop
-  )<2;
-}
-
-/* LED LOGIC */
-setInterval(()=>{
-  if(
-    isConnected("pin13","led-node-1") &&
-    isConnected("gnd","led-node-2")
-  ){
-    console.log("LED ON");
+  if(tool==="draw"){
+    drawing = true;
+    startPoint = {x,y};
   }
-},500);
 
-/* TOOL ACTION */
-tool.onchange=e=>{
-  mode=e.target.value;
-  if(mode=="led") addLED();
+  if(tool==="select"){
+    selected = hitTest(e.offsetX,e.offsetY);
+  }
+};
+
+canvas.onmouseup = e=>{
+  if(tool==="draw" && drawing){
+    const endX = snap(e.offsetX);
+    const endY = snap(e.offsetY);
+
+    const dx = endX - startPoint.x;
+    const dy = endY - startPoint.y;
+
+    const len = Math.max(1,Math.round(Math.sqrt(dx*dx+dy*dy)/grid));
+    let angle = Math.atan2(dy,dx)*180/Math.PI;
+    angle = Math.round(angle/90)*90;
+
+    items.push({
+      x:startPoint.x,
+      y:startPoint.y,
+      w:1,
+      h:len,
+      a:angle
+    });
+
+    drawing=false;
+    startPoint=null;
+    draw();
+  }
+
+  selected=null;
+};
+
+canvas.onmousemove = e=>{
+  mouse=e;
+  if(selected){
+    selected.x = snap(e.offsetX);
+    selected.y = snap(e.offsetY);
+  }
+  draw();
+};
+
+/* Draw loop */
+function draw(){
+  ctx.clearRect(0,0,500,500);
+  drawGrid();
+
+  items.forEach(w=>drawWire(w));
+
+  // Ghost preview
+  if(tool==="draw" && drawing && mouse){
+    const dx = snap(mouse.offsetX)-startPoint.x;
+    const dy = snap(mouse.offsetY)-startPoint.y;
+
+    const len = Math.max(1,Math.round(Math.sqrt(dx*dx+dy*dy)/grid));
+    let angle = Math.atan2(dy,dx)*180/Math.PI;
+    angle = Math.round(angle/90)*90;
+
+    let gx = startPoint.x + grid;
+    let gy = startPoint.y + grid;
+
+    if(Math.abs(angle-90)<5){
+      gx = startPoint.x;
+    }
+
+    drawWire({
+      x:gx,
+      y:gy,
+      w:1,
+      h:len,
+      a:angle
+    },0.4);
+  }
 }
+
+draw();
 </script>
 </body>
 </html>

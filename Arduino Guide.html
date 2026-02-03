@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/png" href="Website-Guide.png">
+<link rel="icon" type="image/png" href="Images/Website-Guide.png">
 
 <title>Arduino Guide</title>
 
@@ -108,93 +108,6 @@ main{
 /* ROOT HEIGHT */
 html, body{
   height:100%;
-}
-
-/* Examples page ONLY when active */
-#examples.active{
-  position:fixed;
-  top:120px;
-  bottom:60px;
-  left:0;
-  right:0;
-  display:flex;
-}
-
-/* LAYOUT */
-.examples-layout{
-  display:flex;
-  width:100%;
-  height:100%;
-}
-
-/* LEFT MENU – 20% WIDTH, FULL HEIGHT */
-.examples-menu{
-  width:20%;
-  height:100%;
-  background:white;
-  border-right:4px solid var(--accent2);
-  padding:12px;
-  overflow-y:auto;
-}
-
-/* MAIN CONTENT – 80% WIDTH, FULL HEIGHT */
-.examples-content{
-  width:80%;
-  height:100%;
-  background:white;
-  padding:24px;
-  overflow-y:auto;
-}
-
-.examples-menu div:hover{
-  background:rgba(0,151,157,.12);
-}
-
-.example-item,
-.example-item * {
-  cursor: pointer;
-  user-select: none;
-}
-
-.examples-menu h3{
-  margin: 16px 0 8px;
-  font-size: 14px;
-  text-transform: uppercase;
-  opacity: .7;
-}
-
-.code-block{
-  position:relative;
-  background:#0e1a24;
-  color:#b9f6ca;
-  padding:16px;
-  border-radius:6px;
-  margin-top:16px;
-  overflow:auto;
-}
-
-.code-block pre{
-  margin:0;
-  font-family:monospace;
-  font-size:15px;
-}
-
-/* COPY BUTTON */
-.copy-btn{
-  position:absolute;
-  top:8px;
-  right:8px;
-  background:var(--accent2);
-  border:none;
-  color:#003;
-  font-weight:700;
-  padding:6px 10px;
-  border-radius:4px;
-  cursor:pointer;
-}
-
-.copy-btn:hover{
-  background:#00e676;
 }
 
 /* DROPDOWN WRAPPER */
@@ -504,7 +417,7 @@ p{
   width:120%;
   margin-top:10px;
   border-radius:8px;
-  left:38%;
+  left:5%;
   top:-15%;
 }
 
@@ -577,56 +490,6 @@ p{
   display: block;
 }
 
-.form-panel {
-  width: 100%;
-  max-width: var(--max-width);
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  padding: 24px;
-  box-shadow: 0 0 15px rgba(0,255,0,0.15);
-}
-
-.form-panel h2 {
-  text-align: center;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-
-.form-panel p {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-}
-
-/* ===== FORM ===== */
-label {
-  display: block;
-  margin-top: 14px;
-  font-weight: bold;
-}
-
-input,textarea {
-  width: 100%;
-  margin-top: 6px;
-  padding: 8px;
-  background: var(--panel);
-  color: var(--accent);
-  border: 2px solid var(--accent);
-  font-family: monospace;
-  font-size: 1rem;
-  outline: none;
-}
-
-input:focus,
-textarea:focus {
-  background: #ffffff;
-  box-shadow: 0 0 8px var(--accent);
-}
-
-textarea {
-  resize: vertical;
-}
-
 .btn {
   display: inline-block;
   padding: 10px 20px;
@@ -639,10 +502,6 @@ textarea {
 }
 .btn:hover {
   background-color: #005fa3;
-}
-
-#examples.active{
-  overflow:auto;
 }
 
 .quick-links {
@@ -1011,30 +870,30 @@ textarea {
 
 <header>
   <div class="topbar">
-    <img src="logo-left.png" class="logo left">
+    <img src="Images/logo-left.png" class="logo left">
     <div class="title">Arduino Guide</div>
-    <img src="logo-right.png" class="logo right"> </div>
+    <img src="Images/logo-right.png" class="logo right"> </div>
 
   <nav>
-    <a href="#home">Home</a>
+    <a href="Arduino%20Guide.html#home">Home</a>
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
     Board <span>▾</span>
   </button>
 
 <div class="dropdown-menu">
-  <a href="#board" onclick="selectLink(this)">Board</a>
-  <a href="#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
-  <a href="#hardware" onclick="selectLink(this)">Hardware</a>
-  <a href="#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>
+  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
+  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>
+  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
 </div>
 </div>
-    <a href="#more">Arduino Explained</a>
+    <a href="Arduino%20Guide.html#more">Arduino Explained</a>
     <a href="Examples.html#examples">Examples</a>
 
     <span class="nav-spacer"></span>
 
-    <a href="Arduino%20Guide%20Extra.html#contact">Contact</a>
+    <a href="Feedback.html#about">Feedback</a>
 
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
@@ -1527,7 +1386,7 @@ textarea {
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0%;">
       <img src="Images/Arduino-LED-circuit.png" alt="Circuit Diagram">
     </div></div>
 </details>
@@ -1557,7 +1416,7 @@ textarea {
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0%;">
       <img src="Images/Arduino-LED's-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -1585,7 +1444,7 @@ textarea {
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0%;">
       <img src="Images/Arduino-OLED-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -1612,7 +1471,7 @@ textarea {
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 28%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0;">
       <img src="Images/Arduino-Buzzer-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -1914,7 +1773,7 @@ textarea {
 <p>3D Model Below: Zoom/Drag/Look Around to see it better!</p>
 <div id="uno3d-wrap">
   <model-viewer 
-    src="arduino_uno.glb"
+    src="3D/arduino_uno.glb"
     alt="Arduino Uno 3D Model"
     auto-rotate
     camera-controls
