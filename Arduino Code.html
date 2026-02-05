@@ -1,272 +1,459 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Arduino Coding Place</title>
-<link rel="stylesheet" href="style.css">
+<title>Arduino Editor</title>
+<style>
+body{margin:0;font-family:Arial;background:#0b0f1a;color:white}
+header{background:#12182b;padding:10px;display:flex;gap:10px;align-items:center}
+button{background:#1f2a44;color:white;border:none;padding:6px 12px;cursor:pointer}
+button:hover{background:#2f3f66}
+#filename{background:#000;border:1px solid #444;color:#0f0;padding:4px;width:200px}
+#editor{width:100%;height:calc(100vh - 60px);
+background:black;color:#0f0;font-family:monospace;font-size:14px;padding:10pxbox-sizing:border-box;border:none;}
+::-webkit-scrollbar{display:none}textarea{border:none;width:90%;}
+/* dropdown */
+.dropdown{position:relative}
+.dropdown-menu{
+display:none;
+position:absolute;
+top:32px;
+left:0;
+background:#1a1f33;
+min-width:180px;
+border:1px solid #333;
+z-index:10
+}
+.dropdown-menu div{
+padding:6px;
+cursor:pointer
+}
+.dropdown-menu div:hover{background:#2a355c}
+
+/* modal */
+#modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+display:none;
+align-items:center;
+justify-content:center
+}
+#modalBox{
+background:#151c33;
+padding:20px;
+border:1px solid #444;
+width:300px;
+text-align:center
+}
+</style>
 </head>
 <body>
-<style>
-body{
-  margin:0;
-  background:#111;
-  color:white;
-  font-family: Consolas, monospace;
-}
 
-/* MENU BAR */
-.menu-bar{
-  display:flex;
-  background:#222;
-  border-bottom:1px solid #333;
-}
+<header>
+<button class="back-button" onclick="history.back()"><-- Back</button>
+<button onclick="newProject()">New</button>
+<button onclick="openFile()">Open</button>
+<button onclick="saveProject(this)">Save</button>
 
-.menu{
-  position:relative;
-  padding:8px 14px;
-  cursor:pointer;
-}
+<div class="dropdown">
+<button onclick="toggleExamples()">Examples</button>
+<div id="examples" class="dropdown-menu">
+  <div onclick="loadExample('blink')">Blink LED</div>
+  <div onclick="loadExample('button')">Button</div>
+  <div onclick="loadExample('serial')">Serial</div>
+  <div onclick="loadExample('buzzer')">Buzzer</div>
+  <div onclick="loadExample('pwm')">PWM LED</div>
+  <div onclick="loadExample('multi-led')">Multi LED's</div>
+  <div onclick="loadExample('analog')">Analog</div>
+  <div onclick="loadExample('joystick')">Joystick</div>
+  <div onclick="loadExample('oled')">4Pin oled</div>
+  <div onclick="loadExample('timer')">Timer</div>
+</div>
+</div>
 
-.menu:hover{
-  background:#333;
-}
+<input id="filename" value="project">
+<span>.ino / .txt</span>
+</header>
 
-.dropdown{
-  display:none;
-  position:absolute;
-  top:100%;
-  left:0;
-  background:#222;
-  border:1px solid #333;
-  min-width:160px;
-  z-index:10;
-}
+<textarea id="editor">// Arduino code here</textarea>
 
-.menu:hover .dropdown{
-  display:block;
-}
-
-.dropdown button{
-  width:100%;
-  background:none;
-  border:none;
-  color:white;
-  padding:8px;
-  text-align:left;
-  cursor:pointer;
-}
-
-.dropdown button:hover{
-  background:#444;
-}
-
-/* CODE EDITOR */
-#editor{
-  width:100%;
-  height:calc(100vh - 40px);
-  background:#000;
-  color:white;
-  border:none;
-  outline:none;
-  padding:12px;
-  font-size:14px;
-  line-height:1.4;
-  resize:none;
-}
-
-.editor-wrapper{
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 40px);
-  background: black;
-  font-family: Consolas, monospace;
-}
-
-/* Highlighted layer */
-#highlight{
-  position: absolute;
-  inset: 0;
-  padding: 12px;
-  color: white;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  pointer-events: none;
-}
-
-/* Editable layer */
-#editor{
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  color: transparent;          /* TEXT HIDDEN */
-  caret-color: white;          /* CURSOR VISIBLE */
-  border: none;
-  outline: none;
-  resize: none;
-  padding: 12px;
-  font-size: 14px;
-  line-height: 1.4;
-}
-.comment{
-  color: #3cff3c; /* green */
-}
-
-.err{
-  color: #ff4b4b; /* red */
-  font-weight: bold;
-}
-
-</style>
-
-<!-- TOP MENU BAR -->
-<div class="menu-bar">
-  <div class="menu">File
-    <div class="dropdown">
-      <button onclick="newFile()">New</button>
-      <button onclick="openFile()">Open</button>
-      <button onclick="saveFile()">Save (.txt + .ino)</button>
-    </div>
-  </div>
-
-  <div class="menu">Examples
-    <div class="dropdown">
-      <button onclick="loadExample('blink')">Blink</button>
-      <button onclick="loadExample('button')">Button</button>
-    </div>
-  </div>
-
-  <div class="menu">Help
-    <div class="dropdown">
-      <button onclick="alert('Arduino Coding Place v1')">About</button>
-    </div>
+<!-- custom modal -->
+<div id="modal">
+  <div id="modalBox">
+    <p>Erase current project?</p>
+    <button onclick="confirmNew(true)">Yes</button>
+    <button onclick="confirmNew(false)">Cancel</button>
   </div>
 </div>
 
-<!-- EDITOR -->
-<div class="editor-wrapper">
-  <pre id="highlight"></pre>
-  <textarea id="editor" spellcheck="false"></textarea>
-</div>
+<input type="file" id="fileInput" style="display:none" accept=".txt,.ino">
+<footer id="status">0 chars</footer>
+<script>
+editor.oninput = ()=>{
+  status.textContent = editor.value.length + " chars";
+};const status = document.getElementById("status");
+let pendingNew=false;
 
-<input type="file" id="fileInput" accept=".txt,.ino" hidden>
+/* ---------- dropdown ---------- */
+function toggleExamples(){
+  const m=document.getElementById("examples");
+  m.style.display = m.style.display==="block"?"none":"block";
+}
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".dropdown")){
+    examples.style.display="none";
+  }
+});
 
-<script>const editor = document.getElementById("editor");
-const fileInput = document.getElementById("fileInput");
-
-/* NEW FILE */
-function newFile(){
-  if(confirm("Clear editor?")){
-    editor.value = "";
+/* ---------- new ---------- */
+function newProject(){
+  modal.style.display="flex";
+  pendingNew=true;
+}
+function confirmNew(ok){
+  modal.style.display="none";
+  if(ok){
+    editor.value="";
+    filename.value="project";
   }
 }
 
-/* OPEN FILE */
+/* ---------- open ---------- */
 function openFile(){
   fileInput.click();
 }
-
-fileInput.onchange = () => {
-  const file = fileInput.files[0];
-  if(!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    editor.value = e.target.result;
+fileInput.onchange = e=>{
+  const file=e.target.files[0];
+  const reader=new FileReader();
+  reader.onload=()=>{
+    editor.value=reader.result;
+    filename.value=file.name.replace(/\.(ino|txt)$/,"");
   };
   reader.readAsText(file);
 };
 
-/* SAVE BOTH .TXT AND .INO */
-function saveFile(){
-  const content = editor.value;
+/* ---------- save (your download logic) ---------- */
+function saveProject(btn) {
+  const old = btn.innerText;
+  btn.innerText = "Saving...";
 
-  saveAsFile(content, "sketch.txt");
-  saveAsFile(content, "sketch.ino");
+  // Assuming you have global editor and filename elements
+  const code = editor.value;
+  const name = filename.value || "code";
+
+  // Save .ino file
+  downloadFile(code, name + ".ino");
+
+  setTimeout(() => {
+    // Save .txt file after delay
+    downloadFile(code, name + ".txt");
+    btn.innerText = "✔ Saved";
+    setTimeout(() => btn.innerText = old, 1500);
+  }, 1000);
 }
 
-function saveAsFile(text, filename){
-  const blob = new Blob([text], { type:"text/plain" });
+function downloadFile(content, filename) {
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
+  a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(a.href);
+
+  URL.revokeObjectURL(url);
 }
 
-const editor = document.getElementById("editor");
-const highlight = document.getElementById("highlight");
+/* ---------- examples ---------- */
+function loadExample(type){
+examples.style.display="none";
 
-editor.addEventListener("input", updateHighlight);
-editor.addEventListener("scroll", syncScroll);
+if(type==="blink"){
+editor.value=`// This code runs repeatedly on the Arduino
+// It makes the built-in LED blink on and off
 
-function syncScroll(){
-  highlight.scrollTop = editor.scrollTop;
-  highlight.scrollLeft = editor.scrollLeft;
+// Set digital pin 13 as an OUTPUT
+// Pin 13 has a built-in LED on most Arduino boards
+pinMode(13, OUTPUT);
+
+// Turn the LED ON by setting the pin HIGH (5V)
+digitalWrite(13, HIGH);
+
+// Pause the program for 1000 milliseconds (1 second)
+delay(1000);
+
+// Turn the LED OFF by setting the pin LOW (0V)
+digitalWrite(13, LOW);
+
+// Pause again for 1 second
+delay(1000);
+
+// After this, the code repeats forever`;
+filename.value="blink";
 }
 
-function updateHighlight(){
-  let code = editor.value;
+if(type==="button"){
+editor.value=`// Set pin 2 as an INPUT pin
+// This pin will read HIGH (5V) or LOW (0V)
+pinMode(2, INPUT);
 
-  // Escape HTML
-  code = code
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+// Read the current state of the button
+// HIGH = button pressed (depending on wiring)
+// LOW  = button not pressed
+int value = digitalRead(2);
 
-  // 🔴 Error words (very simple for now)
-  code = code.replace(
-    /\b(ERROR|TODO|!!!)\b/g,
-    `<span class="err">$1</span>`
-  );
-
-  // 🟢 Comments
-  code = code.replace(
-    /\/\/.*/g,
-    `<span class="comment">$&</span>`
-  );
-
-  highlight.innerHTML = code;
+// NOTE:
+// Without a pull-up or pull-down resistor,
+// the value may randomly change (floating pin)
+`;
+filename.value="button";
 }
 
-// Initial render
-updateHighlight();
+if(type==="button-led"){
+editor.value=`// Configure pin 2 to read button input
+pinMode(2, INPUT);
 
-/* EXAMPLES */
-function loadExample(name){
-  if(name === "blink"){
-    editor.value = `
-// Blink LED example
-void setup(){
-  pinMode(13, OUTPUT);
-}
+// Configure pin 13 to control the LED
+pinMode(13, OUTPUT);
 
-void loop(){
+// Read the button state
+// If pin 2 reads HIGH, the button is pressed
+if(digitalRead(2) == HIGH){
+
+  // Button is pressed → turn LED ON
   digitalWrite(13, HIGH);
-  delay(1000);
-  digitalWrite(13, LOW);
-  delay(1000);
-}
-`;
-  }
 
-  if(name === "button"){
-    editor.value = `
-// Button example
+}else{
+
+  // Button not pressed → turn LED OFF
+  digitalWrite(13, LOW);
+}
+
+// This code should be inside loop()
+// so it continuously checks the button
+`;
+filename.value="button_led";
+}
+
+if(type==="pwm"){
+editor.value=`// Set pin 9 as OUTPUT
+// Pin 9 supports PWM (~ symbol on Arduino)
+pinMode(9, OUTPUT);
+
+// Write a PWM value to the pin
+// 0   = always OFF
+// 255 = always ON
+// Values in between simulate brightness
+analogWrite(9, 128); // ~50% brightness
+
+// NOTE:
+// PWM is NOT true analog voltage
+// It rapidly switches the pin ON and OFF
+`;
+filename.value="pwm";
+}
+
+if(type==="multi-led"){
+editor.value=`// Set pin 13 as OUTPUT (LED 1)
+pinMode(13, OUTPUT);
+
+// Set pin 12 as OUTPUT (LED 2)
+pinMode(12, OUTPUT);
+
+// Set pin 11 as OUTPUT (LED 3)
+pinMode(11, OUTPUT);
+
+// Turn ON LED connected to pin 13
+digitalWrite(13, HIGH);
+
+// Turn OFF LED connected to pin 12
+digitalWrite(12, LOW);
+
+// Turn OFF LED connected to pin 11
+digitalWrite(11, LOW);
+
+// All three pins are controlled independently
+`;
+filename.value="multi_led";
+}
+
+if(type==="buzzer"){
+editor.value=`// Set pin 6 as OUTPUT
+// Buzzer signal pin is connected here
+pinMode(6, OUTPUT);
+
+// Generate a sound at 1000 Hz (1 kHz)
+// Works with passive buzzers
+tone(6, 1000);
+
+// Keep the sound playing for 500 ms
+delay(500);
+
+// Stop the sound
+noTone(6);
+
+// NOTE:
+// Active buzzers do NOT need tone()
+// They only need HIGH or LOW
+`;
+filename.value="buzzer";
+}
+
+if(type==="analog"){
+editor.value=`// Read analog voltage from pin A0
+// Arduino converts voltage to a number:
+// 0   = 0V
+// 1023 = reference voltage (usually 5V)
+int value = analogRead(A0);
+
+// Example:
+// ~512 ≈ 2.5V (half of 5V)
+
+// NOTE:
+// analogRead does NOT measure current
+// Only voltage
+`;
+filename.value="analog";
+}
+
+if(type==="joystick"){
+editor.value=`// Joystick connections
+// VRx -> A0
+// VRy -> A1
+// SW  -> Pin 2
+
 void setup(){
-  pinMode(2, INPUT);
-  pinMode(13, OUTPUT);
+  pinMode(2, INPUT_PULLUP); // Joystick button
+  Serial.begin(9600);
 }
 
 void loop(){
-  if(digitalRead(2) == HIGH){
-    digitalWrite(13, HIGH);
-  }else{
-    digitalWrite(13, LOW);
-  }
+  int x = analogRead(A0); // X-axis (0–1023)
+  int y = analogRead(A1); // Y-axis (0–1023)
+  int button = digitalRead(2); // LOW when pressed
+
+  Serial.print("X: ");
+  Serial.print(x);
+  Serial.print("  Y: ");
+  Serial.print(y);
+  Serial.print("  Button: ");
+  Serial.println(button == LOW ? "Pressed" : "Released");
+
+  delay(200);
 }
 `;
-  }
+filename.value="joystick";
 }
+
+if(type==="oled"){
+editor.value=`#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
+
+void setup(){
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)){
+    while(true); // Stop if OLED not found
+  }
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.println("Arduino OLED");
+  display.println("4-pin I2C");
+  display.display();
+}
+
+void loop(){
+  // Nothing here for now
+}
+
+// Wiring:
+// VCC → 5V / 3.3V
+// GND → GND
+// SDA → A4
+// SCL → A5
+`;
+filename.value="oled";
+}
+
+if(type==="serial"){
+editor.value=`// Setup runs once
+void setup(){
+  // Start serial communication at 9600 baud rate
+  Serial.begin(9600);
+}
+
+// Loop runs repeatedly
+void loop(){
+  // Print "Hello" to serial monitor
+  Serial.println("Hello");
+  
+  // Wait 1 second
+  delay(1000);
+}
+`;
+filename.value="serial";
+}
+
+if(type==="timer"){
+editor.value=`// Store the last time the action happened
+// unsigned long is required for millis()
+unsigned long t = 0;
+
+void loop(){
+
+  // millis() returns time since Arduino started (ms)
+  // This checks if 1 second has passed
+  if(millis() - t > 1000){
+
+    // Update the timer
+    t = millis();
+
+    // Toggle LED state:
+    // If ON → OFF
+    // If OFF → ON
+    digitalWrite(13, !digitalRead(13));
+  }
+
+  // Code here keeps running without delay()
+}
+
+// This method allows multitasking
+`;
+filename.value="timer";
+}
+}
+</script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
+    authDomain: "arduino-guideg.firebaseapp.com",
+    projectId: "arduino-guideg",
+    storageBucket: "arduino-guideg.firebasestorage.app",
+    messagingSenderId: "146740789054",
+    appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
+    measurementId: "G-V3ZB157P0R"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
 </script>
 </body>
 </html>

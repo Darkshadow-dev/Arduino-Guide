@@ -160,46 +160,59 @@ transition:
   z-index:999;
 }
 
-.submenu-wrapper {
+.side-menu{
   position: relative;
 }
 
-.side-dropdown {
-  display: none;
-  position: absolute;
-  right: 100%;
-  top: 0;
-  background:white;
-  box-shadow:0 6px 14px rgba(0,0,0,.12);
-  min-width: 180px;
-  z-index: 1000;
-  flex-direction: column;
-}
-
-.submenu-wrapper:hover .side-dropdown {
-  display: flex;
-}
-
-.side-dropdown a {
+.side-btn{
+  background: none;
+  border: none;
+  color: var(--accent);
   padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.side-btn:hover{
+  background: rgba(0,151,157,.12);
+}
+
+.side-panel{
+  position: absolute;
+  right: 100%;          /* LEFT SIDE */
+  top: 0;
+  min-width: 180px;
+  background: white;
+  box-shadow: 0 6px 14px rgba(0,0,0,.2);
+  border-radius: 8px;
+
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+  transition: .25s ease;
+
+  display: flex;
+  flex-direction: column;
+  z-index: 2000;
+}
+
+.side-panel.open{
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.side-panel a{
+  padding: 10px 14px;
   color: var(--accent);
   text-decoration: none;
-  display: block;
+  font-weight: 600;
 }
 
-.side-dropdown a:hover {
-  background-color: #444;
-}
-
-.submenu-toggle {
-  color:var(--accent);
-  padding: 8px 12px;
-  cursor: pointer;
-  display: inline-block;
-}
-
-.submenu-toggle:hover {
-  background-color: white;
+.side-panel a:hover{
+  background: rgba(0,151,157,.15);
 }
 
 .dropdown-btn span{
@@ -903,16 +916,22 @@ p{
 <div class="dropdown-menu">
   <a href="Arduino Quiz.html">Quizes</a>
   <a href="Arduino Community.html">Community</a>
+  <a href="Arduino Code.html">Code beta</a>
+<div class="side-menu">
+  <button class="side-btn" onclick="toggleSideMenu(this, event)">
+    More of all
+  </button>
+
+  <div class="side-panel">
+    <a href="Arduino%20Guide%20Extra.html#leds">LEDs</a>
+    <a href="Arduino%20Guide%20Extra.html#resistors">Resistors</a>
+    <a href="Arduino%20Guide%20Extra.html#capacitors">Capacitors</a>
+    <a href="Arduino%20Guide%20Extra.html#wires">Wires</a>
+    <a href="Arduino%20Guide%20Extra.html#pins-code">Pins</a>
+  </div>
+</div>
     <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
-<div class="submenu-wrapper">
-  <span class="submenu-toggle">More of all</span>
-  <div class="side-dropdown">
-    <a href="Arduino%20Guide%20Extra.html#leds" onclick="selectLink(this)">LEDs</a>
-    <a href="Arduino%20Guide%20Extra.html#resistors" onclick="selectLink(this)">Resistors</a>
-    <a href="Arduino%20Guide%20Extra.html#capacitors" onclick="selectLink(this)">Capacitors</a>
-    <a href="Arduino%20Guide%20Extra.html#wires" onclick="selectLink(this)">Wires</a>
-    <a href="Arduino%20Guide%20Extra.html#pins-code" onclick="selectLink(this)">Pins</a>
-  </div></div>
+</div></div>
 </div></div>
   </nav></header>
 
@@ -958,17 +977,6 @@ p{
     Everything is contained in a single, fast-loading website that works offline
     and runs even on older computers.
   </p>
-
-<div style="height:5vh;"></div>
-<details>
-  <summary><b>For advanced users</b></summary>
-  <ul>
-    <li>Pin function overlays (PWM, SPI, I²C, UART)</li>
-    <li>Protocol-level explanations</li>
-    <li>Code → hardware signal flow</li>
-    <li>Real-world usage patterns</li>
-  </ul>
-</details>
 
 <div style="height:5vh;"></div>
   <h3>What You Will Learn</h3>
@@ -1376,7 +1384,7 @@ p{
 <p> Click on the <a href="Examples.html#examples">Blink LED</a> example.</p>
 
 <details class="wiring-card">
-  <summary>LED Wiring</summary>
+  <summary> LED Wiring</summary>
   <p>LED with current-limiting resistor.</p>
   <div class="dual-image-row">
     <div class="zoom-box">
@@ -1386,7 +1394,7 @@ p{
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
       <img src="Images/Arduino-LED-circuit.png" alt="Circuit Diagram">
     </div></div>
 </details>
@@ -1416,7 +1424,7 @@ p{
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
       <img src="Images/Arduino-LED's-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -1444,7 +1452,7 @@ p{
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
       <img src="Images/Arduino-OLED-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -1471,7 +1479,7 @@ p{
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
       <img src="Images/Arduino-Buzzer-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -2262,11 +2270,25 @@ document.addEventListener("click", () => {
   });
 });
 
-function toggleSubmenu(event) {
-  event.preventDefault();
-  const wrapper = event.target.parentElement;
-  wrapper.classList.toggle('open');
+function toggleSideMenu(btn, e){
+  e.stopPropagation();   // THIS IS THE KEY LINE
+
+  const panel = btn.nextElementSibling;
+
+  // close other side panels
+  document.querySelectorAll(".side-panel").forEach(p => {
+    if (p !== panel) p.classList.remove("open");
+  });
+
+  panel.classList.toggle("open");
 }
+// close when clicking outside
+document.addEventListener("click", e => {
+  if (!e.target.closest(".side-menu")) {
+    document.querySelectorAll(".side-panel")
+      .forEach(p => p.classList.remove("open"));
+  }
+});
 
 function copyCode(btn){
   const code = btn.nextElementSibling.innerText;
