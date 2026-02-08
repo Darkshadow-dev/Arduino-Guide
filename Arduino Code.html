@@ -5,13 +5,53 @@
 <title>Arduino Editor</title>
 <style>
 body{margin:0;font-family:Arial;background:#0b0f1a;color:white}
+body{
+  overflow-x:hidden;
+}
 header{background:#12182b;padding:10px;display:flex;gap:10px;align-items:center}
 button{background:#1f2a44;color:white;border:none;padding:6px 12px;cursor:pointer}
 button:hover{background:#2f3f66}
 #filename{background:#000;border:1px solid #444;color:#0f0;padding:4px;width:200px}
-#editor{width:100%;height:calc(100vh - 60px);
+/* wrapper */
+.editor-wrap{
+  display:flex;
+  width:100vw;
+  height:100vh;
+  margin:0;
+  background:#0b0f1a;
+  border-radius:10px;
+  overflow:hidden;
+  font-family:monospace;
+}
+
+/* numbers */
+.line-numbers{
+  width:40px;
+  background:#111827;
+  color:#6b7280;
+  padding:10px 6px;
+  text-align:right;
+  user-select:none;
+  line-height:1.4;
+  font-size:14px;
+}
+
+/* editor */
+#editor{
+  flex:1;
+  background:#0b0f1a;
+  color:#e5e7eb;
+  border:none;
+  outline:none;
+  resize:none;
+  padding:10px;
+  font-size:14px;
+  line-height:1.4;
+}
+
 background:black;color:#0f0;font-family:monospace;font-size:14px;padding:10pxbox-sizing:border-box;border:none;}
-::-webkit-scrollbar{display:none}textarea{border:none;width:90%;}
+nav::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{display:none}
 /* dropdown */
 .dropdown{position:relative}
 .dropdown-menu{
@@ -29,7 +69,72 @@ padding:6px;
 cursor:pointer
 }
 .dropdown-menu div:hover{background:#2a355c}
+.code-layer{
+  position:relative;
+  flex:1;
+}
 
+#highlight, #editor{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:10px;
+  font-family:monospace;
+  font-size:14px;
+  line-height:1.4;
+  white-space:pre;
+}
+
+#highlight, #editor{
+  white-space: pre-wrap;   /* instead of pre */
+  word-wrap: break-word;
+  overflow-x: hidden;
+}
+
+#highlight{
+  pointer-events:none;
+  color:#e5e7eb;
+}
+
+#editor{
+  background:transparent;
+  color:transparent;
+  caret-color:white;
+  border:none;
+  outline:none;
+  resize:none;
+}
+.tool-btn{
+  position:relative;
+  padding:6px 12px;
+  cursor:pointer;
+}
+
+.tool-btn::after{
+  content: attr(data-tip);
+  position:absolute;
+  bottom:-28px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+  white-space:nowrap;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+  transition-delay:1s;   /* THE 1s DELAY */
+}
+
+.tool-btn:hover::after{
+  opacity:1;
+}
 /* modal */
 #modal{
 position:fixed;
@@ -51,7 +156,7 @@ text-align:center
 <body>
 
 <header>
-<button class="back-button" onclick="history.back()"><-- Back</button>
+    <a href="Arduino%20Guide.html#home">Home</a>
 <button onclick="newProject()">New</button>
 <button onclick="openFile()">Open</button>
 <button onclick="saveProject(this)">Save</button>
@@ -71,12 +176,19 @@ text-align:center
   <div onclick="loadExample('timer')">Timer</div>
 </div>
 </div>
-
+<button class="tool-btn" data-tip="Ctrl+U" onclick="undo()">Undo</button>
+<button class="tool-btn" data-tip="Ctrl+R" onclick="redo()">Redo</button>
 <input id="filename" value="project">
 <span>.ino / .txt</span>
 </header>
 
-<textarea id="editor">// Arduino code here</textarea>
+<div class="editor-wrap">
+  <div class="line-numbers" id="lines"></div>
+  <div class="code-layer">
+    <pre id="highlight"></pre>
+    <textarea id="editor"></textarea>
+  </div>
+</div>
 
 <!-- custom modal -->
 <div id="modal">
@@ -90,6 +202,44 @@ text-align:center
 <input type="file" id="fileInput" style="display:none" accept=".txt,.ino">
 <footer id="status">0 chars</footer>
 <script>
+let history = [];
+let hIndex = -1;
+
+function saveState(){
+  history = history.slice(0, hIndex+1);
+  history.push(editor.value);
+  hIndex++;
+}
+
+editor.addEventListener("input", saveState);
+
+function undo(){
+  if(hIndex > 0){
+    hIndex--;
+    editor.value = history[hIndex];
+    highlight.innerHTML = highlightCode(editor.value);
+    updateLines();
+  }
+}
+
+function redo(){
+  if(hIndex < history.length-1){
+    hIndex++;
+    editor.value = history[hIndex];
+    highlight.innerHTML = highlightCode(editor.value);
+    updateLines();
+  }
+}
+document.addEventListener("keydown", e=>{
+  if(e.ctrlKey && e.key==="u"){
+    e.preventDefault();
+    undo();
+  }
+  if(e.ctrlKey && e.key==="r"){
+    e.preventDefault();
+    redo();
+  }
+});
 editor.oninput = ()=>{
   status.textContent = editor.value.length + " chars";
 };const status = document.getElementById("status");
@@ -165,6 +315,34 @@ function downloadFile(content, filename) {
   URL.revokeObjectURL(url);
 }
 
+const lines = document.getElementById("lines");
+
+function updateLines(){
+  const count = editor.value.split("\n").length;
+  let html = "";
+  for(let i=1;i<=count;i++){
+    html += i + "<br>";
+  }
+  lines.innerHTML = html;
+}
+
+
+function highlightCode(code)
+{ return code
+ .replace(/(\/\/.*)/g,'<span style="color:#11ab26">$1</span>')
+ .replace(/\b(void|int|pinMode|digitalWrite|delay|Serial)\b/g, '<span style="color:#38bdf8">$1</span>')
+ .replace(/(\;\e\w.*)/g, '<span style="color:#38bdf8">$1</span>')
+ .replace(/\b(HIGH|LOW|INPUT|OUTPUT)\b/g, '<span style="color:#fbbf24">$1</span>')
+ .replace(/\b(\d+)\b/g, '<span style="color:#a78bfa">$1</span>'); }
+editor.addEventListener("scroll", ()=>{
+  highlight.scrollTop = editor.scrollTop;
+});
+
+editor.addEventListener("input", ()=>{
+  updateLines();
+  highlight.innerHTML = highlightCode(editor.value);
+});
+
 /* ---------- examples ---------- */
 function loadExample(type){
 examples.style.display="none";
@@ -190,7 +368,7 @@ digitalWrite(13, LOW);
 delay(1000);
 
 // After this, the code repeats forever`;
-filename.value="blink";
+filename.value = "blink";
 }
 
 if(type==="button"){
@@ -429,8 +607,134 @@ void loop(){
 `;
 filename.value="timer";
 }
+highlight.innerHTML = highlightCode(editor.value);
+updateLines();
+saveState();
 }
 </script>
+
+<script>
+const STORAGE_KEY = "arduino-last-page";
+
+/* ACTIVATE PAGE */
+function activatePage(id, save = true) {
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.remove("active")
+  );
+
+  if (target) {
+    target.classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, id);
+  } else {
+    document.getElementById("notfound").classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
+  }
+
+  window.scrollTo(0, 0);
+}
+
+/* HOME BUTTON */
+function goHome() {
+  activatePage("home");
+  history.pushState(null, "", "#home");
+}
+
+/* NAV LINK HANDLING */
+document.querySelectorAll("nav a").forEach(a => {
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("http")) return;
+
+    // #section
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const id = href.substring(1);
+      activatePage(id);
+      history.pushState(null, "", href);
+      return;
+    }
+
+    // page.html#section
+    if (href.includes(".html#")) {
+      const [page, hash] = href.split("#");
+      if (location.pathname.endsWith(page)) {
+        e.preventDefault();
+        activatePage(hash);
+        history.pushState(null, "", "#" + hash);
+      }
+    }
+  });
+});
+
+/* BACK / FORWARD */
+window.addEventListener("hashchange", () => {
+  const id = location.hash.substring(1);
+  activatePage(id, false);
+});
+
+/* RESTORE LAST PAGE ON LOAD */
+window.addEventListener("load", () => {
+  const hash = location.hash.substring(1);
+  const last = localStorage.getItem(STORAGE_KEY) || "home";
+
+  if (hash) {
+    activatePage(hash);
+  } else {
+    activatePage(last);
+    history.replaceState(null, "", "#" + last);
+  }
+});
+
+/* DROPDOWNS (unchanged) */
+function toggleDropdown(btn, e) {
+  e.stopPropagation();
+
+  document.querySelectorAll(".dropdown").forEach(d => {
+    if (d !== btn.closest(".dropdown")) {
+      d.classList.remove("open");
+      d.querySelector(".dropdown-menu").classList.remove("open");
+    }
+  });
+
+  const dropdown = btn.closest(".dropdown");
+  dropdown.classList.toggle("open");
+  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
+}
+
+function selectLink(link) {
+  const dropdown = link.closest(".dropdown");
+  dropdown.classList.remove("open");
+  dropdown.querySelector(".dropdown-menu").classList.remove("open");
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".dropdown").forEach(d => {
+    d.classList.remove("open");
+    d.querySelector(".dropdown-menu").classList.remove("open");
+  });
+});
+
+function toggleSideMenu(btn, e){
+  e.stopPropagation();   // THIS IS THE KEY LINE
+
+  const panel = btn.nextElementSibling;
+
+  // close other side panels
+  document.querySelectorAll(".side-panel").forEach(p => {
+    if (p !== panel) p.classList.remove("open");
+  });
+
+  panel.classList.toggle("open");
+}
+// close when clicking outside
+document.addEventListener("click", e => {
+  if (!e.target.closest(".side-menu")) {
+    document.querySelectorAll(".side-panel")
+      .forEach(p => p.classList.remove("open"));
+  }
+});
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";

@@ -665,6 +665,12 @@ p{
 /* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
 @media (max-width:900px){
 
+@media (max-width:900px){
+  .hardware-layout{
+    grid-template-columns: 1fr;
+  }
+}
+
 .led-container {
   transform-origin: center;
   transition: transform 0.3s ease;
@@ -873,6 +879,11 @@ p{
 
   .dropdown-menu a:hover{
     background:rgba(0,151,157,.15);
+  }
+}
+@media (max-width:900px){
+  #uno3d-wrap{
+    transform: translateY(-30px);
   }
 }
 
