@@ -611,22 +611,46 @@ p{
   }
 }
 
+/* ===== MOVE EXAMPLES MENU TO TOP (MOBILE ONLY) ===== */
 @media (max-width:900px){
 
-  /* move examples bar to top */
-  #examples-layout{
-    position: static;
-    width: 100%;
-    order: 2;
-    margin-top: 10px;
-  }
-
-  /* main layout becomes vertical */
-  .main{
-    display: flex;
+  /* stack instead of side-by-side */
+  .examples-layout{
     flex-direction: column;
   }
 
+  /* examples menu becomes top bar */
+  .examples-menu{
+    width:100%;
+    height:auto;
+    border-right:none;
+    border-bottom:4px solid var(--accent2);
+    display:flex;
+    flex-wrap:nowrap;
+    gap:8px;
+    overflow-x:auto;
+    padding:10px;
+  }
+
+  /* items inline */
+  .examples-menu .example-item{
+    min-width:max-content;
+    white-space:nowrap;
+    padding:8px 12px;
+    border-radius:6px;
+    background:#f5faff;
+  }
+
+  /* content goes under menu */
+  .examples-content{
+    width:100%;
+    height:auto;
+  }
+
+  /* hide scrollbar (still scrollable) */
+  .examples-menu::-webkit-scrollbar{
+    display:none;
+  }
 }
 
 </style>
