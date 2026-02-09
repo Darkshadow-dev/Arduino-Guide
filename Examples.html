@@ -481,9 +481,9 @@ p{
 
   /* MENU FLOATING */
   .dropdown-menu{
-  position:fixed; /* escape header */
-  top:60px;
-  left:10%;
+  position:apsolute; /* escape header */
+  top:100%;
+  left:0%;
     min-width:180px;
     max-width:240px;
     background:white;
@@ -626,7 +626,7 @@ p{
     border-right:none;
     border-bottom:4px solid var(--accent2);
     display:flex;
-    flex-wrap:nowrap;
+    flex-wrap:wrap;
     gap:8px;
     overflow-x:auto;
     padding:10px;
@@ -634,8 +634,9 @@ p{
 
   /* items inline */
   .examples-menu .example-item{
+    flex: 1 1 48%;
     min-width:max-content;
-    white-space:nowrap;
+    white-space:normal;
     padding:8px 12px;
     border-radius:6px;
     background:#f5faff;
@@ -716,7 +717,6 @@ p{
 <section id="examples" class="page">
 
   <div class="examples-layout">
-
     <!-- SIDE MENU -->
 <aside class="examples-menu">
 
