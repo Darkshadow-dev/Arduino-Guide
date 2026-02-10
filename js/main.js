@@ -666,3 +666,61 @@ function downloadQRCode() {
     })
     .catch(() => alert('Failed to download QR code'));
 }
+
+clone.insertAdjacentHTML("afterbegin", `
+  <div style="padding:20px">
+    <h1>Arduino Guide Offline</h1>
+    <p>Generated: ${new Date().toLocaleString()}</p>
+    <p>By: ${userId}</p>
+    <hr>
+  </div>
+`);
+
+
+async function downloadOfflinePDF(){
+  const { jsPDF } = window.jspdf;
+
+  // Clone body so UI popups don't mess it
+  const clone = document.body.cloneNode(true);
+
+  // Remove buttons you don't want in PDF
+  clone.querySelectorAll("button").forEach(b => b.remove());
+
+  // Create hidden container
+  const temp = document.createElement("div");
+  temp.style.position = "fixed";
+  temp.style.left = "-9999px";
+  temp.appendChild(clone);
+  document.body.appendChild(temp);
+
+  const canvas = await html2canvas(clone, {
+    scale: 2,
+    useCORS: true
+  });
+
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF("p","mm","a4");
+  const pageWidth = 210;
+  const pageHeight = 297;
+
+  const imgWidth = pageWidth;
+  const imgHeight = canvas.height * imgWidth / canvas.width;
+
+  let y = 0;
+  while(y < imgHeight){
+    pdf.addImage(imgData, "PNG", 0, -y, imgWidth, imgHeight);
+    y += pageHeight;
+    if(y < imgHeight) pdf.addPage();
+  }
+
+  pdf.save("Arduino-Guide-Offline.pdf");
+
+  document.body.removeChild(temp);
+}
+document.querySelectorAll("[id^='text-']").forEach(el=>{
+  el.style.maxHeight = "none";
+});
+document.querySelectorAll("[id^='codeWrap-']").forEach(el=>{
+  el.style.display = "block";
+});

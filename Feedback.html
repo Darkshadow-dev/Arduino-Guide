@@ -10,7 +10,6 @@
 <link rel="stylesheet" href="css/main.css">
 
 </head>
-
 <body>
 
 <header>
@@ -138,7 +137,10 @@
     <a href="https://instagram.com/darkshadow_web_dev" target="_blank">Instagram</a>
     <a href="https://github.com/darkshadow-dev" target="_blank">GitHub</a>
 <a href="https://forms.gle/YGrm43ZC8cpHdaLh6">Form</a>
-  </div>
+
+<button onclick="downloadOfflinePDF()">
+  📄 Download Offline PDF
+</button>  </div>
 </section>
 
 
@@ -201,5 +203,8 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </body>
 </html>
