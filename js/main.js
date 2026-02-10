@@ -193,11 +193,41 @@ function downloadFile(content, filename){
 function loadExample(type){
   const box = document.getElementById("exampleBox");
 
+  if(type === "code"){
+    box.innerHTML = `
+      <h2>What and why</h2>
+      <p>Way does some code needs to be typed in it's own way and you can't type it in any other way:</p>
+<div class="code-block" data-filename="Code">
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <pre>
+
+So code like:
+pinMode - needs to be pin+M+ode you can try to type it other way but it may not work.
+
+digitalWrite - same way as the pinMode just a another command you call.
+
+HIGH/LOW/INPUT/OUTPUT/... - all NEED to be all caps trust me,
+I tryed in other ways some work but this is standard
+so just use all caps when typing command outputs.
+Also Im personaly using the names commands/com-output and so on you can feel free to use all of these
+names, but I don't know if it's used by "professionals",
+Im self taught so Im saying stuff my way you find your or use my way feel free.
+I can't stop you or make you I can just Guide you :) . // Robot hehe.   you know im not so w you saying.  ok il stop posably. you misspaled it so did i so you know what.  w.  ntg.  :).
+
+analogRead/digitalRead/Serial.print - all and more shown in rest of examples follow same way of type in them
+somewhere you might find other ways but this is more or less standard snytax.
+
+  </pre>
+      </div>
+    `;
+  }
+
   if(type === "blink"){
     box.innerHTML = `
       <h2>Blink LED</h2>
       <p>Basic digital output example.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="blink">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -231,7 +261,7 @@ delay(1000);
     box.innerHTML = `
       <h2>Button Input</h2>
       <p>Read a button using a digital pin.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="button">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -246,7 +276,7 @@ pinMode(2, INPUT);
 int value = digitalRead(2);
 
 // NOTE:
-// Without a pull-up or pull-down resistor,
+// Without a pull-up or pull-down resistor,    // waht ar these res?.  idk relay i used tham but ye. k i guss ;).  (;.
 // the value may randomly change (floating pin)
 
         </pre>
@@ -258,7 +288,7 @@ int value = digitalRead(2);
     box.innerHTML = `
       <h2>Button + LED</h2>
       <p>Turn an LED on when a button is pressed.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="button-led">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -295,7 +325,7 @@ if(digitalRead(2) == HIGH){
       <h2>PWM LED (Fade)</h2>
       <p>Control LED brightness using PWM (~ pins).</p>
 
-      <div class="code-block">
+      <div class="code-block" data-filename="PWM">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
         <pre>
@@ -323,7 +353,7 @@ analogWrite(9, 128); // ~50% brightness
     box.innerHTML = `
       <h2>Multiple LEDs</h2>
       <p>Control more than one LED.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="multi-led">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -356,7 +386,7 @@ digitalWrite(11, LOW);
     box.innerHTML = `
       <h2>Buzzer Sound</h2>
       <p>Make sound using a buzzer.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="buzzer">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -388,7 +418,7 @@ noTone(6);
     box.innerHTML = `
       <h2>Analog Sensor</h2>
       <p>Read a sensor value (0–1023).</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="analog">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -418,7 +448,7 @@ if(type === "joystick"){
       Read X/Y movement and button press from a joystick module.
       Uses analog pins and one digital pin.
     </p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="joystick">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -459,7 +489,7 @@ if(type === "oled"){
       Display text on a small OLED screen using I²C.
       Uses only SDA and SCL pins.
     </p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="oled">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -486,7 +516,7 @@ void setup(){
   display.println("4-pin I2C");
   display.display();
 }
-
+// hey also the // is wisibile in the page do we erase it or?.  no no we do not.  ok w?. w? way to do?.  i guss so.
 void loop(){
   // Nothing here for now
 }
@@ -503,7 +533,7 @@ void loop(){
     box.innerHTML = `
       <h2>Serial Monitor</h2>
       <p>Send data to the PC via USB.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="serial">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
@@ -531,7 +561,7 @@ void loop(){
     box.innerHTML = `
       <h2>Timers (millis)</h2>
       <p>Run code without blocking.</p>
-<div class="code-block" data-filename="blink.ino">
+<div class="code-block" data-filename="timer">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
