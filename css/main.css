@@ -241,6 +241,28 @@ transition:
   padding: 6px 10px;
 }
 
+/* Make summary look clickable */
+summary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+}
+
+/* Remove text-cursor feeling */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom arrow */
+summary::before{
+  content:"";
+  margin-right:6px;
+  transition:transform .2s;
+}
+details[open] summary::before{
+  transform:rotate(90deg);
+}
+
 footer{
   position:fixed;
   bottom:0;
@@ -338,113 +360,6 @@ textarea {
   height:5vh;
 }
 
-/* ================= MOBILE NAV + DROPDOWNS (FINAL, CLEAN) ================= */
-@media (max-width:900px){
-
-  /* NAV SCROLL BAR */
-  nav{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    overflow-x:auto;
-    overflow-y:visible;
-    white-space:nowrap;
-    -webkit-overflow-scrolling:touch;
-    position:relative;
-  }
-  nav::-webkit-scrollbar{display:none}
-
-  .nav-spacer{display:none;}
-
-  /* DROPDOWN CONTAINER */
-.dropdown{
-  position:relative;
-  flex:0 0 auto;
-  width:auto;
-}
-
-  /* BUTTON SIZE */
-  .dropdown-btn{
-    padding:8px 12px;
-    font-size:14px;
-    border-radius:8px;
-  }
-
-  /* MENU FLOATING */
-  .dropdown-menu{
-  position:fixed; /* escape header */
-  top:60px;
-  left:10%;
-    min-width:180px;
-    max-width:240px;
-    background:white;
-    border-radius:10px;
-    padding:6px 0;
-    box-shadow:0 6px 14px rgba(0,0,0,.25);
-    z-index:9999;
-
-    opacity:0;
-    transform:translateY(-6px);
-    pointer-events:none;
-    transition:.2s ease;
-  }
-
-  /* OPEN STATE */
-  .dropdown.open .dropdown-menu{
-    opacity:1;
-    transform:translateY(0);
-    pointer-events:auto;
-  }
-
-  /* LINKS */
-  .dropdown-menu a{
-    display:block;
-    padding:8px 12px;
-    font-size:14px;
-    color:var(--accent);
-  }
-  .dropdown-menu a:hover{
-    background:rgba(0,151,157,.15);
-  }
-}
-
-/* SMALL PHONES */
-@media (max-width:600px){
-
-  h2{font-size:20px}
-  p{font-size:15px}
-
-  .logo{height:24px;width:24px;}
-  .title{font-size:18px;}
-
-  header{
-    padding:10px;
-  }
-
-  footer{
-    height:50px;
-    font-size:14px;
-  }
-
-.dropdown{
-  position:relative;
-  flex:0 0 auto;
-  width:auto;
-}
-
-  .dropdown-menu a{
-    padding:14px 16px;
-    font-size:16px;
-  }
-}
-
-/* TABLET */
-@media (max-width:768px){
-  .content{
-    flex-direction:column;
-  }
-}
-
 /* ===== MOBILE DROPDOWN OVERRIDE (NO CONFLICT) ===== */
 @media (max-width:900px){
 
@@ -502,7 +417,7 @@ textarea {
   }
 .mini-nav{
   position:absolute;
-  top:40%;
+  right:40%;
   display:flex;
   gap:12px;
 }
@@ -675,7 +590,7 @@ select{
   width:120%;
   margin-top:10px;
   border-radius:8px;
-  left:5%;
+  left:25%;
   top:-15%;
 }
 
@@ -704,7 +619,7 @@ select{
 /* ZOOM */
 .zoom-box:hover img{
   transform:scale(4);
-  cursor:zoom-out;
+  cursor:zoom-in;
 }
 
 /* MOBILE STACK */
@@ -748,18 +663,56 @@ select{
   display: block;
 }
 
-.btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #0077cc;
-  color: white;
-  text-decoration: none;
+.btn-action{
+  background: var(--accent2);
+  color: #003;
+  border: none;
+  padding: 8px 14px;
   border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
 }
-.btn:hover {
-  background-color: #005fa3;
+
+.btn-action:hover{
+  background: #00e676;
+  transform: translateY(-1px);
+}
+
+.btn-group{
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-group:hover{
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-submit{
+  width:50%;
+  margin-top:18px;
+  margin-left:25%;
+  padding:12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:1.05rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.btn-submit:hover{
+  transform: scale(1.03);
+  filter: brightness(1.1);
 }
 
 .quick-links {

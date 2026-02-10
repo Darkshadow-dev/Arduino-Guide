@@ -88,7 +88,7 @@
 
 <div class="quick-links">
   <a href="#board">What is Arduino?</a>
-  <a href="#examples">Try Your First Example</a>
+  <a href="Examples.html#examples">Try Your First Example</a>
 </div>
 
 <div class="start-box">
@@ -520,13 +520,13 @@
   <p>LED with current-limiting resistor.</p>
   <div class="dual-image-row">
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
     <img class="led-frame" src="Images/Arduino-LED-off.png" alt="LED off">
     <img class="led-frame" src="Images/Arduino-LED-on.png" alt="LED on">
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
       <img src="Images/Arduino-LED-circuit.png" alt="Circuit Diagram">
     </div></div>
 </details>
@@ -548,7 +548,7 @@
   <p>LEDs with current-limiting resistors..</p>
   <div class="dual-image-row">
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
     <img class="led-frame" src="Images/Arduino-LED's-off.png" alt="Multiple LEDs off">
     <img class="led-frame" src="Images/Arduino-LED's-on1.png" alt="Multiple LEDs on step 1">
     <img class="led-frame" src="Images/Arduino-LED's-on2.png" alt="Multiple LEDs on step 2">
@@ -556,7 +556,7 @@
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
       <img src="Images/Arduino-LED's-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -578,13 +578,13 @@
   <p>OLED / LCD using SDA and SCL lines.</p>
   <div class="dual-image-row">
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
     <img class="led-frame" src="Images/Arduino-Oled4-off.png" alt="OLED off">
     <img class="led-frame" src="Images/Arduino-Oled4-on.png" alt="OLED on">
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
       <img src="Images/Arduino-OLED-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -605,13 +605,13 @@
   <p>Buzzer Connect lines.</p>
   <div class="dual-image-row">
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 0px;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
     <img class="led-frame" src="Images/Arduino-Buzzer.png" alt="Buzzer image">
     <img class="led-frame" src="Images/Arduino-Buzzer-active.png" alt="Buzzer image">
   </div>
     </div>
     <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 5%;">
+  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
       <img src="Images/Arduino-Buzzer-circuit.png" alt="Circuit Diagram">
     </div></div></div>
 </details>
@@ -648,12 +648,10 @@
 
 <section id="uno" class="page special-layout">
   <h2>Arduino Uno Board Image</h2>
-
+    <button class="btn-group" onclick="selectGroup('power')">Show Power Pins</button>
+    <button class="btn-group" onclick="selectGroup('analog')">Show Analog Pins</button>
+    <button class="btn-group" onclick="selectGroup('digital')">Show Digital Pins</button>
   <div class="content">
-
-    <button onclick="selectGroup('power')">Show All Power Pins on the image below</button><br>
-    <button onclick="selectGroup('analog')">Show All Analog Pins on the image below</button><br>
-    <button onclick="selectGroup('digital')">Show All Digital Pins on the image below</button><br>
     <!-- Image container with clickable pin -->
     <div style="position:relative; flex:1 1 300px;">
       <img src="Images/Arduino-uno.jfif" alt="Arduino Uno Board" style="width:100%; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
@@ -1113,7 +1111,7 @@ function showPinInfo(title, description) {
     <p>Arduino Uno pins are grouped by function:</p>
 
     <h4>Digital Pins (0–13)</h4>  
-    <button onclick="selectGroup('digital')">Show Digital Pins on 3D Arduino Uno</button><br>
+    <a href="#uno"><button class="btn-group" onclick="selectGroup('digital')">Show Digital Pins</button></a>
     <ul>
       <li>Read HIGH / LOW</li>
       <li>Some support PWM (~)</li>
@@ -1122,7 +1120,7 @@ function showPinInfo(title, description) {
     </ul>
 
     <h4>Analog Pins (A0–A5)</h4>
-    <button onclick="selectGroup('analog')">Show Analog Pins on 3D Arduino Uno</button><br>
+    <a href="#uno"><button class="btn-group" onclick="selectGroup('analog')">Show Analog Pins</button></a>
     <ul>
       <li>Read voltage (0–5V by default)</li>
       <li>Resolution: 10-bit (0–1023)</li>
@@ -1132,7 +1130,7 @@ function showPinInfo(title, description) {
     </ul>
 
     <h4>Power Pins</h4>
-    <button onclick="selectGroup('power')">Show Power Pins on 3D Arduino Uno</button><br>
+    <a href="#uno"><button class="btn-group" onclick="selectGroup('power')">Show Power Pins</button></a>
     <ul>
       <li><b>5V</b> – regulated output (limited current, do NOT power motors)</li>
       <li><b>3.3V</b> – low power devices</li>

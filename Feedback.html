@@ -38,7 +38,7 @@
 
     <span class="nav-spacer"></span>
 
-    <a href="Arduino%20Guide%20Extra.html#about">Feedback</a>
+    <a href="Feedback.html#about">Feedback</a>
 
 <div class="dropdown">
   <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
@@ -112,19 +112,19 @@
       <label>MESSAGE:</label>
       <textarea id="message" rows="5"></textarea>
 
-      <button type="submit">SEND MESSAGE</button>
+      <button class="btn-submit">SEND MESSAGE</button>
     </form>
   </div>
 
   <!-- Contact info and buttons below the form -->
   <div class="contact-info" style="margin-top: 30px; text-align: center;">
     <p>Email: <a href="mailto:guidecommunity.contacts@gmail.com">guidecommunity.contacts@gmail.com</a></p>
-    </form>
   </div>
 
   <div class="quick-links">
     <a href="https://instagram.com/darkshadow_web_dev" target="_blank">Instagram</a>
     <a href="https://github.com/darkshadow-dev" target="_blank">GitHub</a>
+<a href="https://forms.gle/YGrm43ZC8cpHdaLh6">Form</a>
   </div>
 </section>
 
@@ -132,16 +132,23 @@
 <section id="feedback" class="page">
   <h2>Feature Request</h2>
   <p>Help shape the future of Arduino Guide.</p>
-
   <div class="form-panel">
+<label>What should we add?</label>
+<select id="type" onchange="toggleCustomType()">
+  <option value="">Select one</option>
+  <option>New feature</option>
+  <option>Bug fix</option>
+  <option>UI change</option>
+  <option>Performance</option>
+  <option value="custom">Other (type your own)</option>
+</select>
 
-    <label>What should we add?</label>
-    <select id="type">
-      <option>New feature</option>
-      <option>Bug fix</option>
-      <option>UI change</option>
-      <option>Performance</option>
-    </select>
+<!-- hidden by default -->
+<input 
+  id="customType" 
+  placeholder="Type your own..." 
+  style="display:none; margin-top:8px;"
+>
 
     <label>Describe it</label>
     <textarea id="idea" rows="6"></textarea>
@@ -149,7 +156,7 @@
     <label>Your nickname (optional)</label>
     <input id="user">
 
-    <button class="btn" onclick="submitFeedback()">Submit</button>
+    <button class="btn-submit" onclick="submitFeedback()">Submit</button>
 
     <p id="formStatus"></p>
   </div>

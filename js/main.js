@@ -198,8 +198,8 @@ function loadExample(type){
       <h2>Blink LED</h2>
       <p>Basic digital output example.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // This code runs repeatedly on the Arduino
@@ -232,8 +232,8 @@ delay(1000);
       <h2>Button Input</h2>
       <p>Read a button using a digital pin.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Set pin 2 as an INPUT pin
@@ -259,8 +259,8 @@ int value = digitalRead(2);
       <h2>Button + LED</h2>
       <p>Turn an LED on when a button is pressed.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Configure pin 2 to read button input
@@ -296,7 +296,8 @@ if(digitalRead(2) == HIGH){
       <p>Control LED brightness using PWM (~ pins).</p>
 
       <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
         <pre>
 
 // Set pin 9 as OUTPUT
@@ -323,8 +324,8 @@ analogWrite(9, 128); // ~50% brightness
       <h2>Multiple LEDs</h2>
       <p>Control more than one LED.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Set pin 13 as OUTPUT (LED 1)
@@ -356,8 +357,8 @@ digitalWrite(11, LOW);
       <h2>Buzzer Sound</h2>
       <p>Make sound using a buzzer.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Set pin 6 as OUTPUT
@@ -388,8 +389,8 @@ noTone(6);
       <h2>Analog Sensor</h2>
       <p>Read a sensor value (0–1023).</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Read analog voltage from pin A0
@@ -418,8 +419,8 @@ if(type === "joystick"){
       Uses analog pins and one digital pin.
     </p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Joystick connections
@@ -459,8 +460,8 @@ if(type === "oled"){
       Uses only SDA and SCL pins.
     </p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 #include <Wire.h>
@@ -503,8 +504,8 @@ void loop(){
       <h2>Serial Monitor</h2>
       <p>Send data to the PC via USB.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Setup runs once
@@ -531,8 +532,8 @@ void loop(){
       <h2>Timers (millis)</h2>
       <p>Run code without blocking.</p>
 <div class="code-block" data-filename="blink.ino">
-  <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-  <button class="copy-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  <button class="btn-action" onclick="copyCode(this)">Copy</button>
+  <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
   <pre>
 
 // Store the last time the action happened
@@ -566,6 +567,18 @@ void loop(){
 }
 
 
+function toggleCustomType(){
+  const sel = document.getElementById("type");
+  const custom = document.getElementById("customType");
+
+  if(sel.value === "custom"){
+    custom.style.display = "block";
+    custom.focus();
+  }else{
+    custom.style.display = "none";
+    custom.value = "";
+  }
+}
 
 
         function sendMail(form) {
@@ -573,7 +586,6 @@ void loop(){
             const email = document.getElementById("email").value;
             const subject = document.getElementById("subject").value;
             const message = document.getElementById("message").value;
-
             // Format mailto link
             const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
                 "Name: " + name + "\n" +
@@ -586,14 +598,20 @@ void loop(){
         }
 function submitFeedback(){
 
-  const type = document.getElementById("type").value;
+  const typeSelect = document.getElementById("type");
+  const customType = document.getElementById("customType");
   const idea = document.getElementById("idea").value;
   const user = document.getElementById("user").value || "Anonymous";
 
-  const subject = "Arduino Guide Feedback: " + type;
+  const finalType = 
+    typeSelect.value === "custom"
+    ? customType.value
+    : typeSelect.value;
+
+  const subject = "Arduino Guide Feedback: " + finalType;
 
   const body =
-    "Type: " + type + "\n" +
+    "Type: " + finalType + "\n" +
     "User: " + user + "\n\n" +
     "Message:\n" + idea;
 
@@ -602,6 +620,7 @@ function submitFeedback(){
 
   window.location.href = mailtoLink;
 }
+
 function downloadQRCode() {
   fetch('QR-Code.png')
     .then(response => response.blob())
