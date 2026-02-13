@@ -584,6 +584,53 @@ p{
   opacity: 1;
 }
 
+/*hardware tutorial page*/
+
+/* Hardware tutorial box */
+.tutorial-box{
+  background:#0e1a24;
+  border:1px solid #2a4a63;
+  border-radius:12px;
+  padding:20px;
+  color:#dff1ff;
+  max-width:700px;
+}
+
+.tutorial-image{
+  text-align:center;
+  margin-bottom:12px;
+}
+
+.tutorial-image img{
+  max-width:100%;
+  border-radius:10px;
+  transition:transform .3s ease;
+}
+
+.tutorial-image img:hover{
+  transform:scale(1.5);
+}
+
+.tutorial-controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:10px 0;
+}
+
+.tutorial-controls button{
+  padding:6px 14px;
+  background:#1f6bff;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.tutorial-controls button:hover{
+  background:#3a82ff;
+}
+
 /*-------------___ Main page css ___-------------*/
 
 /* START BOX */
@@ -646,6 +693,7 @@ p{
   color: #fff;
   transform: translateY(-2px);
 }
+
 
 /*-----------------------------___ Board CSS ___-------------------------*/
 
@@ -722,10 +770,21 @@ p{
   background:#f5faff;
 }
 
-.next-link{
-  margin-top:20px;
-  font-weight:bold;
-}
+.next-link{  display:inline-block;  margin-top:20px;  font-weight:bold;  cursor:pointer;  text-decoration:none;  transition:0.2s;}
+.nl-blue{ color:#38bdf8; }
+.nl-green{ color:#22c55e; }
+.nl-red{ color:#ef4444; }
+.nl-yellow{ color:#facc15; }
+.nl-bg-dark{  background:#0b0f1a;  padding:6px 10px;  border-radius:6px;}
+.nl-bg-light{  background:#f5faff;  padding:6px 10px;  border-radius:6px;}
+.nl-sm{ font-size:14px; }
+.nl-md{ font-size:16px; }
+.nl-lg{ font-size:20px; }
+.nl-underline{ text-decoration:underline; }
+.nl-noneunderline{ text-decoration:none; }
+.nl-hover-glow:hover{  text-shadow:0 0 8px currentColor;}
+.nl-hover-scale:hover{  transform:scale(1.05);}
+
 
 /*--------------------------------___ Example CSS ___---------------------*/
 /* Examples page ONLY when active */

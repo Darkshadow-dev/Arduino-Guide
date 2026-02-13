@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="Images/Website-Guide.png">
+
+<title>Arduino Guide</title>
+
+<link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+
+<header>
+  <div class="topbar">
+    <img src="Images/logo-left.png" class="logo left">
+    <div class="title">Arduino Guide</div>
+    <img src="Images/logo-right.png" class="logo right"> </div>
+  <nav>
+    <a href="Arduino%20Guide.html#home">Home</a>
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    Board <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>
+  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
+  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>
+  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+</div>
+</div>
+    <a href="Arduino%20Guide.html#more">Arduino Explained</a>
+    <a href="Examples.html#examples">Examples</a>
+
+    <span class="nav-spacer"></span>
+
+    <a href="Feedback.html#about">Feedback</a>
+
+<div class="dropdown">
+  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
+    More <span>▾</span>
+  </button>
+
+<div class="dropdown-menu">
+  <a href="Arduino Quiz.html">Quizes</a>
+  <a href="Arduino Community.html">Community</a>
+  <a href="Arduino Code.html">Code beta</a>
+<div class="side-menu">
+  <button class="side-btn" onclick="toggleSideMenu(this, event)">
+    More of all
+  </button>
+
+  <div class="side-panel">
+    <a href="Arduino%20Guide%20Extra.html#leds">LEDs</a>
+    <a href="Arduino%20Guide%20Extra.html#resistors">Resistors</a>
+    <a href="Arduino%20Guide%20Extra.html#capacitors">Capacitors</a>
+    <a href="Arduino%20Guide%20Extra.html#wires">Wires</a>
+    <a href="Arduino%20Guide%20Extra.html#pins-code">Pins</a>
+  </div>
+</div>
+    <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
+</div></div>
+</div></div>
+  </nav>
+</header>
+
+<main>
+
+
+<!--- NEW SECTION BELOW -->
+
+<section id="hardware-tutorial" class="page">
+  <div class="tutorial-box">
+    
+    <div class="tutorial-image">
+      <img id="tutImage" src="Images/led-step1.png">
+    </div>
+
+    <div class="tutorial-controls">
+      <button onclick="prevStep()">← Back</button>
+      <span id="stepCounter">Step 1 / 4</span>
+      <button onclick="nextStep()">Next →</button>
+    </div>
+
+    <h2 id="tutTitle"></h2>
+    <p id="tutText"></p>
+
+    <div id="tutCode" class="code-block" style="display:none">
+      <button class="btn-action" onclick="copyCode(this)">Copy</button>
+      <pre></pre>
+    </div>
+</section>
+
+<!-- NEW SECTION BELOW -->
+
+
+<section id="notfound" class="page">
+    <h2>404 – Page Not Found</h2>
+    <p>The section you tried to open does not exist.</p>
+    <button onclick="goHome()">Go Home</button>
+</section>
+
+</main>
+
+<footer>
+  Arduino Guide Ⓖ 2026
+</footer>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<script src="js/main.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
+    authDomain: "arduino-guideg.firebaseapp.com",
+    projectId: "arduino-guideg",
+    storageBucket: "arduino-guideg.firebasestorage.app",
+    messagingSenderId: "146740789054",
+    appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
+    measurementId: "G-V3ZB157P0R"
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>

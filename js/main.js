@@ -1,3 +1,6 @@
+/*------------------------------------___  Main Script ___------------------------*/
+
+/*-------------___ Page script ___----------------*/
 const STORAGE_KEY = "arduino-last-page";
 
 /* ACTIVATE PAGE */
@@ -71,7 +74,7 @@ window.addEventListener("load", () => {
   }
 });
 
-/* DROPDOWNS (unchanged) */
+/*----------- DROPDOWNS --------------*/
 function toggleDropdown(btn, e) {
   e.stopPropagation();
 
@@ -100,8 +103,9 @@ document.addEventListener("click", () => {
   });
 });
 
+/*------------ Side dropdown ----------------*/
 function toggleSideMenu(btn, e){
-  e.stopPropagation();   // THIS IS THE KEY LINE
+  e.stopPropagation();
 
   const panel = btn.nextElementSibling;
 
@@ -120,13 +124,7 @@ document.addEventListener("click", e => {
   }
 });
 
-function copyCode(btn){
-  const code = btn.nextElementSibling.innerText;
-  navigator.clipboard.writeText(code).then(()=>{
-    btn.textContent="✓";
-    setTimeout(()=>btn.textContent="Copy",900);
-  });
-}
+/*-------------- Animation on hardwarevi page --------------*/
 
 document.querySelectorAll('.led-container').forEach(container => {
   const frames = container.querySelectorAll('.led-frame');
@@ -142,7 +140,92 @@ document.querySelectorAll('.led-container').forEach(container => {
   }, 1000);
 });
 
-renderer = new THREE.WebGLRenderer({
+
+/*-------------------- Animation tutorial page --------------------*/
+
+let currentTutorial = null;
+let currentStep = 0;
+
+const tutorials = {
+  led: {
+    title: "Blink LED",
+    steps: [
+      {
+        img: "Images/led-step1.png",
+        text: "Step 1: Get an Arduino, LED, 220Ω resistor and wires."
+      },
+      {
+        img: "Images/led-step2.png",
+        text: "Step 2: Connect resistor to pin 13."
+      },
+      {
+        img: "Images/led-step3.png",
+        text: "Step 3: Connect LED to resistor and GND."
+      },
+      {
+        img: "Images/led-step4.png",
+        text: "Step 4: Upload this code.",
+        code: `
+// Blink LED
+void setup(){
+  pinMode(13, OUTPUT);
+}
+
+void loop(){
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}`
+      }
+    ]
+  }
+};
+
+function loadTutorial(name){
+  currentTutorial = tutorials[name];
+  currentStep = 0;
+  renderStep();
+}
+
+function renderStep(){
+  const step = currentTutorial.steps[currentStep];
+
+  document.getElementById("tutImage").src = step.img;
+  document.getElementById("tutTitle").innerText =
+    currentTutorial.title + " – Step " + (currentStep+1);
+  document.getElementById("tutText").innerText = step.text;
+  document.getElementById("stepCounter").innerText =
+    "Step " + (currentStep+1) + " / " + currentTutorial.steps.length;
+
+  const codeBox = document.getElementById("tutCode");
+  if(step.code){
+    codeBox.style.display = "block";
+    codeBox.querySelector("pre").innerText = step.code;
+  }else{
+    codeBox.style.display = "none";
+  }
+}
+
+function nextStep(){
+  if(currentStep < currentTutorial.steps.length-1){
+    currentStep++;
+    renderStep();
+  }
+}
+
+function prevStep(){
+  if(currentStep > 0){
+    currentStep--;
+    renderStep();
+  }
+}
+
+loadTutorial("blink");
+
+
+/*-------------- 3D model renderer--------------- */
+const renderer = new THREE.WebGLRenderer({
   canvas: document.getElementById("uno3d"),
   antialias: true,
   alpha: true // <- this removes black background
@@ -150,9 +233,78 @@ renderer = new THREE.WebGLRenderer({
 
 renderer.setClearColor(0x000000, 0); // fully transparent
 
+/*--------------___ Feedback functiones ___---------------------*/
 
+function toggleCustomType(){
+  const sel = document.getElementById("type");
+  const custom = document.getElementById("customType");
 
+  if(sel.value === "custom"){
+    custom.style.display = "block";
+    custom.focus();
+  }else{
+    custom.style.display = "none";
+    custom.value = "";
+  }
+}
+        function sendMail(form) {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+            // Format mailto link
+            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n\n" +
+                "Message:\n" + message
+            )}`;
 
+            // Open user's email client
+            window.location.href = mailtoLink;
+        }
+function submitFeedback(){
+
+  const typeSelect = document.getElementById("type");
+  const customType = document.getElementById("customType");
+  const idea = document.getElementById("idea").value;
+  const user = document.getElementById("user").value || "Anonymous";
+
+  const finalType = 
+    typeSelect.value === "custom"
+    ? customType.value
+    : typeSelect.value;
+
+  const subject = "Arduino Guide Feedback: " + finalType;
+
+  const body =
+    "Type: " + finalType + "\n" +
+    "User: " + user + "\n\n" +
+    "Message:\n" + idea;
+
+  const mailtoLink =
+    `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  window.location.href = mailtoLink;
+}
+
+function downloadQRCode() {
+  fetch('QR-Code.png')
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ArduinoGuideQRCode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert('Failed to download QR code'));
+}
+/*-------------------___ pdf download ___-------------------------------*/
+
+/*-------------------___ Example copy function + download ___---------------------------*/
 
 function copyCode(btn){
   const code = btn.parentElement.querySelector("pre").innerText;
@@ -190,6 +342,7 @@ function downloadFile(content, filename){
   URL.revokeObjectURL(url);
 }
 
+/*--------------- Examples ---------------*/
 function loadExample(type){
   const box = document.getElementById("exampleBox");
 
@@ -595,132 +748,3 @@ void loop(){
     `;
   }
 }
-
-
-function toggleCustomType(){
-  const sel = document.getElementById("type");
-  const custom = document.getElementById("customType");
-
-  if(sel.value === "custom"){
-    custom.style.display = "block";
-    custom.focus();
-  }else{
-    custom.style.display = "none";
-    custom.value = "";
-  }
-}
-
-
-        function sendMail(form) {
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const subject = document.getElementById("subject").value;
-            const message = document.getElementById("message").value;
-            // Format mailto link
-            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-                "Name: " + name + "\n" +
-                "Email: " + email + "\n\n" +
-                "Message:\n" + message
-            )}`;
-
-            // Open user's email client
-            window.location.href = mailtoLink;
-        }
-function submitFeedback(){
-
-  const typeSelect = document.getElementById("type");
-  const customType = document.getElementById("customType");
-  const idea = document.getElementById("idea").value;
-  const user = document.getElementById("user").value || "Anonymous";
-
-  const finalType = 
-    typeSelect.value === "custom"
-    ? customType.value
-    : typeSelect.value;
-
-  const subject = "Arduino Guide Feedback: " + finalType;
-
-  const body =
-    "Type: " + finalType + "\n" +
-    "User: " + user + "\n\n" +
-    "Message:\n" + idea;
-
-  const mailtoLink =
-    `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  window.location.href = mailtoLink;
-}
-
-function downloadQRCode() {
-  fetch('QR-Code.png')
-    .then(response => response.blob())
-    .then(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ArduinoGuideQRCode.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    })
-    .catch(() => alert('Failed to download QR code'));
-}
-
-clone.insertAdjacentHTML("afterbegin", `
-  <div style="padding:20px">
-    <h1>Arduino Guide Offline</h1>
-    <p>Generated: ${new Date().toLocaleString()}</p>
-    <p>By: ${userId}</p>
-    <hr>
-  </div>
-`);
-
-
-async function downloadOfflinePDF(){
-  const { jsPDF } = window.jspdf;
-
-  // Clone body so UI popups don't mess it
-  const clone = document.body.cloneNode(true);
-
-  // Remove buttons you don't want in PDF
-  clone.querySelectorAll("button").forEach(b => b.remove());
-
-  // Create hidden container
-  const temp = document.createElement("div");
-  temp.style.position = "fixed";
-  temp.style.left = "-9999px";
-  temp.appendChild(clone);
-  document.body.appendChild(temp);
-
-  const canvas = await html2canvas(clone, {
-    scale: 2,
-    useCORS: true
-  });
-
-  const imgData = canvas.toDataURL("image/png");
-
-  const pdf = new jsPDF("p","mm","a4");
-  const pageWidth = 210;
-  const pageHeight = 297;
-
-  const imgWidth = pageWidth;
-  const imgHeight = canvas.height * imgWidth / canvas.width;
-
-  let y = 0;
-  while(y < imgHeight){
-    pdf.addImage(imgData, "PNG", 0, -y, imgWidth, imgHeight);
-    y += pageHeight;
-    if(y < imgHeight) pdf.addPage();
-  }
-
-  pdf.save("Arduino-Guide-Offline.pdf");
-
-  document.body.removeChild(temp);
-}
-document.querySelectorAll("[id^='text-']").forEach(el=>{
-  el.style.maxHeight = "none";
-});
-document.querySelectorAll("[id^='codeWrap-']").forEach(el=>{
-  el.style.display = "block";
-});

@@ -137,12 +137,9 @@
     <a href="https://instagram.com/darkshadow_web_dev" target="_blank">Instagram</a>
     <a href="https://github.com/darkshadow-dev" target="_blank">GitHub</a>
 <a href="https://forms.gle/YGrm43ZC8cpHdaLh6">Form</a>
-
-<button onclick="downloadOfflinePDF()">
-  📄 Download Offline PDF
-</button>  </div>
 </section>
 
+<button onclick="downloadOfflinePDF()">TEST PDF</button>
 
 <section id="feedback" class="page">
   <h2>Feature Request</h2>
@@ -188,7 +185,71 @@
 <footer>
   Arduino Guide Ⓖ 2026
 </footer>
-<script src="js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/main.js" defer></script>
+<script>
+const EXPORT_FILES = [
+  "Arduino%20Guide.html"
+];
+
+async function loadFile(url){
+  const res = await fetch(url);
+  const text = await res.text();
+  const doc = new DOMParser().parseFromString(text,"text/html");
+  return doc.body;
+}
+
+async function downloadOfflinePDF(){
+  const { jsPDF } = window.jspdf;
+  const exportRoot = document.createElement("div");
+  exportRoot.style.width = "1000px";
+
+  for(const file of EXPORT_FILES){
+    const body = await loadFile(file);
+    const section = body.cloneNode(true);
+
+    // FORCE ALL PAGES VISIBLE
+    section.querySelectorAll(".page").forEach(p=>{
+      p.classList.add("active");
+      p.style.display = "block";
+    });
+const details = section.querySelectorAll("details");
+details.forEach((d,i)=>{
+  d.open = true;
+  d.style.pageBreakBefore = i === 0 ? "auto" : "always";
+});
+    section.style.pageBreakAfter = "always";
+    exportRoot.appendChild(section);
+  }
+
+
+  document.body.appendChild(exportRoot);
+
+  const canvas = await html2canvas(exportRoot,{
+    scale:2,
+    useCORS:true,
+    windowWidth:1200
+  });
+
+  const img = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF("p","mm","a4");
+  const h = canvas.height * 210 / canvas.width;
+  let y = 0;
+
+  while(y < h){
+    pdf.addImage(img,"PNG",0,-y,210,h);
+    y += 297;
+    if(y < h) pdf.addPage();
+  }
+
+  pdf.save("Arduino-Guide-Offline.pdf");
+  document.body.removeChild(exportRoot);
+}
+
+
+</script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
@@ -203,8 +264,5 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 </body>
 </html>
