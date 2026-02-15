@@ -1,273 +1,318 @@
-/*---------------------- MOBILE GUIDE CSS ----------------------*/
+/*---------------------- MOBILE GUIDE CSS – PC STYLE ----------------------*/
 
-/* Basic reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+
+@media(max-width:960px){
+/*-------------Root-----------------------*/
+:root{
+  --bg:#f5faff;
+  --panel:#e9f4ff;
+  --accent:#00979d;
+  --accent2:#00c853;
+  --text:#0b1c2d;
+  --max:1100px;
+  --font: system-ui, Arial;
 }
 
+/*-------------Reset-----------------------*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body { height:100%; }
+
 body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
 }
 
-/*------------------------------------
-  TOP NAV + DROPDOWN
-------------------------------------*/
+/*-------------Header / Top Nav----------------*/
 .top-nav {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #333;
-  color: #fff;
-  display: flex;
+  top: 0; left:0; right:0;
+  background: var(--panel);
+  padding: 12px 16px;
+  display:flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
+  align-items:center;
   z-index: 1000;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.top-nav .nav-left,
-.top-nav .nav-right {
-  display: flex;
-  align-items: center;
+.top-nav .nav-left, .top-nav .nav-right {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
 .top-nav a {
-  color: #fff;
-  text-decoration: none;
-  margin-right: 10px;
-  font-size: 14px;
+  padding:8px 12px;
+  color: var(--accent);
+  font-weight:600;
+  border-radius:6px;
+  text-decoration:none;
 }
 
 .top-nav a:hover {
-  text-decoration: underline;
+  background: rgba(0,151,157,.15);
 }
 
-/* Dropdown */
+/*-------------Dropdown----------------*/
 .dropdown {
   position: relative;
+  width:160px;
 }
 
 .dropdown-btn {
-  padding: 6px 10px;
-  cursor: pointer;
-  background: #444;
-  border-radius: 4px;
-  font-size: 14px;
-  user-select: none;
+  width:100%;
+  padding:10px 14px;
+  font-weight:600;
+  text-align:left;
+  font-size:14px;
+  cursor:pointer;
+  border:none;
+  border-radius:8px;
+  background: var(--panel);
+  color: var(--accent);
 }
+
+.dropdown-btn:hover { background: rgba(0,151,157,.15); }
+
+.dropdown-btn span { transition: transform .25s ease; }
+.dropdown.open .dropdown-btn span { transform: rotate(180deg); }
 
 .dropdown-menu {
-  position: absolute;
-  top: 36px;
-  left: 0;
-  background: #fff;
-  color: #222;
-  min-width: 150px;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  display: none;
-  flex-direction: column;
-  z-index: 1000;
+  position:absolute;
+  top:110%;
+  left:0;
+  width:100%;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  opacity:0;
+  transform: translateY(-8px);
+  pointer-events:none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index:999;
 }
 
-.dropdown.open .dropdown-menu {
-  display: flex;
+.dropdown-menu.open {
+  opacity:1;
+  transform: translateY(0);
+  pointer-events:auto;
 }
 
 .dropdown-menu a {
-  padding: 8px 12px;
-  text-decoration: none;
-  color: #222;
-  font-size: 14px;
+  display:block;
+  padding:10px 14px;
+  font-weight:600;
+  color: var(--accent);
 }
 
 .dropdown-menu a:hover {
-  background: #eee;
+  background: rgba(0,151,157,.12);
 }
 
-/*------------------------------------
-  SIDE MENU
-------------------------------------*/
+/*-------------Side Panel----------------*/
 .side-panel {
   position: fixed;
-  top: 48px;
-  left: -250px;
-  width: 240px;
+  top:48px;
+  left:-250px;
+  width:240px;
   height: calc(100% - 48px);
-  background: #222;
-  color: #fff;
-  padding: 12px;
-  transition: left 0.25s;
-  overflow-y: auto;
-  z-index: 900;
+  background: var(--panel);
+  color: var(--accent);
+  padding:12px;
+  border-radius:8px;
+  box-shadow:0 6px 14px rgba(0,0,0,.2);
+  transition: left .25s ease;
+  z-index:900;
+  display:flex;
+  flex-direction: column;
+  overflow-y:auto;
 }
 
-.side-panel.open {
-  left: 0;
-}
+.side-panel.open { left:0; }
 
 .side-panel a {
-  display: block;
-  color: #fff;
-  padding: 8px 0;
-  font-size: 14px;
+  padding:10px 14px;
+  font-weight:600;
+  text-decoration:none;
+  color: var(--accent);
+  border-radius:6px;
 }
 
-.side-panel a:hover {
-  text-decoration: underline;
+.side-panel a:hover { background: rgba(0,151,157,.15); }
+
+.side-btn {
+  background:none;
+  border:none;
+  color: var(--accent);
+  width:100%;
+  text-align:left;
+  padding:8px 12px;
+  font-weight:600;
+  cursor:pointer;
 }
 
-/*------------------------------------
-  PAGE CONTAINER
-------------------------------------*/
+.side-btn:hover { background: rgba(0,151,157,.12); }
+
+/*-------------Page Container----------------*/
 .page {
-  padding: 60px 12px 20px 12px;
-  display: none;
+  padding: 80px 12px 20px;
+  display:none;
 }
 
-.page.active {
-  display: block;
+.page.active { display:block; }
+
+.page h2 { 
+  color: var(--accent);
+  margin-bottom:10px;
+  font-size:18px;
 }
 
-/* Page titles */
-.page h2 {
-  margin-bottom: 12px;
-  font-size: 18px;
-}
-
-/*------------------------------------
-  TABS + COMPARE
-------------------------------------*/
+/*-------------Tabs + Compare----------------*/
 .tab-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 12px;
+  display:flex;
+  flex-direction:column;
+  margin-top:12px;
 }
 
 .tab-header {
-  display: flex;
-  overflow-x: auto;
-  border-bottom: 2px solid #ccc;
+  display:flex;
+  overflow-x:auto;
+  border-bottom:2px solid #ccc;
 }
 
 .tab-header button {
-  flex: none;
-  padding: 8px 12px;
-  background: #eee;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
+  flex:none;
+  padding:8px 12px;
+  border:none;
+  font-weight:600;
+  cursor:pointer;
+  font-size:14px;
+  background: var(--panel);
+  color: var(--accent);
+  border-radius:6px 6px 0 0;
 }
 
 .tab-header button.active {
-  background: #333;
+  background: var(--accent);
   color: #fff;
 }
 
 .tab-content {
   background: #fff;
-  border-radius: 4px;
-  padding: 12px;
-  margin-top: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  overflow-x: auto;
+  border-radius:0 0 8px 8px;
+  padding:12px;
+  box-shadow:0 2px 4px rgba(0,0,0,.1);
+  margin-top:0;
+  overflow-x:auto;
 }
 
 .compare-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
 }
 
 .compare-item {
-  background: #f0f0f0;
-  border-radius: 4px;
-  padding: 8px;
-  font-size: 14px;
-  display: flex;
+  background: var(--panel);
+  border-radius:8px;
+  padding:8px;
+  display:flex;
   justify-content: space-between;
-  align-items: center;
+  align-items:center;
+  flex-wrap:wrap;
+  font-weight:600;
 }
 
 .compare-item button {
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-  background: #333;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
+  padding:6px 12px;
+  font-weight:600;
+  border:none;
+  border-radius:6px;
+  background: var(--accent);
+  color:#fff;
+  cursor:pointer;
 }
 
-.compare-item button:hover {
-  background: #555;
-}
+.compare-item button:hover { background: var(--accent2); }
 
-/*------------------------------------
-  EXAMPLES / CODE BLOCKS
-------------------------------------*/
+/*-------------Code Blocks----------------*/
 .code-block {
-  background: #1e1e1e;
-  color: #dcdcdc;
-  border-radius: 4px;
-  margin: 12px 0;
-  padding: 8px;
-  overflow-x: auto;
-  position: relative;
+  background:#0e1a24;
+  color:#b9f6ca;
+  border-radius:8px;
+  padding:12px;
+  margin:12px 0;
+  overflow-x:auto;
+  position:relative;
 }
 
 .code-block pre {
   font-family: monospace;
-  font-size: 13px;
+  font-size:14px;
 }
 
 .btn-action {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  padding: 4px 8px;
-  font-size: 12px;
-  background: #444;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 3px;
+  position:absolute;
+  top:8px;
+  right:8px;
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  background: var(--accent2);
+  color:#003;
+  font-weight:700;
+  cursor:pointer;
 }
 
-.btn-action:hover {
-  background: #666;
+.btn-action:hover { background:#00e676; }
+
+/*-------------Buttons----------------*/
+.btn {
+  display:inline-block;
+  padding:10px 20px;
+  background: var(--accent);
+  color:#fff;
+  border-radius:6px;
+  font-weight:700;
+  text-decoration:none;
+  transition:.2s;
 }
 
-/*------------------------------------
-  SCROLL & TOUCH ADJUSTMENTS
-------------------------------------*/
-body, .page, .side-panel, .dropdown-menu {
-  -webkit-overflow-scrolling: touch;
+.btn:hover { background: var(--accent2); transform: translateY(-1px); }
+
+.btn-submit{
+  width:50%;
+  margin:18px auto 0;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color:#fff;
+  font-size:1.05rem;
+  cursor:pointer;
+  display:block;
+  transition:.25s;
 }
 
-@media (max-width: 500px) {
-  .top-nav .nav-left {
-    flex-wrap: wrap;
-  }
+.btn-submit:hover { transform:scale(1.03); filter: brightness(1.1); }
+}
 
-  .tab-header {
-    font-size: 12px;
-  }
-
-  .compare-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .compare-item button {
-    margin-top: 4px;
-  }
+/*-------------Media Queries Mobile Friendly----------------*/
+@media(max-width:500px){
+  .tab-header button{ font-size:12px; padding:6px 10px; }
+  .compare-item { flex-direction:column; align-items:flex-start; }
+  .compare-item button { margin-top:4px; }
+  .top-nav a { font-size:12px; padding:6px 10px; }
+  .side-panel { width:200px; }
 }
