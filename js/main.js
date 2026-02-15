@@ -140,7 +140,6 @@ document.querySelectorAll('.led-container').forEach(container => {
   }, 1000);
 });
 
-
 /*-------------------- Animation tutorial page --------------------*/
 
 let currentTutorial = null;
@@ -223,6 +222,7 @@ function prevStep(){
 
 loadTutorial("blink");
 
+/*this is a gone function above*/
 
 /*-------------- 3D model renderer--------------- */
 const renderer = new THREE.WebGLRenderer({
@@ -344,6 +344,7 @@ function downloadFile(content, filename){
 
 /*--------------- Examples ---------------*/
 function loadExample(type){
+  activatePage("examples", false);
   const box = document.getElementById("exampleBox");
 
   if(type === "code"){

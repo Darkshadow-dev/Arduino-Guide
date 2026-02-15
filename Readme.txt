@@ -31,6 +31,10 @@ Folders {:
 
 -audio
 
+-js
+
+-css
+
 Images {:
 
 _Arduino-Buzzer.png
@@ -95,12 +99,14 @@ audio {:
 
 css {:
 
+_mobile.css
 _main.css
 }
 
 js {:
 
-main.js
+_mobile.js
+_main.js
 }
 
 2:8:26

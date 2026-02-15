@@ -8,6 +8,7 @@
 <title>Arduino Guide</title>
 
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/mobile.css">
 
 </head>
 
@@ -514,7 +515,7 @@
 </p>
 
 <h3>Wiring LED to the Board</h3>
-<p> Click on the <a href="Examples.html#examples">Blink LED</a> example.</p>
+<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Blink LED</a> example.</p>
 
 <details class="wiring-card">
   <summary> LED Wiring</summary>
@@ -542,7 +543,7 @@
 <div style="height:10vh;"></div>
 
 <h3>Wiring Multiple LEDs to the Board</h3>
-<p> Click on the <a href="Examples.html#examples">Multi LED</a> example</p>
+<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Multi LED</a> example</p>
 
 <details class="wiring-card">
   <summary>Multiple LED Wiring</summary>
@@ -573,7 +574,7 @@
 
 <div style="height:10vh;"></div>
 <h3>OLED 4-Pin Wiring Layout</h3>
-<p> Click on the <a href="Examples.html#examples">Oled 4-Pin Display</a> example.</p>
+<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Oled 4-Pin Display</a> example.</p>
 <details class="wiring-card">
   <summary>Screen (I²C)</summary>
   <p>OLED / LCD using SDA and SCL lines.</p>
@@ -603,7 +604,7 @@
 // ye also stop with ? ill see your comment soon egnof.  ok ill srop.>
 <div style="height:10vh;"></div>
 <h3>Buzzer+Arduino Wiring Layout</h3>
-<p> Click on the <a href="Examples.html#examples">Buzzer/Speaker</a> example.</p>
+<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Buzzer/Speaker</a> example.</p>
 <details class="wiring-card">
   <summary>Buzzer (Passive)</summary>
   <p>Buzzer Connect lines.</p>
@@ -621,7 +622,6 @@
 </details>
 <details>
   <summary>Wiring Explained</summary>
-  <p>Go to <a class="next.link nl-blue nl-noneunderline" href="Hardware-Tutorial.html#hardware-tutorial"> Visual Explained </a>page.
   <p><b>Connect</b> the Pin 6 to one end of a 1k resistor (lower the resistance if it dosen't work).</p>
   <p><b>Why:</b> only passive buzzers need resistors active ones don't need resistors first try with a resistor then a lower one then without any!</p>
   <p><b>Connect</b> The end of the resistor (if you need to use one) to the + of the buzzer/speaker</p>
@@ -1304,6 +1304,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 </footer>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script src="js/main.js"></script>
+<script src="js/mobile.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
