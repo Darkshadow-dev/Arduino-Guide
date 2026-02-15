@@ -124,6 +124,55 @@ document.addEventListener("click", e => {
   }
 });
 
+function toggleLP(btn){
+  const card = btn.parentElement;
+
+  document.querySelectorAll(".lp-card").forEach(c=>{
+    if(c!==card) c.classList.remove("active");
+  });
+
+  card.classList.toggle("active");
+}
+
+/* progress system (toggle version) */
+
+document.querySelectorAll(".lp-check").forEach(box=>{
+  const text = box.previousElementSibling.textContent.trim();
+  const key = "lp_" + text;
+
+  if(localStorage.getItem(key)==="1"){
+    box.classList.add("done");
+  }
+
+  box.onclick = ()=>{
+    box.classList.toggle("done");
+
+    if(box.classList.contains("done")){
+      localStorage.setItem(key,"1");
+    }else{
+      localStorage.removeItem(key);
+    }
+
+    updateCard(box.closest(".lp-card"));
+  };
+});
+
+function updateCard(card){
+  const total = card.querySelectorAll(".lp-check").length;
+  const done  = card.querySelectorAll(".lp-check.done").length;
+
+  if(done === total){
+    card.classList.add("done");
+  }else{
+    card.classList.remove("done");
+  }
+}
+
+/* restore buttons on load */
+document.querySelectorAll(".lp-card").forEach(card=>{
+  updateCard(card);
+});
+
 /*-------------- Animation on hardwarevi page --------------*/
 
 document.querySelectorAll('.led-container').forEach(container => {

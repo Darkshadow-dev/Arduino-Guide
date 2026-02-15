@@ -330,6 +330,43 @@ p{
 .nl-hover-glow:hover{  text-shadow:0 0 8px currentColor;}
 .nl-hover-scale:hover{  transform:scale(1.05);}
 
+/*--------------------___ New cursor looks ___-----------------------------------------*/
+
+button,
+.lp-btn,
+.btn,
+.btn-action{
+  cursor: grab;
+}
+
+button:active{
+  cursor: grabbing;
+}
+
+.example-item,
+.code-block,
+.pin{
+  cursor: crosshair;
+}
+
+nav a,
+.quick-links a{
+  cursor: pointer;
+}
+
+.zoom-box:hover,
+.tutorial-image img:hover{
+  cursor: zoom-in;
+}
+
+.lp-check{
+  cursor: cell;
+}
+
+.disabled{
+  cursor: not-allowed;
+}
+
 /*----------------___ Button CSS ___--------*/
 
 .btn {
@@ -706,6 +743,99 @@ p{
   background: var(--accent);
   color: #fff;
   transform: translateY(-2px);
+}
+
+/* ---------- Learning Path ---------- */
+
+.lp-grid{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+
+.lp-card{
+  width:180px;
+  border:3px solid #000;
+  border-radius:14px;
+  background:#fff;
+  overflow:hidden;
+}
+
+/* BUTTON */
+.lp-btn{
+  width:100%;
+  padding:12px;
+  font-size:18px;
+  font-weight:bold;
+  background:#eee;
+  border:none;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.lp-card.done .lp-btn{
+  background:#b7f5c0;
+  color:#0b5;
+}
+
+/* DROPDOWN ANIMATION */
+.lp-content{
+  max-height:0;
+  overflow:hidden;
+  transition:0.35s ease;
+}
+
+.lp-card.active .lp-content{
+  max-height:300px;
+}
+
+/* LINKS */
+.lp-content a{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  text-decoration:none;
+  color:#000;
+  border-top:1px solid #ccc;
+}
+
+.lp-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.lp-check{
+  width:18px;
+  height:18px;
+  border:2px solid #999;
+  border-radius:4px;
+  cursor:pointer;
+  flex-shrink:0;
+  position:relative;
+}
+
+.lp-check.done{
+  background:#00c853;
+  border-color:#00c853;
+}
+
+.lp-check.done::after{
+  content:"✓";
+  color:white;
+  font-size:14px;
+  position:absolute;
+  left:3px;
+  top:-1px;
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .lp-card { width: 100%; }
 }
 
 
