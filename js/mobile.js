@@ -1,20 +1,26 @@
 //------------------------------------
-// MOBILE JS FOR TOUCH SUPPORT
+// MOBILE JS (touch support for dropdowns)
 //------------------------------------
 
-// Add tap support for mobile elements
-function enableTouchClick(selector){
-  document.querySelectorAll(selector).forEach(item=>{
-    item.addEventListener('touchstart', e=>{
-      e.stopPropagation();
-      item.click();
-    });
+// --- Make PC dropdown functions work with touch ---
+document.querySelectorAll(".dropdown-btn").forEach(btn => {
+  btn.addEventListener("touchstart", e => {
+    e.preventDefault();  // prevent ghost click
+    toggleDropdown(btn, e);
   });
-}
+});
 
-// Dropdowns
-enableTouchClick('.dropdown-btn');
-enableTouchClick('.side-btn');
+document.querySelectorAll(".side-btn").forEach(btn => {
+  btn.addEventListener("touchstart", e => {
+    e.preventDefault();
+    toggleSideMenu(btn, e);
+  });
+});
 
-// Examples menu items
-enableTouchClick('.example-item');
+// Optional: make example items tap-friendly
+document.querySelectorAll(".example-item").forEach(item => {
+  item.addEventListener("touchstart", e => {
+    e.preventDefault();
+    item.click();
+  });
+});
