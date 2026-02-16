@@ -353,6 +353,8 @@ function downloadQRCode() {
 }
 /*-------------------___ pdf download ___-------------------------------*/
 
+/* Go to Feedback.html for the script leave it there*/
+
 /*-------------------___ Example copy function + download ___---------------------------*/
 
 function copyCode(btn){

@@ -745,6 +745,24 @@ nav a,
   transform: translateY(-2px);
 }
 
+/* ---------- INFO CARDS ---------- */
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+  margin:40px 0;
+}
+.info-card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.info-card h3{
+  color:var(--accent);
+  margin-bottom:10px;
+}
+
 /* ---------- Learning Path ---------- */
 
 .lp-grid{
@@ -864,7 +882,7 @@ nav a,
 
 .spec-grid{
   display:grid;
-  grid-template-columns:  1fr 2fr;
+  grid-template-columns:  1fr 1.5fr;
   gap:12px;
   background:var(--panel);
   padding:15px;
