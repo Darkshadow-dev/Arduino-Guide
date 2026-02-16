@@ -152,6 +152,21 @@ width:300px;
 text-align:center
 }
 
+.copy-btn{
+  margin-left:12px;
+  padding:5px 10px;
+  border-radius:6px;
+  background:#00979d;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.copy-btn:hover{
+  background:#00c853;
+}
+
 #landscape-warning {
   position: fixed;
   top: 0; left: 0;
@@ -191,31 +206,58 @@ text-align:center
 <body>
 
 <header>
-    <a href="Arduino%20Guide.html#home">Home</a>
-<button onclick="newProject()">New</button>
-<button onclick="openFile()">Open</button>
-<button onclick="saveProject(this)">Save</button>
+
+<a href="Arduino%20Guide.html#home">Home</a>
 
 <div class="dropdown">
-<button onclick="toggleExamples()">Examples</button>
-<div id="examples" class="dropdown-menu">
-  <div onclick="loadExample('blink')">Blink LED</div>
-  <div onclick="loadExample('button')">Button</div>
-  <div onclick="loadExample('serial')">Serial</div>
-  <div onclick="loadExample('buzzer')">Buzzer</div>
-  <div onclick="loadExample('pwm')">PWM LED</div>
-  <div onclick="loadExample('multi-led')">Multi LED's</div>
-  <div onclick="loadExample('analog')">Analog</div>
-  <div onclick="loadExample('joystick')">Joystick</div>
-  <div onclick="loadExample('oled')">4Pin oled</div>
-  <div onclick="loadExample('timer')">Timer</div>
+  <button onclick="toggleFile()">File ▾</button>
+  <div id="fileMenu" class="dropdown-menu">
+    <div onclick="newProject()">New</div>
+    <div onclick="openFile()">Open</div>
+    <div onclick="saveProject(this)">Save</div>
+  </div>
 </div>
+
+<div class="dropdown">
+  <button onclick="toggleEdit()">Edit ▾</button>
+  <div id="editMenu" class="dropdown-menu">
+    <div onclick="undo()">Undo</div>
+    <div onclick="redo()">Redo</div>
+    <div onclick="editor.select()">Select All</div>
+  </div>
 </div>
-<button class="tool-btn" data-tip="Ctrl+U" onclick="undo()">Undo</button>
-<button class="tool-btn" data-tip="Ctrl+R" onclick="redo()">Redo</button>
+
+<div class="dropdown">
+  <button onclick="toggleExamples()">Examples ▾</button>
+  <div id="examples" class="dropdown-menu">
+    <div onclick="loadExample('blink')">Blink</div>
+    <div onclick="loadExample('button')">Button</div>
+    <div onclick="loadExample('serial')">Serial</div>
+    <div onclick="loadExample('buzzer')">Buzzer</div>
+    <div onclick="loadExample('pwm')">PWM</div>
+    <div onclick="loadExample('analog')">Analog</div>
+    <div onclick="loadExample('oled')">OLED</div>
+    <div onclick="loadExample('timer')">Timer</div>
+  </div>
+</div>
+
+<div class="dropdown">
+  <button onclick="toggleInfo()">Info ▾</button>
+  <div id="infoMenu" class="dropdown-menu">
+    <div onclick="openInfo('about')">About</div>
+    <div onclick="openInfo('shortcuts')">Shortcuts</div>
+    <div onclick="openInfo('format')">Formatting</div>
+    <div onclick="openInfo('version')">Version</div>
+  </div>
+</div>
+
+<button class="copy-btn" onclick="copyAll()">Copy</button>
+
 <input id="filename" value="project">
 <span>.ino / .txt</span>
+
 </header>
+
 <div id="landscape-warning" style="display:none;">
   <div class="warning-box">
     <h3>Landscape Mode Needed</h3>
@@ -290,13 +332,32 @@ editor.oninput = ()=>{
 let pendingNew=false;
 
 /* ---------- dropdown ---------- */
-function toggleExamples(){
-  const m=document.getElementById("examples");
-  m.style.display = m.style.display==="block"?"none":"block";
+
+function closeAllMenus(){
+  document.querySelectorAll(".dropdown-menu")
+    .forEach(m => m.style.display = "none");
 }
-document.addEventListener("click",e=>{
+
+function toggleFile(){
+  closeAllMenus();
+  fileMenu.style.display = "block";
+}
+function toggleEdit(){
+  closeAllMenus();
+  editMenu.style.display = "block";
+}
+function toggleExamples(){
+  closeAllMenus();
+  examples.style.display = "block";
+}
+function toggleAbout(){
+  closeAllMenus();
+  aboutMenu.style.display = "block";
+}
+
+document.addEventListener("click", e=>{
   if(!e.target.closest(".dropdown")){
-    examples.style.display="none";
+    closeAllMenus();
   }
 });
 
@@ -386,6 +447,38 @@ editor.addEventListener("input", ()=>{
   updateLines();
   highlight.innerHTML = highlightCode(editor.value);
 });
+
+function copyAll(){
+  const text = editor.getValue();
+  navigator.clipboard.writeText(text);
+}
+
+/*info------------------------------------------*/
+
+function toggleInfo(){
+  closeAllMenus();
+  infoMenu.style.display = "block";
+}
+
+function openInfo(type){
+  closeAllMenus();
+
+  if(type=="about"){
+    editor.setValue("// Arduino Guide\n// Offline IDE\n// Made by Dark");
+  }
+
+  if(type=="shortcuts"){
+    editor.setValue("// Ctrl + S = Save\n// Ctrl + Z = Undo\n// Ctrl + Y = Redo");
+  }
+
+  if(type=="format"){
+    editor.setValue("// Use 2 spaces\n// Keep lines short\n// Comment your code");
+  }
+
+  if(type=="version"){
+    editor.setValue("// Version 0.7 beta\n// 70% done");
+  }
+}
 
 /* ---------- examples ---------- */
 function loadExample(type){

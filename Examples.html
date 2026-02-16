@@ -69,6 +69,14 @@
   <div class="examples-layout">
     <!-- SIDE MENU -->
 <aside class="examples-menu">
+<div class="examples-quicknav">
+  <select id="levelFilter" onchange="filterExamples(this.value)">
+    <option value="all">All levels</option>
+    <option value="basic">Basic</option>
+    <option value="intermediate">Intermediate</option>
+    <option value="advanced">Advanced</option>
+  </select>
+</div>
 
   <h3>CODE Basic's</h3>
   <div class="example-item" onclick="loadExample('code')">
@@ -77,17 +85,17 @@
   </div>
 
   <h3>Basic</h3>
-  <div class="example-item" onclick="loadExample('blink')">
+  <div class="example-item" data-level="basic" onclick="loadExample('blink')">
     <strong>Blink LED</strong>
     <span>Digital output</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('button')">
+  <div class="example-item" data-level="basic" onclick="loadExample('button')">
     <strong>Button</strong>
     <span>Digital input</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('button-led')">
+  <div class="example-item" data-level="basic" onclick="loadExample('button-led')">
     <strong>Button + LED</strong>
     <span>Input → Output</span>
   </div>
@@ -98,38 +106,38 @@
   </div>
 
   <h3>Intermediate</h3>
-  <div class="example-item" onclick="loadExample('pwm')">
+  <div class="example-item" data-level="intermediate" onclick="loadExample('pwm')">
     <strong>PWM LED</strong>
     <span>Brightness control</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('multi-led')">
+  <div class="example-item" data-level="intermediate" onclick="loadExample('multi-led')">
     <strong>Multiple LEDs</strong>
     <span>Multiple outputs</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('analog')">
+  <div class="example-item" data-level="intermediate" onclick="loadExample('analog')">
     <strong>Analog Sensor</strong>
     <span>analogRead()</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('joystick')">
+  <div class="example-item" data-level="intermediate" onclick="loadExample('joystick')">
     <strong>Joystick</strong>
     <span>Joystick</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('oled')">
+  <div class="example-item" data-level="intermediate" onclick="loadExample('oled')">
     <strong>Oled 4-Pin Display</strong>
     <span>Oled 4-Pin Display</span>
   </div>
 
   <h3>Advanced</h3>
-  <div class="example-item" onclick="loadExample('serial')">
+  <div class="example-item" data-level="advanced" onclick="loadExample('serial')">
     <strong>Serial Monitor</strong>
     <span>USB communication</span>
   </div>
 
-  <div class="example-item" onclick="loadExample('timer')">
+  <div class="example-item" data-level="advanced" onclick="loadExample('timer')">
     <strong>Timers</strong>
     <span>Non-blocking code</span>
   </div>

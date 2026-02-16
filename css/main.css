@@ -987,6 +987,64 @@ nav a,
   opacity: .7;
 }
 
+.examples-quicknav {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+/* main select */
+.examples-quicknav select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+
+  transition: 
+    background 0.2s ease,
+    border 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* hover */
+.examples-quicknav select:hover {
+  background: #f0f8ff;
+  transform: translateY(-1px);
+}
+
+/* focus / open feel */
+.examples-quicknav select:focus {
+  outline: none;
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(0,200,83,0.25);
+  background: #ffffff;
+}
+
+/* scrollbar (Chromium) */
+.examples-quicknav select::-webkit-scrollbar {
+  width: 6px;
+}
+
+.examples-quicknav select::-webkit-scrollbar-track {
+  background: var(--panel);
+}
+
+.examples-quicknav select::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+/* Firefox */
+.examples-quicknav select {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--panel);
+}
+
 .code-block{
   position:relative;
   background:#0e1a24;

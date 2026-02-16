@@ -357,6 +357,32 @@ function downloadQRCode() {
 
 /*-------------------___ Example copy function + download ___---------------------------*/
 
+function filterExamples(level){
+  const items = document.querySelectorAll(".example-item");
+  const headers = document.querySelectorAll(".examples-menu h3");
+
+  items.forEach(item=>{
+    if(level === "all" || item.dataset.level === level){
+      item.style.display = "block";
+    } else {
+      item.style.display = "none";
+    }
+  });
+
+  // hide empty headers
+  headers.forEach(h=>{
+    let next = h.nextElementSibling;
+    let visible = false;
+
+    while(next && !next.matches("h3")){
+      if(next.style.display !== "none") visible = true;
+      next = next.nextElementSibling;
+    }
+
+    h.style.display = visible ? "block" : "none";
+  });
+}
+
 function copyCode(btn){
   const code = btn.parentElement.querySelector("pre").innerText;
   navigator.clipboard.writeText(code).then(()=>{
