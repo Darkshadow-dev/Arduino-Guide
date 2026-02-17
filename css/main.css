@@ -1146,3 +1146,188 @@ footer{
   font-weight:600;
   box-shadow:0 -2px 6px rgba(0,0,0,.1);
 }
+
+
+/*---------------------------------___ Main mobile css ___-----------------------------------------*/
+/* ================= MOBILE LAYOUT ================= */
+@media (max-width: 768px){
+
+/* -------- NAV (horizontal scroll only) -------- */
+nav{
+  overflow-x:auto;
+  white-space:nowrap;
+  flex-wrap:nowrap;
+}
+
+nav a, .dropdown{
+  flex:0 0 auto;
+}
+
+/* -------- MAIN GLOBAL -------- */
+main{
+  padding:110px 12px 14vh;
+  font-size:clamp(15px, 2.5vw, 17px);
+}
+
+
+/* bigger tap targets */
+button, .btn, .btn-action, nav a{
+  padding:12px 16px;
+  font-size:15px;
+}
+
+/* -------- BOARD PAGE -------- */
+.spec-grid{
+  grid-template-columns:1fr;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+.compare{
+  min-width:600px; /* forces horizontal scroll */
+}
+
+/* -------- HARDWARE PAGE -------- */
+.hardware-layout{
+  grid-template-columns:1fr;
+}
+
+.hardware-right{
+  position:static;
+  border-left:none;
+  padding-left:0;
+  margin-top:20px;
+}
+
+/* -------- HARDWARE VISUAL -------- */
+.wiring-card{
+  margin-bottom:20px;
+}
+
+.dual-image-row{
+  grid-template-columns:1fr;
+}
+
+/* -------- 3D PAGE -------- */
+#uno3d-wrap{
+  width:100%;
+  height:45vh;
+}
+
+.special-layout .content{
+  flex-direction:column;
+}
+
+.special-layout img{
+  width:100%;
+}
+
+/* -------- EXAMPLES PAGE -------- */
+#examples.active{
+  position:static;
+}
+
+.examples-layout{
+  flex-direction:column;
+}
+
+/* horizontal quick nav */
+.examples-menu{
+  width:100%;
+  height:auto;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  border-right:none;
+  border-bottom:3px solid var(--accent2);
+}
+
+.examples-content{
+  width:100%;
+  height:auto;
+}
+
+/* -------- FEEDBACK -------- */
+.form-panel{
+  padding:16px;
+}
+
+/* -------- FOOTER & HEADER SAME -------- */
+header, footer{
+  position:fixed;
+}
+
+/* -------- TABLE + COMPARE -------- */
+.compare td, .compare th{
+  white-space:nowrap;
+  font-size:14px;
+}
+
+/* -------- REMOVE HOVER DEPENDENCY -------- */
+.zoom-box:hover img{
+  transform:none;
+}
+
+/* tap zoom instead */
+.zoom-box img{
+  transform:scale(1);
+}
+
+/* -------- TOUCH FEEL -------- */
+button,
+.btn,
+.btn-action,
+.example-item{
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+}
+
+/* ================= LARGE DESKTOP / ULTRAWIDE ================= */
+@media (min-width: 1400px){
+
+  :root{
+    --max: 1500px; /* wider content */
+  }
+
+  body{
+    font-size:17px;
+  }
+
+  main{
+    max-width:1500px;
+    padding-left:40px;
+    padding-right:40px;
+  }
+
+  .examples-layout{
+    max-width:100%;
+  }
+
+  .examples-menu{
+    width:18%;
+    font-size:15px;
+  }
+
+  .examples-content{
+    width:82%;
+    font-size:16px;
+  }
+
+  .hardware-layout{
+    max-width:1400px;
+    margin:auto;
+  }
+
+  .info-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .spec-grid{
+    grid-template-columns:1fr 2fr;
+  }
+
+}
