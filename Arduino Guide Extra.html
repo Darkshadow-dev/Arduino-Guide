@@ -14,62 +14,57 @@
 <body>
 
 <header>
-  <div class="topbar">
-    <img src="Images/logo-left.png" class="logo left">
-    <div class="title">Arduino Guide</div>
-    <img src="Images/logo-right.png" class="logo right"> </div>
+  <div class="topbar">    <img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>
+    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button>
+<div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
+</div></div>
+    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a>    <span class="nav-spacer"></span>    <a href="Feedback.html#about">Feedback</a>
+<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
+<div class="dropdown-menu">  <a href="Arduino Quiz.html">Quizes</a>  <a href="Arduino Community.html">Community</a>  <a href="Arduino Code.html">Code beta</a>  <a href="Arduino%20Guide%20Extra.html#more">More of all</a>
+</div></div>  </nav></header>
+<main>
 
-  <nav>
-    <a href="Arduino%20Guide.html#home">Home</a>
-<div class="dropdown">
-  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
-    Board <span>▾</span>
-  </button>
-
-<div class="dropdown-menu">
-  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>
-  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>
-  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>
-  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
-</div>
-</div>
-    <a href="Arduino%20Guide.html#more">Arduino Explained</a>
-    <a href="Examples.html#examples">Examples</a>
-
-    <span class="nav-spacer"></span>
-
-    <a href="Feedback.html#about">Feedback</a>
-
-<div class="dropdown">
-  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">
-    More <span>▾</span>
-  </button>
-
-<div class="dropdown-menu">
-  <a href="Arduino Quiz.html">Quizes</a>
-  <a href="Arduino Community.html">Community</a>
-  <a href="Arduino Code.html">Code beta</a>
-<div class="side-menu">
-  <button class="side-btn" onclick="toggleSideMenu(this, event)">
-    More of all
-  </button>
-
-  <div class="side-panel">
+<div class="mini-nav">
+    <a href="Arduino%20Guide%20Extra.html#more">Home</a>
     <a href="Arduino%20Guide%20Extra.html#leds">LEDs</a>
     <a href="Arduino%20Guide%20Extra.html#resistors">Resistors</a>
     <a href="Arduino%20Guide%20Extra.html#capacitors">Capacitors</a>
     <a href="Arduino%20Guide%20Extra.html#wires">Wires</a>
     <a href="Arduino%20Guide%20Extra.html#pins-code">Pins</a>
-  </div>
-</div>
     <a href="Arduino%20Guide%20Extra.html#breadboards">Breadboards</a>
-</div></div>
-</div></div>
-  </nav></header>
+</div>
+<section id="more" class="page active" >
+<div style="height:5vh;"></div>
+  <h2>Arduino Guide</h2>
+  <p style="opacity:0.8; margin-top:-10px;">
+    A visual, offline-friendly way to learn Arduino.
+  </p>
 
-<main>
+  <p>
+    <b>Arduino Guide</b> is a community-driven project designed to explain
+    Arduino in a simple and visual way.
+    No boring theory — only real examples, wiring, and code.
+  </p>
+
+  <p>
+    This site is built for beginners and self-learners who want to
+    understand electronics by actually <b>seeing</b> how things connect.
+  </p>
+
+  <p>
+    Instead of reading long manuals, you learn by clicking, exploring,
+    and understanding both <b>hardware</b> and <b>code</b> at the same time.
+  </p>
+
+  <p>
+    The guide focuses on <b>clarity</b>, <b>speed</b>, and <b>simplicity</b>.
+    Everything runs in a single lightweight website that works offline
+    and even on older computers.
+  </p>
+</section>
 
 <section id="leds" class="page">
+<div style="height:5vh;"></div>
   <h2>LEDs (Light Emitting Diodes)</h2>
 
   <p>
@@ -153,6 +148,7 @@
 
 
 <section id="resistors" class="page">
+<div style="height:5vh;"></div>
   <h2>Resistors</h2>
 
   <p>
@@ -230,6 +226,7 @@
 
 
 <section id="capacitors" class="page">
+<div style="height:5vh;"></div>
   <h2>Capacitors</h2>
 
   <p>
@@ -307,6 +304,7 @@
 
 
 <section id="wires" class="page">
+<div style="height:5vh;"></div>
   <h2>Wires</h2>
 
   <p>
@@ -384,6 +382,7 @@
 
 
 <section id="pins-code" class="page">
+<div style="height:5vh;"></div>
   <h2>Using Arduino Pins in Code</h2>
 
   <p>
@@ -488,6 +487,7 @@ void loop() {
 
 
 <section id="breadboards" class="page">
+<div style="height:5vh;"></div>
   <h2>Breadboards</h2>
 <a href="#breadboard-3d">3D Breadboard</a>
   <p>
