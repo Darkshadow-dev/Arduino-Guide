@@ -74,6 +74,7 @@
   <a href="#about">About</a>
   <a href="#contact">Contact</a>
   <a href="#feedback">Feedback</a>
+  <a href="#download-pdf">Download</a>
 </div>
 
 
@@ -83,10 +84,6 @@
   <p style="opacity:0.8; margin-top:-10px;">
     A visual, offline-friendly way to learn Arduino.
   </p>
-
-  <button class="btn-action" onclick="openDownloadPopup()" style="margin:12px 0 20px;">
-    Download for Offline Use
-  </button>
 
   <p>
     <b>Arduino Guide</b> is a community-driven project designed to explain
@@ -236,6 +233,21 @@
   </div>
 </section>
 
+<section id="download-pdf" class="page">
+
+<div style="height:10vh;"></div>
+
+<h2>In here you'll downlad the whole or selected pages of the website!</h2>
+
+  <button class="btn-action" onclick="openDownloadPopup()" style="margin:12px 0 20px;">
+    Download for Offline Use
+  </button>
+
+<h3>Below you can see as the selected pages are downloaded</h3>
+
+<div style="height:10vh;"></div>
+</section>
+
 <section id="notfound" class="page">
     <h2>404 – Page Not Found</h2>
     <p>The section you tried to open does not exist.</p>
@@ -307,8 +319,12 @@ padding-right:4px;
       <label style="display:flex; gap:6px; align-items:center;">
         <input type="checkbox" value="Arduino%20Guide%20Extra.html"> Extra
       </label>
+
       <label style="display:flex; gap:6px; align-items:center;">
         <input type="checkbox" value="Arduino%20Code.html"> Code
+      </label>
+      <label style="display:flex; gap:6px; align-items:center;">
+        <input type="checkbox" value="Arduino%20Community.html"> Community not working
       </label>
     </div>
 
@@ -334,6 +350,7 @@ let EXPORT_FILES = [
   "Arduino%20Guide.html",
   "Arduino%20Guide%20Extra.html",
   "Arduino%20Code.html",
+  "Arduino%20Community.html",
   "Examples.html"
 ];
 
