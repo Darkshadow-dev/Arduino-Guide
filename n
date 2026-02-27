@@ -1,0 +1,492 @@
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox, simpledialog, font
+import datetime
+import os
+import re
+
+class NotepadTab:
+    def __init__(self, parent):
+        self.frame = tk.Frame(parent)
+
+        # Scrollbars FIRST
+        self.scroll_y = tk.Scrollbar(self.frame)
+        self.scroll_y.pack(side="right", fill="y")
+
+        self.scroll_x = tk.Scrollbar(self.frame, orient="horizontal")
+        self.scroll_x.pack(side="bottom", fill="x")
+
+        # Text widget
+        self.text = tk.Text(
+            self.frame,
+            undo=True,
+            wrap="none",
+            font=("Consolas", 12),
+            insertwidth=2,
+            insertbackground="black",
+            cursor="xterm"
+        )
+
+        self.text.pack(fill="both", expand=True)
+
+        # Connect scrollbars
+        self.text.config(
+            yscrollcommand=self.scroll_y.set,
+            xscrollcommand=self.scroll_x.set
+        )
+
+        self.scroll_y.config(command=self.text.yview)
+        self.scroll_x.config(command=self.text.xview)
+
+        self.text.config(insertofftime=400, insertontime=600)
+
+        self.file_path = None
+        self.modified = False
+        self.word_wrap = True
+        self.zoom_size = 12
+
+        self.text.bind("<<Modified>>", self.on_modified)
+
+    def on_modified(self, event=None):
+        self.modified = self.text.edit_modified()
+        self.text.edit_modified(False)
+
+
+class Notepad:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Notepad")
+
+        self.notebook = ttk.Notebook(root)
+        self.notebook.pack(fill="both", expand=True)
+
+        self.status = tk.Label(root, text="Ln 1, Col 1", anchor="e")
+        self.status.pack(fill="x")
+        self.autosave_label = tk.Label(root, text="", anchor="w")
+        self.autosave_label.pack(fill="x")
+
+        self.tabs = []
+
+        self.create_menu()
+        self.new_tab()
+        self.bind_shortcuts()
+
+        self.notebook.bind("<<NotebookTabChanged>>", self.update_status)
+        self.auto_save_all()
+        self.highlight_after_id = None
+
+    # ---------------- TAB MANAGEMENT ----------------
+    def new_tab(self):
+        tab = NotepadTab(self.notebook)
+        self.tabs.append(tab)
+        self.notebook.add(tab.frame, text="Untitled.txt")
+        self.notebook.select(tab.frame)
+
+        # Always update status and schedule highlight
+        for event in ("<KeyRelease>", "<ButtonRelease>", "<MouseWheel>", "<Configure>"):
+            tab.text.bind(event, lambda e, t=tab: self.on_text_event(e, t))
+
+    def close_tab(self):
+        if not self.tabs:
+            return
+
+        tab = self.get_current_tab()
+
+        # Auto save if modified
+        if tab.modified:
+            if tab.file_path:
+                with open(tab.file_path, "w", encoding="utf-8") as f:
+                    f.write(tab.text.get("1.0", tk.END))
+            else:
+                # If never saved before, force Save As
+                path = filedialog.asksaveasfilename(
+                    defaultextension=".txt",
+                    filetypes=[
+                        ("All Supported", "*.html *.css *.js *.txt"),
+                        ("HTML Files", "*.html"),
+                        ("CSS Files", "*.css"),
+                        ("JavaScript Files", "*.js"),
+                        ("Text Files", "*.txt"),
+                        ("All Files", "*.*")
+                    ]
+                )
+                if not path:
+                    return
+                tab.file_path = path
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(tab.text.get("1.0", tk.END))
+
+        index = self.notebook.index("current")
+        self.notebook.forget(index)
+        self.tabs.pop(index)
+
+        if not self.tabs:
+            self.new_tab()
+
+    def get_current_tab(self):
+        index = self.notebook.index("current")
+        return self.tabs[index]
+
+    def next_tab(self):
+        if not self.tabs:
+            return
+        current = self.notebook.index("current")
+        total = len(self.tabs)
+        self.notebook.select((current + 1) % total)
+
+    def previous_tab(self):
+        if not self.tabs:
+            return
+        current = self.notebook.index("current")
+        total = len(self.tabs)
+        self.notebook.select((current - 1) % total)
+
+    def update_tab_title(self, tab=None):
+        if not tab:
+            tab = self.get_current_tab()
+        index = self.tabs.index(tab)
+
+        if tab.file_path:
+            name = os.path.basename(tab.file_path)
+        else:
+            name = "Untitled.txt"
+
+        star = "*" if tab.modified else ""
+        self.notebook.tab(index, text=f"{star}{name}")
+
+
+    def on_text_event(self, event, tab):
+        self.update_status()
+        self.schedule_highlight(tab)
+
+    def on_key_release(self, event, tab):
+        self.update_status()
+        self.schedule_highlight(tab)
+        return "break"
+
+
+    def bind_shortcuts(self):
+        self.root.bind("<Control-n>", lambda e: self.new_tab())
+        self.root.bind("<Control-o>", lambda e: self.open_file())
+        self.root.bind("<Control-s>", lambda e: self.save_file())
+        self.root.bind("<Control-Shift-S>", lambda e: self.save_as())
+        self.root.bind("<Control-w>", lambda e: self.close_tab())
+
+        self.root.bind("<Control-f>", lambda e: self.find_text())
+        self.root.bind("<Control-h>", lambda e: self.replace_text())
+        self.root.bind("<Control-a>", lambda e: self.get_current_tab().text.tag_add("sel","1.0","end"))
+
+        self.root.bind("<Control-plus>", lambda e: self.zoom_in())
+        self.root.bind("<Control-minus>", lambda e: self.zoom_out())
+        self.root.bind("<Control-0>", lambda e: self.zoom_reset())
+        self.root.bind("<Control-Tab>", lambda e: self.next_tab())
+        self.root.bind("<Control-Shift-Tab>", lambda e: self.previous_tab())
+        self.root.bind("<Control-Shift-X>", lambda e: self.close_tab())
+
+    def get_visible_range(self, tab):
+        """Return first and last visible text indices to limit highlighting."""
+        first = tab.text.index("@0,0")
+        last = tab.text.index(f"@0,{tab.text.winfo_height()}")
+        return first, last
+
+    def apply_tag(self, tab, tag_name, regex, start="1.0", end="end"):
+        """Apply a tag to matches of regex only in the given range."""
+        content = tab.text.get(start, end)
+        for match in re.finditer(regex, content):
+            s = f"{start}+{match.start()}c"
+            e = f"{start}+{match.end()}c"
+            tab.text.tag_add(tag_name, s, e)
+
+
+    def schedule_highlight(self, tab):
+        if hasattr(tab, "highlight_job"):
+            self.root.after_cancel(tab.highlight_job)
+        # Short delay prevents lag when scrolling fast
+        tab.highlight_job = self.root.after(100, lambda: self.highlight_code(tab))
+
+
+        def do_highlight():
+            if tab.file_path:
+                if tab.file_path.lower().endswith(".html"):
+                    self.highlight_code(tab)
+                elif tab.file_path.lower().endswith(".py"):
+                    self.highlight_python(tab)
+
+        tab.highlight_job = self.root.after(300, do_highlight)
+
+
+
+
+    def highlight_code(self, tab):
+        if not tab.file_path:
+            return
+
+        first, last = self.get_visible_range(tab)
+
+        # Remove all tags in visible range
+        for tag in ["keyword","string","comment","number","html_tag","html_attr","html_string","html_comment"]:
+            tab.text.tag_remove(tag, first, last)
+
+        # Configure tags (once, ideally during init)
+        tab.text.tag_config("keyword", foreground="blue")
+        tab.text.tag_config("string", foreground="green")
+        tab.text.tag_config("comment", foreground="gray")
+        tab.text.tag_config("number", foreground="purple")
+        tab.text.tag_config("html_tag", foreground="blue")
+        tab.text.tag_config("html_attr", foreground="red")
+        tab.text.tag_config("html_string", foreground="green")
+        tab.text.tag_config("html_comment", foreground="gray")
+
+        path = tab.file_path.lower()
+        content = tab.text.get(first, last)
+
+        if path.endswith(".py"):
+            self.apply_tag(tab, "keyword", r"\b(import|from|class|def|if|elif|else|try|except|for|while|with|as|return|break|continue|pass|in|is|not|and|or|lambda|yield|global|nonlocal|assert|raise|del)\b", first, last)
+            self.apply_tag(tab, "string", r'(\".*?\"|\'.*?\')', first, last)
+            self.apply_tag(tab, "comment", r"#.*", first, last)
+            self.apply_tag(tab, "number", r"\b\d+(\.\d+)?\b", first, last)
+        elif path.endswith(".html"):
+            self.apply_tag(tab, "html_comment", r"<!--.*?-->", first, last)
+            self.apply_tag(tab, "html_tag", r"</?[^>]+>", first, last)
+            self.apply_tag(tab, "html_attr", r"\b[\w-]+(?=\=)", first, last)
+            self.apply_tag(tab, "html_string", r'"[^"]*"', first, last)
+        elif path.endswith(".js"):
+            self.apply_tag(tab, "keyword", r"\b(var|let|const|function|if|else|return|for|while|break|continue|switch|case|default)\b", first, last)
+            self.apply_tag(tab, "string", r'(\".*?\"|\'.*?\')', first, last)
+            self.apply_tag(tab, "comment", r"//.*", first, last)
+            self.apply_tag(tab, "number", r"\b\d+(\.\d+)?\b", first, last)
+        elif path.endswith(".css"):
+            self.apply_tag(tab, "keyword", r"\b(color|background|margin|padding|font|width|height|display|position)\b", first, last)
+            self.apply_tag(tab, "string", r'(\".*?\"|\'.*?\')', first, last)
+
+
+    def auto_save_all(self):
+        saved_any = False
+
+        for tab in self.tabs:
+            if tab.modified and tab.file_path:
+                with open(tab.file_path, "w", encoding="utf-8") as f:
+                    f.write(tab.text.get("1.0", tk.END))
+                tab.modified = False
+                saved_any = True
+
+        if saved_any:
+            self.show_autosave_indicator()
+
+        # repeat every 90 seconds
+        self.root.after(90000, self.auto_save_all)
+
+    def show_autosave_indicator(self):
+        self.autosave_label.config(text="💾 Auto Saved")
+        self.autosave_label.after(5000, lambda: self.autosave_label.config(text=""))
+
+
+    # ---------------- FILE ----------------
+    def open_file(self):
+        path = filedialog.askopenfilename(
+    filetypes=[
+    ("All Supported", "*.html *.css *.js *.txt"),
+    ("HTML Files", "*.html"),
+    ("Python Files", "*.py"),
+    ("CSS Files", "*.css"),
+    ("JavaScript Files", "*.js"),
+    ("Text Files", "*.txt"),
+    ("All Files", "*.*")
+    ]
+        )
+
+        if path:
+            self.new_tab()
+            tab = self.get_current_tab()
+
+            with open(path, "r", encoding="utf-8") as f:
+                tab.text.delete(1.0, tk.END)
+                tab.text.insert(tk.END, f.read())
+
+            tab.file_path = path
+            tab.modified = False
+            self.update_tab_title(tab)
+
+            # Highlight immediately
+            if path.lower().endswith(".html"):
+                self.highlight_code(tab)
+            elif path.lower().endswith(".py"):
+                self.highlight_code(tab)
+
+
+    def save_file(self):
+        tab = self.get_current_tab()
+        if not tab.file_path:
+            return self.save_as()
+
+        with open(tab.file_path, "w", encoding="utf-8") as f:
+            f.write(tab.text.get(1.0, tk.END))
+
+        tab.modified = False
+        self.update_tab_title(tab)
+
+    def save_as(self):
+        tab = self.get_current_tab()
+        path = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text Documents", "*.txt"), ("All Files", "*.*")]
+        )
+        if path:
+            tab.file_path = path
+            self.save_file()
+
+    def ask_save(self, tab):
+        if tab.modified:
+            result = messagebox.askyesnocancel("Notepad", "Do you want to save changes?")
+            if result is None:
+                return False
+            if result:
+                self.save_file()
+        return True
+
+    def exit_app(self):
+        for tab in self.tabs:
+            if tab.modified:
+                result = messagebox.askyesnocancel("Notepad", "Save changes before exit?")
+                if result is None:
+                    return
+                if result:
+                    self.save_file()
+        self.root.destroy()
+
+    # ---------------- EDIT ----------------
+    def delete_text(self):
+        tab = self.get_current_tab()
+        tab.text.delete("sel.first", "sel.last")
+
+    def find_text(self):
+        tab = self.get_current_tab()
+        find = simpledialog.askstring("Find", "Find what:")
+        if find:
+            pos = tab.text.search(find, "1.0", tk.END)
+            if pos:
+                end = f"{pos}+{len(find)}c"
+                tab.text.tag_add("sel", pos, end)
+                tab.text.mark_set("insert", end)
+                tab.text.see(pos)
+
+    def replace_text(self):
+        tab = self.get_current_tab()
+        find = simpledialog.askstring("Replace", "Find what:")
+        replace = simpledialog.askstring("Replace", "Replace with:")
+        if find and replace:
+            content = tab.text.get(1.0, tk.END)
+            content = content.replace(find, replace)
+            tab.text.delete(1.0, tk.END)
+            tab.text.insert(1.0, content)
+
+    def time_date(self):
+        tab = self.get_current_tab()
+        now = datetime.datetime.now().strftime("%H:%M %d/%m/%Y")
+        tab.text.insert(tk.INSERT, now)
+
+    # ---------------- FORMAT ----------------
+
+    def toggle_wrap(self):
+        tab = self.get_current_tab()
+        tab.word_wrap = not tab.word_wrap
+
+        if tab.word_wrap:
+            tab.text.config(wrap="word")
+            tab.scroll_x.pack_forget()  # hide horizontal scroll
+        else:
+            tab.text.config(wrap="none")
+            tab.scroll_x.pack(side="bottom", fill="x")  # show horizontal scroll
+
+
+    def change_font(self):
+        tab = self.get_current_tab()
+        font_choice = font.askfont(self.root)
+        if font_choice:
+            f = font.Font(**font_choice)
+            tab.text.config(font=f)
+
+    # ---------------- VIEW ----------------
+    def zoom_in(self):
+        tab = self.get_current_tab()
+        tab.zoom_size += 2
+        tab.text.config(font=("Consolas", tab.zoom_size))
+
+    def zoom_out(self):
+        tab = self.get_current_tab()
+        if tab.zoom_size > 6:
+            tab.zoom_size -= 2
+            tab.text.config(font=("Consolas", tab.zoom_size))
+
+    def zoom_reset(self):
+        tab = self.get_current_tab()
+        tab.zoom_size = 12
+        tab.text.config(font=("Consolas", tab.zoom_size))
+
+    def toggle_status(self):
+        if self.status.winfo_viewable():
+            self.status.pack_forget()
+        else:
+            self.status.pack(fill="x")
+
+    # ---------------- STATUS ----------------
+    def update_status(self, event=None):
+        if not self.tabs:
+            return
+        tab = self.get_current_tab()
+        row, col = tab.text.index(tk.INSERT).split(".")
+        self.status.config(text=f"Ln {row}, Col {int(col)+1}")
+        self.update_tab_title(tab)
+
+
+    # ---------------- MENU ----------------
+    def create_menu(self):
+        menu = tk.Menu(self.root)
+        self.root.config(menu=menu)
+
+        # File
+        file = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="File", menu=file)
+        file.add_command(label="New", command=self.new_tab)
+        file.add_command(label="Open...", command=self.open_file)
+        file.add_command(label="Save", command=self.save_file)
+        file.add_command(label="Save As...", command=self.save_as)
+        file.add_separator()
+        file.add_command(label="Close Tab", command=self.close_tab)
+        file.add_command(label="Exit", command=self.exit_app)
+
+        # Edit
+        edit = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="Edit", menu=edit)
+        edit.add_command(label="Undo", command=lambda: self.get_current_tab().text.edit_undo())
+        edit.add_separator()
+        edit.add_command(label="Cut", command=lambda: self.get_current_tab().text.event_generate("<<Cut>>"))
+        edit.add_command(label="Copy", command=lambda: self.get_current_tab().text.event_generate("<<Copy>>"))
+        edit.add_command(label="Paste", command=lambda: self.get_current_tab().text.event_generate("<<Paste>>"))
+        edit.add_command(label="Delete", command=self.delete_text)
+        edit.add_separator()
+        edit.add_command(label="Find...", command=self.find_text)
+        edit.add_command(label="Replace...", command=self.replace_text)
+        edit.add_separator()
+        edit.add_command(label="Time/Date", command=self.time_date)
+        edit.add_command(label="Select All", command=lambda: self.get_current_tab().text.tag_add("sel","1.0","end"))
+
+        # Format
+        format_menu = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="Format", menu=format_menu)
+        format_menu.add_command(label="Word Wrap", command=self.toggle_wrap)
+        format_menu.add_command(label="Font...", command=self.change_font)
+
+        # View
+        view = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="View", menu=view)
+        zoom = tk.Menu(view, tearoff=0)
+        view.add_cascade(label="Zoom", menu=zoom)
+        zoom.add_command(label="Zoom In", command=self.zoom_in)
+        zoom.add_command(label="Zoom Out", command=self.zoom_out)
+        zoom.add_command(label="Restore Default Zoom", command=self.zoom_reset)
+        view.add_command(label="Status Bar", command=self.toggle_status)
+
+
+root = tk.Tk()
+app = Notepad(root)
+root.mainloop()
