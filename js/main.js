@@ -419,6 +419,42 @@ function downloadFile(content, filename){
   URL.revokeObjectURL(url);
 }
 
+let cliMode = false;
+
+function toggleView(){
+  cliMode = !cliMode;
+
+  const blocks = document.querySelectorAll(".code-block");
+
+  blocks.forEach(block => {
+    const pre = block.querySelector("pre");
+    const title = block.parentElement.querySelector("h2");
+    const text = block.parentElement.querySelector("p");
+
+    if(cliMode){
+      if(title) title.style.display = "none";
+      if(text) text.style.display = "none";
+
+      pre.style.background = "#000";
+      pre.style.color = "#0f0";
+      pre.style.fontFamily = "monospace";
+      pre.style.fontSize = "14px";
+
+    }else{
+      if(title) title.style.display = "";
+      if(text) text.style.display = "";
+
+      pre.style.background = "";
+      pre.style.color = "";
+      pre.style.fontFamily = "";
+      pre.style.fontSize = "";
+    }
+  });
+
+  document.getElementById("viewToggle").textContent =
+    cliMode ? "Normal View" : "CLI / IDE";
+}
+
 /*--------------- Examples ---------------*/
 function loadExample(type){
   activatePage("examples", false);
@@ -461,6 +497,8 @@ somewhere you might find other ways but this is more or less standard snytax.
 <div class="code-block" data-filename="blink">
   <button class="btn-action" onclick="copyCode(this)">Copy</button>
   <button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
+<button id="viewToggle" onclick="toggleView()">CLI / IDE</button>
+
   <pre>
 
 // This code runs repeatedly on the Arduino
@@ -826,3 +864,4 @@ void loop(){
     `;
   }
 }
+

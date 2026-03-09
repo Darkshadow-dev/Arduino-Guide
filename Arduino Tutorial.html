@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Arduino Guide Tutorials</title>
+
+<style>
+
+/* GENERAL */
+
+body{
+margin:0;
+font-family:Arial;
+background:#ffffff;
+color:#333;
+}
+
+/* HEADER */
+
+header{
+background:#2b7cff;
+color:white;
+padding:14px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+header h1{
+margin:0;
+font-size:20px;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+margin-left:18px;
+font-weight:bold;
+}
+
+nav a:hover{
+text-decoration:underline;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+height:calc(100vh - 60px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:260px;
+background:#f4f4f4;
+border-right:1px solid #ddd;
+padding:15px;
+}
+
+.sidebar h3{
+margin-top:0;
+}
+
+/* BUTTON STYLE */
+
+.sidebar button{
+display:block;
+width:100%;
+margin:8px 0;
+padding:10px;
+border:none;
+background:#e7e7e7;
+cursor:pointer;
+border-radius:6px;
+transition:all 0.2s ease;
+}
+
+.sidebar button:hover{
+background:#d8e6ff;
+transform:translateX(3px);
+}
+
+.sidebar button:active{
+transform:scale(0.97);
+}
+
+/* CONTENT */
+
+.content{
+flex:1;
+padding:25px;
+overflow:auto;
+text-align:center;
+}
+
+/* IMAGE VIEWER */
+
+.viewer{
+display:flex;
+justify-content:center;
+}
+
+.viewer img{
+max-width:520px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+/* STEP TEXT */
+
+.text{
+margin-top:15px;
+font-size:17px;
+max-width:650px;
+margin-left:auto;
+margin-right:auto;
+line-height:1.5;
+}
+
+/* CONTROL BUTTONS */
+
+.controls{
+margin-top:18px;
+}
+
+.controls button{
+padding:10px 18px;
+margin:6px;
+border:none;
+background:#2b7cff;
+color:white;
+border-radius:6px;
+cursor:pointer;
+font-size:15px;
+transition:all 0.2s ease;
+}
+
+.controls button:hover{
+background:#1f64d6;
+transform:translateY(-2px);
+}
+
+.controls button:active{
+transform:scale(0.96);
+}
+
+/* CODE BLOCK */
+
+.code{
+margin-top:25px;
+background:#f3f3f3;
+border:1px solid #ccc;
+padding:15px;
+font-family:monospace;
+white-space:pre;
+overflow:auto;
+text-align:left;
+max-width:700px;
+margin-left:auto;
+margin-right:auto;
+border-radius:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Arduino Guide Tutorials</h1>
+
+<nav>
+<a href="Arduino Guide.html#home">Home</a>
+<a href="Arduino Guide.html#examples">Examples</a>
+<a href="tutorials.html">Tutorials</a>
+</nav>
+</header>
+
+<div class="container">
+
+<!-- LEFT MENU -->
+
+<div class="sidebar">
+
+<h3>Tutorials</h3>
+
+<button onclick="startTutorial('blink')">
+LED Blink
+</button>
+
+<button onclick="startTutorial('button')">
+Button LED Control
+</button>
+
+</div>
+
+
+<!-- RIGHT CONTENT -->
+
+<div class="content">
+
+<h1 id="title">Select a Tutorial</h1>
+
+<div class="viewer">
+<img id="stepImage" src="" style="display:none">
+</div>
+
+<div class="text" id="stepText"></div>
+
+<div class="controls">
+<button onclick="prevStep()">Previous</button>
+<button onclick="nextStep()">Next</button>
+</div>
+
+<div class="code" id="codeBlock" style="display:none"></div>
+
+</div>
+
+</div>
+
+<script>
+
+/* Tutorials */
+
+let tutorials={
+blink:{
+title:"LED Blink Tutorial",
+steps:[
+{img:"images/blink1.png",text:"Step 1: Take an LED and a 220Ω resistor."},
+{img:"images/blink2.png",text:"Step 2: Insert the LED into the breadboard."},
+{img:"images/blink3.png",text:"Step 3: Connect the long leg to Arduino pin 13."},
+{img:"images/blink4.png",text:"Step 4: Connect the resistor to GND."}
+],
+code:`void setup(){
+pinMode(13,OUTPUT);
+}
+
+void loop(){
+digitalWrite(13,HIGH);
+delay(1000);
+digitalWrite(13,LOW);
+delay(1000);
+}`
+},
+
+button:{
+title:"Button LED Control",
+steps:[
+{img:"images/button1.png",text:"Step 1: Take a push button, LED and resistor."},
+{img:"images/button2.png",text:"Step 2: Place the button across the breadboard gap."},
+{img:"images/button3.png",text:"Step 3: Connect the button to pin 2."},
+{img:"images/button4.png",text:"Step 4: Connect the LED to pin 13."}
+],
+code:`int button=2;
+int led=13;
+
+void setup(){
+pinMode(button,INPUT);
+pinMode(led,OUTPUT);
+}
+
+void loop(){
+
+if(digitalRead(button)==HIGH){
+digitalWrite(led,HIGH);
+}else{
+digitalWrite(led,LOW);
+}
+
+}`
+}
+};
+
+let currentTutorial=null;
+let step=0;
+
+function startTutorial(name){
+
+currentTutorial=tutorials[name];
+step=0;
+
+document.getElementById("title").innerText=currentTutorial.title;
+document.getElementById("codeBlock").style.display="none";
+
+showStep();
+}
+
+function showStep(){
+
+let s=currentTutorial.steps[step];
+
+let img=document.getElementById("stepImage");
+img.src=s.img;
+img.style.display="block";
+
+document.getElementById("stepText").innerText=s.text;
+}
+
+function nextStep(){
+
+if(step<currentTutorial.steps.length-1){
+step++;
+showStep();
+}else{
+
+document.getElementById("stepImage").style.display="none";
+document.getElementById("stepText").innerText="Final Step: Upload the code below.";
+
+let code=document.getElementById("codeBlock");
+code.style.display="block";
+code.innerText=currentTutorial.code;
+
+}
+}
+
+function prevStep(){
+
+if(step>0){
+step--;
+showStep();
+document.getElementById("codeBlock").style.display="none";
+}
+
+}
+
+</script>
+
+</body>
+</html>
