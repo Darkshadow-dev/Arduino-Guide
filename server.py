@@ -18,6 +18,7 @@ os.makedirs(PROJECT, exist_ok=True)
 
 INO = os.path.join(PROJECT, "web_sketch.ino")
 
+CLI = "/opt/render/project/src/bin/arduino-cli"
 
 # -------------------------
 # Helper function
@@ -52,7 +53,7 @@ def compile_code():
         f.write(code)
 
     result = run_cmd([
-        "arduino-cli",
+        CLI,
         "compile",
         "--fqbn",
         "arduino:avr:uno",
@@ -68,7 +69,7 @@ def compile_code():
 @app.route("/ports", methods=["GET"])
 def ports():
     result = run_cmd([
-        "arduino-cli",
+        CLI,
         "board",
         "list",
         "--format",
@@ -108,7 +109,7 @@ def upload():
         return jsonify({"success": False, "output": "No port selected"})
 
     result = run_cmd([
-        "arduino-cli",
+        CLI,
         "upload",
         "-p",
         port,
@@ -125,16 +126,6 @@ def session():
 import os
 import subprocess
 
-def ensure_cli():
-    try:
-        subprocess.run(["arduino-cli", "version"], check=True)
-    except:
-        os.system("curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh")
-        os.system("mv bin/arduino-cli /usr/local/bin/")
-        os.system("arduino-cli core update-index")
-        os.system("arduino-cli core install arduino:avr")
-
-ensure_cli()
 
 # -------------------------
 # Render-safe startup
