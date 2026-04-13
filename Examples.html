@@ -116,8 +116,383 @@
     <button onclick="goHome()">Go Home</button>
 </section>
 </main>
-
+<div id="copyPopup">Copied!</div>
 <script src="js/main.js"></script>
+<script>/*--------------- Examples ---------------*/
+let selectedPort = "COM8";
+const examples = {
+
+code:{
+title:"What and why",
+text:"Explanation of Arduino syntax and commands.",
+filename:"code",
+code:`
+// Arduino commands must be typed exactly
+
+pinMode(LED_BUILTIN, OUTPUT);
+digitalWrite(LED_BUILTIN, HIGH);
+delay(1000);
+
+// Commands are case sensitive
+// HIGH LOW INPUT OUTPUT must be capital letters
+`
+},
+
+blink:{
+title:"Blink LED",
+text:"Blink the built-in LED every second.",
+filename:"blink",
+code:`
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop() {
+
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+
+}
+`
+},
+
+button:{
+title:"Button Input",
+text:"Read a button using a digital pin.",
+filename:"button",
+code:`
+void setup() {
+  pinMode(2, INPUT_PULLUP);
+}
+
+void loop() {
+
+  int value = digitalRead(2);
+
+}
+`
+},
+
+"button-led":{
+title:"Button + LED",
+text:"Turn an LED on when a button is pressed.",
+filename:"button-led",
+code:`
+void setup(){
+  pinMode(2, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop(){
+
+  if(digitalRead(2) == LOW){
+    digitalWrite(LED_BUILTIN, HIGH);
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+
+}
+`
+},
+
+pwm:{
+title:"PWM LED",
+text:"Control LED brightness using PWM.",
+filename:"pwm",
+code:`
+void setup(){
+  pinMode(9, OUTPUT);
+}
+
+void loop(){
+
+  analogWrite(9, 128);
+
+}
+`
+},
+
+"multi-led":{
+title:"Multiple LEDs",
+text:"Control multiple outputs.",
+filename:"multi-led",
+code:`
+void setup(){
+
+  pinMode(13, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(11, OUTPUT);
+
+}
+
+void loop(){
+
+  digitalWrite(13, HIGH);
+  digitalWrite(12, LOW);
+  digitalWrite(11, LOW);
+
+}
+`
+},
+
+buzzer:{
+title:"Buzzer",
+text:"Play sound using a buzzer.",
+filename:"buzzer",
+code:`
+void setup(){
+  pinMode(6, OUTPUT);
+}
+
+void loop(){
+
+  tone(6, 1000);
+  delay(500);
+
+  noTone(6);
+  delay(500);
+
+}
+`
+},
+
+analog:{
+title:"Analog Sensor",
+text:"Read analog voltage values.",
+filename:"analog",
+code:`
+void setup(){
+  Serial.begin(9600);
+}
+
+void loop(){
+
+  int value = analogRead(A0);
+
+  Serial.println(value);
+
+  delay(200);
+
+}
+`
+},
+
+joystick:{
+title:"Joystick",
+text:"Read joystick X/Y and button.",
+filename:"joystick",
+code:`
+void setup(){
+  pinMode(2, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+void loop(){
+
+  int x = analogRead(A0);
+  int y = analogRead(A1);
+  int button = digitalRead(2);
+
+  Serial.print("X:");
+  Serial.print(x);
+
+  Serial.print(" Y:");
+  Serial.print(y);
+
+  Serial.print(" Button:");
+  Serial.println(button);
+
+  delay(200);
+
+}
+`
+},
+
+oled:{
+title:"OLED Display",
+text:"Display text using I2C OLED.",
+filename:"oled",
+code:`
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+Adafruit_SSD1306 display(128, 64, &Wire);
+
+void setup(){
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+
+  display.setCursor(0, 0);
+  display.println("Arduino OLED");
+  display.display();
+
+}
+
+void loop(){
+
+}
+`
+},
+
+serial:{
+title:"Serial Monitor",
+text:"Send data to the PC.",
+filename:"serial",
+code:`
+void setup(){
+  Serial.begin(9600);
+}
+
+void loop(){
+
+  Serial.println("Hello");
+
+  delay(1000);
+
+}
+`
+},
+
+timer:{
+title:"Timer (millis)",
+text:"Run code without delay blocking.",
+filename:"timer",
+code:`
+unsigned long t = 0;
+
+void setup(){
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop(){
+
+  if(millis() - t > 1000){
+
+    t = millis();
+
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+
+  }
+
+}
+`
+}
+
+};
+
+function loadExample(name){
+
+activatePage("examples", false);
+
+const ex = examples[name];
+const box = document.getElementById("exampleBox");
+
+if(!ex) return;
+
+box.innerHTML = `
+
+<h2>${ex.title}</h2>
+<p>${ex.text}</p>
+
+<div class="code-block" data-filename="${ex.filename}">
+<button class="btn-action" onclick="copyCode(this)">Copy</button>
+<button class="btn-action" style="right:70px" onclick="downloadCode(this)">Download</button>
+
+<pre>${ex.code}</pre>
+</div>
+
+<div class="cli-cmd-container">
+
+<h3>CLI Commands</h3>
+<p>
+Use to check your port:
+<code class="cli-inline" onclick="copyCmd(this)">
+<a class="next-link nl-blue nl-md nl-noneunderline">arduino-cli board list</a>
+</code>
+</p>
+<div class="cli-row">
+
+<button class="cli-btn" onclick="copyCompile('${ex.filename}')">
+Copy Compile
+</button>
+
+<button class="cli-btn" onclick="copyUpload('${ex.filename}')">
+Copy Upload
+</button>
+
+<select class="cli-port-select" id="comPort">
+<option>COM3</option>
+<option>COM4</option>
+<option>COM5</option>
+<option>COM6</option>
+<option>COM7</option>
+<option>COM8</option>
+<option>COM9</option>
+<option>COM10</option>
+</select>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+function copyCmd(el){
+
+const cmd = el.innerText;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Text copied");
+
+}
+
+
+function copyCompile(name){
+
+const cmd =
+`arduino-cli compile --fqbn arduino:avr:uno ${name}`;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Compile command copied");
+
+}
+
+function copyUpload(name){
+
+const port = document.getElementById("comPort").value;
+
+const cmd =
+`arduino-cli upload -p ${port} --fqbn arduino:avr:uno ${name}`;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Upload command copied");
+
+}
+
+function showPopup(text){
+  const popup = document.getElementById("copyPopup");
+  popup.textContent = text;
+  popup.classList.add("show");
+
+  setTimeout(()=>{
+    popup.classList.remove("show");
+  },3000);
+}
+
+</script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
@@ -132,6 +507,11 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+
 </body>
 </html>
+
+
+
+
 
