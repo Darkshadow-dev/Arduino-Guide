@@ -18,6 +18,10 @@ os.makedirs(PROJECT, exist_ok=True)
 
 INO = os.path.join(PROJECT, "web_sketch.ino")
 
+@app.get("/", (req, res) => {
+   res.send("Server is working");
+});
+
 
 # -------------------------
 # Helper function
