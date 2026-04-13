@@ -1079,6 +1079,68 @@ nav a,
   background:#00e676;
 }
 
+#copyPopup{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  
+  background:#222;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:8px;
+  font-size:14px;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s;
+}
+
+#copyPopup.show{
+  opacity:1;
+}
+
+/* CLI command container */
+.cli-cmd-container{
+  max-width:420px;
+  padding:12px;
+  margin-top:10px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  background:#f8f8f8;
+}
+
+/* one-line layout */
+.cli-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* buttons */
+.cli-btn{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  background:#2b7cff;
+  color:white;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.cli-btn:hover{
+  background:#1d5fd1;
+}
+
+/* dropdown */
+.cli-port-select{
+  width:100px;
+  padding:5px;
+  border-radius:6px;
+  border:1px solid #aaa;
+  font-size:13px;
+}
+
 /*----------------------___ Feedback CSS ___------------------------*/
 
 .form-panel {
@@ -1150,7 +1212,7 @@ footer{
 
 /*---------------------------------___ Main mobile css ___-----------------------------------------*/
 /* ================= MOBILE LAYOUT ================= */
-@media (max-width: 768px){
+@media (max-width: 678px){
 
 /* -------- NAV (horizontal scroll only) -------- */
 nav{
@@ -1290,7 +1352,7 @@ button,
 @media (min-width: 1400px){
 
   :root{
-    --max: 1500px; /* wider content */
+    --max: 2200px; /* wider content */
   }
 
   body{
@@ -1298,7 +1360,7 @@ button,
   }
 
   main{
-    max-width:1500px;
+    max-width:2200px;
     padding-left:40px;
     padding-right:40px;
   }
@@ -1331,5 +1393,132 @@ button,
   }
 
 }
+/* ================= FIXED MOBILE PATCH ================= */
+@media (max-width: 600px){
+
+/* ---------- HEADER FIX ---------- */
+header{
+  padding:10px;
+}
+
+/* stack header content */
+.topbar{
+  flex-direction:column;
+  gap:8px;
+}
+
+/* center title properly */
+.title{
+  text-align:center;
+  font-size:18px;
+}
+
+/* fix logo overlapping */
+.logo{
+  position:static;
+  margin:0 auto;
+}
+
+/* ---------- NAV FIX ---------- */
+nav{
+  margin-top:8px;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding-bottom:6px;
+}
+
+/* better spacing */
+nav a{
+  padding:10px 14px;
+  font-size:14px;
+}
+
+/* REMOVE broken mini-nav positioning */
+.mini-nav{
+  position:static;
+  justify-content:center;
+  width:100%;
+  margin-top:6px;
+}
+
+/* ---------- DROPDOWN FIX ---------- */
+.dropdown{
+  width:auto; /* remove fixed width */
+  min-width:140px;
+}
+
+.dropdown-menu{
+  position:absolute;
+  left:0;
+  right:auto;
+  width:max-content;
+  min-width:160px;
+  max-width:90vw;
+}
+
+/* ---------- SIDE PANEL FIX ---------- */
+.side-panel{
+  position:fixed;
+  top:70px;
+  right:10px;
+  left:10px;
+  min-width:auto;
+  width:auto;
+}
+
+/* ---------- MAIN SPACING ---------- */
+main{
+  padding-top:130px; /* more space for header */
+}
+
+/* ---------- QUICK LINKS ---------- */
+.quick-links{
+  flex-direction:column;
+}
+
+.quick-links a{
+  width:100%;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-submit{
+  width:100%;
+  margin-left:0;
+}
+
+/* ---------- PIN MAP ---------- */
+.pin-map{
+  max-width:100%;
+}
+
+/* ---------- HARDWARE IMAGES ---------- */
+.wiring-card img{
+  width:100%;
+  left:0;
+  top:0;
+}
+
+/* ---------- ZOOM FIX ---------- */
+.zoom-box:hover img{
+  transform:none;
+}
+
+/* ---------- EXAMPLES MENU ---------- */
+.examples-menu{
+  grid-template-columns:1fr; /* easier tap */
+}
+
+/* ---------- TEXT OVERFLOW ---------- */
+h2, h3, p{
+  word-wrap:break-word;
+}
+
+/* ---------- SAFETY (no horizontal scroll bugs) ---------- */
+body{
+  overflow-x:hidden;
+}
+
+}
+
 
 
