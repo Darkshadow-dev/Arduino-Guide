@@ -2,885 +2,472 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Arduino Editor</title>
+<title>Arduino IDE Web</title>
+
 <style>
-body{margin:0;font-family:Arial;background:#0b0f1a;color:white}
 body{
-  overflow-x:hidden;
+  margin:0;
+  font-family:monospace;
+  background:#0b0f1a;
+  color:white;
 }
-header{background:#12182b;padding:10px;display:flex;gap:10px;align-items:center}
-button{background:#1f2a44;color:white;border:none;padding:6px 12px;cursor:pointer}
-button:hover{background:#2f3f66}
-#filename{background:#000;border:1px solid #444;color:#0f0;padding:4px;width:200px}
-/* wrapper */
-.editor-wrap{
+
+header{
   display:flex;
-  width:100vw;
-  height:100vh;
-  margin:0;
-  background:#0b0f1a;
-  border-radius:10px;
-  overflow:hidden;
-  font-family:monospace;
-}
-
-/* numbers */
-.line-numbers{
-  width:40px;
+  gap:10px;
+  padding:10px;
   background:#111827;
-  color:#6b7280;
-  padding:10px 6px;
-  text-align:right;
-  user-select:none;
-  line-height:1.4;
-  font-size:14px;
+  align-items:center;
 }
 
-/* editor */
-#editor{
+button{
+  background:#1f2a44;
+  color:white;
+  border:none;
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+button:hover{background:#2c3e66}
+
+#editorWrap{
+  display:flex;
+  height:calc(100vh - 120px);
+}
+
+#lineNums{
+  width:40px;
+  background:#0f172a;
+  padding:10px;
+  color:#666;
+  text-align:right;
+}
+
+textarea{
   flex:1;
   background:#0b0f1a;
-  color:#e5e7eb;
+  color:#00ff99;
   border:none;
   outline:none;
-  resize:none;
   padding:10px;
   font-size:14px;
-  line-height:1.4;
 }
 
-background:black;color:#0f0;font-family:monospace;font-size:14px;padding:10pxbox-sizing:border-box;border:none;}
-nav::-webkit-scrollbar{display:none}
+#console{
+  height:120px;
+  background:#575251;
+  color:#0f0;
+  overflow:auto;
+  padding:10px;
+}
+select{
+  background:#111827;
+  color:white;
+}
+
 ::-webkit-scrollbar{display:none}
-/* dropdown */
-.dropdown{position:relative}
-.dropdown-menu{
-display:none;
-position:absolute;
-top:32px;
-left:0;
-background:#1a1f33;
-min-width:180px;
-border:1px solid #333;
-z-index:10
-}
-.dropdown-menu div{
-padding:6px;
-cursor:pointer
-}
-.dropdown-menu div:hover{background:#2a355c}
-.code-layer{
-  position:relative;
-  flex:1;
-}
-
-#highlight, #editor{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:10px;
-  font-family:monospace;
-  font-size:14px;
-  line-height:1.4;
-  white-space:pre;
-}
-
-#highlight, #editor{
-  white-space: pre-wrap;   /* instead of pre */
-  word-wrap: break-word;
-  overflow-x: hidden;
-}
-
-#highlight{
-  pointer-events:none;
-  color:#e5e7eb;
-}
-
-#editor{
-  background:transparent;
-  color:transparent;
-  caret-color:white;
-  border:none;
-  outline:none;
-  resize:none;
-}
-.tool-btn{
-  position:relative;
-  padding:6px 12px;
-  cursor:pointer;
-}
-
-.tool-btn::after{
-  content: attr(data-tip);
-  position:absolute;
-  bottom:-28px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#111;
-  color:#fff;
-  padding:4px 8px;
-  border-radius:6px;
-  font-size:12px;
-  white-space:nowrap;
-
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .2s ease;
-  transition-delay:1s;   /* THE 1s DELAY */
-}
-
-.tool-btn:hover::after{
-  opacity:1;
-}
-/* modal */
-#modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-display:none;
-align-items:center;
-justify-content:center
-}
-#modalBox{
-background:#151c33;
-padding:20px;
-border:1px solid #444;
-width:300px;
-text-align:center
-}
-
-.copy-btn{
-  margin-left:12px;
-  padding:5px 10px;
-  border-radius:6px;
-  background:#00979d;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-  font-size:13px;
-}
-
-.copy-btn:hover{
-  background:#00c853;
-}
-
-#landscape-warning {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.warning-box {
-  background: #222;
-  border: 2px solid #555;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 350px;
-  text-align: center;
-  font-family: sans-serif;
-}
-
-.warning-box button {
-  margin: 8px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#ok-btn { background: #4caf50; color: white; }
-#why-btn { background: #555; color: white; }
 </style>
-</head>
-<body>
 
+</head>
+
+<body>
+<input type="file" id="fileInput" style="display:none" accept=".ino,.txt">
 <header>
 
-<a href="Arduino%20Guide.html#home">Home</a>
+<button onclick="newProject()">New</button>
 
-<div class="dropdown">
-  <button onclick="toggleFile()">File ▾</button>
-  <div id="fileMenu" class="dropdown-menu">
-    <div onclick="newProject()">New</div>
-    <div onclick="openFile()">Open</div>
-    <div onclick="saveProject(this)">Save</div>
-  </div>
-</div>
+<button onclick="document.getElementById('fileInput').click()">Open</button>
 
-<div class="dropdown">
-  <button onclick="toggleEdit()">Edit ▾</button>
-  <div id="editMenu" class="dropdown-menu">
-    <div onclick="undo()">Undo</div>
-    <div onclick="redo()">Redo</div>
-    <div onclick="editor.select()">Select All</div>
-  </div>
-</div>
+<button onclick="saveFile()">Save</button>
 
-<div class="dropdown">
-  <button onclick="toggleExamples()">Examples ▾</button>
-  <div id="examples" class="dropdown-menu">
-    <div onclick="loadExample('blink')">Blink</div>
-    <div onclick="loadExample('button')">Button</div>
-    <div onclick="loadExample('serial')">Serial</div>
-    <div onclick="loadExample('buzzer')">Buzzer</div>
-    <div onclick="loadExample('pwm')">PWM</div>
-    <div onclick="loadExample('analog')">Analog</div>
-    <div onclick="loadExample('oled')">OLED</div>
-    <div onclick="loadExample('timer')">Timer</div>
-  </div>
-</div>
+<button onclick="compileCode()">Compile</button>
 
-<div class="dropdown">
-  <button onclick="toggleInfo()">Info ▾</button>
-  <div id="infoMenu" class="dropdown-menu">
-    <div onclick="openInfo('about')">About</div>
-    <div onclick="openInfo('shortcuts')">Shortcuts</div>
-    <div onclick="openInfo('format')">Formatting</div>
-    <div onclick="openInfo('version')">Version</div>
-  </div>
-</div>
+<button onclick="uploadCode()">Upload</button>
 
-<button class="copy-btn" onclick="copyAll()">Copy</button>
+<button onclick="loadPorts()">Refresh Ports</button>
+
+<select id="portSelect">
+  <option value="COM3">COM3</option>
+  <option value="COM4">COM4</option>
+  <option value="COM5">COM5</option>
+  <option value="COM6">COM6</option>
+  <option value="COM7">COM7</option>
+  <option value="COM8">COM8</option>
+  <option value="COM9">COM9</option>
+</select>
+
+<select id="board">
+  <option value="arduino:avr:uno">UNO</option>
+  <option value="arduino:avr:nano">NANO</option>
+  <option value="arduino:avr:mega">MEGA</option>
+</select>
+
+<select id="examples" onchange="loadExample(this.value)">
+  <option value="">Examples</option>
+  <option value="blink">Blink</option>
+  <option value="button">Button</option>
+  <option value="button-led">Button LED</option>
+  <option value="pwm">PWM</option>
+  <option value="multi-led">Multi LED</option>
+  <option value="buzzer">Buzzer</option>
+  <option value="analog">Analog</option>
+  <option value="joystick">Joystick</option>
+  <option value="serial">Serial</option>
+  <option value="timer">Timer</option>
+</select>
 
 <input id="filename" value="project">
-<span>.ino / .txt</span>
-
+<button onclick="location.href='Arduino Guide.html#home'">Home</button>
+<button onclick="location.href='Examples.html#examples'">Examples</button>
+<button onclick="location.href='Arduino Quiz.html'">Quizes</button>
+<button onclick="location.href='Arduino Tutorial.html#home'">Tutorials</button>
+<button onclick="location.href='Arduino Community.html'">Community</button>
 </header>
 
-<div id="landscape-warning" style="display:none;">
-  <div class="warning-box">
-    <h3>Landscape Mode Needed</h3>
-    <p id="warning-text">This works best in landscape mode. Turn your phone over!</p>
-    <p id="warning-text">Note: Navigation bar brakes in landscape mode go to potrait mode to use it</p>
-
-    <button id="ok-btn">OK</button>
-    <button id="why-btn">Why?</button>
-  </div>
-</div>
-<div class="editor-wrap">
-  <div class="line-numbers" id="lines"></div>
-  <div class="code-layer">
-    <pre id="highlight"></pre>
-    <textarea id="editor"></textarea>
-  </div>
+<div id="editorWrap">
+  <div id="lineNums"></div>
+  <textarea id="editor"></textarea>
 </div>
 
-<!-- custom modal -->
-<div id="modal">
-  <div id="modalBox">
-    <p>Erase current project?</p>
-    <button onclick="confirmNew(true)">Yes</button>
-    <button onclick="confirmNew(false)">Cancel</button>
-  </div>
-</div>
+<pre id="console"></pre>
 
-<input type="file" id="fileInput" style="display:none" accept=".txt,.ino">
-<footer id="status">0 chars</footer>
 <script>
-let history = [];
-let hIndex = -1;
+/* =========================
+   SAFE STATE
+========================= */
 
-function saveState(){
-  history = history.slice(0, hIndex+1);
-  history.push(editor.value);
-  hIndex++;
-}
+let editor, lines, consoleBox, portSelect, board, fileInput, filename;
 
-editor.addEventListener("input", saveState);
-
-function undo(){
-  if(hIndex > 0){
-    hIndex--;
-    editor.value = history[hIndex];
-    highlight.innerHTML = highlightCode(editor.value);
-    updateLines();
+/* ================= SAFE FETCH ================= */
+async function safeFetch(url, options){
+  try{
+    const res = await fetch(url, options);
+    return await res.json();
+  }catch(err){
+    console.error("Fetch error:", err);
+    return null;
   }
 }
 
-function redo(){
-  if(hIndex < history.length-1){
-    hIndex++;
-    editor.value = history[hIndex];
-    highlight.innerHTML = highlightCode(editor.value);
-    updateLines();
+/* ================= INIT ================= */
+window.addEventListener("load", () => {
+
+  editor = document.getElementById("editor");
+  lines = document.getElementById("lineNums");
+  consoleBox = document.getElementById("console");
+  portSelect = document.getElementById("portSelect");
+  board = document.getElementById("board");
+  fileInput = document.getElementById("fileInput");
+  filename = document.getElementById("filename");
+
+  if(!editor || !lines || !consoleBox || !portSelect || !board){
+    console.error("Missing elements");
+    return;
   }
-}
-document.addEventListener("keydown", e=>{
-  if(e.ctrlKey && e.key==="u"){
-    e.preventDefault();
-    undo();
-  }
-  if(e.ctrlKey && e.key==="r"){
-    e.preventDefault();
-    redo();
-  }
-});
-editor.oninput = ()=>{
-  status.textContent = editor.value.length + " chars";
-};const status = document.getElementById("status");
-let pendingNew=false;
 
-/* ---------- dropdown ---------- */
+  editor.addEventListener("input", updateLines);
 
-function closeAllMenus(){
-  document.querySelectorAll(".dropdown-menu")
-    .forEach(m => m.style.display = "none");
-}
+  fileInput.addEventListener("change", openFile);
 
-function toggleFile(){
-  closeAllMenus();
-  fileMenu.style.display = "block";
-}
-function toggleEdit(){
-  closeAllMenus();
-  editMenu.style.display = "block";
-}
-function toggleExamples(){
-  closeAllMenus();
-  examples.style.display = "block";
-}
-function toggleAbout(){
-  closeAllMenus();
-  aboutMenu.style.display = "block";
-}
-
-document.addEventListener("click", e=>{
-  if(!e.target.closest(".dropdown")){
-    closeAllMenus();
-  }
-});
-
-/* ---------- new ---------- */
-function newProject(){
-  modal.style.display="flex";
-  pendingNew=true;
-}
-function confirmNew(ok){
-  modal.style.display="none";
-  if(ok){
-    editor.value="";
-    filename.value="project";
-  }
-}
-
-/* ---------- open ---------- */
-function openFile(){
-  fileInput.click();
-}
-fileInput.onchange = e=>{
-  const file=e.target.files[0];
-  const reader=new FileReader();
-  reader.onload=()=>{
-    editor.value=reader.result;
-    filename.value=file.name.replace(/\.(ino|txt)$/,"");
-  };
-  reader.readAsText(file);
-};
-
-/* ---------- save (your download logic) ---------- */
-function saveProject(btn) {
-  const old = btn.innerText;
-  btn.innerText = "Saving...";
-
-  // Assuming you have global editor and filename elements
-  const code = editor.value;
-  const name = filename.value || "code";
-
-  // Save .ino file
-  downloadFile(code, name + ".ino");
-
-  setTimeout(() => {
-    // Save .txt file after delay
-    downloadFile(code, name + ".txt");
-    btn.innerText = "✔ Saved";
-    setTimeout(() => btn.innerText = old, 1500);
-  }, 1000);
-}
-
-function downloadFile(content, filename) {
-  const blob = new Blob([content], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-const lines = document.getElementById("lines");
-
-function updateLines(){
-  const count = editor.value.split("\n").length;
-  let html = "";
-  for(let i=1;i<=count;i++){
-    html += i + "<br>";
-  }
-  lines.innerHTML = html;
-}
-
-
-function highlightCode(code)
-{ return code
- .replace(/(\/\/.*)/g,'<span style="color:#11ab26">$1</span>')
- .replace(/\b(void|int|pinMode|digitalWrite|delay|Serial)\b/g, '<span style="color:#38bdf8">$1</span>')
- .replace(/(\;\e\w.*)/g, '<span style="color:#38bdf8">$1</span>')
- .replace(/\b(HIGH|LOW|INPUT|OUTPUT)\b/g, '<span style="color:#fbbf24">$1</span>')
- .replace(/\b(\d+)\b/g, '<span style="color:#a78bfa">$1</span>'); }
-editor.addEventListener("scroll", ()=>{
-  highlight.scrollTop = editor.scrollTop;
-});
-
-editor.addEventListener("input", ()=>{
+  editor.value = defaultSketch();
   updateLines();
-  highlight.innerHTML = highlightCode(editor.value);
+
+  loadPorts();
 });
 
-function copyAll(){
-  const text = editor.getValue();
-  navigator.clipboard.writeText(text);
-}
-
-/*info------------------------------------------*/
-
-function toggleInfo(){
-  closeAllMenus();
-  infoMenu.style.display = "block";
-}
-
-function openInfo(type){
-  closeAllMenus();
-
-  if(type=="about"){
-    editor.setValue("// Arduino Guide\n// Offline IDE\n// Made by Dark");
-  }
-
-  if(type=="shortcuts"){
-    editor.setValue("// Ctrl + S = Save\n// Ctrl + Z = Undo\n// Ctrl + Y = Redo");
-  }
-
-  if(type=="format"){
-    editor.setValue("// Use 2 spaces\n// Keep lines short\n// Comment your code");
-  }
-
-  if(type=="version"){
-    editor.setValue("// Version 0.7 beta\n// 70% done");
-  }
-}
-
-/* ---------- examples ---------- */
-function loadExample(type){
-examples.style.display="none";
-
-if(type==="blink"){
-editor.value=`// This code runs repeatedly on the Arduino
-// It makes the built-in LED blink on and off
-
-// Set digital pin 13 as an OUTPUT
-// Pin 13 has a built-in LED on most Arduino boards
-pinMode(13, OUTPUT);
-
-// Turn the LED ON by setting the pin HIGH (5V)
-digitalWrite(13, HIGH);
-
-// Pause the program for 1000 milliseconds (1 second)
-delay(1000);
-
-// Turn the LED OFF by setting the pin LOW (0V)
-digitalWrite(13, LOW);
-
-// Pause again for 1 second
-delay(1000);
-
-// After this, the code repeats forever`;
-filename.value = "blink";
-}
-
-if(type==="button"){
-editor.value=`// Set pin 2 as an INPUT pin
-// This pin will read HIGH (5V) or LOW (0V)
-pinMode(2, INPUT);
-
-// Read the current state of the button
-// HIGH = button pressed (depending on wiring)
-// LOW  = button not pressed
-int value = digitalRead(2);
-
-// NOTE:
-// Without a pull-up or pull-down resistor,
-// the value may randomly change (floating pin)
-`;
-filename.value="button";
-}
-
-if(type==="button-led"){
-editor.value=`// Configure pin 2 to read button input
-pinMode(2, INPUT);
-
-// Configure pin 13 to control the LED
-pinMode(13, OUTPUT);
-
-// Read the button state
-// If pin 2 reads HIGH, the button is pressed
-if(digitalRead(2) == HIGH){
-
-  // Button is pressed → turn LED ON
-  digitalWrite(13, HIGH);
-
-}else{
-
-  // Button not pressed → turn LED OFF
-  digitalWrite(13, LOW);
-}
-
-// This code should be inside loop()
-// so it continuously checks the button
-`;
-filename.value="button_led";
-}
-
-if(type==="pwm"){
-editor.value=`// Set pin 9 as OUTPUT
-// Pin 9 supports PWM (~ symbol on Arduino)
-pinMode(9, OUTPUT);
-
-// Write a PWM value to the pin
-// 0   = always OFF
-// 255 = always ON
-// Values in between simulate brightness
-analogWrite(9, 128); // ~50% brightness
-
-// NOTE:
-// PWM is NOT true analog voltage
-// It rapidly switches the pin ON and OFF
-`;
-filename.value="pwm";
-}
-
-if(type==="multi-led"){
-editor.value=`// Set pin 13 as OUTPUT (LED 1)
-pinMode(13, OUTPUT);
-
-// Set pin 12 as OUTPUT (LED 2)
-pinMode(12, OUTPUT);
-
-// Set pin 11 as OUTPUT (LED 3)
-pinMode(11, OUTPUT);
-
-// Turn ON LED connected to pin 13
-digitalWrite(13, HIGH);
-
-// Turn OFF LED connected to pin 12
-digitalWrite(12, LOW);
-
-// Turn OFF LED connected to pin 11
-digitalWrite(11, LOW);
-
-// All three pins are controlled independently
-`;
-filename.value="multi_led";
-}
-
-if(type==="buzzer"){
-editor.value=`// Set pin 6 as OUTPUT
-// Buzzer signal pin is connected here
-pinMode(6, OUTPUT);
-
-// Generate a sound at 1000 Hz (1 kHz)
-// Works with passive buzzers
-tone(6, 1000);
-
-// Keep the sound playing for 500 ms
-delay(500);
-
-// Stop the sound
-noTone(6);
-
-// NOTE:
-// Active buzzers do NOT need tone()
-// They only need HIGH or LOW
-`;
-filename.value="buzzer";
-}
-
-if(type==="analog"){
-editor.value=`// Read analog voltage from pin A0
-// Arduino converts voltage to a number:
-// 0   = 0V
-// 1023 = reference voltage (usually 5V)
-int value = analogRead(A0);
-
-// Example:
-// ~512 ≈ 2.5V (half of 5V)
-
-// NOTE:
-// analogRead does NOT measure current
-// Only voltage
-`;
-filename.value="analog";
-}
-
-if(type==="joystick"){
-editor.value=`// Joystick connections
-// VRx -> A0
-// VRy -> A1
-// SW  -> Pin 2
-
-void setup(){
-  pinMode(2, INPUT_PULLUP); // Joystick button
-  Serial.begin(9600);
+/* ================= DEFAULT SKETCH ================= */
+function defaultSketch(){
+  return `void setup(){
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop(){
-  int x = analogRead(A0); // X-axis (0–1023)
-  int y = analogRead(A1); // Y-axis (0–1023)
-  int button = digitalRead(2); // LOW when pressed
-
-  Serial.print("X: ");
-  Serial.print(x);
-  Serial.print("  Y: ");
-  Serial.print(y);
-  Serial.print("  Button: ");
-  Serial.println(button == LOW ? "Pressed" : "Released");
-
-  delay(200);
-}
-`;
-filename.value="joystick";
-}
-
-if(type==="oled"){
-editor.value=`#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
-
-void setup(){
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)){
-    while(true); // Stop if OLED not found
-  }
-
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println("Arduino OLED");
-  display.println("4-pin I2C");
-  display.display();
-}
-
-void loop(){
-  // Nothing here for now
-}
-
-// Wiring:
-// VCC → 5V / 3.3V
-// GND → GND
-// SDA → A4
-// SCL → A5
-`;
-filename.value="oled";
-}
-
-if(type==="serial"){
-editor.value=`// Setup runs once
-void setup(){
-  // Start serial communication at 9600 baud rate
-  Serial.begin(9600);
-}
-
-// Loop runs repeatedly
-void loop(){
-  // Print "Hello" to serial monitor
-  Serial.println("Hello");
-  
-  // Wait 1 second
+  digitalWrite(LED_BUILTIN, HIGH);
   delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+}`;
 }
-`;
-filename.value="serial";
+
+/* ================= LINE NUMBERS ================= */
+function updateLines(){
+  if(!editor || !lines) return;
+
+  const count = editor.value.split("\n").length;
+  lines.innerHTML = Array.from({length:count},(_,i)=>i+1).join("<br>");
 }
 
-if(type==="timer"){
-editor.value=`// Store the last time the action happened
-// unsigned long is required for millis()
-unsigned long t = 0;
+/* ================= COMPILE ================= */
+async function compileCode(){
 
-void loop(){
+  consoleBox.textContent = "Compiling...";
 
-  // millis() returns time since Arduino started (ms)
-  // This checks if 1 second has passed
-  if(millis() - t > 1000){
+  const res = await safeFetch("http://localhost:5000/compile", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      code: editor.value,
+      board: board.value
+    })
+  });
 
-    // Update the timer
-    t = millis();
-
-    // Toggle LED state:
-    // If ON → OFF
-    // If OFF → ON
-    digitalWrite(13, !digitalRead(13));
+  if(!res){
+    consoleBox.textContent = "Server error";
+    return;
   }
 
-  // Code here keeps running without delay()
+  consoleBox.textContent = res.output || "";
 }
 
-// This method allows multitasking
-`;
-filename.value="timer";
+/* ================= UPLOAD ================= */
+async function uploadCode(){
+
+  const port = portSelect.value;
+
+  if(!port){
+    consoleBox.textContent = "Select port first";
+    return;
+  }
+
+  consoleBox.textContent = "Uploading...";
+
+  const res = await safeFetch("http://localhost:5000/upload", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      code: editor.value,
+      port: port,
+      board: board.value
+    })
+  });
+
+  if(!res){
+    consoleBox.textContent = "Server error";
+    return;
+  }
+
+  consoleBox.textContent = res.output || "";
 }
-highlight.innerHTML = highlightCode(editor.value);
-updateLines();
-saveState();
+
+/* ================= PORTS (FIXED SAFE) ================= */
+async function loadPorts(){
+
+  if(!portSelect) return;
+
+  const data = await safeFetch("http://localhost:5000/ports");
+
+  const fallback = [
+    "COM3","COM4","COM5","COM6","COM7","COM8","COM9"
+  ];
+
+  portSelect.innerHTML = "";
+
+  let list = fallback;
+
+  if(data && data.success && Array.isArray(data.ports) && data.ports.length){
+    list = data.ports.map(p => p.port || "COM3");
+  }
+
+  list.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p;
+    portSelect.appendChild(opt);
+  });
+}
+
+/* ================= NEW ================= */
+function newProject(){
+  if(confirm("Clear code?")){
+    editor.value = "";
+    filename.value = "project";
+    updateLines();
+  }
+}
+
+/* ================= SAVE ================= */
+function saveFile(){
+  const blob = new Blob([editor.value], {type:"text/plain"});
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+  a.download = (filename.value || "project") + ".ino";
+  a.click();
+}
+
+/* ================= OPEN ================= */
+function openFile(e){
+  const file = e.target.files?.[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    editor.value = reader.result;
+    filename.value = file.name.replace(/\.(ino|txt)$/,"");
+    updateLines();
+    highlightCode(); // refresh highlight
+  };
+
+  reader.readAsText(file);
+}
+
+/* bind safely */
+fileInput.addEventListener("change", openFile);
+
+function highlightCode(){
+
+  if(!editor) return;
+
+  let code = editor.value;
+
+  // ---- SIMPLE ERROR CHECKS ----
+  let errors = [];
+
+  if(code.includes("void loop") && !code.includes("{")){
+    errors.push("Missing { in loop()");
+  }
+
+  if(code.includes("pinMode") && !code.includes("setup")){
+    errors.push("pinMode used outside setup()");
+  }
+
+  if((code.match(/\{/g)||[]).length !== (code.match(/\}/g)||[]).length){
+    errors.push("Brackets { } mismatch");
+  }
+
+  consoleBox.textContent = errors.length
+    ? "⚠ Errors:\n" + errors.join("\n")
+    : "✔ No errors detected";
+
+  // ---- SYNTAX HIGHLIGHT ----
+  let html = code
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+
+    .replace(/(\/\/.*)/g,'<span style="color:#22c55e">$1</span>')
+    .replace(/\b(void|int|pinMode|digitalWrite|delay|Serial|setup|loop|tone|noTone|analogWrite|digitalRead|millis)\b/g,
+      '<span style="color:#38bdf8">$1</span>')
+    .replace(/\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP)\b/g,
+      '<span style="color:#fbbf24">$1</span>')
+    .replace(/\b(\d+)\b/g,
+      '<span style="color:#a78bfa">$1</span>');
+
+  document.getElementById("highlight").innerHTML = html;
+}
+
+/* ================= EXAMPLES (FIXED ALL) ================= */
+function loadExample(name){
+
+  const ex = {
+
+    blink:`void setup(){
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+void loop(){
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+}`,
+
+    button:`void setup(){
+  pinMode(2, INPUT);
+}
+void loop(){
+  int v = digitalRead(2);
+}`,
+
+    "button-led":`void setup(){
+  pinMode(2, INPUT);
+  pinMode(13, OUTPUT);
+}
+void loop(){
+  digitalWrite(13, digitalRead(2));
+}`,
+
+    pwm:`void setup(){
+  pinMode(9, OUTPUT);
+}
+void loop(){
+  analogWrite(9, 128);
+}`,
+
+    "multi-led":`void setup(){
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+}
+void loop(){
+  digitalWrite(11, HIGH);
+  digitalWrite(12, LOW);
+  digitalWrite(13, HIGH);
+}`,
+
+    buzzer:`void setup(){
+  pinMode(6, OUTPUT);
+}
+void loop(){
+  tone(6, 1000);
+  delay(500);
+  noTone(6);
+  delay(500);
+}`,
+
+    analog:`void setup(){
+  Serial.begin(9600);
+}
+void loop(){
+  Serial.println(analogRead(A0));
+  delay(200);
+}`,
+
+    joystick:`void setup(){
+  Serial.begin(9600);
+}
+void loop(){
+  int x = analogRead(A0);
+  int y = analogRead(A1);
+  int b = digitalRead(2);
+  Serial.println(String(x)+" "+String(y)+" "+String(b));
+}`,
+
+    serial:`void setup(){
+  Serial.begin(9600);
+}
+void loop(){
+  Serial.println("Hello");
+  delay(1000);
+}`,
+
+    timer:`unsigned long t=0;
+void setup(){
+  pinMode(13,OUTPUT);
+}
+void loop(){
+  if(millis()-t>1000){
+    t=millis();
+    digitalWrite(13,!digitalRead(13));
+  }
+}`
+  };
+
+  if(!ex[name]) {
+    consoleBox.textContent = "Example not found: " + name;
+    return;
+  }
+
+  editor.value = ex[name];
+  filename.value = name;
+
+  updateLines();
+  highlightCode(); // IMPORTANT FIX
 }
 </script>
-
-<script>
-const STORAGE_KEY = "arduino-last-page";
-
-/* ACTIVATE PAGE */
-function activatePage(id, save = true) {
-  const target = document.getElementById(id);
-
-  document.querySelectorAll(".page").forEach(p =>
-    p.classList.remove("active")
-  );
-
-  if (target) {
-    target.classList.add("active");
-    if (save) localStorage.setItem(STORAGE_KEY, id);
-  } else {
-    document.getElementById("notfound").classList.add("active");
-    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
-  }
-
-  window.scrollTo(0, 0);
-}
-
-/* HOME BUTTON */
-function goHome() {
-  activatePage("home");
-  history.pushState(null, "", "#home");
-}
-
-/* NAV LINK HANDLING */
-document.querySelectorAll("nav a").forEach(a => {
-  a.addEventListener("click", e => {
-    const href = a.getAttribute("href");
-    if (!href || href.startsWith("http")) return;
-
-    // #section
-    if (href.startsWith("#")) {
-      e.preventDefault();
-      const id = href.substring(1);
-      activatePage(id);
-      history.pushState(null, "", href);
-      return;
-    }
-
-    // page.html#section
-    if (href.includes(".html#")) {
-      const [page, hash] = href.split("#");
-      if (location.pathname.endsWith(page)) {
-        e.preventDefault();
-        activatePage(hash);
-        history.pushState(null, "", "#" + hash);
-      }
-    }
-  });
-});
-
-/* BACK / FORWARD */
-window.addEventListener("hashchange", () => {
-  const id = location.hash.substring(1);
-  activatePage(id, false);
-});
-
-/* RESTORE LAST PAGE ON LOAD */
-window.addEventListener("load", () => {
-  const hash = location.hash.substring(1);
-  const last = localStorage.getItem(STORAGE_KEY) || "home";
-
-  if (hash) {
-    activatePage(hash);
-  } else {
-    activatePage(last);
-    history.replaceState(null, "", "#" + last);
-  }
-});
-
-/* DROPDOWNS (unchanged) */
-function toggleDropdown(btn, e) {
-  e.stopPropagation();
-
-  document.querySelectorAll(".dropdown").forEach(d => {
-    if (d !== btn.closest(".dropdown")) {
-      d.classList.remove("open");
-      d.querySelector(".dropdown-menu").classList.remove("open");
-    }
-  });
-
-  const dropdown = btn.closest(".dropdown");
-  dropdown.classList.toggle("open");
-  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
-}
-
-function selectLink(link) {
-  const dropdown = link.closest(".dropdown");
-  dropdown.classList.remove("open");
-  dropdown.querySelector(".dropdown-menu").classList.remove("open");
-}
-
-document.addEventListener("click", () => {
-  document.querySelectorAll(".dropdown").forEach(d => {
-    d.classList.remove("open");
-    d.querySelector(".dropdown-menu").classList.remove("open");
-  });
-});
-
-function toggleSideMenu(btn, e){
-  e.stopPropagation();   // THIS IS THE KEY LINE
-
-  const panel = btn.nextElementSibling;
-
-  // close other side panels
-  document.querySelectorAll(".side-panel").forEach(p => {
-    if (p !== panel) p.classList.remove("open");
-  });
-
-  panel.classList.toggle("open");
-}
-// close when clicking outside
-document.addEventListener("click", e => {
-  if (!e.target.closest(".side-menu")) {
-    document.querySelectorAll(".side-panel")
-      .forEach(p => p.classList.remove("open"));
-  }
-});
 <script type="module">
-  // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
     apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
     authDomain: "arduino-guideg.firebaseapp.com",
@@ -888,49 +475,9 @@ document.addEventListener("click", e => {
     storageBucket: "arduino-guideg.firebasestorage.app",
     messagingSenderId: "146740789054",
     appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
-    measurementId: "G-V3ZB157P0R"
-  };
-
-  // Initialize Firebase
+    measurementId: "G-V3ZB157P0R"};
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-
-</script>
-<script>
-function isMobile() {
-  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
-}
-
-function checkOrientation() {
-  if (!isMobile()) return; // ignore on PC
-
-  const warning = document.getElementById("landscape-warning");
-
-  if (window.innerWidth < window.innerHeight) {
-    // Portrait mode
-    warning.style.display = "flex";
-    document.getElementById("warning-text").innerText =
-      "This only works in landscape mode. Turn your phone over.";
-  } else {
-    // Landscape mode
-    warning.style.display = "none";
-  }
-}
-
-// Buttons
-document.getElementById("ok-btn").onclick = () => {
-  document.getElementById("landscape-warning").style.display = "none";
-};
-
-document.getElementById("why-btn").onclick = () => {
-  document.getElementById("warning-text").innerText =
-    "The simulator was made for pc but needs landscape mode to work correctly!";
-};
-
-// Check on load and when rotating
-window.addEventListener("load", checkOrientation);
-window.addEventListener("resize", checkOrientation);
 </script>
 </body>
 </html>
-
