@@ -27,6 +27,7 @@
   <a href="#contact">Contact</a>
   <a href="#feedback">Feedback</a>
   <a href="#download-pdf">Download</a>
+  <a href="#update">Update</a>
 </div>
 
 
@@ -205,6 +206,49 @@
 <div style="height:10vh;"></div>
 </section>
 
+
+<section id="update" class="page">
+<div style="height:5vh;"></div>
+<h2>Here you can see the recent updates made to the whole guide:</h2>
+<div style="height:5vh;"></div>
+<p>
+Home get better syntax and css fixed.
+nav and style made more for mobile and pc.
+</p><p>
+Text got more esay for reading and writing.
+</p><p>
+BIG Update:
+</p><p>
+Trutorial page. Better community, Examples page got less buggy and more stable as well code got updated
+</p><p>
+As well Code editor got real updated with compile, upload, code etc (lost the highlight somehow).
+</p><p>
+Feedback got more nav (this uplod page was added) as well download got extended and bit fixed as well word download supported.
+</p><p>
+Lowerd download size from 300mb ~avg to well below 5mb ~avg.
+</p><p>
+Examples got dropdown and commands copy for Arduino cli.
+</p><p>
+More dropdown was lowerd and ready for more stuff (lost the good zoom on more).
+</p><p>
+Hardware visual page got remasterd.(zoom fix)
+</p><p>
+Editor update:
+</p><p>
+Compile works server up and running, more feuters coming.?(End of Editor update)+ whole re-do of layout
+</p><p>
+Tutorials in work by the way Quizes got done and made after 1 month of work Done!!(More will be added any way)
+</p><p>
+End of Big update.
+</p><p>
+More details coming soon
+</p><p>
+13/04/2026
+</p><p>
+
+</p>
+</section>
+
 <section id="notfound" class="page">
     <h2>404 – Page Not Found</h2>
     <p>The section you tried to open does not exist.</p>
@@ -218,6 +262,7 @@
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <script src="js/main.js" defer></script>
 
 <div id="downloadPopup" onclick="closeDownloadPopup()" style="
@@ -284,20 +329,22 @@ padding-right:4px;
         <input type="checkbox" value="Arduino%20Community.html"> Community not working
       </label>
     </div>
-
-    <!-- footer -->
-    <div style="
+<div style="
 display:flex;
-align-items:center;
 gap:8px;
 border-top:1px solid #333;
 padding-top:8px;
 ">
-      <span id="downloadMsg" style="color:#f55; font-size:12px; margin-right:auto;"></span>
-      <button class="btn-action" onclick="startDownload()" id="dlBtn">
-        Download PDF
-      </button>
-    </div>
+
+  <button class="btn-action" onclick="startDownload('pdf')" id="dlPdf">
+    Download PDF
+  </button>
+
+  <button class="btn-action" onclick="startDownload('word')" id="dlWord">
+    Download Word
+  </button>
+
+</div>
 
   </div>
 </div>
@@ -319,22 +366,22 @@ function openDownloadPopup() {
   document.getElementById("downloadPopup").style.display = "block";
 }
 
-function startDownload() {
+function startDownload(type) {
   const checks = document.querySelectorAll("#downloadList input:checked");
-  const btn = document.getElementById("dlBtn");
 
   if (checks.length === 0) {
     document.getElementById("downloadMsg").textContent = "Select at least one";
-    btn.style.opacity = "0.5";
     return;
   }
 
-  btn.style.opacity = "1";
-  document.getElementById("downloadMsg").textContent = "";
-
   EXPORT_FILES = [...checks].map(c => c.value);
   closeDownloadPopup();
-  downloadOfflinePDF();
+
+  if(type === "pdf"){
+    downloadOfflinePDF();
+  } else {
+    downloadWord();
+  }
 }
 
 async function loadFile(url) {
@@ -392,6 +439,75 @@ async function downloadOfflinePDF(){
 
   pdf.save("Arduino-Guide-Offline.pdf");
 }
+async function downloadWord(){
+  const { Document, Packer, Paragraph, TextRun, ImageRun } = window.docx;
+
+  const doc = new Document({
+    sections: []
+  });
+
+  let children = [];
+
+  for(const file of EXPORT_FILES){
+    const body = await loadFile(file);
+
+    // TITLE (file name)
+    children.push(new Paragraph({
+      children: [ new TextRun({ text: file, bold: true, size: 32 }) ]
+    }));
+
+    // TEXT
+    body.querySelectorAll("h1,h2,h3,p,li").forEach(el=>{
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: el.innerText,
+              break: 1
+            })
+          ]
+        })
+      );
+    });
+
+    // IMAGES
+    const imgs = body.querySelectorAll("img");
+
+    for(const img of imgs){
+      try{
+        const response = await fetch(new URL(img.src, location.href));
+        const blob = await response.blob();
+        const buffer = await blob.arrayBuffer();
+
+        children.push(
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: buffer,
+                transformation: {
+                  width: 400,
+                  height: 250
+                }
+              })
+            ]
+          })
+        );
+      }catch(e){}
+    }
+
+    // spacing between files
+    children.push(new Paragraph({ text: "" }));
+  }
+
+  doc.addSection({ children });
+
+  const blob = await Packer.toBlob(doc);
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Arduino-Guide.docx";
+  a.click();
+}
 </script>
 
 
@@ -411,3 +527,6 @@ async function downloadOfflinePDF(){
 </script>
 </body>
 </html>
+
+
+
