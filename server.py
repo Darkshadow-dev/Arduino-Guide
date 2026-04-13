@@ -4,6 +4,8 @@ import subprocess
 import os
 import json
 
+os.environ["ARDUINO_DATA_DIR"] = "/opt/render/project/src/.arduino"
+
 app = Flask(__name__)
 CORS(app)
 
@@ -25,21 +27,28 @@ CLI = "/opt/render/project/src/bin/arduino-cli"
 # -------------------------
 def run_cmd(cmd):
     try:
+        env = os.environ.copy()
+
+        # 🔥 FORCE Arduino to use correct folder
+        env["ARDUINO_DATA_DIR"] = "/opt/render/project/src/.arduino"
+
         result = subprocess.run(
             cmd,
             capture_output=True,
-            text=True
+            text=True,
+            env=env
         )
+
         return {
             "success": result.returncode == 0,
             "output": result.stdout + result.stderr
         }
+
     except Exception as e:
         return {
             "success": False,
             "output": str(e)
         }
-
 
 # -------------------------
 # Compile endpoint
