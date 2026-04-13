@@ -464,6 +464,20 @@ void loop(){
   updateLines();
   highlightCode(); // IMPORTANT FIX
 }
+
+fetch("https://arduino-guide-6.onrender.com/compile", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        code: editor.getValue()
+    })
+})
+.then(res => res.json())
+.then(data => {
+    console.log("OUTPUT:", data.output);
+});
 </script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
