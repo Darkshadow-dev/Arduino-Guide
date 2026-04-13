@@ -4,13 +4,12 @@ echo "Installing Arduino CLI..."
 
 curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 
-chmod +x bin/arduino-cli
+# FIX: use full path instead of moving
+CLI="/opt/render/project/src/bin/arduino-cli"
 
-mv bin/arduino-cli /usr/local/bin/arduino-cli
-
-arduino-cli version
+echo "Testing CLI..."
+$CLI version
 
 echo "Installing Arduino AVR core..."
-
-arduino-cli core update-index
-arduino-cli core install arduino:avr
+$CLI core update-index
+$CLI core install arduino:avr
