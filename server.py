@@ -122,6 +122,20 @@ def upload():
 def session():
     return jsonify({"status": "ok"})
 
+import os
+import subprocess
+
+def ensure_cli():
+    try:
+        subprocess.run(["arduino-cli", "version"], check=True)
+    except:
+        os.system("curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh")
+        os.system("mv bin/arduino-cli /usr/local/bin/")
+        os.system("arduino-cli core update-index")
+        os.system("arduino-cli core install arduino:avr")
+
+ensure_cli()
+
 # -------------------------
 # Render-safe startup
 # IMPORTANT FIX HERE
