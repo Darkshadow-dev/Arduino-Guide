@@ -4,12 +4,19 @@ echo "Installing Arduino CLI..."
 
 curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 
-# FIX: use full path instead of moving
 CLI="/opt/render/project/src/bin/arduino-cli"
 
-echo "Testing CLI..."
-$CLI version
+echo "Setting Arduino config directory..."
 
-echo "Installing Arduino AVR core..."
+export ARDUINO_DATA_DIR=/opt/render/project/src/.arduino
+
+mkdir -p $ARDUINO_DATA_DIR
+
+echo "Updating index..."
 $CLI core update-index
+
+echo "Installing AVR core..."
 $CLI core install arduino:avr
+
+echo "Verifying install..."
+$CLI core list
