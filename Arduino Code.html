@@ -202,7 +202,7 @@ async function compileCode(){
 
   consoleBox.textContent = "Compiling...";
 
-  const res = await safeFetch("http://localhost:5000/compile", {
+  const res = await safeFetch("https://arduino-guide-6.onrender.com/compile", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({
@@ -231,7 +231,7 @@ async function uploadCode(){
 
   consoleBox.textContent = "Uploading...";
 
-  const res = await safeFetch("http://localhost:5000/upload", {
+  const res = await safeFetch("https://arduino-guide-6.onrender.com/upload", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({
@@ -254,7 +254,7 @@ async function loadPorts(){
 
   if(!portSelect) return;
 
-  const data = await safeFetch("http://localhost:5000/ports");
+  const data = await safeFetch("https://arduino-guide-6.onrender.com/ports");
 
   const fallback = [
     "COM3","COM4","COM5","COM6","COM7","COM8","COM9"
@@ -465,7 +465,7 @@ void loop(){
   highlightCode(); // IMPORTANT FIX
 }
 
-fetch("https://arduino-guide-6.onrender.com/session", {
+fetch("https://arduino-guide-6.onrender.com/compile", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
