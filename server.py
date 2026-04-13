@@ -68,32 +68,36 @@ def compile_code():
 # -------------------------
 @app.route("/ports", methods=["GET"])
 def ports():
-    result = run_cmd([
-        CLI,
-        "board",
-        "list",
-        "--format",
-        "json"
-    ])
-
     try:
-        data = json.loads(result["output"]) if result["success"] else []
-    except:
-        data = []
+        result = run_cmd([
+            CLI,
+            "board",
+            "list",
+            "--format",
+            "json"
+        ])
 
-    out = []
-    for b in data:
-        out.append({
-            "port": b.get("address"),
-            "board": b.get("boardName") or b.get("name"),
-            "fqbn": (
-                b.get("matchingBoards", [{}])[0].get("fqbn")
-                if b.get("matchingBoards")
-                else ""
-            )
-        })
+        if not result["success"]:
+            return jsonify({"success": True, "ports": []})
 
-    return jsonify({"success": True, "ports": out})
+        data = json.loads(result["output"])
+
+        out = []
+        for b in data:
+            out.append({
+                "port": b.get("address"),
+                "board": b.get("boardName") or b.get("name"),
+                "fqbn": (
+                    b.get("matchingBoards", [{}])[0].get("fqbn")
+                    if b.get("matchingBoards")
+                    else ""
+                )
+            })
+
+        return jsonify({"success": True, "ports": out})
+
+    except Exception:
+        return jsonify({"success": True, "ports": []})
 
 
 # -------------------------
