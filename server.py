@@ -17,7 +17,7 @@ os.makedirs(BASE, exist_ok=True)
 
 PROJECT = os.path.join(BASE, "web_sketch")
 os.makedirs(PROJECT, exist_ok=True)
-
+from flask import send_file
 INO = os.path.join(PROJECT, "web_sketch.ino")
 
 CLI = "/opt/render/project/src/bin/arduino-cli"
@@ -174,6 +174,52 @@ def upload():
     return jsonify(result)
 
     return jsonify(result)
+
+# -------------------------
+# Download EXE uploader
+# -------------------------
+@app.route("/download-exe")
+def download_exe():
+    exe_path = os.path.join(os.getcwd(), "uploader.exe")
+
+    if not os.path.exists(exe_path):
+        return jsonify({"success": False, "error": "EXE not found"})
+
+    return send_file(
+        exe_path,
+        as_attachment=True
+    )
+
+# -------------------------
+# Download HEX file
+# -------------------------
+@app.route("/download-hex", methods=["GET"])
+def download_hex():
+
+    name = request.args.get("name", "project")
+
+    name = "".join(c for c in name if c.isalnum() or c in ("_", "-")).strip()
+    if not name:
+        name = "project"
+
+    project_path = os.path.join(BASE, name)
+
+    hex_file = None
+
+    for root, dirs, files in os.walk(project_path):
+        for file in files:
+            if file.endswith(".hex"):
+                hex_file = os.path.join(root, file)
+                break
+
+    if not hex_file or not os.path.exists(hex_file):
+        return jsonify({"success": False, "error": "HEX not found"})
+
+    return send_file(
+        hex_file,
+        as_attachment=True,
+        download_name=f"{name}.hex"
+    )
 @app.route("/session")
 def session():
     return jsonify({"status": "ok"})
