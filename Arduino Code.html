@@ -135,6 +135,7 @@ select{
 ========================= */
 
 let editor, lines, consoleBox, portSelect, board, fileInput, filename;
+let lastHexPath = null;
 function showPopup(){
   document.getElementById("exePopup").style.display = "flex";
 }
@@ -227,9 +228,7 @@ async function compileCode(){
 
   // 🔥 DOWNLOAD HEX IF EXISTS
 if(res.hex_path){
-  window.location.href =
-    "https://arduino-guide-6.onrender.com/download-hex?path=" +
-    encodeURIComponent(res.hex_path);
+  lastHexPath = res.hex_path;
 }
 }
 
@@ -280,13 +279,32 @@ function newProject(){
 function saveFile(){
   const name = (filename.value || "project").replace(/[^a-zA-Z0-9_-]/g, "");
 
-  const blob = new Blob([editor.value], {type:"text/plain"});
-  const a = document.createElement("a");
+  // -------------------------
+  // 1. download .ino
+  // -------------------------
+  const inoBlob = new Blob([editor.value], {type:"text/plain"});
+  const inoLink = document.createElement("a");
 
-  a.href = URL.createObjectURL(blob);
-  a.download = name + ".ino";
+  inoLink.href = URL.createObjectURL(inoBlob);
+  inoLink.download = name + ".ino";
+  inoLink.click();
 
-  a.click();
+  // -------------------------
+  // 2. download .hex (if exists)
+  // -------------------------
+  if(lastHexPath){
+    setTimeout(() => {
+      const hexLink = document.createElement("a");
+      hexLink.href =
+        "https://arduino-guide-6.onrender.com/download-hex?path=" +
+        encodeURIComponent(lastHexPath);
+
+      hexLink.download = name + ".hex";
+      hexLink.click();
+    }, 300);
+  } else {
+    consoleBox.textContent = "⚠ No compiled HEX yet. Click Compile first.";
+  }
 }
 
 /* ================= OPEN ================= */
