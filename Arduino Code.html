@@ -84,8 +84,6 @@ select{
 
 <button onclick="uploadCode()">Upload</button>
 
-<button onclick="loadPorts()">Refresh Ports</button>
-
 <select id="portSelect">
   <option value="COM3">COM3</option>
   <option value="COM4">COM4</option>
@@ -205,7 +203,8 @@ async function compileCode(){
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({
       code: editor.value,
-      board: board.value
+      board: board.value,
+      name: filename.value || "project"
     })
   });
 
@@ -215,7 +214,18 @@ async function compileCode(){
   }
 
   consoleBox.textContent = res.output || "";
+
+  // 🔥 DOWNLOAD HEX IF EXISTS
+  if(res.hex){
+    const name = (filename.value || "project").replace(/[^a-zA-Z0-9_-]/g, "");
+
+    const link = document.createElement("a");
+    link.href = "data:application/octet-stream;base64," + res.hex;
+    link.download = name + ".hex";
+    link.click();
+  }
 }
+
 
 /* ================= UPLOAD ================= */
 async function uploadCode(){
@@ -232,10 +242,11 @@ async function uploadCode(){
   const res = await safeFetch("https://arduino-guide-6.onrender.com/upload", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      code: editor.value,
-      port: port,
-      board: board.value
+body: JSON.stringify({
+  code: editor.value,
+  port: port,
+  board: board.value,
+  name: filename.value || "project"
     })
   });
 
@@ -285,11 +296,14 @@ function newProject(){
 
 /* ================= SAVE ================= */
 function saveFile(){
+  const name = (filename.value || "project").replace(/[^a-zA-Z0-9_-]/g, "");
+
   const blob = new Blob([editor.value], {type:"text/plain"});
   const a = document.createElement("a");
 
   a.href = URL.createObjectURL(blob);
-  a.download = (filename.value || "project") + ".ino";
+  a.download = name + ".ino";
+
   a.click();
 }
 
@@ -493,3 +507,4 @@ fetch("https://arduino-guide-6.onrender.com/compile", {
 </script>
 </body>
 </html>
+

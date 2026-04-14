@@ -56,20 +56,54 @@ def run_cmd(cmd):
 @app.route("/compile", methods=["POST"])
 def compile_code():
     data = request.json or {}
-    code = data.get("code", "")
 
-    with open(INO, "w", encoding="utf-8") as f:
+    code = data.get("code", "")
+    name = data.get("name", "project")
+
+    # clean name
+    name = "".join(c for c in name if c.isalnum() or c in ("_", "-")).strip()
+    if not name:
+        name = "project"
+
+    project_path = os.path.join(BASE, name)
+    os.makedirs(project_path, exist_ok=True)
+
+    ino_path = os.path.join(project_path, f"{name}.ino")
+
+    with open(ino_path, "w", encoding="utf-8") as f:
         f.write(code)
 
     result = run_cmd([
         CLI,
         "compile",
         "--fqbn",
-        "arduino:avr:uno",
-        PROJECT
+        data.get("board", "arduino:avr:uno"),
+        project_path
     ])
 
-    return jsonify(result)
+    # 🔥 FIND HEX FILE
+    hex_file = None
+
+    build_path = os.path.join(project_path, "build")
+
+    for root, dirs, files in os.walk(project_path):
+        for file in files:
+            if file.endswith(".hex"):
+                hex_file = os.path.join(root, file)
+                break
+
+    # 🔥 RETURN HEX (base64)
+    hex_data = None
+    if hex_file and os.path.exists(hex_file):
+        import base64
+        with open(hex_file, "rb") as f:
+            hex_data = base64.b64encode(f.read()).decode("utf-8")
+
+    return jsonify({
+        "success": result["success"],
+        "output": result["output"],
+        "hex": hex_data
+    })
 
 
 # -------------------------
@@ -115,8 +149,16 @@ def ports():
 @app.route("/upload", methods=["POST"])
 def upload():
     data = request.json or {}
+
     port = data.get("port")
     board = data.get("board", "arduino:avr:uno")
+    name = data.get("name", "project")
+
+    name = "".join(c for c in name if c.isalnum() or c in ("_", "-")).strip()
+    if not name:
+        name = "project"
+
+    project_path = os.path.join(BASE, name)
 
     if not port:
         return jsonify({"success": False, "output": "No port selected"})
@@ -124,12 +166,12 @@ def upload():
     result = run_cmd([
         CLI,
         "upload",
-        "-p",
-        port,
-        "--fqbn",
-        board,
-        PROJECT
+        "-p", port,
+        "--fqbn", board,
+        project_path
     ])
+
+    return jsonify(result)
 
     return jsonify(result)
 @app.route("/session")
@@ -147,3 +189,4 @@ import subprocess
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
