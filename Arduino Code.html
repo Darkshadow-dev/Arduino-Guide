@@ -226,14 +226,11 @@ async function compileCode(){
   consoleBox.textContent = res.output || "";
 
   // 🔥 DOWNLOAD HEX IF EXISTS
-  if(res.hex){
-    const name = (filename.value || "project").replace(/[^a-zA-Z0-9_-]/g, "");
-
-    const link = document.createElement("a");
-    link.href = "data:application/octet-stream;base64," + res.hex;
-    link.download = name + ".hex";
-    link.click();
-  }
+if(res.hex_path){
+  window.location.href =
+    "https://arduino-guide-6.onrender.com/download-hex?path=" +
+    encodeURIComponent(res.hex_path);
+}
 }
 
 
@@ -353,17 +350,8 @@ function highlightCode(){
 
   document.getElementById("highlight").innerHTML = html;
 }
-async function downloadEXE(){
-
-  const res = await fetch("https://arduino-guide-6.onrender.com/download-exe");
-  const data = await res.json();
-
-  if(data.url){
-    window.open(data.url);
-  }
-
-  const name = document.getElementById("filename").value || "project";
-  window.open("https://arduino-guide-6.onrender.com/download-hex?name=" + name);
+function downloadEXE(){
+  window.location.href = "https://arduino-guide-6.onrender.com/download-exe";
 }
 /* ================= EXAMPLES (FIXED ALL) ================= */
 function loadExample(name){
