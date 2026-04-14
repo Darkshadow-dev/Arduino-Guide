@@ -181,7 +181,7 @@ def upload():
 @app.route("/download-exe")
 def download_exe():
     return jsonify({
-        "url": "https://github.com/user-attachments/files/26728823/uploader.zip"
+        "url": "https://github.com/Darkshadow-dev/Arduino-Guide/releases/tag/Arduino"
     })
 
 # -------------------------
