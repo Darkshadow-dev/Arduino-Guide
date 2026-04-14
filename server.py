@@ -180,15 +180,9 @@ def upload():
 # -------------------------
 @app.route("/download-exe")
 def download_exe():
-    exe_path = os.path.join(os.getcwd(), "uploader.exe")
-
-    if not os.path.exists(exe_path):
-        return jsonify({"success": False, "error": "EXE not found"})
-
-    return send_file(
-        exe_path,
-        as_attachment=True
-    )
+    return jsonify({
+        "url": "https://github.com/YOUR/REPO/raw/main/uploader.zip"
+    })
 
 # -------------------------
 # Download HEX file

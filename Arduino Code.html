@@ -353,13 +353,16 @@ function highlightCode(){
 
   document.getElementById("highlight").innerHTML = html;
 }
-function downloadEXE(){
+async function downloadEXE(){
+
+  const res = await fetch("https://arduino-guide-6.onrender.com/download-exe");
+  const data = await res.json();
+
+  if(data.url){
+    window.open(data.url);
+  }
+
   const name = document.getElementById("filename").value || "project";
-
-  // Download EXE
-  window.open("https://arduino-guide-6.onrender.com/download-exe");
-
-  // Download HEX
   window.open("https://arduino-guide-6.onrender.com/download-hex?name=" + name);
 }
 /* ================= EXAMPLES (FIXED ALL) ================= */
@@ -516,8 +519,7 @@ fetch("https://arduino-guide-6.onrender.com/compile", {
     text-align:center;
     width:300px;
   ">
-    <h3>Local Upload Required</h3>
-    <p>To upload to Arduino, download the uploader app.</p>
+    <h3>Local Upload Required</h3><p>Download ZIP, extract it, then run uploader.exe</p>
 
     <button onclick="downloadEXE()">Download uploader.exe (~5MB)</button>
     <br><br>
