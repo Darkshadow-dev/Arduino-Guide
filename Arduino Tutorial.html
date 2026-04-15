@@ -1,19 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Arduino Guide – Tutorials</title>
 
 <style>
-
-/* ---------------- GENERAL ---------------- */
-
-*{
-box-sizing:border-box;
-}
+*{box-sizing:border-box;}
 
 body{
 margin:0;
@@ -22,85 +15,70 @@ background:#fafafa;
 color:#333;
 }
 
-/* ---------------- HEADER ---------------- */
-
+/* HEADER */
 header{
 position:sticky;
 top:0;
 z-index:10;
-
 background:#2b7cff;
 color:white;
-
 padding:14px 24px;
-
 display:flex;
 align-items:center;
 justify-content:space-between;
-
 box-shadow:0 2px 6px rgba(0,0,0,0.15);
 }
 
-header h1{
-margin:0;
-font-size:20px;
+header h1{margin:0;font-size:20px;}
+
+nav{
+display:flex;
+align-items:center;
+flex-wrap:wrap;
 }
 
 nav a{
 color:white;
 text-decoration:none;
-margin-left:18px;
+margin-left:14px;
 font-weight:600;
 font-size:14px;
+padding:6px 8px;
+border-radius:6px;
 }
 
 nav a:hover{
-opacity:0.85;
+background:rgba(255,255,255,0.2);
 }
 
-/* ---------------- LAYOUT ---------------- */
-
+/* LAYOUT */
 .container{
 display:flex;
 height:calc(100vh - 60px);
 }
 
-/* ---------------- SIDEBAR ---------------- */
-
+/* SIDEBAR */
 .sidebar{
 width:260px;
 background:#ffffff;
 border-right:1px solid #ddd;
-
 padding:18px;
-
 overflow-y:auto;
 }
 
-.sidebar h3{
-margin-top:0;
-font-size:18px;
-}
-
-/* tutorial buttons */
+.sidebar h3{margin-top:0;}
 
 .sidebar button{
 display:block;
 width:100%;
-
-margin:8px 0;
-padding:10px 12px;
-
+margin:6px 0;
+padding:10px;
 border:none;
 border-radius:6px;
-
 background:#f1f1f1;
 cursor:pointer;
-
 text-align:left;
-font-size:14px;
-
-transition:all .15s ease;
+transition:.15s;
 }
 
 .sidebar button:hover{
@@ -113,187 +91,105 @@ background:#2b7cff;
 color:white;
 }
 
-/* ---------------- CONTENT ---------------- */
-
+/* CONTENT */
 .content{
 flex:1;
-
 padding:40px;
-
 overflow:auto;
 text-align:center;
 }
 
-/* hero placeholder */
-
 .placeholder{
 max-width:650px;
 margin:auto;
-
-padding:40px 20px;
-
+padding:30px;
 border:2px dashed #ccc;
 border-radius:10px;
-
 background:#fff;
 }
 
-.placeholder h2{
-margin-top:0;
-}
-
-.placeholder p{
-line-height:1.6;
-color:#555;
-}
-
-/* viewer */
-
-.viewer{
-margin-top:20px;
-}
-
+/* STEP VIEW */
 .viewer img{
-max-width:520px;
+max-width:420px;
 border-radius:6px;
 border:1px solid #ccc;
 }
 
-/* text */
-
 .text{
 margin-top:20px;
-font-size:16px;
 max-width:650px;
-margin-left:auto;
-margin-right:auto;
+margin:auto;
 line-height:1.6;
 }
 
-/* controls */
-
-.controls{
-margin-top:20px;
-}
-
+/* CONTROLS */
 .controls button{
 padding:10px 18px;
 margin:5px;
-
 border:none;
 border-radius:6px;
-
 background:#2b7cff;
 color:white;
-
-font-size:14px;
 cursor:pointer;
-
-transition:.15s;
 }
 
 .controls button:hover{
 background:#1e63d6;
-transform:translateY(-2px);
 }
 
-/* code block */
-
+/* CODE */
 .code{
-margin-top:28px;
-
+margin-top:25px;
 background:#111;
 color:#0f0;
-
 padding:16px;
-
 border-radius:8px;
-
 font-family:monospace;
-font-size:14px;
-
 white-space:pre;
-overflow:auto;
-
 max-width:700px;
 margin-left:auto;
 margin-right:auto;
-
 text-align:left;
 }
 
-/* ---------------- MOBILE ---------------- */
-
+/* MOBILE */
 @media (max-width:900px){
-
-.container{
-flex-direction:column;
-height:auto;
+.container{flex-direction:column;height:auto;}
+.sidebar{width:100%;border-right:none;border-bottom:1px solid #ddd;}
+.content{padding:20px;}
 }
-
-.sidebar{
-width:100%;
-border-right:none;
-border-bottom:1px solid #ddd;
-}
-
-.content{
-padding:25px 15px;
-}
-
-}
-
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-<h1>Arduino Guide Tutorials</h1>
+<h1>Arduino Tutorials</h1>
 
 <nav>
-<a href="Arduino Guide.html#home">Home</a>
-<a href="Arduino Guide.html#examples">Examples</a>
-<a href="#">Tutorials</a>
+<a href="Arduino Guide.html#home">🏠 Home</a>
+<a href="Arduino Guide.html#examples">💡 Examples</a>
+<a href="Arduino Quizz.html">🧠 Quiz</a>
+<a href="#">📘 Tutorials</a>
+<a href="Arduino Community.html">👥 Community</a>
+<a href="Arduino Code.html">💻 Code</a>
 </nav>
-
 </header>
 
 <div class="container">
 
 <!-- SIDEBAR -->
-
 <div class="sidebar">
-
-<h3>Tutorials</h3>
-
-<div id="tutorialList">
-
-<button disabled>Coming Soon</button>
-
-</div>
-
+<h3>Lessons</h3>
+<div id="tutorialList"></div>
 </div>
 
 <!-- CONTENT -->
-
 <div class="content">
 
-<div class="placeholder">
-
-<h2>Tutorials Coming Soon</h2>
-
-<p>
-This page will contain step-by-step Arduino tutorials with images,
-instructions, and code examples.
-</p>
-
-<p>
-Select a tutorial from the left sidebar once tutorials are added.
-</p>
-
+<div class="placeholder" id="placeholder">
+<h2>Select a Tutorial</h2>
+<p>Each tutorial takes 30–60 minutes and teaches one real skill.</p>
 </div>
 
 <h1 id="title"></h1>
@@ -304,105 +200,160 @@ Select a tutorial from the left sidebar once tutorials are added.
 
 <div class="text" id="stepText"></div>
 
-<div class="controls" style="display:none" id="controls">
-
-<button onclick="prevStep()">Previous</button> <button onclick="nextStep()">Next</button>
-
+<div class="controls" id="controls" style="display:none">
+<button onclick="prevStep()">⬅ Prev</button>
+<button onclick="nextStep()">Next ➡</button>
 </div>
 
 <div class="code" id="codeBlock" style="display:none"></div>
 
 </div>
-
 </div>
 
 <script>
 
-/* tutorial system ready */
+/* ===== REAL TUTORIALS ===== */
 
-let tutorials={};
+let tutorials = {
+
+"LED Blink":{
+title:"LED Blink (Beginner)",
+steps:[
+{img:"",text:"🎯 Goal: Make LED blink every second."},
+{img:"",text:"🔌 Connect LED to pin 13 with resistor."},
+{img:"",text:"💡 This will teach OUTPUT control."}
+],
+code:`void setup(){
+pinMode(13, OUTPUT);
+}
+
+void loop(){
+digitalWrite(13, HIGH);
+delay(1000);
+digitalWrite(13, LOW);
+delay(1000);
+}`
+},
+
+"Button Control":{
+title:"Button Control",
+steps:[
+{img:"",text:"🎯 Goal: Turn LED on with button."},
+{img:"",text:"🔌 Button to pin 2, LED to 13."},
+{img:"",text:"💡 Learn INPUT + logic."}
+],
+code:`int btn=2;
+int led=13;
+
+void setup(){
+pinMode(btn, INPUT);
+pinMode(led, OUTPUT);
+}
+
+void loop(){
+if(digitalRead(btn)){
+digitalWrite(led, HIGH);
+}else{
+digitalWrite(led, LOW);
+}
+}`
+},
+
+"Auto Light":{
+title:"Auto Light Sensor",
+steps:[
+{img:"",text:"🎯 Goal: LED turns ON in dark."},
+{img:"",text:"🔌 Sensor to A0."},
+{img:"",text:"💡 Learn analog input."}
+],
+code:`int s=A0;
+int led=13;
+
+void setup(){
+pinMode(led, OUTPUT);
+}
+
+void loop(){
+if(analogRead(s)<500){
+digitalWrite(led, HIGH);
+}else{
+digitalWrite(led, LOW);
+}
+}`
+}
+
+};
+
+/* ===== SYSTEM ===== */
 
 let currentTutorial=null;
 let step=0;
 
-function startTutorial(name){
+/* BUILD SIDEBAR */
+const list=document.getElementById("tutorialList");
 
+Object.keys(tutorials).forEach(name=>{
+let b=document.createElement("button");
+b.innerText=name;
+b.onclick=()=>{
+document.querySelectorAll(".sidebar button").forEach(x=>x.classList.remove("active"));
+b.classList.add("active");
+startTutorial(name);
+};
+list.appendChild(b);
+});
+
+/* START */
+function startTutorial(name){
 currentTutorial=tutorials[name];
 step=0;
 
-document.getElementById("title").innerText=currentTutorial.title;
-
+document.getElementById("placeholder").style.display="none";
 document.getElementById("controls").style.display="block";
 
-showStep();
+document.getElementById("title").innerText=currentTutorial.title;
 
+showStep();
 }
 
+/* SHOW STEP */
 function showStep(){
-
 let s=currentTutorial.steps[step];
-
-let img=document.getElementById("stepImage");
-img.src=s.img;
-img.style.display="block";
 
 document.getElementById("stepText").innerText=s.text;
 
+let img=document.getElementById("stepImage");
+if(s.img){
+img.src=s.img;
+img.style.display="block";
+}else{
+img.style.display="none";
+}
 }
 
+/* NEXT */
 function nextStep(){
-
-if(step<currentTutorial.steps.length-1){
-
+if(step < currentTutorial.steps.length-1){
 step++;
 showStep();
-
 }else{
-
-document.getElementById("stepImage").style.display="none";
-
-document.getElementById("stepText").innerText="Final Step: Upload the code below.";
-
+document.getElementById("stepText").innerText="💻 Final Code:";
 let code=document.getElementById("codeBlock");
-
 code.style.display="block";
 code.innerText=currentTutorial.code;
-
+}
 }
 
-}
-
+/* PREV */
 function prevStep(){
-
 if(step>0){
-
 step--;
-
 showStep();
-
 document.getElementById("codeBlock").style.display="none";
-
 }
-
 }
 
 </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
-    authDomain: "arduino-guideg.firebaseapp.com",
-    projectId: "arduino-guideg",
-    storageBucket: "arduino-guideg.firebasestorage.app",
-    messagingSenderId: "146740789054",
-    appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
-    measurementId: "G-V3ZB157P0R"};
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+
 </body>
 </html>
-
-
-

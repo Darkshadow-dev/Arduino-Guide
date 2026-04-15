@@ -275,10 +275,21 @@ nav a:hover{
   }
 
   /* category buttons row */
-  #sidebar{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-  }
+#sidebar{
+  display:flex;
+  flex-direction:column;
+}
+
+.cat{
+  width:100%;
+}
+
+/* category buttons grid */
+#sidebar .cat:nth-of-type(-n+3){
+  display:inline-block;
+  width:33.33%;
+  text-align:center;
+}
 
   #sidebar h2,
   .sideSection{
@@ -291,17 +302,17 @@ nav a:hover{
   }
 
   /* QUIZ SELECT BUTTONS */
-  #quizSelect{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-  }
+#quizSelect{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-  #quizSelect button{
-    width:25%;
-    padding:10px;
-    font-size:14px;
-  }
+#quizSelect button{
+  width:100%;
+  padding:12px;
+  font-size:15px;
+}
 
   /* QUESTIONS */
   .question{
