@@ -363,6 +363,40 @@ nav a:hover{
   font-weight:bold;
   font-size:18px;
 }}
+#codeUnlocks{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.codeBtn{
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#222;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.codeBtn.locked{
+  background:#555;
+  cursor:not-allowed;
+  opacity:0.6;
+}
+
+.codeArea textarea{
+  width:100%;
+  height:150px;
+  margin-top:10px;
+  font-family:monospace;
+}
+
+.codeArea input{
+  width:100%;
+  margin-top:6px;
+}
 </style>
 </head>
 
@@ -383,6 +417,9 @@ nav a:hover{
   <button class="cat active" onclick="loadCategory('pins',this)">Pins</button>
   <button class="cat" onclick="loadCategory('hardware',this)">Hardware</button>
   <button class="cat" onclick="loadCategory('software',this)">Software</button>
+<hr style="border:1px solid #222; width:100%;">
+
+<div id="sidebarQuizzes"></div>
 </div>
 
 <!-- ===== MAIN ===== -->
@@ -403,6 +440,7 @@ nav a:hover{
     <h2 id="title">Pins</h2>
 
     <div id="quizSelect"></div>
+<div id="codeUnlocks"></div>
     <div id="quizArea"></div>
 
     <div id="controls">
@@ -510,9 +548,9 @@ hardware:[
   {type:"mc",q:"Capacitor is used to?",a:["Smooth power","Store code","Increase speed"],c:0},
   {type:"mc",q:"Crystal oscillator provides?",a:["Clock signal","Power","Reset"],c:0},
   {type:"mc",q:"ATmega328P is a?",a:["Microcontroller","Sensor","Voltage regulator"],c:0},
-  {type:"logic",q:"If the crystal fails, the board will?",a:["Not boot","Run faster","Use more power"],c:0},
-  {type:"logic",q:"If regulator fails, the board will?",a:["Turn off","LED stays on","USB still works"],c:0},
-  {type:"logic",q:"Short on 5V will?",a:["Reset board","Do nothing","Overheat"],c:2}
+  {type:"mc",q:"If the crystal fails, the board will?",a:["Not boot","Run faster","Use more power"],c:0},
+  {type:"mc",q:"If regulator fails, the board will?",a:["Turn off","LED stays on","USB still works"],c:0},
+  {type:"mc",q:"Short on 5V will?",a:["Reset board","Do nothing","Overheat"],c:2}
 ],
 
 /* ---------- QUIZ 3 (Intermediate – 14) ---------- */
@@ -525,9 +563,9 @@ hardware:[
   {type:"mc",q:"Which chip runs your sketch?",a:["ATmega328P","USB chip","Crystal"],c:0},
   {type:"mc",q:"Which memory stores your program?",a:["Flash","SRAM","EEPROM"],c:0},
   {type:"mc",q:"Which pin restarts the board?",a:["RESET","5V","GND"],c:0},
-  {type:"logic",q:"Holding RESET LOW will?",a:["Restart","Stop","Run normally"],c:1},
-  {type:"logic",q:"Too high VIN causes?",a:["Overheat","Faster speed","No effect"],c:0},
-  {type:"logic",q:"Removing USB power will?",a:["Stop board","Continue running","Overvoltage"],c:0},
+  {type:"mc",q:"Holding RESET LOW will?",a:["Restart","Stop","Run normally"],c:1},
+  {type:"mc",q:"Too high VIN causes?",a:["Overheat","Faster speed","No effect"],c:0},
+  {type:"mc",q:"Removing USB power will?",a:["Stop board","Continue running","Overvoltage"],c:0},
   {type:"mc",q:"Which supplies stable clock?",a:["Crystal","Capacitor","Regulator"],c:0},
   {type:"mc",q:"Which part filters noise?",a:["Capacitor","Crystal","Flash"],c:0},
   {type:"mc",q:"Which part protects voltage?",a:["Regulator","EEPROM","SRAM"],c:0}
@@ -539,8 +577,8 @@ hardware:[
   {type:"mc",q:"Which part handles USB communication?",a:["USB chip","ATmega","Regulator"],c:0},
   {type:"fill",q:"Uno logic voltage is __ V",c:"5"},
   {type:"fill",q:"Maximum VIN is __ V",c:"12"},
-  {type:"logic",q:"If VIN is below 7V?",a:["Unstable","Faster","No change"],c:0},
-  {type:"logic",q:"If regulator overheats?",a:["Shuts down","Boosts","Nothing"],c:0},
+  {type:"mc",q:"If VIN is below 7V?",a:["Unstable","Faster","No change"],c:0},
+  {type:"mc",q:"If regulator overheats?",a:["Shuts down","Boosts","Nothing"],c:0},
   {type:"mc",q:"Which memory loses data on power off?",a:["SRAM","Flash","EEPROM"],c:0},
   {type:"mc",q:"Which memory keeps data without power?",a:["EEPROM","SRAM","Cache"],c:0},
   {type:"mc",q:"Which part protects USB from damage?",a:["Polyfuse","Crystal","Capacitor"],c:0},
@@ -556,8 +594,8 @@ hardware:[
   {type:"fill",q:"Recommended current per pin is __ mA",c:"20"},
   {type:"fill",q:"3.3V pin max current is __ mA",c:"50"},
   {type:"mc",q:"Which protects reverse polarity?",a:["Diode","Crystal","EEPROM"],c:0},
-  {type:"logic",q:"Shorting GND and 5V will?",a:["Damage","Charge","Boost"],c:0},
-  {type:"logic",q:"Too much current causes?",a:["Overheating","Faster","Stable"],c:0},
+  {type:"mc",q:"Shorting GND and 5V will?",a:["Damage","Charge","Boost"],c:0},
+  {type:"mc",q:"Too much current causes?",a:["Overheating","Faster","Stable"],c:0},
   {type:"mc",q:"Which part smooths voltage?",a:["Capacitor","SRAM","USB chip"],c:0},
   {type:"mc",q:"Which part generates clock?",a:["Crystal","Regulator","EEPROM"],c:0},
   {type:"mc",q:"Which memory is fastest?",a:["SRAM","Flash","EEPROM"],c:0},
@@ -573,8 +611,8 @@ hardware:[
   {type:"fill",q:"Uno operating voltage is __ V",c:"5"},
   {type:"fill",q:"USB voltage is __ V",c:"5"},
   {type:"fill",q:"Bootloader size is about __ KB",c:"0.5"},
-  {type:"logic",q:"If EEPROM is full?",a:["Old data overwritten","Stops","Speeds up"],c:0},
-  {type:"logic",q:"If flash is corrupted?",a:["No program","Faster","Overheat"],c:0},
+  {type:"mc",q:"If EEPROM is full?",a:["Old data overwritten","Stops","Speeds up"],c:0},
+  {type:"mc",q:"If flash is corrupted?",a:["No program","Faster","Overheat"],c:0},
   {type:"mc",q:"Which chip stores sketches?",a:["Flash","SRAM","EEPROM"],c:0},
   {type:"mc",q:"Which part ensures stable reset?",a:["Reset capacitor","Crystal","USB chip"],c:0},
   {type:"mc",q:"Which part steps down voltage?",a:["Regulator","Capacitor","EEPROM"],c:0},
@@ -598,9 +636,9 @@ hardware:[
   {type:"fill",q:"EEPROM memory size is __ KB",c:"1"},
   {type:"fill",q:"Operating voltage is __ V",c:"5"},
   {type:"fill",q:"Crystal speed is __ MHz",c:"16"},
-  {type:"logic",q:"If regulator fails?",a:["Board shuts down","Speeds up","Charges"],c:0},
-  {type:"logic",q:"If crystal fails?",a:["No boot","Runs faster","Overvoltage"],c:0},
-  {type:"logic",q:"Shorting 5V and GND will?",a:["Damage board","Charge battery","Boost power"],c:0},
+  {type:"mc",q:"If regulator fails?",a:["Board shuts down","Speeds up","Charges"],c:0},
+  {type:"mc",q:"If crystal fails?",a:["No boot","Runs faster","Overvoltage"],c:0},
+  {type:"mc",q:"Shorting 5V and GND will?",a:["Damage board","Charge battery","Boost power"],c:0},
   {type:"mc",q:"Which part protects USB port?",a:["Polyfuse","EEPROM","SRAM"],c:0},
   {type:"mc",q:"Which memory keeps data after power off?",a:["EEPROM","SRAM","Cache"],c:0},
   {type:"mc",q:"Which memory is volatile?",a:["SRAM","Flash","EEPROM"],c:0},
@@ -612,7 +650,7 @@ hardware:[
 /* =================== SOFTWARE =================== */
 software:[
 
-/* ---------- QUIZ 1 (Easy – 5) ---------- */
+/* ---------- QUIZ 1 ---------- */
 [
   {type:"fill",q:"setup() runs __ time(s)",c:"once"},
   {type:"fill",q:"loop() runs __",c:"forever"},
@@ -621,7 +659,7 @@ software:[
   {type:"mc",q:"digitalWrite() changes?",a:["State","Speed","Mode"],c:0}
 ],
 
-/* ---------- QUIZ 2 (Beginner – 4) ---------- */
+/* ---------- QUIZ 2 ---------- */
 [
   {type:"fill",q:"delay() uses __",c:"milliseconds"},
   {type:"fill",q:"HIGH equals __",c:"1"},
@@ -629,7 +667,7 @@ software:[
   {type:"mc",q:"Which prints to Serial?",a:["Serial.print","pinMode","delay"],c:0}
 ],
 
-/* ---------- QUIZ 3 (Intro+ – 8) ---------- */
+/* ---------- QUIZ 3 ---------- */
 [
   {type:"mc",q:"Which function runs first?",a:["setup","loop","main"],c:0},
   {type:"mc",q:"Which function repeats?",a:["loop","setup","start"],c:0},
@@ -641,7 +679,7 @@ software:[
   {type:"mc",q:"Which is a comment?",a:["//","##","**"],c:0}
 ],
 
-/* ---------- QUIZ 4 (Intermediate – 9 + 1 fix) ---------- */
+/* ---------- QUIZ 4 ---------- */
 [
   {type:"mc",q:"Which sets serial speed?",a:["Serial.begin","Serial.print","Serial.read"],c:0},
   {type:"mc",q:"Which reads serial data?",a:["Serial.read","Serial.print","delay"],c:0},
@@ -652,10 +690,10 @@ software:[
   {type:"mc",q:"Which means NOT?",a:["!","&&","||"],c:0},
   {type:"mc",q:"Which stores whole numbers?",a:["int","float","char"],c:0},
   {type:"mc",q:"Which stores decimal?",a:["float","int","bool"],c:0},
-  {type:"code",q:"Fix: pinMode(13, IN);",c:"pinMode(13, OUTPUT);"}
+  {type:"fill",q:"Fix: pinMode(13, IN);",c:"pinMode(13, OUTPUT);"}
 ],
 
-/* ---------- QUIZ 5 (Advanced – 8 + 5 fixes) ---------- */
+/* ---------- QUIZ 5 ---------- */
 [
   {type:"mc",q:"Which creates a function?",a:["void","int","char"],c:0},
   {type:"mc",q:"Which exits a loop?",a:["break","stop","exit"],c:0},
@@ -666,14 +704,14 @@ software:[
   {type:"mc",q:"Which checks condition?",a:["if","for","void"],c:0},
   {type:"mc",q:"Which repeats a set number of times?",a:["for","while","loop"],c:0},
 
-  {type:"code",q:"Fix: digitalWrite(13, ON);",c:"digitalWrite(13, HIGH);"},
-  {type:"code",q:"Fix: if(x=5)",c:"if(x==5)"},
-  {type:"code",q:"Fix: Serial.begin;",c:"Serial.begin(9600);"},
-  {type:"code",q:"Fix: delay 1000;",c:"delay(1000);"},
-  {type:"code",q:"Fix: int x == 5;",c:"int x = 5;"}
+  {type:"fill",q:"Fix: digitalWrite(13, ON);",c:"digitalWrite(13, HIGH);"},
+  {type:"fill",q:"Fix: if(x=5)",c:"if(x==5)"},
+  {type:"fill",q:"Fix: Serial.begin;",c:"Serial.begin(9600);"},
+  {type:"fill",q:"Fix: delay 1000;",c:"delay(1000);"},
+  {type:"fill",q:"Fix: int x == 5;",c:"int x = 5;"}
 ],
 
-/* ---------- QUIZ 6 (Expert – 12 + 7 fixes) ---------- */
+/* ---------- QUIZ 6 ---------- */
 [
   {type:"mc",q:"Which reads PWM value?",a:["analogRead","digitalRead","delay"],c:0},
   {type:"mc",q:"Which sends PWM?",a:["analogWrite","digitalWrite","Serial.print"],c:0},
@@ -688,16 +726,16 @@ software:[
   {type:"mc",q:"Which stops a loop?",a:["break","continue","return"],c:0},
   {type:"mc",q:"Which skips one loop?",a:["continue","break","stop"],c:0},
 
-  {type:"code",q:"Fix: if(x==5);",c:"if(x==5)"},
-  {type:"code",q:"Fix: for i<5;",c:"for(int i=0;i<5;i++)"},
-  {type:"code",q:"Fix: while x<10",c:"while(x<10)"},
-  {type:"code",q:"Fix: Serial.print;",c:"Serial.print(x);"},
-  {type:"code",q:"Fix: pinMode(8, OUTPUT",c:"pinMode(8, OUTPUT);"},
-  {type:"code",q:"Fix: digitalRead = 8;",c:"digitalRead(8);"},
-  {type:"code",q:"Fix: analogWrite(300);",c:"analogWrite(pin,255);"}
+  {type:"fill",q:"Fix: if(x==5);",c:"if(x==5)"},
+  {type:"fill",q:"Fix: for i<5;",c:"for(int i=0;i<5;i++)"},
+  {type:"fill",q:"Fix: while x<10",c:"while(x<10)"},
+  {type:"fill",q:"Fix: Serial.print;",c:"Serial.print(x);"},
+  {type:"fill",q:"Fix: pinMode(8, OUTPUT",c:"pinMode(8, OUTPUT);"},
+  {type:"fill",q:"Fix: digitalRead = 8;",c:"digitalRead(8);"},
+  {type:"fill",q:"Fix: analogWrite(300);",c:"analogWrite(pin,255);"}
 ],
 
-/* ---------- QUIZ 7 (Master – 18) ---------- */
+/* ---------- QUIZ 7 ---------- */
 [
   {type:"mc",q:"Which returns value?",a:["return","break","void"],c:0},
   {type:"mc",q:"Which creates loop?",a:["for","case","goto"],c:0},
@@ -719,7 +757,7 @@ software:[
   {type:"mc",q:"Which writes digital?",a:["digitalWrite","analogWrite","Serial.print"],c:0}
 ],
 
-/* ---------- QUIZ 8 (Legend – 16 + 5 fixes) ---------- */
+/* ---------- QUIZ 8 ---------- */
 [
   {type:"mc",q:"Which library controls LCD?",a:["LiquidCrystal","Wire","SPI"],c:0},
   {type:"mc",q:"Which handles time without delay?",a:["millis","delay","clock"],c:0},
@@ -738,12 +776,14 @@ software:[
   {type:"mc",q:"Which reads sensor?",a:["analogRead","digitalRead","delay"],c:0},
   {type:"mc",q:"Which outputs PWM?",a:["analogWrite","digitalWrite","Serial.print"],c:0},
 
-  {type:"code",q:"Fix: if(x=3)",c:"if(x==3)"},
-  {type:"code",q:"Fix: Serial.print;",c:"Serial.print(x);"},
-  {type:"code",q:"Fix: for i<10;",c:"for(int i=0;i<10;i++)"},
-  {type:"code",q:"Fix: pinMode(5, IN);",c:"pinMode(5, INPUT);"},
-  {type:"code",q:"Fix: digitalWrite(8, TRUE);",c:"digitalWrite(8, HIGH);"}
+  {type:"fill",q:"Fix: if(x=3)",c:"if(x==3)"},
+  {type:"fill",q:"Fix: Serial.print;",c:"Serial.print(x);"},
+  {type:"fill",q:"Fix: for i<10;",c:"for(int i=0;i<10;i++)"},
+  {type:"fill",q:"Fix: pinMode(5, IN);",c:"pinMode(5, INPUT);"},
+  {type:"fill",q:"Fix: digitalWrite(8, TRUE);",c:"digitalWrite(8, HIGH);"}
 ]
+
+
 
 ]
 };
@@ -753,14 +793,37 @@ let currentQuizIndex = 0;
 let userAnswers = [];
 let totalQuestions = 0;
 let progress = JSON.parse(localStorage.getItem("progress")) || {};
+let mode = "quiz"; // "quiz" or "code"
+let activeCodeChallenge = null;
+let challengeTimer = null;
+let challengeResult = null;
+function getDraftKey(){
+  return currentCategory + "-" + currentQuizIndex + "-draft";
+}
 
-// Initialize first category
-window.onload = () => {
-  loadCategory(currentCategory, document.querySelector('.cat.active'));
+function saveDraft(){
+  localStorage.setItem(getDraftKey(), JSON.stringify(userAnswers[currentQuizIndex] || []));
+}
+
+function loadDraft(){
+  const key = getDraftKey();
+  return JSON.parse(localStorage.getItem(key) || "[]");
+}
+
+function clearDraft(){
+  localStorage.removeItem(getDraftKey());
+}
+const board = {
+  value: "uno"
 };
+
 
 // ===== LOAD CATEGORY =====
 function loadCategory(category, btn){
+mode = "quiz";
+document.getElementById("quizSelect").style.display = "flex";
+document.getElementById("controls").style.display = "block";
+document.getElementById("quizArea").innerHTML = "";
   currentCategory = category;
   currentQuizIndex = 0;
   userAnswers = Array.from({ length: data[category].length }, () => []);
@@ -800,6 +863,7 @@ data[category].forEach((quiz, i)=>{
 
 // ===== LOAD QUIZ =====
 function loadQuiz(index){
+if(mode === "code") return;
   currentQuizIndex = index;
 
   const key = currentCategory + "-" + index;
@@ -808,9 +872,17 @@ function loadQuiz(index){
   if(!userAnswers[index]) userAnswers[index] = [];
 
   // restore saved answers
-  if(progress[key]?.answers){
-    userAnswers[index] = progress[key].answers;
-  }
+// ALWAYS reset first (fixes "carry over answers")
+userAnswers[index] = [];
+
+// priority:
+// 1. draft (unfinished quiz)
+// 2. saved submitted progress (only if exists)
+const draft = JSON.parse(localStorage.getItem(currentCategory + "-" + index + "-draft") || "null");
+
+if(draft){
+  userAnswers[index] = draft;
+}
 
   // Highlight active quiz button
   document.querySelectorAll('#quizSelect button').forEach((b,i)=>b.classList.toggle('active', i===index));
@@ -850,7 +922,10 @@ function loadQuiz(index){
     } else if(q.type==='fill'){
       const input = document.createElement('input');
       input.value = userAnswers[index][i] || '';
-      input.oninput = (e)=>userAnswers[index][i]=e.target.value;
+input.oninput = (e)=>{
+  userAnswers[index][i]=e.target.value;
+  saveDraft();
+}
       ansDiv.appendChild(input);
     }
 
@@ -871,7 +946,7 @@ function selectAnswer(qIndex, ansIndex, btn){
   const buttons = btn.parentElement.querySelectorAll('button');
   buttons.forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
-
+saveDraft();
   updateQuizButtonCounter();
 }
 
@@ -884,6 +959,7 @@ function toggleMCM(qIndex, ansIndex, btn){
   else arr.push(ansIndex);
   btn.classList.toggle('selected');
   updateQuizButtonCounter();
+saveDraft();
 }
 
 // ===== UPDATE QUIZ BUTTON COUNTER =====
@@ -948,6 +1024,7 @@ progress[key] = {
 };
 updateRank();
   saveProgress();
+clearDraft();
 }
 
 // ===== RETAKE QUIZ =====
@@ -968,7 +1045,8 @@ function retake(){
 
   document.getElementById("scoreBox").textContent = "";
   document.getElementById("submitBtn").disabled = false;
-
+clearDraft();
+userAnswers[currentQuizIndex] = [];
   updateRank();
 }
 function buildQuizButtons(){
@@ -1023,6 +1101,7 @@ function updateRank(){
     <b>${rank}</b>
     <small style="opacity:0.7;margin-left:6px;">(${score} XP)</small>
   `;
+renderSidebarQuizzes();
 }
 function saveProgress(){
   localStorage.setItem("progress", JSON.stringify(progress));
@@ -1044,6 +1123,273 @@ function getQuizColor(score, total){
   if(score === total) return "green";
   return "yellow";
 }
+
+function getTotalXP(){
+  return Object.values(progress || {})
+    .reduce((sum, p) => sum + (p.score || 0), 0);
+}
+
+function openCodeQuiz(u){
+
+  mode = "code";
+
+  document.getElementById("quizSelect").style.display = "none";
+  document.getElementById("controls").style.display = "none";
+
+  const area = document.getElementById("quizArea");
+  area.innerHTML = "";
+
+  const div = document.createElement("div");
+  div.className = "codeArea";
+
+  const title = u?.name || "Code Challenge";
+  const desc = u?.desc || "";
+
+  let html = `
+    <h3>${title}</h3>
+    <p>${desc}</p>
+    <textarea id="codeInput" placeholder="Write Arduino code here..."></textarea>
+    <button onclick="startCodeChallenge('${u.id}')">Submit Code</button>
+    <br><br>
+  `;
+
+  // CUSTOM override
+  if(u.id === "custom"){
+    html = `
+      <h3>${title}</h3>
+      <p>${desc}</p>
+
+      <input id="projTitle" placeholder="Project Title">
+      <input id="projDesc" placeholder="What does it do?">
+
+      <textarea id="codeInput" placeholder="Write Arduino code here..."></textarea>
+
+      <button id="submitBtn" onclick="submitCode('${u.id}')">Submit Project</button>
+
+      <br><br>
+    `;
+  }
+
+  div.innerHTML = html;
+  area.appendChild(div);
+}
+
+function exitCodeMode(){
+
+  mode = "quiz";
+
+  document.getElementById("quizSelect").style.display = "flex";
+  document.getElementById("controls").style.display = "block";
+
+  document.getElementById("quizArea").innerHTML = "";
+
+  loadQuiz(currentQuizIndex);
+}
+
+function renderSidebarQuizzes(){
+
+  const box = document.getElementById("sidebarQuizzes");
+  box.innerHTML = "";
+
+  const xp = getTotalXP();
+
+
+
+  /* ================= CODE CHALLENGES (NEW PART) ================= */
+  const codeChallenges = [
+    { name:"Blink LED Challenge", need:180, id:"blink", desc:"Make LED blink using Arduino code" },
+    { name:"Buzzer Challenge", need:190, id:"buzzer", desc:"Create buzzer pattern" },
+    { name:"Multi LED Challenge", need:200, id:"multiled", desc:"Control multiple LEDs in sequence" },
+    { name:"Custom Project", need:230, id:"custom", desc:"Build your own Arduino project" }
+  ];
+
+  // separator (optional visual)
+  const sep = document.createElement("hr");
+  sep.style.width = "100%";
+  sep.style.border = "1px solid #222";
+  box.appendChild(sep);
+
+  codeChallenges.forEach(c => {
+
+    const btn = document.createElement("button");
+    btn.className = "cat";
+
+    if (xp < c.need) {
+      btn.textContent = `${c.name} 🔒 (${c.need} XP)`;
+      btn.style.opacity = "0.4";
+      btn.disabled = true;
+    } else {
+      btn.textContent = `${c.name} ⚡`;
+      btn.onclick = () => openCodeQuiz(c);
+    }
+
+    box.appendChild(btn);
+  });
+}
+
+function submitCode(id){
+  const code = document.getElementById("codeInput").value.toLowerCase();
+
+  let passed = false;
+
+  if(id === "blink"){
+    if(code.includes("pinmode") &&
+       code.includes("digitalwrite") &&
+       code.includes("delay")){
+      passed = true;
+    }
+  }
+
+  if(id === "buzzer"){
+    if(code.includes("tone") || code.includes("digitalwrite")){
+      passed = true;
+    }
+  }
+
+  if(id === "multiled"){
+    const writes = (code.match(/digitalwrite/g) || []).length;
+    if(code.includes("pinmode") && writes >= 2){
+      passed = true;
+    }
+  }
+
+  if(id === "custom"){
+    const title = document.getElementById("projTitle").value;
+    const desc = document.getElementById("projDesc").value;
+
+    if(title && desc && code.length > 30){
+      passed = true;
+    }
+  }
+
+  if(passed){
+    alert("✅ Passed!");
+  } else {
+    alert("❌ Try again!");
+  }
+}
+
+async function startCodeChallenge(id){
+
+  const code = document.getElementById("codeInput").value;
+
+  if(!code.trim()){
+    alert("Write code first!");
+    return;
+  }
+
+  // lock UI
+  const btns = document.querySelectorAll("#quizArea button");
+  btns.forEach(b => b.disabled = true);
+
+  const consoleBox = document.getElementById("scoreBox");
+  consoleBox.textContent = "⏳ Sending code to compiler...";
+
+  activeCodeChallenge = id;
+  challengeResult = null;
+
+  try {
+    const res = await fetch("https://arduino-guide-6.onrender.com/compile", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        code: code,
+        board: board.value
+      })
+    });
+
+    const result = await res.json();
+
+    challengeResult = result;
+
+    consoleBox.textContent = "⏳ Compiling... wait for result";
+
+    startChallengeTimer();
+
+  } catch (err) {
+    consoleBox.textContent = "❌ Server error";
+    console.error(err);
+
+    // unlock UI
+    btns.forEach(b => b.disabled = false);
+    activeCodeChallenge = null;
+  }
+}
+
+function startChallengeTimer(){
+
+  let timeLeft = 10; // (IMPORTANT: reduce from 120 for real testing)
+
+  const consoleBox = document.getElementById("scoreBox");
+
+  challengeTimer = setInterval(() => {
+
+    timeLeft--;
+
+    consoleBox.textContent = `⏳ Processing... ${timeLeft}s`;
+
+    if(timeLeft <= 0){
+      clearInterval(challengeTimer);
+      showChallengeResult();
+    }
+
+  }, 1000);
+}
+
+function showChallengeResult(){
+
+  const consoleBox = document.getElementById("scoreBox");
+
+  const btns = document.querySelectorAll("#quizArea button");
+  btns.forEach(b => b.disabled = false);
+
+  if(!challengeResult){
+    consoleBox.textContent = "❌ No compiler response";
+    activeCodeChallenge = null;
+    return;
+  }
+
+  const output = (challengeResult.output || "").toLowerCase();
+
+  const passed =
+    !output.includes("error") &&
+    !output.includes("fail");
+
+  if(passed){
+    consoleBox.textContent = "✅ Challenge Passed!";
+
+    // FIX: safe XP function
+    addXPForChallenge(activeCodeChallenge);
+
+    // update progress
+    saveProgress();
+    updateRank();
+
+  } else {
+    consoleBox.textContent = "❌ Challenge Failed!";
+  }
+
+  activeCodeChallenge = null;
+}
+function addXPForChallenge(id){
+
+  const xpMap = {
+  };
+
+  const xp = xpMap[id] || 5;
+
+  const key = "code-" + id;
+
+  if(!progress[key]){
+    progress[key] = { score: xp, total: xp };
+  } else {
+    progress[key].score += xp;
+  }
+
+  saveProgress();
+  updateRank();
+}
+
 
 window.onload = () => {
   loadProgress();
@@ -1067,4 +1413,5 @@ window.onload = () => {
 </script>
 </body>
 </html>
+
 
