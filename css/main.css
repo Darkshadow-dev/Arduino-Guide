@@ -1212,7 +1212,7 @@ footer{
 
 /*---------------------------------___ Main mobile css ___-----------------------------------------*/
 /* ================= MOBILE LAYOUT ================= */
-@media (max-width: 678px){
+@media (max-width: 900px){
 
 /* -------- NAV (horizontal scroll only) -------- */
 nav{
@@ -1394,7 +1394,7 @@ button,
 
 }
 /* ================= FIXED MOBILE PATCH ================= */
-@media (max-width: 600px){
+@media (max-width: 900px){
 
 /* ---------- HEADER FIX ---------- */
 header{
@@ -1520,5 +1520,24 @@ body{
 
 }
 
+@media (max-width: 900px){
 
+  .dropdown{
+    position: relative;
+  }
+
+  .dropdown-menu{
+    position: absolute;
+    top: 110%;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+
+    z-index: 9999;
+  }
+
+}
 
