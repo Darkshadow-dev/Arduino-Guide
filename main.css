@@ -1,0 +1,1525 @@
+/*-------------------___ Main css for PC's ___----------------------------*/
+
+/*-------------Root-----------------------*/
+
+:root{
+  --bg:#f5faff;
+  --panel:#e9f4ff;
+  --accent:#00979d;
+  --accent2:#00c853;
+  --text:#0b1c2d;
+  --max:1100px;
+  --font: system-ui, Arial;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ROOT HEIGHT */
+html, body{
+  height:100%;
+}
+
+/*-------___ Body CSS ___-----------------*/
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+}
+
+/*-------------__ HEADER ___---------------*/
+header{
+  position:fixed;
+  top:0;left:0;right:0;
+  background:var(--panel);
+  padding:12px 16px;
+  z-index:1000;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+/*--------------___ NAV ___---------------*/
+nav{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+}
+
+.nav-spacer{
+  flex:0.5;
+}
+
+nav::-webkit-scrollbar{display:none}
+::-webkit-scrollbar{display:none}
+
+nav a{
+  display:inline-block;
+  margin:0 6px;
+  padding:8px 12px;
+  text-decoration:none;
+  color:var(--accent);
+  border-radius:6px;
+  font-weight:600;
+}
+
+nav a:hover{
+  background:rgba(0,151,157,.15);
+}
+
+/*--------------------------------- DROPDOWN WRAPPER ----------------------------------*/
+.dropdown{
+  position:relative;
+  width:160px;
+  font-family:var(--font);
+}
+
+/* BUTTON */
+.dropdown-btn{
+  width:100%;
+  background:var(--panel);
+  color:var(--accent);
+  padding:10px 14px;
+  font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  font-size:14px;
+  outline:none;
+  border:none;
+  border-radius:8px;
+}
+
+.dropdown-btn:hover{
+  background:rgba(0,151,157,.15);
+}
+
+.dropdown-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* MENU */
+.dropdown-menu{
+  position:absolute;
+  top:110%;
+  left:0;
+  width:100%;
+  background:white;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+  transition:
+  opacity .25s ease,
+  transform .25s ease;
+  z-index:999;
+}
+
+.dropdown-btn span{
+  display:inline-block;
+  transition:transform .25s ease;
+}
+
+.dropdown.open .dropdown-btn span{
+  transform:rotate(180deg);
+}
+
+/* OPEN STATE */
+.dropdown-menu.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px 14px;
+  text-decoration:none;
+  font-weight:600;
+  color:var(--accent);
+}
+
+.dropdown-menu a:hover{
+  background:rgba(0,151,157,.12);
+}
+
+/* Dropdown spacing */
+#more details {
+  margin-bottom: 14px;
+  border-radius: 6px;
+  background: #f9fbff;
+  padding: 6px 10px;
+}
+
+/*------------- Side panel --------------*/
+
+.side-menu{
+  position: relative;
+}
+
+.side-btn{
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.side-btn:hover{
+  background: rgba(0,151,157,.12);
+}
+
+.side-panel{
+  position: absolute;
+  right: 100%;
+  top: 0;
+  min-width: 180px;
+  background: white;
+  box-shadow: 0 6px 14px rgba(0,0,0,.2);
+  border-radius: 8px;
+
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+  transition: .25s ease;
+
+  display: flex;
+  flex-direction: column;
+  z-index: 2000;
+}
+
+.side-panel.open{
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.side-panel a{
+  padding: 10px 14px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.side-panel a:hover{
+  background: rgba(0,151,157,.15);
+}
+
+/*---------- mini nav-----------*/
+.mini-nav{
+  position:absolute;
+  right:40%;
+  display:flex;
+  gap:22px;
+}
+
+.mini-nav a{
+  font-size:20px;
+  text-decoration:none;
+  color:var(--accent);
+  font-weight:600;
+}
+
+.mini-nav a:hover{
+  text-decoration:none;
+}
+
+select{
+  width:100%;
+  margin-top:6px;
+  padding:8px;
+  border:2px solid var(--accent);
+  background:white;
+  color:var(--accent);
+  font-family:monospace;
+}
+
+
+/*---------------------___ MAIN body css ___----------------------*/
+/* MAIN */
+main{
+  max-width:var(--max);
+  margin:auto;
+  padding:120px 16px 15vh;
+}
+
+/*Top*/
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.title{
+  font-size:20px;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.logo{
+  position:absolute;
+  height:36px;
+  width:36px;
+  border-radius:50%;
+  object-fit:cover;
+  background:white;
+  padding:2px;
+  font-size:20px;
+  font-weight:700;
+  color:var(--accent);
+  text-align:center;
+}
+
+.logo.left{ left:12px; }
+.logo.right{ right:12px; }
+
+/* Make summary look clickable */
+summary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+}
+
+/* Remove text-cursor feeling */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom arrow */
+summary::before{
+  content:"";
+  margin-right:6px;
+  transition:transform .2s;
+}
+details[open] summary::before{
+  transform:rotate(90deg);
+}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* SECTIONS */
+h2{
+  color:var(--accent);
+  margin-bottom:10px;
+}
+p{
+  line-height:1.6;
+  margin-bottom:14px;
+}
+
+.next-link{  display:inline-block;  margin-top:20px;  font-weight:bold;  cursor:pointer;  text-decoration:none;  transition:0.2s;}
+.nl-blue{ color:#38bdf8; }
+.nl-green{ color:#22c55e; }
+.nl-red{ color:#ef4444; }
+.nl-yellow{ color:#facc15; }
+.nl-bg-dark{  background:#0b0f1a;  padding:6px 10px;  border-radius:6px;}
+.nl-bg-light{  background:#f5faff;  padding:6px 10px;  border-radius:6px;}
+.nl-sm{ font-size:14px; }
+.nl-md{ font-size:16px; }
+.nl-lg{ font-size:20px; }
+.nl-underline{ text-decoration:underline; }
+.nl-noneunderline{ text-decoration:none; }
+.nl-hover-glow:hover{  text-shadow:0 0 8px currentColor;}
+.nl-hover-scale:hover{  transform:scale(1.05);}
+
+/*--------------------___ New cursor looks ___-----------------------------------------*/
+
+button,
+.lp-btn,
+.btn,
+.btn-action{
+  cursor: grab;
+}
+
+button:active{
+  cursor: grabbing;
+}
+
+.example-item,
+.code-block,
+.pin{
+  cursor: crosshair;
+}
+
+nav a,
+.quick-links a{
+  cursor: pointer;
+}
+
+.zoom-box:hover,
+.tutorial-image img:hover{
+  cursor: zoom-in;
+}
+
+.lp-check{
+  cursor: cell;
+}
+
+.disabled{
+  cursor: not-allowed;
+}
+
+/*----------------___ Button CSS ___--------*/
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0077cc;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.btn:hover {
+  background-color: #005fa3;
+}
+
+.btn-action{
+  background: var(--accent2);
+  color: #003;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-action:hover{
+  background: #00e676;
+  transform: translateY(-1px);
+}
+
+.btn-group{
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-group:hover{
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-submit{
+  width:50%;
+  margin-top:18px;
+  margin-left:25%;
+  padding:12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:1.05rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.btn-submit:hover{
+  transform: scale(1.03);
+  filter: brightness(1.1);
+}
+
+/*-------------------___ Arduino uno 3D CSS ___----------------------*/
+
+.special-layout .content {
+  display: flex;
+  align-items: right;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.special-layout .content p {
+  flex: 1 1 300px;
+  order: 2;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.special-layout .content img {
+  flex: 1 1 300px;
+  order: 1;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/*---------3D-------*/
+#uno3d-wrap {
+  width: 80%;
+  height: 80vh;
+  max-height: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+#uno3d {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/*---------- IMAGE PIN MAP --------------*/
+.pin-map{
+  position:relative;
+  max-width:500px;
+  margin:20px auto;
+}
+.pin-map img{
+  width:100%;
+  display:block;
+  border-radius:10px;
+}
+
+/* CLICKABLE PIN */
+.pin{
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.15);
+  border:2px solid white;
+  cursor:pointer;
+}
+
+/* INFO BOX */
+#pinInfo{
+  background:white;
+  border-left:4px solid var(--accent);
+  padding:12px;
+  margin-top:15px;
+  display:none;
+}
+
+.pin.active { background: #ff3b3b; box-shadow: 0 0 8px #ff3b3b; }
+
+.pin-label {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: none;
+  pointer-events: none;
+}
+
+.pin.active .pin-label {  display: block;}
+
+/*--------------------------___ Hardwarwe CSS ___-----------------------*/
+
+.hardware-layout{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:40px;
+  align-items:start;
+}
+
+/* LEFT */
+.hardware-left img{
+  max-width:100%;
+  margin:16px 0;
+  border-radius:10px;
+}
+
+/* RIGHT */
+.hardware-right {
+  position: sticky;
+  top: 80px;
+}
+
+.hardware-left {
+  max-width: 520px;
+}
+
+.hardware-right {
+  border-left: 2px dashed #2a2a2a;
+  padding-left: 24px;
+}
+
+.wiring-card{
+  background:#0e1a24;
+  border:1px solid #2a4a63;
+  border-radius:12px;
+  padding:12px;
+  color:#dff1ff;
+  margin-bottom:10px;
+}
+
+.wiring-card summary{
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.wiring-card img{
+  width:120%;
+  margin-top:10px;
+  border-radius:8px;
+  left:25%;
+  top:-15%;
+}
+
+/* INSIDE WIRING CARD */
+.dual-image-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:12px;
+}
+
+/* ZOOM BOX */
+.zoom-box{
+  position:relative;
+  border-radius:10px;
+  background:#000;
+}
+
+.zoom-box img{
+  width:100%;
+  display:block;
+  transition:transform .25s ease;
+  transform-origin: center center; /* FIX drift */
+}
+
+.zoom-box:hover {
+  z-index: 9999;
+}
+
+.zoom-box {
+  overflow: visible;
+}
+
+/* ZOOM */
+.zoom-box:hover img{
+  transform:scale(4);
+  cursor:zoom-in;
+}
+
+.led-container {
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.led-frame {
+  position: absolute;
+  top: 0px;
+  width: 100px;
+  height: 100px;
+  opacity: 0;
+  border-radius: 8px;
+}
+
+.led-frame.active {
+  opacity: 1;
+}
+
+/*hardware tutorial page*/
+
+/* Hardware tutorial box */
+.tutorial-box{
+  background:#0e1a24;
+  border:1px solid #2a4a63;
+  border-radius:12px;
+  padding:20px;
+  color:#dff1ff;
+  max-width:700px;
+}
+
+.tutorial-image{
+  text-align:center;
+  margin-bottom:12px;
+}
+
+.tutorial-image img{
+  max-width:100%;
+  border-radius:10px;
+  transition:transform .3s ease;
+}
+
+.tutorial-image img:hover{
+  transform:scale(1.5);
+}
+
+.tutorial-controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:10px 0;
+}
+
+.tutorial-controls button{
+  padding:6px 14px;
+  background:#1f6bff;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.tutorial-controls button:hover{
+  background:#3a82ff;
+}
+
+/*-------------___ Main page css ___-------------*/
+
+/* START BOX */
+
+.start-box {
+  margin: 40px auto 10px;
+  padding: 20px;
+  max-width: 420px;
+  text-align: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.start-box p {
+  margin: 0 0 12px;
+  font-size: 1.1em;
+}
+
+.start-btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 25px;
+  background: #fff;
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.start-btn:hover {
+  background: var(--panel);
+  transform: scale(1.05);
+}
+
+.quick-links {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0 25px;
+  flex-wrap: wrap;
+}
+
+.quick-links a {
+  flex: 1;
+  min-width: 180px;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.quick-links a:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ---------- INFO CARDS ---------- */
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+  margin:40px 0;
+}
+.info-card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.info-card h3{
+  color:var(--accent);
+  margin-bottom:10px;
+}
+
+/* ---------- Learning Path ---------- */
+
+.lp-grid{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+
+.lp-card{
+  width:180px;
+  border:3px solid #000;
+  border-radius:14px;
+  background:#fff;
+  overflow:hidden;
+}
+
+/* BUTTON */
+.lp-btn{
+  width:100%;
+  padding:12px;
+  font-size:18px;
+  font-weight:bold;
+  background:#eee;
+  border:none;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.lp-card.done .lp-btn{
+  background:#b7f5c0;
+  color:#0b5;
+}
+
+/* DROPDOWN ANIMATION */
+.lp-content{
+  max-height:0;
+  overflow:hidden;
+  transition:0.35s ease;
+}
+
+.lp-card.active .lp-content{
+  max-height:300px;
+}
+
+/* LINKS */
+.lp-content a{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  text-decoration:none;
+  color:#000;
+  border-top:1px solid #ccc;
+}
+
+.lp-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.lp-check{
+  width:18px;
+  height:18px;
+  border:2px solid #999;
+  border-radius:4px;
+  cursor:pointer;
+  flex-shrink:0;
+  position:relative;
+}
+
+.lp-check.done{
+  background:#00c853;
+  border-color:#00c853;
+}
+
+.lp-check.done::after{
+  content:"✓";
+  color:white;
+  font-size:14px;
+  position:absolute;
+  left:3px;
+  top:-1px;
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .lp-card { width: 100%; }
+}
+
+
+/*-----------------------------___ Board CSS ___-------------------------*/
+
+/* INFO BLOCK */
+
+.info-block {
+  background: var(--panel);
+  border-left: 5px solid var(--accent);
+  padding: 15px 18px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  color: var(--text);
+}
+
+.info-block b {
+  color: var(--accent);
+}
+
+.board-img{
+  max-width:100%;
+  border-radius:10px;
+  margin:10px 0;
+}
+
+.spec-grid{
+  display:grid;
+  grid-template-columns:  1fr 1.5fr;
+  gap:12px;
+  background:var(--panel);
+  padding:15px;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.spec-grid div{
+  background:#fff;
+  border-radius:8px;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+}
+
+.spec-grid span{
+  color:var(--accent);
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+.compare{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.compare th{
+  background:var(--accent);
+  color:#fff;
+  padding:10px;
+  text-align:left;
+}
+
+.compare td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+}
+
+.compare tr:nth-child(even){
+  background:#f5faff;
+}
+
+
+/*--------------------------------___ Example CSS ___---------------------*/
+/* Examples page ONLY when active */
+#examples.active{
+  position:fixed;
+  top:120px;
+  bottom:60px;
+  left:0;
+  right:0;
+  display:flex;
+}
+
+/* LAYOUT */
+.examples-layout{
+  display:flex;
+  width:100%;
+  height:100%;
+}
+
+/* LEFT MENU – 20% WIDTH, FULL HEIGHT */
+.examples-menu{
+  width:20%;
+  height:100%;
+  background:white;
+  border-right:4px solid var(--accent2);
+  padding:12px;
+  overflow-y:auto;
+}
+
+/* MAIN CONTENT – 80% WIDTH, FULL HEIGHT */
+.examples-content{
+  width:80%;
+  height:100%;
+  background:white;
+  padding:24px;
+  overflow-y:auto;
+}
+
+.examples-menu div:hover{
+  background:rgba(0,151,157,.12);
+}
+
+.example-item,
+.example-item * {
+  cursor: pointer;
+  user-select: none;
+}
+
+.examples-menu h3{
+  margin: 16px 0 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+.examples-quicknav {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+/* main select */
+.examples-quicknav select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+
+  transition: 
+    background 0.2s ease,
+    border 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+}
+
+/* hover */
+.examples-quicknav select:hover {
+  background: #f0f8ff;
+  transform: translateY(-1px);
+}
+
+/* focus / open feel */
+.examples-quicknav select:focus {
+  outline: none;
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(0,200,83,0.25);
+  background: #ffffff;
+}
+
+/* scrollbar (Chromium) */
+.examples-quicknav select::-webkit-scrollbar {
+  width: 6px;
+}
+
+.examples-quicknav select::-webkit-scrollbar-track {
+  background: var(--panel);
+}
+
+.examples-quicknav select::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+/* Firefox */
+.examples-quicknav select {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--panel);
+}
+
+.code-block{
+  position:relative;
+  background:#0e1a24;
+  color:#b9f6ca;
+  padding:16px;
+  border-radius:6px;
+  margin-top:16px;
+  overflow:auto;
+}
+
+.code-block pre{
+  margin:0;
+  font-family:monospace;
+  font-size:15px;
+}
+
+/* COPY BUTTON */
+.copy-btn{
+  position:absolute;
+  top:8px;
+  right:8px;
+  background:var(--accent2);
+  border:none;
+  color:#003;
+  font-weight:700;
+  padding:6px 10px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.copy-btn:hover{
+  background:#00e676;
+}
+
+#copyPopup{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  
+  background:#222;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:8px;
+  font-size:14px;
+
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s;
+}
+
+#copyPopup.show{
+  opacity:1;
+}
+
+/* CLI command container */
+.cli-cmd-container{
+  max-width:420px;
+  padding:12px;
+  margin-top:10px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  background:#f8f8f8;
+}
+
+/* one-line layout */
+.cli-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* buttons */
+.cli-btn{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  background:#2b7cff;
+  color:white;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.cli-btn:hover{
+  background:#1d5fd1;
+}
+
+/* dropdown */
+.cli-port-select{
+  width:100px;
+  padding:5px;
+  border-radius:6px;
+  border:1px solid #aaa;
+  font-size:13px;
+}
+
+/*----------------------___ Feedback CSS ___------------------------*/
+
+.form-panel {
+  width: 100%;
+  max-width: var(--max);
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  padding: 24px;
+  box-shadow: 0 0 15px rgba(0,255,0,0.15);
+}
+
+.form-panel h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.form-panel p {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* ===== FORM ===== */
+label {
+  display: block;
+  margin-top: 14px;
+  font-weight: bold;
+}
+
+input,textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--panel);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  font-family: monospace;
+  font-size: 1rem;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  background: #ffffff;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/*-----------------------___ Footer CSS __-----------------------*/
+footer{
+  position:relative;
+  bottom:0px;
+  left:0;
+  width:100%;
+  height:60px;
+  background:var(--panel);
+  color:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  box-shadow:0 -2px 6px rgba(0,0,0,.1);
+}
+
+
+/*---------------------------------___ Main mobile css ___-----------------------------------------*/
+/* ================= MOBILE LAYOUT ================= */
+@media (max-width: 678px){
+
+/* -------- NAV (horizontal scroll only) -------- */
+nav{
+  overflow-x:auto;
+  white-space:nowrap;
+  flex-wrap:nowrap;
+}
+
+nav a, .dropdown{
+  flex:0 0 auto;
+}
+
+/* -------- MAIN GLOBAL -------- */
+main{
+  padding:110px 12px 14vh;
+  font-size:clamp(15px, 2.5vw, 17px);
+}
+
+
+/* bigger tap targets */
+button, .btn, .btn-action, nav a{
+  padding:12px 16px;
+  font-size:15px;
+}
+
+/* -------- BOARD PAGE -------- */
+.spec-grid{
+  grid-template-columns:1fr;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+.compare{
+  min-width:600px; /* forces horizontal scroll */
+}
+
+/* -------- HARDWARE PAGE -------- */
+.hardware-layout{
+  grid-template-columns:1fr;
+}
+
+.hardware-right{
+  position:static;
+  border-left:none;
+  padding-left:0;
+  margin-top:20px;
+}
+
+/* -------- HARDWARE VISUAL -------- */
+.wiring-card{
+  margin-bottom:20px;
+}
+
+.dual-image-row{
+  grid-template-columns:1fr;
+}
+
+/* -------- 3D PAGE -------- */
+#uno3d-wrap{
+  width:100%;
+  height:45vh;
+}
+
+.special-layout .content{
+  flex-direction:column;
+}
+
+.special-layout img{
+  width:100%;
+}
+
+/* -------- EXAMPLES PAGE -------- */
+#examples.active{
+  position:static;
+}
+
+.examples-layout{
+  flex-direction:column;
+}
+
+/* horizontal quick nav */
+.examples-menu{
+  width:100%;
+  height:auto;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  border-right:none;
+  border-bottom:3px solid var(--accent2);
+}
+
+.examples-content{
+  width:100%;
+  height:auto;
+}
+
+/* -------- FEEDBACK -------- */
+.form-panel{
+  padding:16px;
+}
+
+/* -------- FOOTER & HEADER SAME -------- */
+header, footer{
+  position:fixed;
+}
+
+/* -------- TABLE + COMPARE -------- */
+.compare td, .compare th{
+  white-space:nowrap;
+  font-size:14px;
+}
+
+/* -------- REMOVE HOVER DEPENDENCY -------- */
+.zoom-box:hover img{
+  transform:none;
+}
+
+/* tap zoom instead */
+.zoom-box img{
+  transform:scale(1);
+}
+
+/* -------- TOUCH FEEL -------- */
+button,
+.btn,
+.btn-action,
+.example-item{
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+}
+
+/* ================= LARGE DESKTOP / ULTRAWIDE ================= */
+@media (min-width: 1400px){
+
+  :root{
+    --max: 2200px; /* wider content */
+  }
+
+  body{
+    font-size:17px;
+  }
+
+  main{
+    max-width:2200px;
+    padding-left:40px;
+    padding-right:40px;
+  }
+
+  .examples-layout{
+    max-width:100%;
+  }
+
+  .examples-menu{
+    width:18%;
+    font-size:15px;
+  }
+
+  .examples-content{
+    width:82%;
+    font-size:16px;
+  }
+
+  .hardware-layout{
+    max-width:1400px;
+    margin:auto;
+  }
+
+  .info-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .spec-grid{
+    grid-template-columns:1fr 2fr;
+  }
+
+}
+/* ================= FIXED MOBILE PATCH ================= */
+@media (max-width: 900px){
+
+/* ---------- HEADER FIX ---------- */
+header{
+  padding:10px;
+}
+
+/* stack header content */
+.topbar{
+  flex-direction:column;
+  gap:8px;
+}
+
+/* center title properly */
+.title{
+  text-align:center;
+  font-size:18px;
+}
+
+/* fix logo overlapping */
+.logo{
+  position:static;
+  margin:0 auto;
+}
+
+/* ---------- NAV FIX ---------- */
+nav{
+  margin-top:8px;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding-bottom:6px;
+}
+
+/* better spacing */
+nav a{
+  padding:10px 14px;
+  font-size:14px;
+}
+
+/* REMOVE broken mini-nav positioning */
+.mini-nav{
+  position:static;
+  justify-content:center;
+  width:100%;
+  margin-top:6px;
+}
+
+/* ---------- DROPDOWN FIX ---------- */
+.dropdown{
+  width:auto; /* remove fixed width */
+  min-width:140px;
+}
+
+.dropdown-menu{
+  position:absolute;
+  left:0;
+  right:auto;
+  width:max-content;
+  min-width:160px;
+  max-width:90vw;
+}
+
+/* ---------- SIDE PANEL FIX ---------- */
+.side-panel{
+  position:fixed;
+  top:70px;
+  right:10px;
+  left:10px;
+  min-width:auto;
+  width:auto;
+}
+
+/* ---------- MAIN SPACING ---------- */
+main{
+  padding-top:130px; /* more space for header */
+}
+
+/* ---------- QUICK LINKS ---------- */
+.quick-links{
+  flex-direction:column;
+}
+
+.quick-links a{
+  width:100%;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-submit{
+  width:100%;
+  margin-left:0;
+}
+
+/* ---------- PIN MAP ---------- */
+.pin-map{
+  max-width:100%;
+}
+
+/* ---------- HARDWARE IMAGES ---------- */
+.wiring-card img{
+  width:100%;
+  left:0;
+  top:0;
+}
+
+/* ---------- ZOOM FIX ---------- */
+.zoom-box:hover img{
+  transform:none;
+}
+
+/* ---------- EXAMPLES MENU ---------- */
+.examples-menu{
+  grid-template-columns:1fr; /* easier tap */
+}
+
+/* ---------- TEXT OVERFLOW ---------- */
+h2, h3, p{
+  word-wrap:break-word;
+}
+
+/* ---------- SAFETY (no horizontal scroll bugs) ---------- */
+body{
+  overflow-x:hidden;
+}
+
+}
+
+
+
+

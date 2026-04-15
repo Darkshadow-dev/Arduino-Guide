@@ -1,0 +1,378 @@
+/*------------------------------------___  Main Script ___------------------------*/
+
+/*-------------___ Page script ___----------------*/
+const STORAGE_KEY = "arduino-last-page";
+
+/* ACTIVATE PAGE */
+function activatePage(id, save = true) {
+  const target = document.getElementById(id);
+
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.remove("active")
+  );
+
+  if (target) {
+    target.classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, id);
+  } else {
+    document.getElementById("notfound").classList.add("active");
+    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
+  }
+
+  window.scrollTo(0, 0);
+}
+
+/* HOME BUTTON */
+function goHome() {
+  activatePage("home");
+  history.pushState(null, "", "#home");
+}
+
+/* NAV LINK HANDLING */
+document.querySelectorAll("nav a").forEach(a => {
+  a.addEventListener("click", e => {
+    const href = a.getAttribute("href");
+    if (!href || href.startsWith("http")) return;
+
+    // #section
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const id = href.substring(1);
+      activatePage(id);
+      history.pushState(null, "", href);
+      return;
+    }
+
+    // page.html#section
+    if (href.includes(".html#")) {
+      const [page, hash] = href.split("#");
+      if (location.pathname.endsWith(page)) {
+        e.preventDefault();
+        activatePage(hash);
+        history.pushState(null, "", "#" + hash);
+      }
+    }
+  });
+});
+
+/* BACK / FORWARD */
+window.addEventListener("hashchange", () => {
+  const id = location.hash.substring(1);
+  activatePage(id, false);
+});
+
+/* RESTORE LAST PAGE ON LOAD */
+window.addEventListener("load", () => {
+  const hash = location.hash.substring(1);
+  const last = localStorage.getItem(STORAGE_KEY) || "home";
+
+  if (hash) {
+    activatePage(hash);
+  } else {
+    activatePage(last);
+    history.replaceState(null, "", "#" + last);
+  }
+});
+
+/*----------- DROPDOWNS --------------*/
+function toggleDropdown(btn, e) {
+  e.stopPropagation();
+
+  document.querySelectorAll(".dropdown").forEach(d => {
+    if (d !== btn.closest(".dropdown")) {
+      d.classList.remove("open");
+      d.querySelector(".dropdown-menu").classList.remove("open");
+    }
+  });
+
+  const dropdown = btn.closest(".dropdown");
+  dropdown.classList.toggle("open");
+  dropdown.querySelector(".dropdown-menu").classList.toggle("open");
+}
+
+function selectLink(link) {
+  const dropdown = link.closest(".dropdown");
+  dropdown.classList.remove("open");
+  dropdown.querySelector(".dropdown-menu").classList.remove("open");
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".dropdown").forEach(d => {
+    d.classList.remove("open");
+    d.querySelector(".dropdown-menu").classList.remove("open");
+  });
+});
+
+/*------------ Side dropdown ----------------*/
+function toggleSideMenu(btn, e){
+  e.stopPropagation();
+
+  const panel = btn.nextElementSibling;
+
+  // close other side panels
+  document.querySelectorAll(".side-panel").forEach(p => {
+    if (p !== panel) p.classList.remove("open");
+  });
+
+  panel.classList.toggle("open");
+}
+// close when clicking outside
+document.addEventListener("click", e => {
+  if (!e.target.closest(".side-menu")) {
+    document.querySelectorAll(".side-panel")
+      .forEach(p => p.classList.remove("open"));
+  }
+});
+
+function toggleLP(btn){
+  const card = btn.parentElement;
+
+  document.querySelectorAll(".lp-card").forEach(c=>{
+    if(c!==card) c.classList.remove("active");
+  });
+
+  card.classList.toggle("active");
+}
+
+/* progress system (toggle version) */
+
+document.querySelectorAll(".lp-check").forEach(box=>{
+  const text = box.previousElementSibling.textContent.trim();
+  const key = "lp_" + text;
+
+  if(localStorage.getItem(key)==="1"){
+    box.classList.add("done");
+  }
+
+  box.onclick = ()=>{
+    box.classList.toggle("done");
+
+    if(box.classList.contains("done")){
+      localStorage.setItem(key,"1");
+    }else{
+      localStorage.removeItem(key);
+    }
+
+    updateCard(box.closest(".lp-card"));
+  };
+});
+
+function updateCard(card){
+  const total = card.querySelectorAll(".lp-check").length;
+  const done  = card.querySelectorAll(".lp-check.done").length;
+
+  if(done === total){
+    card.classList.add("done");
+  }else{
+    card.classList.remove("done");
+  }
+}
+
+/* restore buttons on load */
+document.querySelectorAll(".lp-card").forEach(card=>{
+  updateCard(card);
+});
+
+/*-------------- Animation on hardwarevi page --------------*/
+
+document.querySelectorAll('.led-container').forEach(container => {
+  const frames = container.querySelectorAll('.led-frame');
+  if (frames.length < 2) return; // nothing to animate
+
+  let index = 0;
+  frames[index].classList.add('active');
+
+  setInterval(() => {
+    frames[index].classList.remove('active');
+    index = (index + 1) % frames.length;
+    frames[index].classList.add('active');
+  }, 1000);
+});
+
+/*-------------- 3D model renderer--------------- */
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("uno3d"),
+  antialias: true,
+  alpha: true // <- this removes black background
+});
+
+renderer.setClearColor(0x000000, 0); // fully transparent
+
+/*--------------___ Feedback functiones ___---------------------*/
+
+function toggleCustomType(){
+  const sel = document.getElementById("type");
+  const custom = document.getElementById("customType");
+
+  if(sel.value === "custom"){
+    custom.style.display = "block";
+    custom.focus();
+  }else{
+    custom.style.display = "none";
+    custom.value = "";
+  }
+}
+        function sendMail(form) {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const subject = document.getElementById("subject").value;
+            const message = document.getElementById("message").value;
+            // Format mailto link
+            const mailtoLink = `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+                "Name: " + name + "\n" +
+                "Email: " + email + "\n\n" +
+                "Message:\n" + message
+            )}`;
+
+            // Open user's email client
+            window.location.href = mailtoLink;
+        }
+function submitFeedback(){
+
+  const typeSelect = document.getElementById("type");
+  const customType = document.getElementById("customType");
+  const idea = document.getElementById("idea").value;
+  const user = document.getElementById("user").value || "Anonymous";
+
+  const finalType = 
+    typeSelect.value === "custom"
+    ? customType.value
+    : typeSelect.value;
+
+  const subject = "Arduino Guide Feedback: " + finalType;
+
+  const body =
+    "Type: " + finalType + "\n" +
+    "User: " + user + "\n\n" +
+    "Message:\n" + idea;
+
+  const mailtoLink =
+    `mailto:guidecommunity.contacts@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  window.location.href = mailtoLink;
+}
+
+function downloadQRCode() {
+  fetch('QR-Code.png')
+    .then(response => response.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ArduinoGuideQRCode.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert('Failed to download QR code'));
+}
+/*-------------------___ pdf download ___-------------------------------*/
+
+/* Go to Feedback.html for the script leave it there*/
+
+/*-------------------___ Example copy function + download ___---------------------------*/
+
+function filterExamples(level){
+  const items = document.querySelectorAll(".example-item");
+  const headers = document.querySelectorAll(".examples-menu h3");
+
+  items.forEach(item=>{
+    if(level === "all" || item.dataset.level === level){
+      item.style.display = "block";
+    } else {
+      item.style.display = "none";
+    }
+  });
+
+  // hide empty headers
+  headers.forEach(h=>{
+    let next = h.nextElementSibling;
+    let visible = false;
+
+    while(next && !next.matches("h3")){
+      if(next.style.display !== "none") visible = true;
+      next = next.nextElementSibling;
+    }
+
+    h.style.display = visible ? "block" : "none";
+  });
+}
+
+function copyCode(btn){
+  const code = btn.parentElement.querySelector("pre").innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.textContent="✓";
+    setTimeout(()=>btn.textContent="Copy",900);
+  });
+}
+function downloadCode(btn){
+  const old = btn.innerText;
+  btn.innerText = "Downloading...";
+
+  const block = btn.parentElement;
+  const code = block.querySelector("pre").innerText;
+  const name = block.dataset.filename || "code";
+
+  downloadFile(code, name + ".ino");
+
+  setTimeout(()=>{
+    downloadFile(code, name + ".txt");
+    btn.innerText = "✔ Downloaded";
+    setTimeout(()=> btn.innerText = old, 1500);
+  }, 1000);
+}
+
+function downloadFile(content, filename){
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+let cliMode = false;
+
+function toggleView(){
+  cliMode = !cliMode;
+
+  const blocks = document.querySelectorAll(".code-block");
+
+  blocks.forEach(block => {
+    const pre = block.querySelector("pre");
+    const title = block.parentElement.querySelector("h2");
+    const text = block.parentElement.querySelector("p");
+
+    if(cliMode){
+      if(title) title.style.display = "none";
+      if(text) text.style.display = "none";
+
+      pre.style.background = "#000";
+      pre.style.color = "#0f0";
+      pre.style.fontFamily = "monospace";
+      pre.style.fontSize = "14px";
+
+    }else{
+      if(title) title.style.display = "";
+      if(text) text.style.display = "";
+
+      pre.style.background = "";
+      pre.style.color = "";
+      pre.style.fontFamily = "";
+      pre.style.fontSize = "";
+    }
+  });
+
+  document.getElementById("viewToggle").textContent =
+    cliMode ? "Normal View" : "CLI / IDE";
+}
+
+
+
+
+
+
