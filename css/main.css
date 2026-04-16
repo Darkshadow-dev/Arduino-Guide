@@ -1419,7 +1419,19 @@ header{
   margin:0 auto;
 }
 
+/* ---------- NAV FIX ---------- */
+nav{
+  margin-top:8px;
+  overflow-x:auto;
+  white-space:nowrap;
+  padding-bottom:6px;
+}
 
+/* better spacing */
+nav a{
+  padding:10px 14px;
+  font-size:14px;
+}
 
 /* REMOVE broken mini-nav positioning */
 .mini-nav{
