@@ -241,136 +241,6 @@ nav a:hover{
   color:white;
 }
 ::-webkit-scrollbar{display:none}
-
-/* ===== MOBILE ===== */
-@media(max-width:900px){
-
-  #app{
-    flex-direction:column;
-    height:auto;
-  }
-
-  /* SIDEBAR → becomes TOP NAV */
-  #sidebar{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-  }
-
-  #sidebar h2{
-    font-size:16px;
-    padding:10px;
-  }
-
-  .sideSection{
-    text-align:center;
-    padding:6px;
-    border-bottom:1px solid #222;
-  }
-
-  .cat{
-    flex:1;
-    text-align:center;
-    font-size:14px;
-    padding:10px 6px;
-  }
-
-  /* category buttons row */
-#sidebar{
-  display:flex;
-  flex-direction:column;
-}
-
-.cat{
-  width:100%;
-}
-
-/* category buttons grid */
-#sidebar .cat:nth-of-type(-n+3){
-  display:inline-block;
-  width:33.33%;
-  text-align:center;
-}
-
-  #sidebar h2,
-  .sideSection{
-    grid-column:1 / -1;
-  }
-
-  /* MAIN AREA */
-  #mainContent{
-    padding:12px;
-  }
-
-  /* QUIZ SELECT BUTTONS */
-#quizSelect{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-#quizSelect button{
-  width:100%;
-  padding:12px;
-  font-size:15px;
-}
-
-  /* QUESTIONS */
-  .question{
-    padding:10px;
-  }
-
-  .question p{
-    font-size:15px;
-  }
-
-  /* ANSWERS → BIG TOUCH BUTTONS */
-  .answers button{
-    padding:14px;
-    font-size:15px;
-    border-radius:12px;
-  }
-
-  input{
-    font-size:16px;
-    padding:10px;
-  }
-
-  /* CONTROLS */
-  #controls{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-
-  #controls button{
-    width:100%;
-    padding:14px;
-    font-size:16px;
-    border-radius:10px;
-  }
-
-  /* TOPBAR */
-  #topbar{
-    flex-direction:column;
-    height:auto;
-    gap:6px;
-    padding:10px;
-    text-align:center;
-  }
-
-  nav{
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-
-  /* SCORE */
-  #scoreBox{
-    text-align:center;
-    margin-top:10px;
-    font-size:18px;
-  }
-}
 /* HEADER TITLE */
 .headerTitle{
   font-weight:bold;
@@ -410,6 +280,93 @@ nav a:hover{
   width:100%;
   margin-top:6px;
 }
+/* ================= GLOBAL RESPONSIVE (NO LAYOUT BREAK) ================= */
+
+/* shrink sidebar slightly on small screens */
+@media(max-width:1100px){
+  #sidebar{
+    width:180px;
+  }
+}
+
+/* smaller spacing for tablets */
+@media(max-width:900px){
+
+  #topbar{
+    padding:8px 10px;
+  }
+
+  nav a{
+    font-size:13px;
+    padding:5px 8px;
+  }
+
+  #mainContent{
+    padding:12px;
+  }
+
+  .question{
+    padding:10px;
+  }
+
+  .answers button{
+    padding:10px;
+    font-size:14px;
+  }
+}
+
+/* mobile — SAME LAYOUT, just tighter */
+@media(max-width:600px){
+
+  #sidebar{
+    width:150px;
+  }
+
+  #sidebar h2{
+    font-size:14px;
+  }
+
+  .cat{
+    font-size:12px;
+    padding:8px;
+  }
+
+  #topbar{
+    min-height:40px;
+    max-height:40px;
+    font-size:14px;
+  }
+
+  nav{
+    gap:4px;
+  }
+
+  nav a{
+    font-size:12px;
+    padding:4px 6px;
+  }
+
+  #mainContent{
+    padding:8px;
+  }
+
+  #quizSelect{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:6px;
+  }
+
+  #quizSelect button{
+    font-size:12px;
+    padding:8px;
+  }
+
+  .answers button{
+    padding:10px;
+    font-size:13px;
+  }
+}
+
 </style>
 </head>
 
@@ -439,7 +396,7 @@ nav a:hover{
 <div id="main">
 
   <div id="topbar">
-    <div>Arduino Quiz Hub</div>
+    <div>Arduino Quiz</div>
     <nav>
       <a href="Arduino%20Guide.html#home">Home</a>
       <a href="Examples.html#examples">Examples</a>

@@ -1521,34 +1521,11 @@ body{
 }
 
 @media (max-width: 900px){
-
-  .dropdown{
-    position: relative;
-  }
-
-  .dropdown-menu{
-    position: absolute;
-    top: 110%;
-    left: 0;
-    right: 0;
-
-    width: 100%;
-    max-height: 50vh;
-    overflow-y: auto;
-
-    z-index: 9999;
-  }
 header{
   z-index: 1000;
   overflow: visible; /* IMPORTANT */
 }
 
-nav{
-  overflow: visible; /* override scroll clipping */
-}
-
-}
-@media (max-width: 900px){
 
   .dropdown{
     position: relative;
