@@ -1538,6 +1538,48 @@ body{
 
     z-index: 9999;
   }
+header{
+  z-index: 1000;
+  overflow: visible; /* IMPORTANT */
+}
+
+nav{
+  overflow: visible; /* override scroll clipping */
+}
+
+}
+@media (max-width: 900px){
+
+  .dropdown{
+    position: relative;
+    z-index: 1001; /* above header */
+  }
+
+  .dropdown-menu{
+    position: fixed; /* 🔥 key fix */
+    
+    top: auto;
+    left: 10px;
+    right: 10px;
+
+    /* place under button dynamically using JS later if needed */
+    margin-top: 8px;
+
+    width: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+
+    border-radius: 10px;
+
+    z-index: 9999;
+
+    /* smoother mobile feel */
+    transform: translateY(-10px);
+  }
+
+  .dropdown-menu.open{
+    transform: translateY(0);
+  }
 
 }
 
