@@ -193,17 +193,57 @@
 
 <section id="download-pdf" class="page">
 
-<div style="height:10vh;"></div>
+  <h2>Download Arduino Guide</h2>
+  <p>Select pages and download them as PDF or Word for offline use.</p>
 
-<h2>In here you'll downlad the whole or selected pages of the website!</h2>
+  <hr>
 
-  <button class="btn-action" onclick="openDownloadPopup()" style="margin:12px 0 20px;">
-    Download for Offline Use
-  </button>
+<div class="download-box">
 
-<h3>Below you can see as the selected pages are downloaded</h3>
+  <h3>Select pages</h3>
 
-<div style="height:10vh;"></div>
+  <div class="download-list">
+
+    <label class="download-item">
+      <span>Home     </span>
+      <input type="checkbox" value="Arduino%20Guide.html" checked>
+    </label>
+
+    <label class="download-item">
+      <span>Examples </span>
+      <input type="checkbox" value="Examples.html">
+    </label>
+
+    <label class="download-item">
+      <span>Extra    </span>
+      <input type="checkbox" value="Arduino%20Guide%20Extra.html">
+    </label>
+
+    <label class="download-item">
+      <span>Code     </span>
+      <input type="checkbox" value="Arduino%20Code.html">
+    </label>
+
+    <label class="download-item">
+      <span>Community</span>
+      <input type="checkbox" value="Arduino%20Community.html">
+    </label>
+
+  </div>
+
+</div>
+
+  <h3>Format</h3>
+
+  <select id="exportType">
+    <option value="pdf">PDF</option>
+    <option value="word">Word (.docx)</option>
+  </select>
+
+  <br><br>
+
+  <button class="btn-action" onclick="startDownload()">Download</button>
+
 </section>
 
 
@@ -293,90 +333,6 @@ its 1:05 15/04/2026 and im done.(and yes this will be part of th web)!!!!!!!!!!!
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 <script src="js/main.js" defer></script>
 
-<div id="downloadPopup" onclick="closeDownloadPopup()" style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.65);
-z-index:9999;
-">
-
-  <div onclick="event.stopPropagation()" style="
-background:#151515;
-color:#fff;
-width:320px;
-max-height:70vh;
-margin:auto;
-margin-top:10vh;
-padding:14px;
-border-radius:12px;
-display:flex;
-flex-direction:column;
-gap:10px;
-box-shadow:0 10px 30px rgba(0,0,0,0.6);
-">
-
-    <!-- header -->
-    <div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid #333;
-padding-bottom:6px;
-">
-      <b style="font-size:15px;">Export to PDF</b>
-      <span onclick="closeDownloadPopup()" style="
-cursor:pointer;
-font-size:20px;
-opacity:0.7;
-">✕</span>
-    </div>
-
-    <!-- list -->
-    <div id="downloadList" style="
-flex:1;
-overflow:auto;
-font-size:13px;
-line-height:1.4;
-padding-right:4px;
-">
-      <label style="display:flex; gap:6px; align-items:center;">
-        <input type="checkbox" checked value="Arduino%20Guide.html"> Home
-      </label>
-      <label style="display:flex; gap:6px; align-items:center;">
-        <input type="checkbox" value="Examples.html"> Examples
-      </label>
-      <label style="display:flex; gap:6px; align-items:center;">
-        <input type="checkbox" value="Arduino%20Guide%20Extra.html"> Extra
-      </label>
-
-      <label style="display:flex; gap:6px; align-items:center;">
-        <input type="checkbox" value="Arduino%20Code.html"> Code
-      </label>
-      <label style="display:flex; gap:6px; align-items:center;">
-        <input type="checkbox" value="Arduino%20Community.html"> Community not working
-      </label>
-    </div>
-<div style="
-display:flex;
-gap:8px;
-border-top:1px solid #333;
-padding-top:8px;
-">
-
-  <button class="btn-action" onclick="startDownload('pdf')" id="dlPdf">
-    Download PDF
-  </button>
-
-  <button class="btn-action" onclick="startDownload('word')" id="dlWord">
-    Download Word
-  </button>
-
-</div>
-
-  </div>
-</div>
-
 <script>
 let EXPORT_FILES = [
   "Arduino%20Guide.html",
@@ -385,25 +341,17 @@ let EXPORT_FILES = [
   "Arduino%20Community.html",
   "Examples.html"
 ];
+function startDownload(){
 
-function closeDownloadPopup() {
-  document.getElementById("downloadPopup").style.display = "none";
-}
+  const checks = document.querySelectorAll("#download-pdf input[type='checkbox']:checked");
+  const type = document.getElementById("exportType").value;
 
-function openDownloadPopup() {
-  document.getElementById("downloadPopup").style.display = "block";
-}
-
-function startDownload(type) {
-  const checks = document.querySelectorAll("#downloadList input:checked");
-
-  if (checks.length === 0) {
-    document.getElementById("downloadMsg").textContent = "Select at least one";
+  if(checks.length === 0){
+    alert("Select at least one page");
     return;
   }
 
   EXPORT_FILES = [...checks].map(c => c.value);
-  closeDownloadPopup();
 
   if(type === "pdf"){
     downloadOfflinePDF();

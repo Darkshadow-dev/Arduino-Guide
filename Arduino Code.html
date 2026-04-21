@@ -35,23 +35,56 @@ button:hover{background:#2c3e66}
   display:flex;
   height:calc(100vh - 120px);
 }
+#editorBox{
+  position:relative;
+  flex:1;
+}
+
+#editor, #highlight{
+  position:absolute;
+  inset:0;
+
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.4;
+
+  padding:10px;
+
+  white-space: pre;        /* 🔥 SAME rendering */
+  overflow: auto;
+
+  margin:0;
+  border:none;
+}
+
+#highlight{
+  pointer-events:none;
+  color:white;
+  z-index:1;
+}
+
+#editor{
+  background:transparent;
+  color:transparent;
+  caret-color:#00ff99;
+  z-index:2;
+  resize:none;
+}
 
 #lineNums{
   width:40px;
   background:#0f172a;
-  padding:10px;
+
+  padding:10px 5px;   /* match editor padding */
+
   color:#666;
   text-align:right;
-}
 
-textarea{
-  flex:1;
-  background:#0b0f1a;
-  color:#00ff99;
-  border:none;
-  outline:none;
-  padding:10px;
+  font-family: monospace;
   font-size:14px;
+  line-height:1.4;    /*MUST MATCH editor */
+
+  user-select:none;
 }
 
 #console{
@@ -67,14 +100,16 @@ select{
 }
 
 ::-webkit-scrollbar{display:none}
-
+#highlight, #editor {
+  tab-size: 2;
+}
 
 </style>
 
 </head>
 
 <body>
-<input type="file" id="fileInput" style="display:none" accept=".ino,.txt">
+<input type="file" id="fileInput" style="display:none" accept=".ino,.txt,.cpp,.h,.c">
 <header>
 
 <button onclick="newProject()">New</button>
@@ -84,24 +119,6 @@ select{
 <button onclick="saveFile()">Save</button>
 
 <button onclick="compileCode()">Compile</button>
-
-<button onclick="uploadCode()">Upload</button>
-
-<select id="portSelect">
-  <option value="COM3">COM3</option>
-  <option value="COM4">COM4</option>
-  <option value="COM5">COM5</option>
-  <option value="COM6">COM6</option>
-  <option value="COM7">COM7</option>
-  <option value="COM8">COM8</option>
-  <option value="COM9">COM9</option>
-</select>
-
-<select id="board">
-  <option value="arduino:avr:uno">UNO</option>
-  <option value="arduino:avr:nano">NANO</option>
-  <option value="arduino:avr:mega">MEGA</option>
-</select>
 
 <select id="examples" onchange="loadExample(this.value)">
   <option value="">Examples</option>
@@ -126,8 +143,12 @@ select{
 </header>
 
 <div id="editorWrap">
-  <div id="lineNums"></div>
-  <textarea id="editor"></textarea>
+  <div id="lineNums">
+</div>
+<div id="editorBox">
+  <pre id="highlight"></pre>
+  <textarea id="editor" spellcheck="false"></textarea>
+</div>
 </div>
 
 <pre id="console"></pre>
@@ -137,19 +158,8 @@ select{
    SAFE STATE
 ========================= */
 
-let editor, lines, consoleBox, portSelect, board, fileInput, filename;
-let lastHexPath = null;
-function showPopup(){
-  document.getElementById("exePopup").style.display = "flex";
-}
+let editor, lines, consoleBox, fileInput, filename;
 
-function closePopup(){
-  document.getElementById("exePopup").style.display = "none";
-}
-
-function downloadEXE(){
-  window.location.href = "https://arduino-guide-6.onrender.com/download-exe";
-}
 /* ================= SAFE FETCH ================= */
 async function safeFetch(url, options){
   try{
@@ -167,22 +177,21 @@ window.addEventListener("load", () => {
   editor = document.getElementById("editor");
   lines = document.getElementById("lineNums");
   consoleBox = document.getElementById("console");
-  portSelect = document.getElementById("portSelect");
-  board = document.getElementById("board");
-  fileInput = document.getElementById("fileInput");
+fileInput = document.getElementById("fileInput");
   filename = document.getElementById("filename");
 
-  if(!editor || !lines || !consoleBox || !portSelect || !board){
+  if(!editor || !lines || !consoleBox){
     console.error("Missing elements");
     return;
   }
-
-  editor.addEventListener("input", updateLines);
+editor.addEventListener("input", () => {
+  updateLines();
+  highlightCode();
+});
 
   editor.value = defaultSketch();
   updateLines();
-
-  loadPorts();
+  highlightCode();
 });
 
 /* ================= DEFAULT SKETCH ================= */
@@ -198,7 +207,13 @@ void loop(){
   delay(1000);
 }`;
 }
+const highlight = document.getElementById("highlight");
 
+editor.addEventListener("scroll", () => {
+  highlight.scrollTop = editor.scrollTop;
+  highlight.scrollLeft = editor.scrollLeft;
+  lines.scrollTop = editor.scrollTop;
+});
 /* ================= LINE NUMBERS ================= */
 function updateLines(){
   if(!editor || !lines) return;
@@ -217,7 +232,6 @@ async function compileCode(){
     headers:{"Content-Type":"application/json"},
     body: JSON.stringify({
       code: editor.value,
-      board: board.value,
       name: filename.value || "project"
     })
   });
@@ -228,45 +242,6 @@ async function compileCode(){
   }
 
   consoleBox.textContent = res.output || "";
-
-  // 🔥 DOWNLOAD HEX IF EXISTS
-if(res.hex_path){
-  lastHexPath = res.hex_path;
-}
-}
-
-
-/* ================= UPLOAD ================= */
-async function uploadCode(){
-
-  showPopup();
-}
-
-/* ================= PORTS (FIXED SAFE) ================= */
-async function loadPorts(){
-
-  if(!portSelect) return;
-
-  const data = await safeFetch("https://arduino-guide-6.onrender.com/ports");
-
-  const fallback = [
-    "COM3","COM4","COM5","COM6","COM7","COM8","COM9"
-  ];
-
-  portSelect.innerHTML = "";
-
-  let list = fallback;
-
-  if(data && data.success && Array.isArray(data.ports) && data.ports.length){
-    list = data.ports.map(p => p.port || "COM3");
-  }
-
-  list.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p;
-    opt.textContent = p;
-    portSelect.appendChild(opt);
-  });
 }
 
 /* ================= NEW ================= */
@@ -291,71 +266,33 @@ function saveFile(){
   inoLink.href = URL.createObjectURL(inoBlob);
   inoLink.download = name + ".ino";
   inoLink.click();
-
-  // -------------------------
-  // 2. download .hex (if exists)
-  // -------------------------
-  if(lastHexPath){
-    setTimeout(() => {
-      const hexLink = document.createElement("a");
-      hexLink.href =
-        "https://arduino-guide-6.onrender.com/download-hex?path=" +
-        encodeURIComponent(lastHexPath);
-
-      hexLink.download = name + ".hex";
-      hexLink.click();
-    }, 300);
-  } else {
-    consoleBox.textContent = "⚠ No compiled HEX yet. Click Compile first.";
-  }
 }
 
-/* ================= OPEN ================= */
 function openFile(e){
-  const file = e.target.files?.[0];
+  const file = e.target.files[0];
   if(!file) return;
 
   const reader = new FileReader();
 
   reader.onload = () => {
     editor.value = reader.result;
-    filename.value = file.name.replace(/\.(ino|txt)$/,"");
+    filename.value = file.name.replace(/\.[^/.]+$/, "");
+
     updateLines();
-    highlightCode(); // refresh highlight
+    highlightCode();
+
+    fileInput.value = ""; // 🔥 FIX (allows reopening same file)
   };
 
   reader.readAsText(file);
+
+  updateLines();
+  highlightCode();
 }
 
-/* bind safely */
-fileInput.addEventListener("change", openFile);
-
 function highlightCode(){
-
-  if(!editor) return;
-
   let code = editor.value;
 
-  // ---- SIMPLE ERROR CHECKS ----
-  let errors = [];
-
-  if(code.includes("void loop") && !code.includes("{")){
-    errors.push("Missing { in loop()");
-  }
-
-  if(code.includes("pinMode") && !code.includes("setup")){
-    errors.push("pinMode used outside setup()");
-  }
-
-  if((code.match(/\{/g)||[]).length !== (code.match(/\}/g)||[]).length){
-    errors.push("Brackets { } mismatch");
-  }
-
-  consoleBox.textContent = errors.length
-    ? "⚠ Errors:\n" + errors.join("\n")
-    : "✔ No errors detected";
-
-  // ---- SYNTAX HIGHLIGHT ----
   let html = code
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
@@ -368,11 +305,7 @@ function highlightCode(){
       '<span style="color:#fbbf24">$1</span>')
     .replace(/\b(\d+)\b/g,
       '<span style="color:#a78bfa">$1</span>');
-
-  document.getElementById("highlight").innerHTML = html;
-}
-function downloadEXE(){
-  window.location.href = "https://arduino-guide-6.onrender.com/download-exe";
+document.getElementById("highlight").innerHTML = html;
 }
 /* ================= EXAMPLES (FIXED ALL) ================= */
 function loadExample(name){
@@ -479,7 +412,7 @@ void loop(){
   filename.value = name;
 
   updateLines();
-  highlightCode(); // IMPORTANT FIX
+  highlightCode();
 }
 
 fetch("https://arduino-guide-6.onrender.com/compile", {
@@ -511,30 +444,6 @@ fetch("https://arduino-guide-6.onrender.com/compile", {
   const analytics = getAnalytics(app);
 </script>
 
-<div id="exePopup" style="
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-">
-  <div style="
-    background:#111827;
-    padding:20px;
-    border-radius:10px;
-    text-align:center;
-    width:300px;
-  ">
-    <h3>Local Upload Required</h3><p>Download ZIP, extract it, then run uploader.exe</p>
-
-    <button onclick="downloadEXE()">Download uploader.exe (~5MB)</button>
-    <br><br>
-    <button onclick="closePopup()">Cancel</button>
-  </div>
-</div>
 </body>
 </html>
 

@@ -1193,6 +1193,107 @@ textarea {
   resize: vertical;
 }
 
+/* =========================
+   DOWNLOAD SECTION UI
+========================= */
+
+#download-pdf{
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: var(--font);
+  color: var(--text);
+}
+
+/* Title */
+#download-pdf h2{
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+#download-pdf p{
+  opacity: 0.75;
+  margin-bottom: 20px;
+}
+
+/* Box sections */
+#download-pdf hr{
+  border: none;
+  height: 1px;
+  background: #cfe6ff;
+  margin: 20px 0;
+}
+
+/* Page selection */
+#download-pdf label{
+  display: flex;
+  align-items: right;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid #cfe6ff;
+  padding: 10px 12px;
+  margin: 8px 0;
+  border-radius: 10px;
+  width:65%;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+#download-pdf label:hover{
+  transform: translateX(4px);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0,151,157,0.15);
+}
+
+/* Checkbox */
+#download-pdf input[type="checkbox"]{
+  accent-color: var(--accent);
+  transform: scale(1.2);
+  width:1%;
+}
+
+/* Format dropdown */
+#exportType{
+  width: 200px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cfe6ff;
+  background: white;
+  color: var(--text);
+  outline: none;
+  margin-top: 10px;
+  transition: 0.2s;
+}
+
+#exportType:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,151,157,0.2);
+}
+
+/* Download button */
+#download-pdf .btn-action{
+  margin-top: 20px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white;
+  font-weight: bold;
+
+  transition: 0.2s;
+}
+
+#download-pdf .btn-action:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,200,83,0.25);
+}
+
+#download-pdf .btn-action:active{
+  transform: scale(0.98);
+}
+
 /*-----------------------___ Footer CSS __-----------------------*/
 footer{
   position:relative;
