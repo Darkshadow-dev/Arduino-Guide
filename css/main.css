@@ -1622,36 +1622,32 @@ body{
 }
 
 @media (max-width: 900px){
-header{
-  z-index: 1000;
-  overflow: visible; /* IMPORTANT */
-}
+
+  header{
+    z-index: 1000;
+    overflow: visible;
+  }
 
   .dropdown{
     position: relative;
-    z-index: 1001; /* above header */
   }
 
   .dropdown-menu{
-    position: fixed; /* 🔥 key fix */
-    
-    top: auto;
-    left: 10px;
-    right: 10px;
+    position: absolute;
+    top: 100%;        
+    left: 0;
 
-    /* place under button dynamically using JS later if needed */
-    margin-top: 8px;
+    width: max-content;
+    min-width: 160px;
+    max-width: 90vw;
 
-    width: auto;
     max-height: 60vh;
     overflow-y: auto;
 
     border-radius: 10px;
-
     z-index: 9999;
 
-    /* smoother mobile feel */
-    transform: translateY(-10px);
+    transform: translateY(6px);
   }
 
   .dropdown-menu.open{
@@ -1659,4 +1655,3 @@ header{
   }
 
 }
-
