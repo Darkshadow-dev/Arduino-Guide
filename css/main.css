@@ -1294,6 +1294,39 @@ textarea {
   transform: scale(0.98);
 }
 
+/*------------------- Live counter --------------------------------*/
+.live-counter{
+  position:fixed;
+  bottom:12px;
+  right:12px;
+  background:#ffffff;
+  border:1px solid #e3f2fd;
+  border-radius:10px;
+  padding:6px 12px;
+  font-size:13px;
+  font-family:system-ui, Arial, sans-serif;
+  color:#333;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  z-index:9999;
+}
+
+.live-counter .dot{
+  width:8px;
+  height:8px;
+  background:#4fc3f7;
+  border-radius:50%;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:1;}
+  50%{opacity:0.4;}
+  100%{opacity:1;}
+}
+
 /*-----------------------___ Footer CSS __-----------------------*/
 footer{
   position:relative;
@@ -1308,145 +1341,6 @@ footer{
   justify-content:center;
   font-weight:600;
   box-shadow:0 -2px 6px rgba(0,0,0,.1);
-}
-
-
-/*---------------------------------___ Main mobile css ___-----------------------------------------*/
-/* ================= MOBILE LAYOUT ================= */
-@media (max-width: 900px){
-
-/* -------- NAV (horizontal scroll only) -------- */
-nav{
-  overflow-x:auto;
-  white-space:nowrap;
-  flex-wrap:nowrap;
-}
-
-nav a, .dropdown{
-  flex:0 0 auto;
-}
-
-/* -------- MAIN GLOBAL -------- */
-main{
-  padding:110px 12px 14vh;
-  font-size:clamp(15px, 2.5vw, 17px);
-}
-
-
-/* bigger tap targets */
-button, .btn, .btn-action, nav a{
-  padding:12px 16px;
-  font-size:15px;
-}
-
-/* -------- BOARD PAGE -------- */
-.spec-grid{
-  grid-template-columns:1fr;
-}
-
-.table-wrap{
-  overflow-x:auto;
-}
-
-.compare{
-  min-width:600px; /* forces horizontal scroll */
-}
-
-/* -------- HARDWARE PAGE -------- */
-.hardware-layout{
-  grid-template-columns:1fr;
-}
-
-.hardware-right{
-  position:static;
-  border-left:none;
-  padding-left:0;
-  margin-top:20px;
-}
-
-/* -------- HARDWARE VISUAL -------- */
-.wiring-card{
-  margin-bottom:20px;
-}
-
-.dual-image-row{
-  grid-template-columns:1fr;
-}
-
-/* -------- 3D PAGE -------- */
-#uno3d-wrap{
-  width:100%;
-  height:45vh;
-}
-
-.special-layout .content{
-  flex-direction:column;
-}
-
-.special-layout img{
-  width:100%;
-}
-
-/* -------- EXAMPLES PAGE -------- */
-#examples.active{
-  position:static;
-}
-
-.examples-layout{
-  flex-direction:column;
-}
-
-/* horizontal quick nav */
-.examples-menu{
-  width:100%;
-  height:auto;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-  border-right:none;
-  border-bottom:3px solid var(--accent2);
-}
-
-.examples-content{
-  width:100%;
-  height:auto;
-}
-
-/* -------- FEEDBACK -------- */
-.form-panel{
-  padding:16px;
-}
-
-/* -------- FOOTER & HEADER SAME -------- */
-header, footer{
-  position:fixed;
-}
-
-/* -------- TABLE + COMPARE -------- */
-.compare td, .compare th{
-  white-space:nowrap;
-  font-size:14px;
-}
-
-/* -------- REMOVE HOVER DEPENDENCY -------- */
-.zoom-box:hover img{
-  transform:none;
-}
-
-/* tap zoom instead */
-.zoom-box img{
-  transform:scale(1);
-}
-
-/* -------- TOUCH FEEL -------- */
-button,
-.btn,
-.btn-action,
-.example-item{
-  cursor: default;
-  -webkit-tap-highlight-color: transparent;
-}
-
 }
 
 /* ================= LARGE DESKTOP / ULTRAWIDE ================= */
@@ -1494,164 +1388,255 @@ button,
   }
 
 }
-/* ================= FIXED MOBILE PATCH ================= */
-@media (max-width: 900px){
-
-/* ---------- HEADER FIX ---------- */
-header{
-  padding:10px;
-}
-
-/* stack header content */
-.topbar{
-  flex-direction:column;
-  gap:8px;
-}
-
-/* center title properly */
-.title{
-  text-align:center;
-  font-size:18px;
-}
-
-/* fix logo overlapping */
-.logo{
-  position:static;
-  margin:0 auto;
-}
-
-/* ---------- NAV FIX ---------- */
-nav{
-  margin-top:8px;
-  overflow-x:auto;
-  white-space:nowrap;
-  padding-bottom:6px;
-}
-
-/* better spacing */
-nav a{
-  padding:10px 14px;
-  font-size:14px;
-}
-
-/* REMOVE broken mini-nav positioning */
-.mini-nav{
-  position:static;
-  justify-content:center;
-  width:100%;
-  margin-top:6px;
-}
-
-/* ---------- DROPDOWN FIX ---------- */
-.dropdown{
-  width:auto; /* remove fixed width */
-  min-width:140px;
-}
-
-.dropdown-menu{
-  position:absolute;
-  left:0;
-  right:auto;
-  width:max-content;
-  min-width:160px;
-  max-width:90vw;
-}
-
-/* ---------- SIDE PANEL FIX ---------- */
-.side-panel{
-  position:fixed;
-  top:70px;
-  right:10px;
-  left:10px;
-  min-width:auto;
-  width:auto;
-}
-
-/* ---------- MAIN SPACING ---------- */
-main{
-  padding-top:130px; /* more space for header */
-}
-
-/* ---------- QUICK LINKS ---------- */
-.quick-links{
-  flex-direction:column;
-}
-
-.quick-links a{
-  width:100%;
-}
-
-/* ---------- BUTTONS ---------- */
-.btn-submit{
-  width:100%;
-  margin-left:0;
-}
-
-/* ---------- PIN MAP ---------- */
-.pin-map{
-  max-width:100%;
-}
-
-/* ---------- HARDWARE IMAGES ---------- */
-.wiring-card img{
-  width:100%;
-  left:0;
-  top:0;
-}
-
-/* ---------- ZOOM FIX ---------- */
-.zoom-box:hover img{
-  transform:none;
-}
-
-/* ---------- EXAMPLES MENU ---------- */
-.examples-menu{
-  grid-template-columns:1fr; /* easier tap */
-}
-
-/* ---------- TEXT OVERFLOW ---------- */
-h2, h3, p{
-  word-wrap:break-word;
-}
-
-/* ---------- SAFETY (no horizontal scroll bugs) ---------- */
-body{
-  overflow-x:hidden;
-}
-
-}
-
-@media (max-width: 900px){
+/* =======================
+   📱 EXTRA SMALL (≤400px)
+======================= */
+@media (max-width: 400px){
 
   header{
-    z-index: 1000;
-    overflow: visible;
+    padding:10px 8px;
+  }
+
+  nav{
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    gap:4px;
+  }
+
+  nav a,
+  .dropdown-btn{
+    font-size:12px;
+    padding:6px 8px;
+  }
+
+  .mini-nav{
+    display:none;
+  }
+
+  main{
+    padding:100px 10px 12vh;
+  }
+
+  .title{
+    font-size:16px;
+  }
+
+  .logo{
+    height:28px;
+    width:28px;
+  }
+
+  /* STACK EVERYTHING */
+  .hardware-layout,
+  .examples-layout{
+    display:block;
+  }
+
+  .examples-menu,
+  .examples-content{
+    width:100%;
+    height:auto;
+  }
+
+  .examples-menu{
+    border-right:none;
+    border-bottom:3px solid var(--accent2);
+  }
+
+  .hardware-right{
+    position:static;
+    border-left:none;
+    padding-left:0;
+  }
+
+  .quick-links a{
+    min-width:100%;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
+  .spec-grid{
+    grid-template-columns:1fr;
+  }
+
+  .dual-image-row{
+    grid-template-columns:1fr;
+  }
+
+  #uno3d-wrap{
+    width:100%;
+    height:50vh;
+  }
+
+}
+
+
+/* =======================
+   📱 SMALL PHONES (≤629px)
+======================= */
+@media (max-width: 629px){
+
+  nav{
+    overflow-x:auto;
+    flex-wrap:nowrap;
   }
 
   .dropdown{
-    position: relative;
+    width:auto;
+    min-width:120px;
   }
 
-  .dropdown-menu{
-    position: absolute;
-    top: 100%;        
-    left: 0;
-
-    width: max-content;
-    min-width: 160px;
-    max-width: 90vw;
-
-    max-height: 60vh;
-    overflow-y: auto;
-
-    border-radius: 10px;
-    z-index: 9999;
-
-    transform: translateY(6px);
+  .mini-nav{
+    display:none;
   }
 
-  .dropdown-menu.open{
-    transform: translateY(0);
+  .topbar{
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .logo.left{ left:6px; }
+  .logo.right{ right:6px; }
+
+  .hardware-layout{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+
+  .hardware-right{
+    position:static;
+    border-left:none;
+    padding-left:0;
+  }
+
+  .examples-layout{
+    flex-direction:column;
+  }
+
+  .examples-menu{
+    width:100%;
+    border-right:none;
+    border-bottom:3px solid var(--accent2);
+  }
+
+  .examples-content{
+    width:100%;
+  }
+
+  .lp-card{
+    width:100%;
   }
 
 }
+
+
+/* =======================
+   📱 TABLETS (≤790px)
+======================= */
+@media (max-width: 790px){
+
+  nav{
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .mini-nav{
+    position:static;
+    justify-content:center;
+    margin-top:8px;
+  }
+
+  .hardware-layout{
+    grid-template-columns:1fr;
+  }
+
+  .info-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .spec-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .examples-layout{
+    flex-direction:column;
+  }
+
+  .examples-menu{
+    width:100%;
+    height:auto;
+  }
+
+  .examples-content{
+    width:100%;
+  }
+
+}
+
+
+/* =======================
+   💻 SMALL LAPTOPS (≤900px)
+======================= */
+@media (max-width: 900px){
+
+  .mini-nav{
+    right:20%;
+  }
+
+  .hardware-layout{
+    gap:25px;
+  }
+
+  .info-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .quick-links a{
+    flex:1 1 45%;
+  }
+
+  .examples-menu{
+    width:25%;
+  }
+
+  .examples-content{
+    width:75%;
+  }
+
+}
+
+
+/* =======================
+   💻 NORMAL LAPTOPS (≤1200px)
+======================= */
+@media (max-width: 1200px){
+
+  main{
+    max-width:95%;
+  }
+
+  .mini-nav{
+    right:10%;
+  }
+
+  .info-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .hardware-layout{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .examples-menu{
+    width:22%;
+  }
+
+  .examples-content{
+    width:78%;
+  }
+
+}
+
+

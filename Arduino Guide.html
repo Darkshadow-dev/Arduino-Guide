@@ -1326,6 +1326,44 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+<div class="live-counter" id="liveCounter">
+  <span class="dot"></span>
+  Online: <span id="onlineCount">0</span>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set,
+  onDisconnect,
+  remove
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// 🔑 unique session id per tab
+const userId = "user_" + Math.random().toString(36).substr(2, 9);
+
+// 📍 reference
+const userRef = ref(db, "onlineUsers/" + userId);
+const usersRef = ref(db, "onlineUsers");
+
+// 🟢 mark as online
+set(userRef, true);
+
+// 🔴 remove on disconnect
+onDisconnect(userRef).remove();
+
+// 🔄 listen count
+onValue(usersRef, (snapshot) => {
+  const data = snapshot.val();
+  const count = data ? Object.keys(data).length : 0;
+  document.getElementById("onlineCount").textContent = count;
+});
+</script>
 </body>
 </html>
 
