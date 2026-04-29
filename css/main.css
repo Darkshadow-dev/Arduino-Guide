@@ -488,7 +488,6 @@ nav a,
 }
 
 .btn-action:hover{
-  background: #00e676;
   transform: translateY(-1px);
 }
 
@@ -1385,7 +1384,7 @@ textarea {
 
 #exportType:focus{
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0,151,157,0.2);
+  box-shadow: var(--accent);
 }
 
 /* ACTION BUTTON */
@@ -1396,7 +1395,7 @@ textarea {
   border:none;
   cursor:pointer;
 
-  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  background:var(--accent);
   color:#fff;
   font-weight:600;
   font-size:14px;
@@ -1419,7 +1418,7 @@ textarea {
   bottom:0;
   height:3px;
   width:0%;
-  background:rgba(255,255,255,0.7);
+  background:var(--accent2);
   transition:width linear;
 }
 /* container spacing */
@@ -1445,7 +1444,7 @@ textarea {
 
 /* better label alignment fix */
 #download-pdf label{
-  align-items:center; /* fix your old 'right' */
+  align-items:center;
 }
 /*-------------------- Live counter ----------------------*/
 .live-counter{
@@ -1832,5 +1831,6 @@ footer{
   }
 
 }
+
 
 
