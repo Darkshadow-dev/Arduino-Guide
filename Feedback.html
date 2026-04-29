@@ -131,6 +131,381 @@
 
 <section id="update" class="page">
 <div style="height:10vh;"></div>
+
+<div class="addon-card">
+
+  <div class="addon-header">
+    <h2 class="addon-title">Code Beta Update</h2>
+    <span class="addon-version">v1.4</span>
+  </div>
+
+  <!-- SHORT VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Short updates (click to expand)</summary>
+
+    <ul class="addon-features">
+      <li>Code beta CSS fully reworked</li>
+      <li>JavaScript improved and optimized</li>
+
+      <li>Upload feature removed</li>
+      <li>Compile system improved</li>
+      <li>Scrolling fixed globally</li>
+
+      <li>Navigation restored (after local removal)</li>
+
+      <li>Examples expanded and fixed</li>
+      <li>Open function fixed</li>
+      <li>Local save system adjusted (not re-added)</li>
+
+      <li>Tutorial page redesigned</li>
+      <li>Navigation fixed after local break</li>
+      <li>CSS reverted to stable version</li>
+      <li>JS improved</li>
+
+      <li>Feedback update order reversed (latest → oldest)</li>
+      <li>Feedback formatting improved</li>
+
+      <li>29/04/2026 — 19:34</li>
+    </ul>
+  </details>
+
+  <!-- LONG VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Full log (click to expand)</summary>
+
+    <div class="addon-content">
+
+      <p class="addon-desc">
+        Code beta section received a full CSS rework along with improvements to JavaScript logic.
+      </p>
+
+      <p class="addon-desc">
+        The upload feature was removed, while the compile system was improved for better usability.
+        Scrolling behavior across the section has been fixed.
+      </p>
+
+      <p class="addon-desc">
+        Navigation was restored after being accidentlly removed locally.
+      </p>
+
+      <p class="addon-desc">
+        Examples were expanded, re-added, and made functional again.
+      </p>
+
+      <p class="addon-desc">
+        The open function was fixed. The local save system was adjusted but not reintroduced
+        in this update.
+      </p>
+
+      <p class="addon-desc">
+        The tutorial page was redesigned after local issues. Navigation was fixed,
+        CSS was reverted to a stable version, and JavaScript was improved.
+      </p>
+
+      <p class="addon-desc">
+        Feedback section now displays updates in reverse order (latest first instead of oldest first).
+        Formatting and structure were also improved.
+      </p>
+
+      <p class="addon-desc">
+        Update written at 19:34 on 29/04/2026.
+
+      </p>
+
+    </div>
+
+  </details>
+
+</div>
+
+
+
+
+
+
+
+
+<div class="addon-card">
+
+  <div class="addon-header">
+    <h2 class="addon-title">Feedback Update</h2>
+    <span class="addon-version">v1.3</span>
+  </div>
+
+  <!-- SHORT VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Short updates (click to expand)</summary>
+
+    <ul class="addon-features">
+      <li>Feedback section updated</li>
+      <li>New update cards system added</li>
+      <li>Download system fully reworked</li>
+
+      <li>Timer added (4s per file, was 6s test)</li>
+
+      <li>Download size display (KB/MB) coming soon</li>
+      <li>Planned: total size calculation (1–2 days)</li>
+
+      <li>Image preview system planned (creator view)</li>
+      <li>More fixes coming next</li>
+
+      <li><strong>Next focus:</strong> Tutorials page</li>
+    </ul>
+  </details>
+
+  <!-- LONG VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Full log (click to expand)</summary>
+
+    <div class="addon-content">
+      <p class="addon-desc">
+        Feedback section has been updated and cleaned to better match the overall system.
+      </p>
+
+      <p class="addon-desc">
+        A new update card system was created to improve how updates are displayed and structured.
+      </p>
+
+      <p class="addon-desc">
+        The download system has been fully reworked, including UI and logic improvements.
+      </p>
+
+      <p class="addon-desc">
+        A timer system was added for controlled downloads. Initial testing used 6 seconds per file,
+        now adjusted to 4 seconds per file for better balance.
+      </p>
+
+      <p class="addon-desc">
+        A download size indicator (KB/MB) will be added soon, along with total size calculation
+        within the next 1–2 days.
+      </p>
+
+      <p class="addon-desc">
+        An image preview system is planned for personal/creator view to better visualize content.
+      </p>
+
+      <p class="addon-desc">
+        Additional fixes and improvements will follow after this update.
+      </p>
+
+      <p class="addon-desc">
+        Next major focus will shift toward improving and building out the Tutorials page.
+      </p>
+    </div>
+
+  </details>
+
+</div>
+<div class="addon-card">
+
+  <div class="addon-header">
+    <h2 class="addon-title">Corruption Analysis</h2>
+    <span class="addon-version">v1.2.1</span>
+  </div>
+
+  <!-- SHORT VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">What likely happened (click to expand)</summary>
+
+    <ul class="addon-features">
+      <li><strong>Likely cause:</strong> power loss during auto-save</li>
+      <li>Custom Python editor (.exe) was saving multiple files</li>
+      <li>8/11 files corrupted mid-write</li>
+      <li>Remaining files were not being written at that moment</li>
+
+      <li>Files became partially written (incomplete data)</li>
+      <li>HTML/CSS/JS structure broken</li>
+
+      <li>GitHub not the cause</li>
+      <li>Corrupted files were uploaded after incident</li>
+
+      <li>Conclusion: local failure → then synced</li>
+      <li>Prevention steps planned</li>
+    </ul>
+  </details>
+
+  <!-- LONG VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Full explanation (click to expand)</summary>
+
+    <div class="addon-content">
+      <p class="addon-desc">
+        The corruption was most likely caused by a sudden power loss while
+        files were being auto-saved in a custom Python-based editor.
+      </p>
+
+      <p class="addon-desc">
+        During the save process, files are overwritten and rewritten. If the
+        system shuts down mid-write, the file can become partially written,
+        resulting in broken or unreadable content.
+      </p>
+
+      <p class="addon-desc">
+        This explains why only 8 out of 11 files were affected. Not all files
+        were being written at the same time.
+      </p>
+
+      <p class="addon-desc">
+        GitHub was not the source of the issue. The corrupted files were
+        likely uploaded after the incident, causing both local and remote
+        versions to match the damaged state.
+      </p>
+
+      <p class="addon-desc">
+        Future updates will focus on adding backup systems, improving save
+        safety, and preventing data loss during unexpected shutdowns.
+      </p>
+    </div>
+
+  </details>
+
+</div>
+<div class="addon-card">
+
+  <div class="addon-header">
+    <h2 class="addon-title">Recovery Update</h2>
+    <span class="addon-version">v1.2</span>
+  </div>
+
+  <!-- SHORT VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Short summary (click to expand)</summary>
+
+    <ul class="addon-features">
+      <li><strong>Critical issue:</strong> 8/11 files corrupted</li>
+      <li>Local + GitHub affected</li>
+      <li>All files recovered successfully</li>
+      <li>Lost: 1 CSS file (feedback/download)</li>
+
+      <li>Backups system planned</li>
+      <li>Feedback section will be re-cleaned</li>
+      <li>"More" section delayed</li>
+
+      <li>Code + examples preserved</li>
+      <li>Online counter restored</li>
+      <li>Community update after release</li>
+
+      <li>Corruption time: ~10:30 PM</li>
+      <li>Recovery time: ~11:14 PM – 12:40 AM</li>
+      <li>Recovery work: 5:10 PM – 6:04 PM</li>
+
+      <li>Log written: 28/04/2026 18:05</li>
+    </ul>
+  </details>
+
+  <!-- LONG VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Full log (click to expand)</summary>
+
+    <div class="addon-content">
+      <p class="addon-desc">
+        Major issue occurred where 8 out of 11 files became corrupted,
+        both locally and on GitHub.
+      </p>
+
+      <p class="addon-desc">
+        Recovery was successful. Only one CSS file related to feedback/download
+        was lost.
+      </p>
+
+      <p class="addon-desc">
+        Cause is currently unknown.
+      </p>
+
+      <p class="addon-desc">
+        Next update will focus on fixes, backup systems, and cleaning the
+        feedback section.
+      </p>
+
+      <p class="addon-desc">
+        "More" section updates will be delayed.
+      </p>
+
+      <p class="addon-desc">
+        Code and examples were safely preserved.
+      </p>
+
+      <p class="addon-desc">
+        Online counter has been restored.
+      </p>
+
+      <p class="addon-desc">
+        Community updates will happen after release.
+      </p>
+
+      <p class="addon-desc">
+        Estimated corruption time: around 10:30 PM.
+      </p>
+
+      <p class="addon-desc">
+        Initial recovery window: 11:14 PM – 12:40 AM.
+      </p>
+
+      <p class="addon-desc">
+        Total recovery work: 5:10 PM – 6:04 PM.
+      </p>
+
+      <p class="addon-desc">
+        Update written: 28/04/2026 at 18:05.
+      </p>
+    </div>
+
+  </details>
+
+</div>
+<div class="addon-card">
+
+  <div class="addon-header">
+    <h2 class="addon-title">Update Log</h2>
+    <span class="addon-version">v1.1</span>
+  </div>
+
+  <!-- SHORT VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Short updates (click to expand)</summary>
+
+    <ul class="addon-features">
+      <li>Quiz code improved + C added</li>
+      <li>Ranking system needs images</li>
+      <li>Editor compile works (no exe needed)</li>
+      <li>Music idea (planned)</li>
+      <li>Tutorials starting</li>
+      <li>CLI download not planned</li>
+      <li>Community needs major work</li>
+      <li>Some sections untouched (3 months)</li>
+      <li>Hardware Visual needs images + animation</li>
+      <li>General code fixes pending</li>
+      <li>14/04/2026</li>
+      <li>Final note added (15/04/2026)</li>
+    </ul>
+  </details>
+
+  <!-- LONG VERSION -->
+  <details class="addon-details">
+    <summary class="addon-summary">Full log (click to expand)</summary>
+
+    <div class="addon-content">
+      <p class="addon-desc">Finnesed quizz code and added C to quizz Note:</p>
+      <p class="addon-desc">Needs more C and img for rank</p>
+      <p class="addon-desc">Code editor compile works no upload exe app needed</p>
+      <p class="addon-desc">Music?</p>
+      <p class="addon-desc">Will start work on tutorials</p>
+      <p class="addon-desc">Cli download? NO?</p>
+      <p class="addon-desc">Community needs a whole ton of work</p>
+      <p class="addon-desc">More left untouched since 3 months ago?</p>
+      <p class="addon-desc">Finish img and animation for Hardware visual page</p>
+      <p class="addon-desc">Code fix??</p>
+      <p class="addon-desc">14/04/2026</p>
+      <p class="addon-desc">
+        its 1:05 15/04/2026 and im done.(and yes this will be part of the web)
+        ahhhhhhhhhhhhhh done for now...
+      </p>
+    </div>
+
+  </details>
+
+</div>
+
 <div class="addon-card">
 
   <div class="addon-header">
@@ -237,217 +612,13 @@
   </details>
 
 </div>
-<div class="addon-card">
 
-  <div class="addon-header">
-    <h2 class="addon-title">Update Log</h2>
-    <span class="addon-version">v1.1</span>
-  </div>
 
-  <!-- SHORT VERSION -->
-  <details class="addon-details">
-    <summary class="addon-summary">Short updates (click to expand)</summary>
 
-    <ul class="addon-features">
-      <li>Quiz code improved + C added</li>
-      <li>Ranking system needs images</li>
-      <li>Editor compile works (no exe needed)</li>
-      <li>Music idea (planned)</li>
-      <li>Tutorials starting</li>
-      <li>CLI download not planned</li>
-      <li>Community needs major work</li>
-      <li>Some sections untouched (3 months)</li>
-      <li>Hardware Visual needs images + animation</li>
-      <li>General code fixes pending</li>
-      <li>14/04/2026</li>
-      <li>Final note added (15/04/2026)</li>
-    </ul>
-  </details>
 
-  <!-- LONG VERSION -->
-  <details class="addon-details">
-    <summary class="addon-summary">Full log (click to expand)</summary>
 
-    <div class="addon-content">
-      <p class="addon-desc">Finnesed quizz code and added C to quizz Note:</p>
-      <p class="addon-desc">Needs more C and img for rank</p>
-      <p class="addon-desc">Code editor compile works no upload exe app needed</p>
-      <p class="addon-desc">Music?</p>
-      <p class="addon-desc">Will start work on tutorials</p>
-      <p class="addon-desc">Cli download? NO?</p>
-      <p class="addon-desc">Community needs a whole ton of work</p>
-      <p class="addon-desc">More left untouched since 3 months ago?</p>
-      <p class="addon-desc">Finish img and animation for Hardware visual page</p>
-      <p class="addon-desc">Code fix??</p>
-      <p class="addon-desc">14/04/2026</p>
-      <p class="addon-desc">
-        its 1:05 15/04/2026 and im done.(and yes this will be part of the web)
-        ahhhhhhhhhhhhhh done for now...
-      </p>
-    </div>
 
-  </details>
 
-</div>
-
-<div class="addon-card">
-
-  <div class="addon-header">
-    <h2 class="addon-title">Recovery Update</h2>
-    <span class="addon-version">v1.2</span>
-  </div>
-
-  <!-- SHORT VERSION -->
-  <details class="addon-details">
-    <summary class="addon-summary">Short summary (click to expand)</summary>
-
-    <ul class="addon-features">
-      <li><strong>Critical issue:</strong> 8/11 files corrupted</li>
-      <li>Local + GitHub affected</li>
-      <li>All files recovered successfully</li>
-      <li>Lost: 1 CSS file (feedback/download)</li>
-
-      <li>Backups system planned</li>
-      <li>Feedback section will be re-cleaned</li>
-      <li>"More" section delayed</li>
-
-      <li>Code + examples preserved</li>
-      <li>Online counter restored</li>
-      <li>Community update after release</li>
-
-      <li>Corruption time: ~10:30 PM</li>
-      <li>Recovery time: ~11:14 PM – 12:40 AM</li>
-      <li>Recovery work: 5:10 PM – 6:04 PM</li>
-
-      <li>Log written: 28/04/2026 18:05</li>
-    </ul>
-  </details>
-
-  <!-- LONG VERSION -->
-  <details class="addon-details">
-    <summary class="addon-summary">Full log (click to expand)</summary>
-
-    <div class="addon-content">
-      <p class="addon-desc">
-        Major issue occurred where 8 out of 11 files became corrupted,
-        both locally and on GitHub.
-      </p>
-
-      <p class="addon-desc">
-        Recovery was successful. Only one CSS file related to feedback/download
-        was lost.
-      </p>
-
-      <p class="addon-desc">
-        Cause is currently unknown.
-      </p>
-
-      <p class="addon-desc">
-        Next update will focus on fixes, backup systems, and cleaning the
-        feedback section.
-      </p>
-
-      <p class="addon-desc">
-        "More" section updates will be delayed.
-      </p>
-
-      <p class="addon-desc">
-        Code and examples were safely preserved.
-      </p>
-
-      <p class="addon-desc">
-        Online counter has been restored.
-      </p>
-
-      <p class="addon-desc">
-        Community updates will happen after release.
-      </p>
-
-      <p class="addon-desc">
-        Estimated corruption time: around 10:30 PM.
-      </p>
-
-      <p class="addon-desc">
-        Initial recovery window: 11:14 PM – 12:40 AM.
-      </p>
-
-      <p class="addon-desc">
-        Total recovery work: 5:10 PM – 6:04 PM.
-      </p>
-
-      <p class="addon-desc">
-        Update written: 28/04/2026 at 18:05.
-      </p>
-    </div>
-
-  </details>
-
-</div>
-
-<div class="addon-card">
-
-  <div class="addon-header">
-    <h2 class="addon-title">Corruption Analysis</h2>
-    <span class="addon-version">v1.2.1</span>
-  </div>
-
-  <!-- SHORT VERSION -->
-  <details class="addon-details">
-    <summary class="addon-summary">What likely happened (click to expand)</summary>
-
-    <ul class="addon-features">
-      <li><strong>Likely cause:</strong> power loss during auto-save</li>
-      <li>Custom Python editor (.exe) was saving multiple files</li>
-      <li>8/11 files corrupted mid-write</li>
-      <li>Remaining files were not being written at that moment</li>
-
-      <li>Files became partially written (incomplete data)</li>
-      <li>HTML/CSS/JS structure broken</li>
-
-      <li>GitHub not the cause</li>
-      <li>Corrupted files were uploaded after incident</li>
-
-      <li>Conclusion: local failure → then synced</li>
-      <li>Prevention steps planned</li>
-    </ul>
-  </details>
-
-  <!-- LONG VERSION -->
-  <details class="addon-details">
-    <summary class="addon-summary">Full explanation (click to expand)</summary>
-
-    <div class="addon-content">
-      <p class="addon-desc">
-        The corruption was most likely caused by a sudden power loss while
-        files were being auto-saved in a custom Python-based editor.
-      </p>
-
-      <p class="addon-desc">
-        During the save process, files are overwritten and rewritten. If the
-        system shuts down mid-write, the file can become partially written,
-        resulting in broken or unreadable content.
-      </p>
-
-      <p class="addon-desc">
-        This explains why only 8 out of 11 files were affected. Not all files
-        were being written at the same time.
-      </p>
-
-      <p class="addon-desc">
-        GitHub was not the source of the issue. The corrupted files were
-        likely uploaded after the incident, causing both local and remote
-        versions to match the damaged state.
-      </p>
-
-      <p class="addon-desc">
-        Future updates will focus on adding backup systems, improving save
-        safety, and preventing data loss during unexpected shutdowns.
-      </p>
-    </div>
-
-  </details>
-
-</div>
 
 
 </section>
@@ -607,7 +778,7 @@ async function startDownload() {
 
   EXPORT_FILES = [...checks].map(c => c.value);
 
-  const totalTime = EXPORT_FILES.length * 6; // seconds
+  const totalTime = EXPORT_FILES.length * 4; // seconds
   let currentTime = 0;
 
   btn.classList.add("loading");
@@ -784,4 +955,5 @@ onValue(usersRef, (snapshot) => {
 </script>
 </body>
 </html>
+
 
