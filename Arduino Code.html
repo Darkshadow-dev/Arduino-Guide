@@ -20,6 +20,11 @@ header{
   background:#111827;
   align-items:center;
 }
+html, body{
+  height:100%;
+}
+
+
 
 button{
   background:#1f2a44;
@@ -28,65 +33,63 @@ button{
   padding:6px 10px;
   cursor:pointer;
 }
-
 button:hover{background:#2c3e66}
 
 #editorWrap{
   display:flex;
   height:calc(100vh - 120px);
 }
+
+/* LEFT LINE NUMBERS */
+#lineNums{
+  width:50px;
+  background:#0f172a;
+  padding:10px 5px;
+  color:#666;
+  text-align:right;
+  font-size:14px;
+  line-height:1.4;
+  overflow:hidden;
+}
+
+/* EDITOR BOX */
 #editorBox{
   position:relative;
   flex:1;
 }
 
+/* BOTH LAYERS */
 #editor, #highlight{
   position:absolute;
   inset:0;
-
-  font-family: monospace;
-  font-size: 14px;
-  line-height: 1.4;
-
+  font-family:monospace;
+  font-size:14px;
+  line-height:1.4;
   padding:10px;
-
-  white-space: pre;        /* 🔥 SAME rendering */
-  overflow: auto;
-
+  white-space:pre-wrap;   /* 🔥 FIX GAP + WRAP */
+  word-wrap:break-word;
+  overflow:auto;
   margin:0;
   border:none;
 }
 
+/* SYNTAX LAYER */
 #highlight{
   pointer-events:none;
-  color:white;
   z-index:1;
 }
 
+/* TEXT INPUT */
 #editor{
   background:transparent;
   color:transparent;
   caret-color:#00ff99;
   z-index:2;
   resize:none;
+  outline:none;
 }
 
-#lineNums{
-  width:40px;
-  background:#0f172a;
-
-  padding:10px 5px;   /* match editor padding */
-
-  color:#666;
-  text-align:right;
-
-  font-family: monospace;
-  font-size:14px;
-  line-height:1.4;    /*MUST MATCH editor */
-
-  user-select:none;
-}
-
+/* CONSOLE */
 #console{
   height:120px;
   background:#575251;
@@ -94,15 +97,12 @@ button:hover{background:#2c3e66}
   overflow:auto;
   padding:10px;
 }
+
 select{
   background:#111827;
   color:white;
 }
-
 ::-webkit-scrollbar{display:none}
-#highlight, #editor {
-  tab-size: 2;
-}
 
 </style>
 
@@ -147,60 +147,60 @@ select{
 </header>
 
 <div id="editorWrap">
-  <div id="lineNums">
-</div>
-<div id="editorBox">
-  <pre id="highlight"></pre>
-  <textarea id="editor" spellcheck="false"></textarea>
-</div>
+  <div id="lineNums"></div>
+  <div id="editorBox">
+    <pre id="highlight"></pre>
+    <textarea id="editor" spellcheck="false"></textarea>
+  </div>
 </div>
 
 <pre id="console"></pre>
 
 <script>
-/* =========================
-   SAFE STATE
-========================= */
+let editor, highlight, lines, consoleBox, fileInput, filename;
 
-let editor, lines, consoleBox, fileInput, filename;
-
-/* ================= SAFE FETCH ================= */
-async function safeFetch(url, options){
-  try{
-    const res = await fetch(url, options);
-    return await res.json();
-  }catch(err){
-    console.error("Fetch error:", err);
-    return null;
-  }
-}
-
-/* ================= INIT ================= */
-window.addEventListener("load", () => {
+/* INIT */
+window.onload = () => {
 
   editor = document.getElementById("editor");
+  highlight = document.getElementById("highlight");
   lines = document.getElementById("lineNums");
   consoleBox = document.getElementById("console");
-fileInput = document.getElementById("fileInput");
+  fileInput = document.getElementById("fileInput");
   filename = document.getElementById("filename");
 
-  if(!editor || !lines || !consoleBox){
-    console.error("Missing elements");
-    return;
+  fileInput.addEventListener("change", openFile);
+
+  /* LOAD STORAGE */
+  const savedCode = localStorage.getItem("arduino_code");
+  const savedName = localStorage.getItem("arduino_name");
+
+  if(savedCode){
+    editor.value = savedCode;
+    filename.value = savedName || "project";
+  } else {
+    editor.value = defaultSketch();
   }
-editor.addEventListener("input", () => {
-  updateLines();
-  highlightCode();
-});
 
-  editor.value = defaultSketch();
-  updateLines();
-  highlightCode();
-});
+  updateAll();
 
-/* ================= DEFAULT SKETCH ================= */
+  /* INPUT */
+  editor.addEventListener("input", () => {
+    updateAll();
+    saveLocal();
+  });
+
+  /* SCROLL SYNC */
+  editor.addEventListener("scroll", () => {
+    highlight.scrollTop = editor.scrollTop;
+    highlight.scrollLeft = editor.scrollLeft;
+    lines.scrollTop = editor.scrollTop;
+  });
+};
+
+/* DEFAULT */
 function defaultSketch(){
-  return `void setup(){
+return `void setup(){
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
@@ -211,67 +211,65 @@ void loop(){
   delay(1000);
 }`;
 }
-const highlight = document.getElementById("highlight");
 
-editor.addEventListener("scroll", () => {
-  highlight.scrollTop = editor.scrollTop;
-  highlight.scrollLeft = editor.scrollLeft;
-  lines.scrollTop = editor.scrollTop;
-});
-/* ================= LINE NUMBERS ================= */
+/* UPDATE */
+function updateAll(){
+  updateLines();
+  highlightCode();
+}
+
+/* LINES */
 function updateLines(){
-  if(!editor || !lines) return;
-
   const count = editor.value.split("\n").length;
   lines.innerHTML = Array.from({length:count},(_,i)=>i+1).join("<br>");
 }
 
-/* ================= COMPILE ================= */
-async function compileCode(){
+/* SYNTAX */
+function highlightCode(){
+  let code = editor.value
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
 
-  consoleBox.textContent = "Compiling...";
+    .replace(/(\/\/.*)/g,'<span style="color:#22c55e">$1</span>')
+    .replace(/\b(void|int|setup|loop|digitalWrite|delay|pinMode)\b/g,
+      '<span style="color:#38bdf8">$1</span>')
+    .replace(/\b(HIGH|LOW|OUTPUT|INPUT)\b/g,
+      '<span style="color:#fbbf24">$1</span>')
+    .replace(/\b(\d+)\b/g,
+      '<span style="color:#a78bfa">$1</span>');
 
-  const res = await safeFetch("https://arduino-guide-6.onrender.com/compile", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      code: editor.value,
-      name: filename.value || "project"
-    })
-  });
-
-  if(!res){
-    consoleBox.textContent = "Server error";
-    return;
-  }
-
-  consoleBox.textContent = res.output || "";
+  highlight.innerHTML = code;
 }
 
-/* ================= NEW ================= */
+/* STORAGE */
+function saveLocal(){
+  localStorage.setItem("arduino_code", editor.value);
+  localStorage.setItem("arduino_name", filename.value);
+}
+
+/* NEW */
 function newProject(){
-  if(confirm("Clear code?")){
-    editor.value = "";
-    filename.value = "project";
-    updateLines();
-  }
+  editor.value = "";
+  filename.value = "project";
+  localStorage.removeItem("arduino_code"); // 🔥 prevent restore bug
+  updateAll();
 }
 
-/* ================= SAVE ================= */
+/* SAVE FILE */
 function saveFile(){
-  const name = (filename.value || "project").replace(/[^a-zA-Z0-9_-]/g, "");
+  saveLocal();
 
-  // -------------------------
-  // 1. download .ino
-  // -------------------------
-  const inoBlob = new Blob([editor.value], {type:"text/plain"});
-  const inoLink = document.createElement("a");
+  const name = filename.value || "project";
+  const blob = new Blob([editor.value], {type:"text/plain"});
+  const a = document.createElement("a");
 
-  inoLink.href = URL.createObjectURL(inoBlob);
-  inoLink.download = name + ".ino";
-  inoLink.click();
+  a.href = URL.createObjectURL(blob);
+  a.download = name + ".ino";
+  a.click();
 }
 
+/* OPEN FILE */
 function openFile(e){
   const file = e.target.files[0];
   if(!file) return;
@@ -280,37 +278,36 @@ function openFile(e){
 
   reader.onload = () => {
     editor.value = reader.result;
-    filename.value = file.name.replace(/\.[^/.]+$/, "");
-
-    updateLines();
-    highlightCode();
-
-    fileInput.value = ""; // 🔥 FIX (allows reopening same file)
+    filename.value = file.name.replace(/\..+$/, "");
+    updateAll();
+    saveLocal();
   };
 
   reader.readAsText(file);
-
-  updateLines();
-  highlightCode();
 }
 
-function highlightCode(){
-  let code = editor.value;
+/* COMPILE */
+async function compileCode(){
+  consoleBox.textContent = "Compiling...";
 
-  let html = code
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
+  try{
+    const res = await fetch("https://arduino-guide-6.onrender.com/compile",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        code: editor.value,
+        name: filename.value
+      })
+    });
 
-    .replace(/(\/\/.*)/g,'<span style="color:#22c55e">$1</span>')
-    .replace(/\b(void|int|pinMode|digitalWrite|delay|Serial|setup|loop|tone|noTone|analogWrite|digitalRead|millis)\b/g,
-      '<span style="color:#38bdf8">$1</span>')
-    .replace(/\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP)\b/g,
-      '<span style="color:#fbbf24">$1</span>')
-    .replace(/\b(\d+)\b/g,
-      '<span style="color:#a78bfa">$1</span>');
-document.getElementById("highlight").innerHTML = html;
+    const data = await res.json();
+    consoleBox.textContent = data.output || "No output";
+
+  }catch{
+    consoleBox.textContent = "Server error";
+  }
 }
+
 /* ================= EXAMPLES (FIXED ALL) ================= */
 function loadExample(name){
 
@@ -417,6 +414,7 @@ void loop(){
 
   updateLines();
   highlightCode();
+saveLocal();
 }
 
 fetch("https://arduino-guide-6.onrender.com/compile", {
@@ -497,6 +495,6 @@ onValue(usersRef, (snapshot) => {
 });
 </script>
 
+
 </body>
 </html>
-
