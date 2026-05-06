@@ -406,7 +406,7 @@ box.innerHTML = `
 <button class="cli-btn" onclick="copyCode(this)">Copy</button>
 <button class="cli-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
 
-<pre>${ex.code}</pre>
+<pre>${highlightCode(ex.code)}</pre>
 </div>
 
 <div class="cli-cmd-container">
@@ -445,6 +445,41 @@ Copy Upload
 
 `;
 
+}
+
+function highlightCode(code){
+  return code
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+
+    .replace(/(\/\/.*)/g,'<span style="color:#22c55e">$1</span>')
+    .replace(/\b(void|int|setup|loop|digitalWrite|delay|pinMode)\b/g,
+      '<span style="color:#38bdf8">$1</span>')
+.replace(/\b(Serial|begin|println|millis|analogRead|analogWrite)\b/g,
+  '<span style="color:#38bdf8">$1</span>')
+.replace(/(#include\s*&lt;.*?&gt;)/g,
+  '<span style="color:#f472b6">$1</span>')
+.replace(/\b(#define|#include)\b/g,
+  '<span style="color:#f472b6">$1</span>')
+.replace(/\b(Adafruit_SSD1306|Adafruit_GFX|Wire)\b/g,
+  '<span style="color:#60a5fa">$1</span>')
+.replace(/\b(SSD1306_SWITCHCAPVCC|WHITE|BLACK)\b/g,
+  '<span style="color:#22c55e">$1</span>')
+.replace(/\b(display)\b/g,
+  '<span style="color:#e879f9">$1</span>')
+    .replace(/\b(HIGH|LOW|OUTPUT|INPUT)\b/g,
+      '<span style="color:#fbbf24">$1</span>')
+    .replace(/\b(\d+)\b/g,
+      '<span style="color:#a78bfa">$1</span>');
+
+}
+
+function escapeHTML(str){
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function copyCmd(el){
@@ -548,6 +583,7 @@ onValue(usersRef, (snapshot) => {
 
 </body>
 </html>
+
 
 
 
