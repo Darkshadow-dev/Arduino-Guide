@@ -160,7 +160,7 @@
   </div>
 
   <div class="info-card">
-    <h3>Who It's For</h3>
+    <h3>For Who</h3>
     <ul>
       <li>Beginners</li>
       <li>Visual learners</li>
@@ -168,6 +168,15 @@
       <li>Self-taught makers</li>
     </ul>
   </div>
+
+<div class="info-card">
+  <h3>Note</h3>
+  <ul>
+    <li>Focused on how Arduino works</li>
+    <li>Concepts apply to general electronics</li>
+    <li>Can be used without an Arduino</li>
+  </ul>
+</div>
 </div>
 
 </section>
@@ -527,7 +536,9 @@
 <details class="wiring-card">
   <summary> LED Wiring</summary>
   <p>LED with current-limiting resistor.</p>
+
   <div class="dual-image-row">
+
     <div class="zoom-box">
   <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
     <img class="led-frame" src="Images/Arduino-LED-off.png" alt="LED off">
@@ -605,10 +616,7 @@
   <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
   <p><b>Connect</b> SDA to A4 and SCL to A5 <b>IF</b> you connect it incorectly you risk damaging you oled be careful.</p>
 </details>
-<!// hey hey he heheh he he he he he he yyyyy.
-// ye what is it?.  when will we add this int to real stuff????????????????????????????????????????????????????????????????????????????????????.
-// some thime when i draw them you you do.  k k so is this file done all only this isn't??????????????????'.
-// ye also stop with ? ill see your comment soon egnof.  ok ill srop.>
+
 <div style="height:10vh;"></div>
 <h3>Buzzer+Arduino Wiring Layout</h3>
 <p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Buzzer/Speaker</a> example.</p>
@@ -635,22 +643,7 @@
   <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
 </details>
 <div style="height:10vh;"></div>
-    <details class="wiring-card spacer-2">
-      <summary>DC Motor</summary>
-      <p>Motor driver required.</p>
-      <img src="images/dc-motor.png">
-    </details>
 
-    <details class="wiring-card spacer-3">
-      <summary>Stepper Motor</summary>
-      <p>Two-stage wiring.</p>
-
-      <div class="stepper-slider">
-        <button onclick="stepperPrev()">◀</button>
-        <img id="stepperImg" src="images/stepper-1.png">
-        <button onclick="stepperNext()">▶</button>
-      </div>
-    </details>
   </div></div>
 </section>
 
@@ -1311,7 +1304,6 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 </footer>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script src="js/main.js"></script>
-<script src="js/mobile.js"></script>
 
 
 
@@ -1388,6 +1380,8 @@ onValue(usersRef, (snapshot) => {
 
 </body>
 </html>
+
+
 
 
 
