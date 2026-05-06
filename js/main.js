@@ -371,9 +371,4 @@ function toggleView(){
     cliMode ? "Normal View" : "CLI / IDE";
 }
 
-
-
-
-
-
-
+/*--------------------------___ More page JS ___---------------------------*/

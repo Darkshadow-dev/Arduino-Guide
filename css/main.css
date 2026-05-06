@@ -1479,6 +1479,86 @@ textarea {
   100%{opacity:1;}
 }
 
+/*--------------------------___ More pages ___------------------------------------*/
+
+/* ===== Tutorial Image Container ===== */
+.tut-box{
+  background:#e5e7eb;
+  border-radius:12px;
+  padding:14px;
+  width:420px;
+  height:420px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+/* ===== IMAGE AREA ===== */
+.tut-images{
+  width:100%;
+  height:80%;
+  display:grid;
+  gap:10px;
+  justify-items:center;
+  align-items:center;
+}
+
+/* 1 IMAGE */
+.tut-images.one{
+  grid-template-columns:1fr;
+}
+
+/* 2 IMAGES */
+.tut-images.two{
+  grid-template-columns:1fr 1fr;
+}
+
+/* IMAGE STYLE */
+.tut-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+
+  border-radius:10px;
+  cursor:zoom-in;
+  transition:.2s;
+}
+
+/* TEXT */
+.tut-text{
+  margin-top:10px;
+  font-size:14px;
+  color:#111;
+  text-align:center;
+}
+
+/* ===== ZOOM OVERLAY ===== */
+.zoom-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:99999;
+
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+}
+
+.zoom-overlay.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.zoom-overlay img{
+  width:60vw;
+  height:60vh;
+  object-fit:contain;
+}
+
 /*-----------------------___ Footer CSS __-----------------------*/
 footer{
   position:relative;
@@ -1831,6 +1911,7 @@ footer{
   }
 
 }
+
 
 
 
