@@ -1,0 +1,452 @@
+::root{
+  --bg:#edf1f7;
+  --panel:#ffffff;
+  --accent:#2d8cff;
+  --accent2:#1d6fd6;
+  --text:#1f2937;
+  --shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  font-family:Arial,sans-serif;
+  color:var(--text);
+}
+
+/* TOP */
+
+.topbar{
+  background:#1f2937;
+  color:white;
+  text-align:center;
+  padding:24px 10px;
+  box-shadow:var(--shadow);
+}
+
+.topbar h1{
+  margin:0;
+  font-size:32px;
+}
+
+.topbar p{
+  margin-top:6px;
+  opacity:0.8;
+}
+
+/* NAV */
+
+.navbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  background:#263445;
+  padding:14px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.navbar a,
+.create-post-btn{
+  background:#34495e;
+  color:white;
+  text-decoration:none;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.2s;
+  font-size:15px;
+}
+
+.navbar a:hover,
+.create-post-btn:hover{
+  background:var(--accent);
+}
+
+#searchBox{
+  width:320px;
+  max-width:95%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  outline:none;
+}
+
+/* SORT */
+
+.sort-panel{
+  position:fixed;
+  right:14px;
+  top:150px;
+  z-index:40;
+}
+
+.sort-panel select{
+  background:#263445;
+  color:white;
+  border:none;
+  padding:12px;
+  border-radius:10px;
+  box-shadow:var(--shadow);
+}
+
+/* MAIN */
+
+main{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+/* POSTS */
+
+.post{
+  background:var(--panel);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow);
+  animation:fadeUp .35s ease;
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(15px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+.post h3{
+  margin-top:0;
+  font-size:24px;
+}
+
+.meta{
+  opacity:0.65;
+  margin-bottom:14px;
+  font-size:14px;
+}
+
+.post-content{
+  line-height:1.7;
+  margin-bottom:14px;
+}
+
+.code-box{
+  background:#0d1117;
+  color:#53ff7a;
+  padding:14px;
+  border-radius:12px;
+  overflow:auto;
+  margin-top:14px;
+}
+
+.code-box pre{
+  margin:0;
+  white-space:pre-wrap;
+}
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:18px;
+}
+
+.actions button{
+  border:none;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  transition:0.2s;
+  color:white;
+  font-size:14px;
+}
+
+.like-btn{ background:#22c55e; }
+.dislike-btn{ background:#ef4444; }
+.favorite-btn{ background:#f59e0b; }
+.comment-btn{ background:#3b82f6; }
+.edit-btn{ background:#8b5cf6; }
+.delete-btn{ background:#374151; }
+
+.actions button:hover{
+  transform:translateY(-2px);
+  opacity:0.92;
+}
+
+/* COMMENTS */
+
+.comments-wrap{
+  margin-top:18px;
+  border-top:1px solid #e5e7eb;
+  padding-top:18px;
+}
+
+.comment-sort{
+  margin-bottom:10px;
+}
+
+.comment-sort select{
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  background:#e5edf7;
+}
+
+.comment{
+  background:#f7f9fd;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.comment-top{
+  font-size:13px;
+  opacity:0.75;
+  margin-bottom:8px;
+}
+
+.comment-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+.comment-actions button{
+  border:none;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
+  color:white;
+}
+
+.c-like{ background:#22c55e; }
+.c-dislike{ background:#ef4444; }
+
+/* COMMENT BOX */
+
+.comment-box{
+  margin-top:14px;
+}
+
+.comment-box input,
+.comment-box textarea{
+  width:100%;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  padding:12px;
+  background:#eef3fb;
+}
+
+/* WINDOW */
+
+.window{
+  position:fixed;
+  top:90px;
+  left:50%;
+  transform:translateX(-50%);
+  width:700px;
+  max-width:95%;
+  background:white;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  z-index:100;
+  overflow:hidden;
+  resize:both;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.window-header{
+  background:#263445;
+  color:white;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:move;
+}
+
+.window-controls{
+  display:flex;
+  gap:8px;
+}
+
+.window-controls button{
+  border:none;
+  border-radius:8px;
+  background:#34495e;
+  color:white;
+  width:32px;
+  height:32px;
+  cursor:pointer;
+}
+
+.window-content{
+  padding:18px;
+}
+
+.window-content input,
+.window-content textarea{
+  width:100%;
+  margin-bottom:12px;
+  padding:14px;
+  border:none;
+  background:#eef3fb;
+  border-radius:12px;
+  resize:vertical;
+}
+
+.submit-btn{
+  width:100%;
+  border:none;
+  border-radius:12px;
+  padding:14px;
+  background:var(--accent);
+  color:white;
+  cursor:pointer;
+  font-size:16px;
+  transition:0.2s;
+}
+
+.submit-btn:hover{
+  background:var(--accent2);
+}
+
+/* LOAD */
+
+.load-wrap{
+  text-align:center;
+  margin-top:20px;
+}
+
+#loadMoreBtn{
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
+  background:#263445;
+  color:white;
+}
+
+/* POPUP */
+
+.popup{
+  position:fixed;
+  left:50%;
+  bottom:30px;
+  transform:translateX(-50%);
+  background:#1f2937;
+  color:white;
+  padding:14px 22px;
+  border-radius:12px;
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+  z-index:200;
+}
+
+.popup.show{
+  opacity:1;
+  bottom:40px;
+}
+
+/* CONFIRM */
+
+.confirm-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  align-items:center;
+  justify-content:center;
+  z-index:300;
+  display:none;
+}
+
+.confirm-overlay:not(.hidden){
+  display:flex;
+}
+
+.confirm-box{
+  background:white;
+  padding:24px;
+  border-radius:18px;
+  width:360px;
+  max-width:92%;
+  text-align:center;
+}
+
+.confirm-actions{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-top:20px;
+}
+
+.confirm-actions button{
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .post{
+    padding:16px;
+  }
+
+  .post h3{
+    font-size:21px;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+
+  .actions button{
+    width:100%;
+  }
+
+  .sort-panel{
+    position:static;
+    padding:10px;
+    text-align:center;
+  }
+
+  .sort-panel select{
+    width:95%;
+  }
+
+  .window{
+    top:20px;
+    left:2.5%;
+    transform:none;
+    width:95%;
+    height:auto;
+  }
+
+}
+
+

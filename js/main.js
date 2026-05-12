@@ -1,54 +1,102 @@
 /*------------------------------------___  Main Script ___------------------------*/
 
 /*-------------___ Page script ___----------------*/
+
 const STORAGE_KEY = "arduino-last-page";
 
 /* ACTIVATE PAGE */
 function activatePage(id, save = true) {
+
   const target = document.getElementById(id);
 
-  document.querySelectorAll(".page").forEach(p =>
-    p.classList.remove("active")
-  );
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
 
   if (target) {
+
     target.classList.add("active");
-    if (save) localStorage.setItem(STORAGE_KEY, id);
+
+    if (save) {
+      localStorage.setItem(STORAGE_KEY, id);
+    }
+
   } else {
-    document.getElementById("notfound").classList.add("active");
-    if (save) localStorage.setItem(STORAGE_KEY, "notfound");
+
+    const notFound = document.getElementById("notfound");
+
+    if (notFound) {
+      notFound.classList.add("active");
+    }
+
+    if (save) {
+      localStorage.setItem(STORAGE_KEY, "notfound");
+    }
   }
 
-  window.scrollTo(0, 0);
+  /* FORCE TOP */
+
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "instant"
+  });
+
+  requestAnimationFrame(() => {
+
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    window.scrollTo(0, 0);
+
+  });
 }
 
 /* HOME BUTTON */
 function goHome() {
+
   activatePage("home");
+
   history.pushState(null, "", "#home");
 }
 
 /* NAV LINK HANDLING */
 document.querySelectorAll("nav a").forEach(a => {
+
   a.addEventListener("click", e => {
+
     const href = a.getAttribute("href");
+
     if (!href || href.startsWith("http")) return;
 
-    // #section
+    /* #section */
     if (href.startsWith("#")) {
+
       e.preventDefault();
+
       const id = href.substring(1);
+
       activatePage(id);
+
       history.pushState(null, "", href);
+
       return;
     }
 
-    // page.html#section
+    /* page.html#section */
     if (href.includes(".html#")) {
+
       const [page, hash] = href.split("#");
+
       if (location.pathname.endsWith(page)) {
+
         e.preventDefault();
+
         activatePage(hash);
+
         history.pushState(null, "", "#" + hash);
       }
     }
@@ -57,23 +105,31 @@ document.querySelectorAll("nav a").forEach(a => {
 
 /* BACK / FORWARD */
 window.addEventListener("hashchange", () => {
+
   const id = location.hash.substring(1);
+
   activatePage(id, false);
 });
 
-/* RESTORE LAST PAGE ON LOAD */
+/* RESTORE LAST PAGE */
 window.addEventListener("load", () => {
+
   const hash = location.hash.substring(1);
-  const last = localStorage.getItem(STORAGE_KEY) || "home";
+
+  const last =
+    localStorage.getItem(STORAGE_KEY) || "home";
 
   if (hash) {
+
     activatePage(hash);
+
   } else {
+
     activatePage(last);
+
     history.replaceState(null, "", "#" + last);
   }
 });
-
 /*----------- DROPDOWNS --------------*/
 function toggleDropdown(btn, e) {
   e.stopPropagation();
@@ -173,22 +229,208 @@ document.querySelectorAll(".lp-card").forEach(card=>{
   updateCard(card);
 });
 
-/*-------------- Animation on hardwarevi page --------------*/
 
-document.querySelectorAll('.led-container').forEach(container => {
-  const frames = container.querySelectorAll('.led-frame');
-  if (frames.length < 2) return; // nothing to animate
+
+
+/*-------------- Animation on hardwarevi page --------------*/
+/* ========================================= WIRE ANIMATIONS ========================================= */
+
+const wireOverlay   = document.getElementById("wireOverlay");
+const wireZoomImg   = document.getElementById("wireZoomImg");
+const wireZoomAnim  = document.getElementById("wireZoomAnim");
+
+const zoomPrev = document.getElementById("zoomPrev");
+const zoomNext = document.getElementById("zoomNext");
+
+/* =========================================
+   ANIMATION ENGINE
+========================================= */
+
+/* =========================================
+   FIXED ZOOM ANIMATION
+========================================= */
+
+function startWireAnimation(container){
+
+  const frames = container.querySelectorAll(
+    ".wire-frame, .wire-zoom-frame"
+  );
+
+  if(frames.length <= 1) return;
 
   let index = 0;
-  frames[index].classList.add('active');
 
-  setInterval(() => {
-    frames[index].classList.remove('active');
-    index = (index + 1) % frames.length;
-    frames[index].classList.add('active');
-  }, 1000);
+  frames.forEach((f,i)=>{
+    f.style.display = i === 0 ? "block" : "none";
+  });
+
+  if(container.animInterval){
+    clearInterval(container.animInterval);
+  }
+
+  container.animInterval = setInterval(()=>{
+
+    frames[index].style.display = "none";
+
+    index++;
+
+    if(index >= frames.length){
+      index = 0;
+    }
+
+    frames[index].style.display = "block";
+
+  },700);
+
+}
+
+/* START ALL PAGE ANIMATIONS */
+document.querySelectorAll("[data-wire-anim]").forEach(anim=>{
+  startWireAnimation(anim);
 });
 
+/* =========================================
+   GALLERIES
+========================================= */
+
+document.querySelectorAll("[data-wire-gallery]").forEach(gallery=>{
+
+  const slides = gallery.querySelectorAll(".wire-slide");
+
+  const prev = gallery.querySelector(".gallery-prev");
+  const next = gallery.querySelector(".gallery-next");
+
+  let current = 0;
+
+  function showSlide(i){
+
+    slides.forEach(s=>s.classList.remove("active"));
+
+    slides[i].classList.add("active");
+
+    current = i;
+  }
+
+  prev.addEventListener("click", ()=>{
+
+    let i = current - 1;
+
+    if(i < 0){
+      i = slides.length - 1;
+    }
+
+    showSlide(i);
+
+  });
+
+  next.addEventListener("click", ()=>{
+
+    let i = current + 1;
+
+    if(i >= slides.length){
+      i = 0;
+    }
+
+    showSlide(i);
+
+  });
+
+  /* =========================================
+     ZOOM
+  ========================================= */
+
+  slides.forEach((slide,slideIndex)=>{
+
+    slide.addEventListener("click", ()=>{
+
+      wireOverlay.classList.add("active");
+
+      /* IMAGE */
+      const img = slide.querySelector(".wire-img");
+
+      /* ANIMATION */
+      const anim = slide.querySelector("[data-wire-anim]");
+
+      wireZoomImg.style.display = "none";
+      wireZoomAnim.style.display = "none";
+
+      /* STATIC IMAGE */
+      if(img){
+
+        wireZoomImg.src = img.src;
+        wireZoomImg.style.display = "block";
+
+      }
+
+      /* ANIMATION */
+      if(anim){
+
+        wireZoomAnim.innerHTML = "";
+
+        const frames = anim.querySelectorAll(".wire-frame");
+
+        frames.forEach(frame=>{
+
+          const clone = document.createElement("img");
+
+          clone.src = frame.src;
+          clone.className = "wire-zoom-frame";
+
+          wireZoomAnim.appendChild(clone);
+
+        });
+
+        wireZoomAnim.style.display = "block";
+
+        startWireAnimation(wireZoomAnim);
+
+      }
+
+      /* OVERLAY ARROWS */
+      zoomPrev.onclick = ()=>{
+
+        let i = slideIndex - 1;
+
+        if(i < 0){
+          i = slides.length - 1;
+        }
+
+        slides[i].click();
+
+      };
+
+      zoomNext.onclick = ()=>{
+
+        let i = slideIndex + 1;
+
+        if(i >= slides.length){
+          i = 0;
+        }
+
+        slides[i].click();
+
+      };
+
+    });
+
+  });
+
+});
+
+/* =========================================
+   CLOSE ZOOM
+========================================= */
+
+wireOverlay.addEventListener("click",(e)=>{
+
+  if(
+    e.target === wireOverlay ||
+    e.target === wireZoomImg
+  ){
+    wireOverlay.classList.remove("active");
+  }
+
+});
 /*-------------- 3D model renderer--------------- */
 const renderer = new THREE.WebGLRenderer({
   canvas: document.getElementById("uno3d"),
@@ -370,5 +612,121 @@ function toggleView(){
   document.getElementById("viewToggle").textContent =
     cliMode ? "Normal View" : "CLI / IDE";
 }
+function showCategory(category){
+
+  // hide ALL categories
+  document.querySelectorAll(".example-category")
+  .forEach(cat=>{
+    cat.classList.remove("active");
+  });
+
+  // show selected category ONLY
+  const selected =
+    document.getElementById("cat-" + category);
+
+  if(selected){
+    selected.classList.add("active");
+  }
+
+}
+
+// load BASIC only on startup
+window.addEventListener("DOMContentLoaded", ()=>{
+
+  showCategory("basic");
+
+});
 
 /*--------------------------___ More page JS ___---------------------------*/
+
+
+
+
+
+
+
+
+
+/* =========================================================   MOBILE TOUCH SUPPORT   ========================================================= */
+
+if(window.matchMedia("(hover:none)").matches){
+
+  /* dropdown touch */
+  document.querySelectorAll(".dropdown-btn").forEach(btn=>{
+
+    btn.addEventListener("touchstart",e=>{
+
+      const dropdown=btn.closest(".dropdown");
+
+      dropdown.classList.toggle("open");
+
+      const menu=dropdown.querySelector(".dropdown-menu");
+
+      if(menu){
+        menu.classList.toggle("open");
+      }
+
+    },{passive:true});
+
+  });
+
+  /* side panels */
+  document.querySelectorAll(".side-btn").forEach(btn=>{
+
+    btn.addEventListener("touchstart",()=>{
+
+      const panel=btn.parentElement.querySelector(".side-panel");
+
+      if(panel){
+        panel.classList.toggle("open");
+      }
+
+    },{passive:true});
+
+  });
+
+  /* gallery buttons */
+  document.querySelectorAll(".gallery-btn").forEach(btn=>{
+
+    btn.addEventListener("touchstart",()=>{
+      btn.classList.add("touch-active");
+
+      setTimeout(()=>{
+        btn.classList.remove("touch-active");
+      },120);
+
+    },{passive:true});
+
+  });
+
+  /* smooth nav scroll */
+  const nav=document.querySelector("nav");
+
+  if(nav){
+
+    let startX=0;
+    let scrollLeft=0;
+
+    nav.addEventListener("touchstart",e=>{
+
+      startX=e.touches[0].pageX;
+      scrollLeft=nav.scrollLeft;
+
+    },{passive:true});
+
+    nav.addEventListener("touchmove",e=>{
+
+      const x=e.touches[0].pageX;
+      const walk=(startX-x);
+
+      nav.scrollLeft=scrollLeft+walk;
+
+    },{passive:true});
+
+  }
+
+}
+
+
+
+
