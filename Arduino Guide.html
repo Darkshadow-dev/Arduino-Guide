@@ -9,8 +9,6 @@
 
 <link rel="stylesheet" href="css/main.css">
 
-<link rel="stylesheet" href="css/mobile.css">
-
 </head>
 
 <body>
@@ -333,10 +331,12 @@
       <li>Reads inputs from pins</li>
       <li>Controls outputs like LEDs and motors</li>
     </ul>
-
-    <img src="Images/Microcontroler.png" alt="Arduino microcontroller"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
-  </details>
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+    <img src="Images/Microcontroler.png" alt="Arduino microcontroller"  class="tut-img">
+  </div>
+</div>
+</details>
 <div style="height:5vh;"></div>
 <p>Click on each section to learn more about important Arduino hardware components.</p>
   <!-- POWER -->
@@ -351,9 +351,11 @@
       <li><b>5V pin</b> – regulated output (limited current)</li>
       <li><b>GND</b> – ground (must always be connected)</li>
     </ul>
-
-    <img src="Images/Arduino-power.png" alt="Arduino power pins"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+    <img src="Images/Arduino-power.png" alt="Arduino power pins" class="tut-img">
+  </div>
+</div>
 
     <p><b>Important:</b> Never power motors directly from Arduino 5V.</p>
     <p><b>Why:</b> Motors draw high current and can create electrical noise — use a driver and a diode.</p>
@@ -375,8 +377,11 @@
     <li>Pin 13 has a built-in LED</li>
   </ul>
 
-<img src="Images/Arduino-LED.png" alt="Arduino digital pins" style="max-width:100%; border-radius:8px; margin-top:10px;">
-
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+    <img src="Images/Arduino-LED.png" alt="Arduino digital pins"  class="tut-img">
+  </div>
+</div>
 </details>
 
 <div style="height:5vh;"></div>
@@ -394,9 +399,11 @@
       <li>A4 = SDA, A5 = SCL (I²C)</li>
     </ul>
 
-    <img src="Images/Arduino-OLED4.png" alt="Analog sensor connection"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
-
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+        <img src="Images/Arduino-OLED4.png" alt="Analog sensor connection"  class="tut-img">
+  </div>
+</div>
   </details>
 <div style="height:5vh;"></div>
   <!-- RESISTORS -->
@@ -414,8 +421,11 @@
       <li>Can be placed on either side of an LED</li>
     </ul>
 
-    <img src="Images/LED-Wiring.png" alt="LED resistor wiring"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+      <img src="Images/LED-Wiring.png" alt="LED resistor wiring"  class="tut-img">
+  </div>
+</div>
   </details>
 <div style="height:5vh;"></div>
   <!-- CAPACITORS -->
@@ -433,8 +443,12 @@
       <li>Used near motors and power</li>
     </ul>
 
-    <img src="Images/Capacitor.png" alt="Capacitor polarity"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+    <img src="Images/Capacitor.png" alt="Capacitor polarity"  class="tut-img">
+  </div>
+</div>
+
   </details>
 <div style="height:5vh;"></div>
   <!-- MOTOR -->
@@ -451,9 +465,12 @@
       <li>Common GND with Arduino</li>
       <li>Use flyback diode for DC motors</li>
     </ul>
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+    <img src="Images/Mortor.png" alt="Motor driver wiring"  class="tut-img">
+  </div>
+</div>
 
-    <img src="Images/Mortor.png" alt="Motor driver wiring"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 <div style="height:5vh;"></div>
   <!-- SENSOR -->
@@ -469,9 +486,12 @@
       <li>Temperature sensors</li>
       <li>Light sensors</li>
     </ul>
+<div class="tut-box"data-tut="4">
+  <div class="tut-images one">
+    <img src="Images/HC-SRO4.png" alt="Sensor wiring" class="tut-img">
+  </div>
+</div>
 
-    <img src="Images/HC-SRO4.png" alt="Sensor wiring"
-         style="max-width:100%; border-radius:8px; margin-top:10px;">
   </details>
 </section>
 
@@ -523,128 +543,415 @@
 
 <!-- RIGHT COLUMN -->
 <div class="hardware-right">
+
 <h3 class="examples-title">Common Wiring Examples</h3>
+
 <p class="examples-note">
   These examples show how hardware connects in real projects.
   Click to expand and study each one.
-  Hover or click to zoom in.
+  Click images to zoom and inspect wiring closer.
 </p>
 
+<!-- ===================================================== LED ===================================================== -->
+
+<div style="height:10vh;"></div>
+
 <h3>Wiring LED to the Board</h3>
-<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Blink LED</a> example.</p>
+
+<p>
+  Click on the
+  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html#examples">
+     Blink LED
+  </a>
+  example.
+</p>
 
 <details class="wiring-card">
-  <summary> LED Wiring</summary>
+
+  <summary>LED Wiring</summary>
+
   <p>LED with current-limiting resistor.</p>
 
-  <div class="dual-image-row">
+  <div class="wire-gallery" data-wire-gallery>
 
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
-    <img class="led-frame" src="Images/Arduino-LED-off.png" alt="LED off">
-    <img class="led-frame" src="Images/Arduino-LED-on.png" alt="LED on">
-  </div>
+    <button class="gallery-btn gallery-prev">‹</button>
+
+    <div class="wire-box">
+
+      <!-- ANIMATED -->
+      <div class="wire-slide active">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED-off.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED-on.png">
+
+        </div>
+
+      </div>
+
+      <!-- ANIMATED -->
+      <div class="wire-slide">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED-off,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED-on,board.png">
+
+        </div>
+
+      </div>
+
+      <!-- CIRCUIT -->
+      <div class="wire-slide">
+
+        <img class="wire-img"
+             src="Images/Circuit/Arduino-LED-circuit.png">
+
+      </div>
+
     </div>
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
-      <img src="Images/Arduino-LED-circuit.png" alt="Circuit Diagram">
-    </div></div>
+
+    <button class="gallery-btn gallery-next">›</button>
+
+  </div>
+
 </details>
 
 <details>
   <summary>Wiring Explained</summary>
+
   <p><b>Connect</b> pin 13 to one end of the resistor.</p>
-  <p>Then connect the positive end of the LED (longer leg) to the other end of the 220Ω resistor. (R=220Ω)</p>
-  <p>Finally, connect the shorter leg of the LED to the Arduino's common GND.</p>
+
+  <p>
+    Then connect the positive end of the LED (longer leg)
+    to the other end of the 220Ω resistor.
+  </p>
+
+  <p>
+    Finally, connect the shorter leg of the LED
+    to Arduino GND.
+  </p>
+
 </details>
+
+<!-- ===================================================== MULTI LED ===================================================== -->
 
 <div style="height:10vh;"></div>
 
 <h3>Wiring Multiple LEDs to the Board</h3>
-<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Multi LED</a> example</p>
+
+<p>
+  Click on the
+  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html#examples">
+     Multi LED
+  </a>
+  example.
+</p>
 
 <details class="wiring-card">
+
   <summary>Multiple LED Wiring</summary>
-  <p>LEDs with current-limiting resistors..</p>
-  <div class="dual-image-row">
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
-    <img class="led-frame" src="Images/Arduino-LED's-off.png" alt="Multiple LEDs off">
-    <img class="led-frame" src="Images/Arduino-LED's-on1.png" alt="Multiple LEDs on step 1">
-    <img class="led-frame" src="Images/Arduino-LED's-on2.png" alt="Multiple LEDs on step 2">
-    <img class="led-frame" src="Images/Arduino-LED's-on3.png" alt="Multiple LEDs on step 3">
-  </div>
+
+  <p>LEDs with current-limiting resistors.</p>
+
+  <div class="wire-gallery" data-wire-gallery>
+
+    <button class="gallery-btn gallery-prev">‹</button>
+
+    <div class="wire-box">
+
+      <!-- ANIMATED -->
+      <div class="wire-slide active">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED's-off.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED's-on1.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED's-on2.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED's-on3.png">
+
+        </div>
+
+      </div>
+
+      <!-- ANIMATED -->
+      <div class="wire-slide">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED's-off,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED's-on1,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED's-on2,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED's-on3,board.png">
+
+        </div>
+
+      </div>
+      <!-- CIRCUIT -->
+      <div class="wire-slide">
+
+        <img class="wire-img"
+             src="Images/Circuit/Arduino-LED's-circuit.png">
+
+      </div>
+
     </div>
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
-      <img src="Images/Arduino-LED's-circuit.png" alt="Circuit Diagram">
-    </div></div></div>
+
+    <button class="gallery-btn gallery-next">›</button>
+
+  </div>
+
 </details>
 
 <details>
   <summary>Wiring Explained</summary>
-  <p><b>Connect</b> pin 13 to one end of the first resistor. (R1=220Ω)</p>
-  <p><b>Connect</b> pin 12 to one end of the second resistor. (R2=220Ω)</p>
-  <p><b>Connect</b> pin 11 to one end of the third resistor. (R3=220Ω)</p>
-  <p>All positive ends of the LEDs must go through their respective 220Ω resistors.</p>
-  <p>Then connect all the negative legs (one per LED) together to a common GND on the Arduino.</p>
+
+  <p><b>Connect</b> pin 13 to one end of resistor R1.</p>
+
+  <p><b>Connect</b> pin 12 to one end of resistor R2.</p>
+
+  <p><b>Connect</b> pin 11 to one end of resistor R3.</p>
+
+  <p>
+    Each LED must have its own resistor before
+    connecting to the positive leg.
+  </p>
+
+  <p>
+    Connect all LED negative legs to Arduino GND.
+  </p>
+
 </details>
 
+<!-- ===================================================== OLED ===================================================== -->
+
 <div style="height:10vh;"></div>
+
 <h3>OLED 4-Pin Wiring Layout</h3>
-<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Oled 4-Pin Display</a> example.</p>
+
+<p>
+  Click on the
+  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html#examples">
+     Oled 4-Pin Display
+  </a>
+  example.
+</p>
+
 <details class="wiring-card">
+
   <summary>Screen (I²C)</summary>
+
   <p>OLED / LCD using SDA and SCL lines.</p>
-  <div class="dual-image-row">
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
-    <img class="led-frame" src="Images/Arduino-Oled4-off.png" alt="OLED off">
-    <img class="led-frame" src="Images/Arduino-Oled4-on.png" alt="OLED on">
-  </div>
+
+  <div class="wire-gallery" data-wire-gallery>
+
+    <button class="gallery-btn gallery-prev">‹</button>
+
+    <div class="wire-box">
+
+      <!-- ANIMATED -->
+      <div class="wire-slide active">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-Oled4-off.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-Oled4-on.png">
+
+        </div>
+
+      </div>
+
+      <!-- ANIMATED -->
+      <div class="wire-slide">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-Oled4-off,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-Oled4-on,board.png">
+
+        </div>
+
+      </div>
+
+      <!-- CIRCUIT -->
+      <div class="wire-slide">
+
+        <img class="wire-img"
+             src="Images/Circuit/Arduino-OLED-circuit.png">
+
+      </div>
+
     </div>
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
-      <img src="Images/Arduino-OLED-circuit.png" alt="Circuit Diagram">
-    </div></div></div>
+
+    <button class="gallery-btn gallery-next">›</button>
+
+  </div>
+
 </details>
 
 <details>
   <summary>Wiring Explained</summary>
-  <p><b>Connect</b> the VSS to the 3.3v Power pin (Or to 5v depending on you oled model<b> safest to go to 3.3v</b>)</p>
-  <p><b>Why:</b> the VSS on the oled might be 3.3v and you don't risk damaging your screen on 3.3v <b>IF</b> it dosent power on connect it to 5v!</p>
-  <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
-  <p><b>Connect</b> SDA to A4 and SCL to A5 <b>IF</b> you connect it incorectly you risk damaging you oled be careful.</p>
+
+  <p>
+    <b>Connect</b> VCC/VSS to 3.3v
+    (or 5v depending on model).
+  </p>
+
+  <p>
+    <b>Connect</b> GND to Arduino GND.
+  </p>
+
+  <p>
+    <b>Connect</b> SDA to A4 and SCL to A5.
+  </p>
+
 </details>
 
+<!-- ===================================================== BUZZER ===================================================== -->
+
 <div style="height:10vh;"></div>
-<h3>Buzzer+Arduino Wiring Layout</h3>
-<p> Click on the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html#examples">Buzzer/Speaker</a> example.</p>
+
+<h3>Buzzer + Arduino Wiring Layout</h3>
+
+<p>
+  Click on the
+  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html#examples">
+     Buzzer / Speaker
+  </a>
+  example.
+</p>
+
 <details class="wiring-card">
+
   <summary>Buzzer (Passive)</summary>
-  <p>Buzzer Connect lines.</p>
-  <div class="dual-image-row">
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 10%;">
-    <img class="led-frame" src="Images/Arduino-Buzzer.png" alt="Buzzer image">
-    <img class="led-frame" src="Images/Arduino-Buzzer-active.png" alt="Buzzer image">
-  </div>
+
+  <p>Buzzer connection layout.</p>
+
+  <div class="wire-gallery" data-wire-gallery>
+
+    <button class="gallery-btn gallery-prev">‹</button>
+
+    <div class="wire-box">
+
+      <!-- ANIMATED -->
+      <div class="wire-slide active">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-Buzzer.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-Buzzer-active.png">
+
+        </div>
+
+      </div>
+
+      <!-- ANIMATED -->
+      <div class="wire-slide">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-Buzzer,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-Buzzer-active,board.png">
+
+        </div>
+
+      </div>
+
+      <!-- CIRCUIT -->
+      <div class="wire-slide">
+
+        <img class="wire-img"
+             src="Images/Circuit/Arduino-Buzzer-circuit.png">
+
+      </div>
+
     </div>
-    <div class="zoom-box">
-  <div class="led-container" style="position: relative; width: 100px; height: 100px; margin-top: 10px; left: 25%;">
-      <img src="Images/Arduino-Buzzer-circuit.png" alt="Circuit Diagram">
-    </div></div></div>
+
+    <button class="gallery-btn gallery-next">›</button>
+
+  </div>
+
 </details>
+
 <details>
   <summary>Wiring Explained</summary>
-  <p><b>Connect</b> the Pin 6 to one end of a 1k resistor (lower the resistance if it dosen't work).</p>
-  <p><b>Why:</b> only passive buzzers need resistors active ones don't need resistors first try with a resistor then a lower one then without any!</p>
-  <p><b>Connect</b> The end of the resistor (if you need to use one) to the + of the buzzer/speaker</p>
-  <p><b>Connect</b> GND to Arduino GND! ->(<b>Don't forget to connect it</b>)</p>
-</details>
-<div style="height:10vh;"></div>
 
-  </div></div>
+  <p>
+    <b>Connect</b> pin 6 to a 1k resistor.
+  </p>
+
+  <p>
+    Passive buzzers may require a resistor.
+  </p>
+
+  <p>
+    Connect resistor output to buzzer positive.
+  </p>
+
+  <p>
+    Connect buzzer negative to Arduino GND.
+  </p>
+
+</details>
+
+</div>
+<!-- ZOOM -->
+<div id="wireOverlay" class="wire-overlay">
+
+  <button id="zoomPrev" class="zoom-gallery-btn zoom-prev">‹</button>
+
+  <!-- NORMAL -->
+  <img id="wireZoomImg">
+
+  <!-- ANIMATION -->
+  <div id="wireZoomAnim" class="wire-zoom-anim">
+
+    <img class="wire-zoom-frame active">
+
+    <img class="wire-zoom-frame">
+
+  </div>
+
+  <button id="zoomNext" class="zoom-gallery-btn zoom-next">›</button>
+
+</div>
 </section>
 
 
@@ -1090,6 +1397,7 @@ function showPinInfo(title, description) {
     <ul>
       <li><b>Reads inputs</b> – buttons, sensors, joysticks, distance sensors</li>
       <li><b>Processes logic</b> – your code decides what should happen</li>
+
       <li><b>Controls outputs</b> – LEDs, motors, buzzers, relays, displays</li>
     </ul>
 
@@ -1285,12 +1593,6 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 <!-- NEW SECTION BELOW -->
 
 
-
-
-
-<!-- NEW SECTION BELOW -->
-
-
 <section id="notfound" class="page">
     <h2>404 – Page Not Found</h2>
     <p>The section you tried to open does not exist.</p>
@@ -1309,38 +1611,23 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
-  authDomain: "arduino-guideg.firebaseapp.com",
-  databaseURL: "https://arduino-guideg-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "arduino-guideg",
-  storageBucket: "arduino-guideg.firebasestorage.app",
-  messagingSenderId: "146740789054",
-  appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
-  measurementId: "G-V3ZB157P0R"
-};
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-<div class="live-counter" id="liveCounter">
-  <span class="dot"></span>
-  Online: <span id="onlineCount">0</span>
-</div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
 import {
   getDatabase,
   ref,
   onValue,
   set,
-  onDisconnect,
-  remove
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  onDisconnect
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+import {
+  getAnalytics
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+
+/* ================= FIREBASE CONFIG ================= */
+
 const firebaseConfig = {
   apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
   authDomain: "arduino-guideg.firebaseapp.com",
@@ -1351,35 +1638,92 @@ const firebaseConfig = {
   appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
   measurementId: "G-V3ZB157P0R"
 };
+
+/* ================= INIT ================= */
+
 const app = initializeApp(firebaseConfig);
+
+getAnalytics(app);
+
 const db = getDatabase(app);
 
-// 🔑 unique session id per tab
-const userId = "user_" + Math.random().toString(36).substr(2, 9);
+/* ================= LIVE COUNTER ================= */
 
-// 📍 reference
-const userRef = ref(db, "onlineUsers/" + userId);
-const usersRef = ref(db, "onlineUsers");
+const userId =
+  "user_" +
+  Math.random().toString(36).substring(2, 12);
 
-// 🟢 mark as online
+const userRef =
+  ref(db, "onlineUsers/" + userId);
+
+const usersRef =
+  ref(db, "onlineUsers");
+
+/* mark online */
+
 set(userRef, true);
 
-// 🔴 remove on disconnect
+/* remove when leave */
+
 onDisconnect(userRef).remove();
 
-// 🔄 listen count
+/* update count */
+
 onValue(usersRef, (snapshot) => {
+
   const data = snapshot.val();
-  const count = data ? Object.keys(data).length : 0;
-  document.getElementById("onlineCount").textContent = count;
+
+  const count =
+    data
+    ? Object.keys(data).length
+    : 0;
+
+  document.getElementById("onlineCount").textContent =
+    count;
+
+});
+
+</script>
+<div class="live-counter" id="liveCounter">
+  <span class="dot"></span>
+  Online: <span id="onlineCount">0</span>
+</div>
+
+
+
+<div id="zoomOverlay" class="zoom-overlay">
+  <img id="zoomImg">
+</div>
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+
+  const overlay = document.getElementById("zoomOverlay");
+  const overlayImg = document.getElementById("zoomImg");
+
+  // OPEN (works for ALL images, even future ones)
+
+document.body.addEventListener("click", (e) => {
+
+  const box = e.target.closest("[data-tut]");
+  const img = e.target.closest("img");
+
+  if (box && img) {
+    overlayImg.src = img.src;
+    overlay.classList.add("active");
+  }
+});
+  // CLOSE
+  overlay.addEventListener("click", () => {
+    overlay.classList.remove("active");
+  });
+
 });
 </script>
 
-
-
-
 </body>
 </html>
+
 
 
 
