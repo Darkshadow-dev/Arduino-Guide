@@ -20,79 +20,177 @@
 
   <div class="examples-layout">
     <!-- SIDE MENU -->
+<!-- LEFT MENU -->
 <aside class="examples-menu">
+
 <div class="examples-quicknav">
-  <select id="levelFilter" onchange="filterExamples(this.value)">
-    <option value="all">All levels</option>
-    <option value="basic">Basic</option>
-    <option value="intermediate">Intermediate</option>
-    <option value="advanced">Advanced</option>
-  </select>
+
+<select id="categorySelect" onchange="showCategory(this.value)">
+
+  <option value="basic">Basic</option>
+  <option value="intermediate">Intermediate</option>
+  <option value="advanced">Advanced</option>
+  <option value="voltage">Voltage Monitor</option>
+  <option value="test">Test Circuits</option>
+
+</select>
+
 </div>
 
-  <h3>CODE Basic's</h3>
-  <div class="example-item" onclick="loadExample('code')">
-    <strong>What and why!</strong>
-    <span>For code:</span>
-  </div>
+<!-- ================= BASIC ================= -->
+<div class="example-category active" id="cat-basic">
 
-  <h3>Basic</h3>
-  <div class="example-item" data-level="basic" onclick="loadExample('blink')">
-    <strong>Blink LED</strong>
-    <span>Digital output</span>
-  </div>
+<h3>Basic</h3>
 
-  <div class="example-item" data-level="basic" onclick="loadExample('button')">
-    <strong>Button</strong>
-    <span>Digital input</span>
-  </div>
+<div class="example-item" onclick="loadExample('blink')">
+  <strong>Blink LED</strong>
+  <span>Digital output</span>
+</div>
 
-  <div class="example-item" data-level="basic" onclick="loadExample('button-led')">
-    <strong>Button + LED</strong>
-    <span>Input → Output</span>
-  </div>
+<div class="example-item" onclick="loadExample('button')">
+  <strong>Button</strong>
+  <span>Digital input</span>
+</div>
 
-  <div class="example-item" onclick="loadExample('buzzer')">
-    <strong>Buzzer</strong>
-    <span>Sound output</span>
-  </div>
+<div class="example-item" onclick="loadExample('button-led')">
+  <strong>Button + LED</strong>
+  <span>Input → Output</span>
+</div>
 
-  <h3>Intermediate</h3>
-  <div class="example-item" data-level="intermediate" onclick="loadExample('pwm')">
-    <strong>PWM LED</strong>
-    <span>Brightness control</span>
-  </div>
+<div class="example-item" onclick="loadExample('buzzer')">
+  <strong>Buzzer</strong>
+  <span>Sound output</span>
+</div>
 
-  <div class="example-item" data-level="intermediate" onclick="loadExample('multi-led')">
-    <strong>Multiple LEDs</strong>
-    <span>Multiple outputs</span>
-  </div>
+</div>
 
-  <div class="example-item" data-level="intermediate" onclick="loadExample('analog')">
-    <strong>Analog Sensor</strong>
-    <span>analogRead()</span>
-  </div>
+<!-- ================= INTERMEDIATE ================= -->
+<div class="example-category" id="cat-intermediate">
 
-  <div class="example-item" data-level="intermediate" onclick="loadExample('joystick')">
-    <strong>Joystick</strong>
-    <span>Joystick</span>
-  </div>
+<h3>Intermediate</h3>
 
-  <div class="example-item" data-level="intermediate" onclick="loadExample('oled')">
-    <strong>Oled Display</strong>
-    <span>Oled 4-Pin Display</span>
-  </div>
+<div class="example-item" onclick="loadExample('pwm')">
+  <strong>PWM LED</strong>
+  <span>Brightness control</span>
+</div>
 
-  <h3>Advanced</h3>
-  <div class="example-item" data-level="advanced" onclick="loadExample('serial')">
-    <strong>Serial Monitor</strong>
-    <span>USB communication</span>
-  </div>
+<div class="example-item" onclick="loadExample('multi-led')">
+  <strong>Multiple LEDs</strong>
+  <span>Multiple outputs</span>
+</div>
 
-  <div class="example-item" data-level="advanced" onclick="loadExample('timer')">
-    <strong>Timers</strong>
-    <span>Non-blocking code</span>
-  </div>
+<div class="example-item" onclick="loadExample('analog')">
+  <strong>Analog Sensor</strong>
+  <span>analogRead()</span>
+</div>
+
+<div class="example-item" onclick="loadExample('joystick')">
+  <strong>Joystick</strong>
+  <span>Joystick module</span>
+</div>
+
+<div class="example-item" onclick="loadExample('oled')">
+  <strong>OLED Display</strong>
+  <span>I²C display</span>
+</div>
+
+</div>
+
+<!-- ================= ADVANCED ================= -->
+<div class="example-category" id="cat-advanced">
+
+<h3>Advanced</h3>
+
+<div class="example-item" onclick="loadExample('serial')">
+  <strong>Serial Monitor</strong>
+  <span>USB communication</span>
+</div>
+
+<div class="example-item" onclick="loadExample('timer')">
+  <strong>Timers</strong>
+  <span>millis() timing</span>
+</div>
+
+<div class="example-item" onclick="loadExample('interrupts')">
+  <strong>Interrupts</strong>
+  <span>External interrupt usage</span>
+</div>
+
+<div class="example-item" onclick="loadExample('eeprom')">
+  <strong>EEPROM Save</strong>
+  <span>Store data permanently</span>
+</div>
+
+<div class="example-item" onclick="loadExample('pwm-control')">
+  <strong>PWM Control</strong>
+  <span>Analog output control</span>
+</div>
+
+</div>
+
+<!-- ================= VOLTAGE ================= -->
+<div class="example-category" id="cat-voltage">
+
+<h3>Voltage Monitor</h3>
+
+<div class="example-item" onclick="loadExample('battery-monitor')">
+  <strong>Battery Monitor</strong>
+  <span>Voltage divider</span>
+</div>
+
+<div class="example-item" onclick="loadExample('usb-monitor')">
+  <strong>USB Voltage</strong>
+  <span>USB monitoring</span>
+</div>
+
+<div class="example-item" onclick="loadExample('solar-monitor')">
+  <strong>Solar Monitor</strong>
+  <span>Solar panel voltage</span>
+</div>
+
+<div class="example-item" onclick="loadExample('power-supply-test')">
+  <strong>Power Supply Test</strong>
+  <span>PSU voltage reading</span>
+</div>
+
+<div class="example-item" onclick="loadExample('low-voltage-alert')">
+  <strong>Low Voltage Alert</strong>
+  <span>Battery warning system</span>
+</div>
+
+</div>
+
+<!-- ================= TEST ================= -->
+<div class="example-category" id="cat-test">
+
+<h3>Test Circuits</h3>
+
+<div class="example-item" onclick="loadExample('led-test')">
+  <strong>LED Test</strong>
+  <span>LED testing</span>
+</div>
+
+<div class="example-item" onclick="loadExample('speaker-test')">
+  <strong>Speaker Test</strong>
+  <span>Audio test</span>
+</div>
+
+<div class="example-item" onclick="loadExample('button-test')">
+  <strong>Button Test</strong>
+  <span>Input testing</span>
+</div>
+
+<div class="example-item" onclick="loadExample('relay-test')">
+  <strong>Relay Test</strong>
+  <span>Relay switching</span>
+</div>
+
+<div class="example-item" onclick="loadExample('sensor-test')">
+  <strong>Sensor Test</strong>
+  <span>Basic sensor diagnostics</span>
+</div>
+
+</div>
 
 </aside>
 
@@ -335,7 +433,6 @@ void setup(){
   display.display();
 
 }
-
 void loop(){
 
 }
@@ -381,6 +478,381 @@ void loop(){
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 
   }
+
+}
+`
+},
+
+interrupts:{
+title:"Interrupts",
+text:"Use external interrupts.",
+filename:"interrupts",
+code:`
+volatile bool triggered = false;
+
+void blink(){
+
+  triggered = true;
+
+}
+
+void setup(){
+
+  pinMode(2, INPUT_PULLUP);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  attachInterrupt(digitalPinToInterrupt(2), blink, FALLING);
+
+}
+
+void loop(){
+
+  if(triggered){
+
+    triggered = false;
+
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+
+  }
+
+}
+`
+},
+
+eeprom:{
+title:"EEPROM Save",
+text:"Store values permanently.",
+filename:"eeprom",
+code:`
+#include <EEPROM.h>
+
+int address = 0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+  EEPROM.write(address, 123);
+
+  int value = EEPROM.read(address);
+
+  Serial.println(value);
+
+}
+
+void loop(){
+
+}
+`
+},
+
+"pwm-control":{
+title:"PWM Control",
+text:"Control brightness with PWM.",
+filename:"pwm-control",
+code:`
+int led = 9;
+
+void setup(){
+
+  pinMode(led, OUTPUT);
+
+}
+
+void loop(){
+
+  for(int i=0;i<255;i++){
+
+    analogWrite(led, i);
+
+    delay(5);
+
+  }
+
+  for(int i=255;i>0;i--){
+
+    analogWrite(led, i);
+
+    delay(5);
+
+  }
+
+}
+`
+},
+
+"battery-monitor":{
+title:"Battery Monitor",
+text:"Read battery voltage.",
+filename:"battery-monitor",
+code:`
+int pin = A0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+}
+
+void loop(){
+
+  int value = analogRead(pin);
+
+  float voltage = value * (5.0 / 1023.0);
+
+  Serial.println(voltage);
+
+  delay(1000);
+
+}
+`
+},
+
+"usb-monitor":{
+title:"USB Voltage",
+text:"Monitor USB voltage.",
+filename:"usb-monitor",
+code:`
+int usbPin = A0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+}
+
+void loop(){
+
+  int raw = analogRead(usbPin);
+
+  float voltage = raw * (5.0 / 1023.0);
+
+  Serial.println(voltage);
+
+  delay(500);
+
+}
+`
+},
+
+"solar-monitor":{
+title:"Solar Monitor",
+text:"Monitor solar panel voltage.",
+filename:"solar-monitor",
+code:`
+int solarPin = A0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+}
+
+void loop(){
+
+  int raw = analogRead(solarPin);
+
+  float voltage = raw * (5.0 / 1023.0);
+
+  Serial.print("Solar Voltage: ");
+
+  Serial.println(voltage);
+
+  delay(1000);
+
+}
+`
+},
+
+"power-supply-test":{
+title:"Power Supply Test",
+text:"Check PSU voltage.",
+filename:"power-supply-test",
+code:`
+int psuPin = A0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+}
+
+void loop(){
+
+  float voltage = analogRead(psuPin) * (5.0 / 1023.0);
+
+  Serial.print("PSU: ");
+
+  Serial.println(voltage);
+
+  delay(1000);
+
+}
+`
+},
+
+"low-voltage-alert":{
+title:"Low Voltage Alert",
+text:"Warn on low battery.",
+filename:"low-voltage-alert",
+code:`
+int batteryPin = A0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+
+}
+
+void loop(){
+
+  float voltage = analogRead(batteryPin) * (5.0 / 1023.0);
+
+  if(voltage < 3.0){
+
+    digitalWrite(LED_BUILTIN, HIGH);
+
+  }else{
+
+    digitalWrite(LED_BUILTIN, LOW);
+
+  }
+
+  delay(500);
+
+}
+`
+},
+
+"led-test":{
+title:"LED Test",
+text:"Basic LED blink test.",
+filename:"led-test",
+code:`
+void setup(){
+
+  pinMode(LED_BUILTIN, OUTPUT);
+
+}
+
+void loop(){
+
+  digitalWrite(LED_BUILTIN, HIGH);
+
+  delay(500);
+
+  digitalWrite(LED_BUILTIN, LOW);
+
+  delay(500);
+
+}
+`
+},
+
+"speaker-test":{
+title:"Speaker Test",
+text:"Play test tones.",
+filename:"speaker-test",
+code:`
+int speaker = 8;
+
+void setup(){
+
+}
+
+void loop(){
+
+  tone(speaker, 1000);
+
+  delay(500);
+
+  noTone(speaker);
+
+  delay(500);
+
+}
+`
+},
+
+"button-test":{
+title:"Button Test",
+text:"Test button input.",
+filename:"button-test",
+code:`
+int button = 2;
+
+void setup(){
+
+  Serial.begin(9600);
+
+  pinMode(button, INPUT_PULLUP);
+
+}
+
+void loop(){
+
+  if(digitalRead(button) == LOW){
+
+    Serial.println("Pressed");
+
+  }
+
+  delay(100);
+
+}
+`
+},
+
+"relay-test":{
+title:"Relay Test",
+text:"Switch relay on/off.",
+filename:"relay-test",
+code:`
+int relay = 7;
+
+void setup(){
+
+  pinMode(relay, OUTPUT);
+
+}
+
+void loop(){
+
+  digitalWrite(relay, HIGH);
+
+  delay(1000);
+
+  digitalWrite(relay, LOW);
+
+  delay(1000);
+
+}
+`
+},
+
+"sensor-test":{
+title:"Sensor Test",
+text:"Basic analog sensor test.",
+filename:"sensor-test",
+code:`
+int sensor = A0;
+
+void setup(){
+
+  Serial.begin(9600);
+
+}
+
+void loop(){
+
+  int value = analogRead(sensor);
+
+  Serial.println(value);
+
+  delay(500);
 
 }
 `
@@ -583,6 +1055,7 @@ onValue(usersRef, (snapshot) => {
 
 </body>
 </html>
+
 
 
 
