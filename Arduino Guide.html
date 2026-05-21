@@ -13,10 +13,9 @@
 
 <body>
 
-<header>  <div class="topbar">    <img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a>
-</div></div>    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="Arduino Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
-<div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a>
-</div></div>  </nav></header>
+<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="Arduino Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
+<div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
+<a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
 
 <main>
 
@@ -1536,6 +1535,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
     <ul>
       <li>🧰 Arduino IDE: <a class="next-link nl-blue nl-md nl-noneunderline" href="https://www.arduino.cc/en/software/" target="_blank" rel="noopener noreferrer">arduino.cc/en/software</a></li>
       <li>⌨️ Arduino CLI: <a class="next-link nl-blue nl-md nl-noneunderline" href="https://github.com/arduino/arduino-cli/releases" target="_blank" rel="noopener noreferrer">arduino-cli documentation</a></li>
+      <li> Or go to our <a class="next-link nl-blue nl-nounderline" href="Arduino%20Download.html#download">Arduino cli download</a> Page</li>
     </ul>
 
     <p><b>Why Arduino CLI / CMD is rarely mentioned:</b></p>
@@ -1606,120 +1606,15 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 </footer>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script src="js/main.js"></script>
-
-
-
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-
-import {
-  getDatabase,
-  ref,
-  onValue,
-  set,
-  onDisconnect
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
-
-import {
-  getAnalytics
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-
-/* ================= FIREBASE CONFIG ================= */
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCVq2PWrDMXTsG4GdceE4tUvTYeRYsul1Q",
-  authDomain: "arduino-guideg.firebaseapp.com",
-  databaseURL: "https://arduino-guideg-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "arduino-guideg",
-  storageBucket: "arduino-guideg.firebasestorage.app",
-  messagingSenderId: "146740789054",
-  appId: "1:146740789054:web:069f11c6f6aa314b5af66f",
-  measurementId: "G-V3ZB157P0R"
-};
-
-/* ================= INIT ================= */
-
-const app = initializeApp(firebaseConfig);
-
-getAnalytics(app);
-
-const db = getDatabase(app);
-
-/* ================= LIVE COUNTER ================= */
-
-const userId =
-  "user_" +
-  Math.random().toString(36).substring(2, 12);
-
-const userRef =
-  ref(db, "onlineUsers/" + userId);
-
-const usersRef =
-  ref(db, "onlineUsers");
-
-/* mark online */
-
-set(userRef, true);
-
-/* remove when leave */
-
-onDisconnect(userRef).remove();
-
-/* update count */
-
-onValue(usersRef, (snapshot) => {
-
-  const data = snapshot.val();
-
-  const count =
-    data
-    ? Object.keys(data).length
-    : 0;
-
-  document.getElementById("onlineCount").textContent =
-    count;
-
-});
-
-</script>
+<script type="module" src="js/Live.js"></script>
 <div class="live-counter" id="liveCounter">
   <span class="dot"></span>
   Online: <span id="onlineCount">0</span>
 </div>
 
-
-
 <div id="zoomOverlay" class="zoom-overlay">
   <img id="zoomImg">
 </div>
-
-<script>
-window.addEventListener("DOMContentLoaded", () => {
-
-  const overlay = document.getElementById("zoomOverlay");
-  const overlayImg = document.getElementById("zoomImg");
-
-  // OPEN (works for ALL images, even future ones)
-
-document.body.addEventListener("click", (e) => {
-
-  const box = e.target.closest("[data-tut]");
-  const img = e.target.closest("img");
-
-  if (box && img) {
-    overlayImg.src = img.src;
-    overlay.classList.add("active");
-  }
-});
-  // CLOSE
-  overlay.addEventListener("click", () => {
-    overlay.classList.remove("active");
-  });
-
-});
-</script>
 
 </body>
 </html>
