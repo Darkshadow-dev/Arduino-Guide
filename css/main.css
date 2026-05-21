@@ -778,7 +778,7 @@ nav a,
   margin-top:18px;
   margin-left:25%;
   padding:12px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background: var(--accent);
   color:white;
   border:none;
   border-radius:10px;
@@ -1197,49 +1197,137 @@ nav a,
 }
 
 
-/* Hardware tutorial box */
-.tutorial-box{
-  background:#0e1a24;
-  border:1px solid #2a4a63;
-  border-radius:12px;
-  padding:20px;
-  color:#dff1ff;
-  max-width:700px;
+/* ================= TUTORIAL PAGE ================= */
+
+.tutorial-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:24px;
+  margin-top:24px;
 }
 
-.tutorial-image{
+/* CARD */
+.project-card{
+  background:white;
+  border-radius:20px;
+  overflow:hidden;
+
+  border:1px solid #dbeeff;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.project-card:hover{
+  transform:translateY(-4px);
+
+  box-shadow:
+    0 14px 28px rgba(0,151,157,.14);
+}
+
+/* IMAGE */
+.project-card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+/* CONTENT */
+.project-card-content{
+  padding:18px;
+}
+
+.project-card h3{
+  color:var(--accent);
+  margin-bottom:10px;
+}
+
+.project-card p{
+  color:var(--text);
+  line-height:1.6;
+  margin-bottom:16px;
+}
+
+/* BUTTON */
+.project-card .btn{
+  width:100%;
   text-align:center;
-  margin-bottom:12px;
 }
 
-.tutorial-image img{
-  max-width:100%;
-  border-radius:10px;
-  transition:transform .3s ease;
-}
+/* HERO */
+.tutorial-hero{
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      var(--accent2)
+    );
 
-.tutorial-image img:hover{
-  transform:scale(1.5);
-}
+  border-radius:24px;
 
-.tutorial-controls{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:10px 0;
-}
+  padding:40px;
 
-.tutorial-controls button{
-  padding:6px 14px;
-  background:#1f6bff;
-  border:none;
   color:white;
-  border-radius:6px;
+
+  margin-bottom:32px;
+
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.16);
+}
+
+.tutorial-hero h1{
+  font-size:42px;
+  margin-bottom:14px;
+}
+
+.tutorial-hero p{
+  max-width:700px;
+  line-height:1.7;
+}
+
+/* FAQ */
+.faq-box{
+  background:white;
+
+  border-radius:16px;
+
+  padding:18px;
+
+  margin-bottom:14px;
+
+  box-shadow:
+    0 6px 14px rgba(0,0,0,.06);
+}
+
+.faq-box summary{
+  font-weight:700;
+  color:var(--accent);
   cursor:pointer;
 }
 
-.tutorial-controls button:hover{
-  background:#3a82ff;
+.faq-box p{
+  margin-top:12px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+  .tutorial-hero{
+    padding:24px;
+  }
+
+  .tutorial-hero h1{
+    font-size:32px;
+  }
+
+  .tutorial-grid{
+    grid-template-columns:1fr;
+  }
+
 }
 
 /*-------------___ Main page css ___-------------*/
@@ -3017,7 +3105,7 @@ footer{
 
   nav{
     overflow-x:auto;
-    overflow-y:visibe;
+    overflow-y:visible;
 
     flex-wrap:nowrap;
 
@@ -3392,6 +3480,184 @@ footer{
     width:78%;
   }
 
+}
+
+
+/* ========================= GLOBAL SAFETY ========================= */
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Prevent accidental overflow from all elements */
+* {
+  max-width: 100%;
+}
+
+/* ========================= NAV SCROLL (ONLY MOBILE) ========================= */
+
+@media (max-width: 900px) {
+
+  nav {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    gap: 8px;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  nav a,
+  .dropdown {
+    flex: 0 0 auto;
+  }
+}
+
+/* ========================= DROPDOWN FIX MOBILE ========================= */
+
+@media (max-width: 768px) {
+
+  .dropdown {
+    position: static;
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    right: 10px;
+
+    width: auto;
+    max-height: 70vh;
+
+    overflow-y: auto;
+
+    z-index: 99999;
+
+    border-radius: 16px;
+  }
+
+  .dropdown-menu a {
+    font-size: 15px;
+    padding: 14px;
+  }
+}
+
+/* ========================= MAIN LAYOUT FIX ========================= */
+
+@media (max-width: 900px) {
+
+  main {
+    width: 100%;
+    max-width: 100%;
+    padding: 110px 12px 90px;
+  }
+
+  .info-grid,
+  .tutorial-grid,
+  .lp-grid {
+    grid-template-columns: 1fr !important;
+    display: grid;
+  }
+
+  .quick-links {
+    flex-direction: column;
+  }
+
+  .quick-links a {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hardware-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .hardware-right {
+    position: static;
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* ========================= TABLE SAFETY ========================= */
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.compare {
+  min-width: 600px;
+}
+
+/* ========================= IMAGE / BOX SAFETY ========================= */
+
+img, video, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ========================= TOUCH IMPROVEMENTS ========================= */
+
+@media (hover: none) {
+
+  nav a,
+  .dropdown-btn,
+  .btn,
+  .btn-action,
+  .gallery-btn {
+    min-height: 44px;
+  }
+
+  nav a:hover,
+  .dropdown-btn:hover {
+    transform: none;
+  }
+}
+
+/* ========================= SMALL PHONE FIX ========================= */
+
+@media (max-width: 480px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  h1 { font-size: 24px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 16px; }
+
+  .start-box {
+    padding: 16px;
+  }
+}
+
+/* ========================= TABLET FIX ========================= */
+
+@media (min-width: 769px) and (max-width: 1100px) {
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-links a {
+    flex: 1 1 45%;
+  }
+
+  .hardware-layout {
+    gap: 24px;
+  }
 }
 
 

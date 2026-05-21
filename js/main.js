@@ -432,14 +432,15 @@ wireOverlay.addEventListener("click",(e)=>{
 
 });
 /*-------------- 3D model renderer--------------- */
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("uno3d"),
-  antialias: true,
-  alpha: true // <- this removes black background
-});
 
-renderer.setClearColor(0x000000, 0); // fully transparent
+//const renderer = new THREE.WebGLRenderer({
+  //canvas: document.getElementById("uno3d"),
+  //antialias: true,
+  //alpha: true // <- this removes black background
+//});
 
+//renderer.setClearColor(0x000000, 0); // fully transparent
+//It all works <---------------------------------With out it! <-------------------
 /*--------------___ Feedback functiones ___---------------------*/
 
 function toggleCustomType(){
@@ -494,24 +495,24 @@ function submitFeedback(){
   window.location.href = mailtoLink;
 }
 
-function downloadQRCode() {
-  fetch('QR-Code.png')
-    .then(response => response.blob())
-    .then(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ArduinoGuideQRCode.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    })
-    .catch(() => alert('Failed to download QR code'));
-}
 /*-------------------___ pdf download ___-------------------------------*/
 
 /* Go to Feedback.html for the script leave it there*/
+
+
+
+/*--------------------___ CLI download ___-----------------------------------*/
+function DownloadScript(){
+
+  const url = "https://github.com/user-attachments/files/28068452/Arduino-CLI-Help.py";
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "arduino_cli_installer.py";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
 
 /*-------------------___ Example copy function + download ___---------------------------*/
 
