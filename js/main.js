@@ -729,6 +729,24 @@ if(window.matchMedia("(hover:none)").matches){
   }
 
 }
+function checkOrientation(){
+
+  const mobile = window.innerWidth <= 900;
+
+  const portrait =
+    window.innerHeight > window.innerWidth;
+
+  document.getElementById("rotateWarning").style.display =
+    (mobile && portrait)
+      ? "flex"
+      : "none";
+}
+
+window.addEventListener("load", checkOrientation);
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
+
+
 
 
 

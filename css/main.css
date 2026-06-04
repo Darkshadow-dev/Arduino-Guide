@@ -2928,6 +2928,39 @@ footer{
   font-weight:600;
   box-shadow:0 -2px 6px rgba(0,0,0,.1);
 }
+#rotateWarning{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(4px);
+}
+
+.rotate-box{
+  max-width:320px;
+  padding:24px;
+  border-radius:16px;
+
+  background:white;
+
+  text-align:center;
+
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.rotate-box h2{
+  margin:0 0 10px;
+}
+
+.rotate-box p{
+  margin:0;
+}
 
 /* ================= LARGE DESKTOP / ULTRAWIDE ================= */
 @media (min-width: 1400px){
