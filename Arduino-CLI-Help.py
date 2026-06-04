@@ -6,6 +6,110 @@ import zipfile
 import shutil
 import platform
 import struct
+import tkinter as tk
+import subprocess
+import os
+
+class StatusPopup:
+    def __init__(self):
+        self.win = None
+
+    def close(self):
+        try:
+            if self.win and self.win.winfo_exists():
+                self.win.destroy()
+        except:
+            pass
+
+        self.win = None
+
+    def show_error(self, title, text):
+        self.show(title, "❌ " + text)
+
+    def show(self, title, text, done=False, cli_path=""):
+
+        self.close()
+
+        self.win = tk.Tk()
+        self.win.title(title)
+        self.win.resizable(False, False)
+
+        w = 420
+        h = 220 if done else 120
+
+        sw = self.win.winfo_screenwidth()
+        sh = self.win.winfo_screenheight()
+
+        x = sw - w - 10
+        y = sh - h - 50
+
+        self.win.geometry(f"{w}x{h}+{x}+{y}")
+        self.win.attributes("-topmost", True)
+
+        frame = tk.Frame(self.win)
+        frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        tk.Label(
+            frame,
+            text=text,
+            font=("Segoe UI", 10, "bold"),
+            justify="left",
+            wraplength=390
+        ).pack(anchor="w")
+
+        if done:
+
+            tk.Label(
+                frame,
+                text=f"CLI Location:\n{cli_path}",
+                justify="left",
+                wraplength=390
+            ).pack(anchor="w", pady=10)
+
+            btns = tk.Frame(frame)
+            btns.pack(fill="x")
+
+            def open_folder():
+                try:
+                    os.startfile(os.path.dirname(cli_path))
+                except Exception as e:
+                    self.show_error("Folder Error", str(e))
+
+            def open_cmd():
+                try:
+                    subprocess.Popen(
+                        f'cmd /K cd /d "{os.path.dirname(cli_path)}"',
+                        shell=True
+                    )
+                except Exception as e:
+                    self.show_error("CMD Error", str(e))
+
+            tk.Button(
+                btns,
+                text="Open Folder"
+            , command=open_folder).pack(side="left", padx=5)
+
+            tk.Button(
+                btns,
+                text="Open CMD"
+            , command=open_cmd).pack(side="left", padx=5)
+
+            tk.Button(
+                btns,
+                text="Close"
+            , command=self.close).pack(side="right", padx=5)
+
+        else:
+
+            tk.Button(
+                frame,
+                text="X",
+                command=self.close
+            ).pack(anchor="e")
+
+        self.win.update()
+
+popup = StatusPopup()
 
 CORE = "arduino:avr"
 BOARD = "arduino:avr:uno"
@@ -21,7 +125,18 @@ os.makedirs(SKETCH, exist_ok=True)
 # ERROR SYSTEM
 # =========================
 def fail(msg):
-    print("\n❌ ERROR:", msg)
+
+    print("\nERROR:", msg)
+
+    try:
+        popup.show_error(
+            "Arduino CLI Error",
+            msg
+        )
+
+    except:
+        pass
+
     sys.exit()
 
 def run(cmd):
@@ -90,14 +205,20 @@ cli = find_cli()
 # DOWNLOAD IF MISSING
 # =========================
 if not cli:
-
+    popup.show(
+        "Arduino CLI",
+        "Checking Arduino CLI..."
+    )
     print("\nCLI not found → downloading...")
 
     urllib.request.urlretrieve(URL, ARCHIVE)
 
     if not os.path.exists(ARCHIVE):
         fail("Download failed")
-
+    popup.show(
+        "Arduino CLI",
+        "Downloading Arduino CLI..."
+    )
     print("Extracting...")
 
     if FILE.endswith(".zip"):
@@ -129,7 +250,10 @@ print("✔ CLI OK:", version.splitlines()[0])
 # CORE CHECK
 # =========================
 print("\nChecking Arduino cores...")
-
+popup.show(
+    "Arduino CLI",
+    "Configuring Arduino Core..."
+)
 cores = run([cli, "core", "list"])
 
 if CORE not in cores:
@@ -194,6 +318,11 @@ for line in board_list.splitlines():
 # =========================
 # COMPILE
 # =========================
+popup.show(
+    "Compile Code",
+    "Press Enter in CMD to Compile..."
+    "Then re-run the script! if it fails (it will fail on first run)"
+)
 wait("\nPress ENTER to COMPILE...")
 
 print("\nCompiling...")
@@ -217,7 +346,10 @@ print("✔ Compile OK")
 # UPLOAD
 # =========================
 if port:
-
+    popup.show(
+        "Upload to Board",
+        "Press Enter in CMD to Upload to code..."
+    )
     wait(f"\nBoard found at {port}. Press ENTER to UPLOAD...")
 
     print("\nUploading...")
@@ -247,5 +379,13 @@ else:
 # =========================
 print("\n✔ SYSTEM READY")
 print("Everything OK")
+popup.show(
+    "Arduino CLI",
+    "DONE!",
+    done=True,
+    cli_path=cli
+)
+
 print("CLI location:", cli)
 wait("Press ENTER to exit...")
+

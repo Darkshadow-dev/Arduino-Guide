@@ -17,11 +17,175 @@
 <div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
 <a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
 <main>
+  <a class="lp-title next-link nl-nounderline" href="Arduino Tutorial.html#home" >Tutorials: </a>
+
+  <div class="lp-grid">
+
+    <div class="lp-card">
+      <button class="lp-btn" onclick="toggleLP(this)">Basic Tutorials</button>
+<div class="lp-content">
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#ide/cli-install">Install IDE/CLI</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#setup">Setup IDE/CLI</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#f-p">First project</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+</div>
+    </div>
+
+    <div class="lp-card">
+      <button class="lp-btn" onclick="toggleLP(this)">Code Tutorials</button>
+      <div class="lp-content">
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#blink">All Blink</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#mm">Multi with monitor</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+      </div>
+    </div>
+
+
+    <div class="lp-card">
+      <button class="lp-btn" onclick="toggleLP(this)">Hardware Tutorials</button>
+      <div class="lp-content">
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#Q-W">Quick Wiring</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+<div class="lp-item">
+  <a href="Arduino Tutorial.html#note">To be noted</a>
+  <span class="lp-check" onclick="toggleCheck(this)"></span>
+</div>
+      </div>
+    </div>
+  </div>
 
 <section id="home" class="page active">
 
-Nothing Placeholder
 
+<div style="height:5vh;"></div>
+<div class="info-card">
+  <h3>What You Will Learn</h3>
+  <ul>
+    <li>How Arduino digital and analog pins behave in real circuits</li>
+    <li>How code sends signals to control LEDs, sensors, and motors</li>
+    <li>How to build basic wiring setups step-by-step</li>
+    <li>How Serial, I²C, and SPI communication work in practice</li>
+  </ul>
+</div>
+
+<div style="height: 2vh"></div>
+
+<div class="info-card">
+  <h3>How This Tutorial Works</h3>
+  <ul>
+    <li>Open each lesson to learn one concept at a time</li>
+    <li>Follow step-by-step examples with code and wiring</li>
+    <li>Use interactive sections to understand pin behavior</li>
+    <li>Everything runs offline with no external tools required</li>
+  </ul>
+</div>
+
+<div style="height: 2vh"></div>
+
+<div class="info-card">
+  <h3>Who This Is For</h3>
+  <ul>
+    <li>Complete beginners starting with Arduino</li>
+    <li>Students learning electronics and programming basics</li>
+    <li>Hobby makers building first projects</li>
+    <li>Visual learners who prefer practical examples</li>
+  </ul>
+</div>
+
+<div style="height: 2vh"></div>
+
+<div class="info-card">
+  <h3>Important Notes</h3>
+  <ul>
+    <li>Focus is on understanding real hardware behavior</li>
+    <li>Skills learned apply to most microcontroller platforms</li>
+    <li>You can follow along even without physical Arduino hardware</li>
+  </ul>
+</div>
+</section>
+
+<section id="ide/cli-install" class="page">
+<h1> Arduino IDE/CLI Download</h1>
+<details><summary>IDE Download Tutorial</summary>
+      <li>🧰 Arduino IDE: <a class="next-link nl-blue nl-md nl-noneunderline" href="https://www.arduino.cc/en/software/" target="_blank" rel="noopener noreferrer">arduino.cc/en/software</a></li>
+
+<p>For IDE download click the link and scroll down till you see the Arduino IDE version and download button, then click download</p>
+<p>Looks like this:</p> <img src="Images/dl.png">
+</details>
+<div style="height:3vh"></div>
+<details><summary>CLI download Tutorial</summary>
+      <li>⌨️ Arduino CLI: <a class="next-link nl-blue nl-md nl-nounderline" href="https://github.com/arduino/arduino-cli/releases" target="_blank" rel="noopener noreferrer">arduino-cli documentation</a></li>
+<p>For CLI download click the link and scroll down till you see the Assets and show more (21) assets, then scroll down till it look same as the image then select your operating system and download the cli and set it up</p>
+<img src="Images/dc.png">
+<div style="height:3vh"></div>
+
+      <li>Or go to our <a class="next-link nl-blue nl-nounderline" href="Arduino%20Download.html#download">Arduino cli download</a> Page</li>
+      <li>To easy setup and download Arduino Command Line Interface (CLI)</p>
+</details>
+
+<div style="height: 2vh"></div>
+
+<div class="info-card">
+  <h3>About This Tutorial</h3>
+  <ul>
+    <li>Learn where to safely download the official Arduino IDE and Arduino CLI</li>
+    <li>Follow step-by-step instructions with screenshots for each download page</li>
+    <li>Understand the difference between the graphical IDE and the command-line CLI</li>
+    <li>Choose the correct download for your operating system</li>
+    <li>Prepare your computer for future Arduino programming tutorials</li>
+  </ul>
+
+</section>
+
+<section id="setup" class="page">
+
+
+
+</section>
+
+<section id="f-p" class="page">
+
+
+
+</section>
+
+<section id="blink" class="page">
+
+
+
+</section>
+
+<section id="mm" class="page">
+
+
+
+</section>
+
+<section id="Q-W" class="page">
+
+
+
+</section>
+
+<section id="note" class="page">
+
+
+</section>
 </main>
 
 <footer>
@@ -32,3 +196,4 @@ Arduino Guide Ⓖ 2026
 
 </body>
 </html>
+
