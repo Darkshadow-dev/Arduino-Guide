@@ -431,6 +431,8 @@ wireOverlay.addEventListener("click",(e)=>{
   }
 
 });
+
+
 /*-------------- 3D model renderer--------------- */
 
 //const renderer = new THREE.WebGLRenderer({
@@ -504,7 +506,7 @@ function submitFeedback(){
 /*--------------------___ CLI download ___-----------------------------------*/
 function DownloadScript(){
 
-  const url = "https://github.com/user-attachments/files/28068452/Arduino-CLI-Help.py";
+  const url = "https://github.com/user-attachments/files/28520518/Arduino-CLI-Help.py";
 
   const a = document.createElement("a");
   a.href = url;
@@ -727,6 +729,7 @@ if(window.matchMedia("(hover:none)").matches){
   }
 
 }
+
 
 
 

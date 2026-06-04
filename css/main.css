@@ -481,7 +481,7 @@ nav a:active{
 }
 
 /* MOBILE */
-@media(max-width:900px){
+@media(max-width:899px){
 
   .mini-nav{
     gap:14px;
@@ -916,36 +916,142 @@ nav a,
 }
 
 
-
-/* ===== NEW WIRING GALLERY CARD ===== */
-/* ===== WIRING CARD ===== */
+/* ============================================== WIRING CARD ============================================== */
 
 .wiring-card{
-  background:#0e1a24;
-  border:1px solid #2a4a63;
-  border-radius:14px;
-  padding:14px;
-  color:#dff1ff;
-  margin-bottom:14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--panel),
+      #ffffff
+    );
+
+  border:2px solid #b9e3ff;
+
+  border-radius:18px;
+
+  padding:18px;
+
+  color:var(--text);
+
+  margin-bottom:20px;
+
+  box-shadow:
+    0 10px 28px rgba(0,151,157,.10),
+    0 0 0 1px rgba(255,255,255,.7) inset;
+
+  overflow:hidden;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
 }
+
+.wiring-card:hover{
+
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 14px 32px rgba(0,151,157,.14),
+    0 0 0 1px rgba(255,255,255,.8) inset;
+}
+
+/* ============================================== SUMMARY ============================================= */
 
 .wiring-card summary{
+
   cursor:pointer;
-  font-weight:bold;
-  font-size:17px;
+
+  font-weight:700;
+  font-size:18px;
+
+  color:var(--accent);
+
+  padding:12px 16px;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #dff5ff,
+      #ecfff5
+    );
+
+  border:1px solid #b8e9ff;
+
+  list-style:none;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  transition:
+    background .15s ease,
+    transform .15s ease;
 }
 
-/* ===== GALLERY ===== */
+/* REMOVE DEFAULT ARROW */
+
+.wiring-card summary::-webkit-details-marker{
+  display:none;
+}
+
+/* CUSTOM ICON */
+
+.wiring-card summary::after{
+
+  content:"+";
+
+  font-size:24px;
+  font-weight:bold;
+
+  color:var(--accent2);
+
+  transition:.2s;
+}
+
+.wiring-card[open] summary::after{
+
+  content:"−";
+
+  transform:rotate(180deg);
+}
+
+/* HOVER */
+
+.wiring-card summary:hover{
+
+  background:
+    linear-gradient(
+      90deg,
+      #d3f1ff,
+      #dfffea
+    );
+}
+
+/* ============================================== GALLERY ============================================== */
 
 .wire-gallery{
   position:relative;
-  margin-top:14px;
+  margin-top:18px;
 }
 
 .wire-box{
-  background:#e5e7eb;
-  border-radius:12px;
-  padding:14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #f2fbff
+    );
+
+  border:2px solid #c8ebff;
+
+  border-radius:18px;
+
+  padding:16px;
 
   width:420px;
   height:420px;
@@ -958,11 +1064,12 @@ nav a,
 
   position:relative;
   overflow:hidden;
+
+  box-shadow:
+    0 10px 24px rgba(0,151,157,.10);
 }
-
-/* ===== SLIDES ===== */
-
 .wire-slide{
+
   position:absolute;
   inset:14px;
 
@@ -976,18 +1083,19 @@ nav a,
   display:flex;
 }
 
-/* ===== NORMAL IMAGES ===== */
-
 .wire-img{
+
   width:100%;
   height:100%;
+
   object-fit:contain;
 
-  border-radius:10px;
-  cursor:zoom-in;
-}
+  border-radius:12px;
 
-/* ===== ANIMATION ===== */
+  cursor:zoom-in;
+
+  background:white;
+}
 
 .wire-anim{
   position:relative;
@@ -997,6 +1105,7 @@ nav a,
 }
 
 .wire-frame{
+
   position:absolute;
   inset:0;
 
@@ -1005,7 +1114,7 @@ nav a,
 
   object-fit:contain;
 
-  border-radius:10px;
+  border-radius:12px;
 
   display:none;
 
@@ -1016,43 +1125,93 @@ nav a,
   display:block;
 }
 
-/* ===== BUTTONS ===== */
+.gallery-btn,
+.zoom-gallery-btn{
 
-.gallery-btn{
-  position:absolute;
-  top:50%;
-  transform:translateY(-1px);
-
-  width:38px;
-  height:38px;
+  width:52px;
+  height:52px;
 
   border:none;
   border-radius:50%;
 
-  background:#111c;
-  color:white;
+  background:
+    linear-gradient(
+      145deg,
+      var(--panel),
+      #ffffff
+    );
 
-  font-size:20px;
+  color:var(--accent);
+
+  font-size:30px;
+  font-weight:bold;
+
   cursor:pointer;
 
-  z-index:50;
+  transition:
+    transform .15s,
+    box-shadow .15s,
+    background .15s;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  box-shadow:
+    0 6px 18px rgba(0,151,157,.14),
+    0 0 0 2px #cdeeff;
 }
 
+/* HOVER */
+
+.gallery-btn:hover,
+.zoom-gallery-btn:hover{
+
+  background:
+    linear-gradient(
+      145deg,
+      #dff6ff,
+      #ecfff5
+    );
+
+  color:var(--accent2);
+
+  transform:scale(1.08);
+}
+
+/* CLICK */
+
+.gallery-btn:active,
+.zoom-gallery-btn:active{
+  transform:scale(.94);
+}
+
+/* POSITION */
+
 .gallery-prev{
+  position:absolute;
   left:10px;
+  top:50%;
+  transform:translateY(-5%);
 }
 
 .gallery-next{
+  position:absolute;
   right:10px;
+  top:50%;
+  transform:translateY(-5%);
 }
 
-/* ========================================= ZOOM OVERLAY ========================================= */
+/* ============================================== OVERLAY ============================================== */
 
 .wire-overlay{
+
   position:fixed;
   inset:0;
 
-  background:rgba(0,0,0,.88);
+  background:rgba(233,244,255,.94);
+
+  backdrop-filter:blur(6px);
 
   display:flex;
   justify-content:center;
@@ -1071,22 +1230,27 @@ nav a,
   pointer-events:auto;
 }
 
-/* ========================================= NORMAL IMAGE ========================================= */
+/* ============================================== ZOOM IMAGE ============================================== */
 
 #wireZoomImg{
+
   width:70vw;
   height:70vh;
 
   object-fit:contain;
 
-  border-radius:14px;
+  border-radius:18px;
 
   display:none;
+
+  background:white;
+
+  box-shadow:
+    0 14px 34px rgba(0,151,157,.18);
 }
 
-/* ========================================= ZOOM ANIMATION ========================================= */
-
 .wire-zoom-anim{
+
   position:relative;
 
   width:70vw;
@@ -1096,6 +1260,7 @@ nav a,
 }
 
 .wire-zoom-frame{
+
   position:absolute;
   inset:0;
 
@@ -1106,64 +1271,8 @@ nav a,
 
   display:none;
 
-  border-radius:14px;
+  border-radius:18px;
 }
-
-/* ========================================= GALLERY BUTTONS ========================================= */
-
-.gallery-btn,
-.zoom-gallery-btn{
-
-  width:52px;
-  height:52px;
-
-  border:none;
-  border-radius:50%;
-
-  background:#132433;
-  color:#dff1ff;
-
-  font-size:32px;
-  font-weight:bold;
-
-  cursor:pointer;
-
-  transition:
-    transform .15s,
-    background .15s,
-    box-shadow .15s;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-
-  box-shadow:
-    0 0 0 1px #2a4a63,
-    0 6px 20px rgba(0,0,0,.35);
-}
-
-/* HOVER */
-
-.gallery-btn:hover,
-.zoom-gallery-btn:hover{
-
-  background:#1f6bff;
-
-  transform:scale(1.08);
-
-  box-shadow:
-    0 0 0 1px #4fa3ff,
-    0 8px 24px rgba(31,107,255,.35);
-}
-
-/* CLICK */
-
-.gallery-btn:active,
-.zoom-gallery-btn:active{
-  transform:scale(.96);
-}
-
-/* ========================================= OVERLAY BUTTON POSITIONS ========================================= */
 
 .zoom-prev{
   position:absolute;
@@ -1175,160 +1284,38 @@ nav a,
   right:30px;
 }
 
-/* ========================================= SMALL SCREENS ========================================= */
+/* ============================================= MOBILE ============================================== */
 
 @media(max-width:700px){
 
+  .wire-box{
+
+    width:100%;
+    height:320px;
+  }
+
   .gallery-btn,
   .zoom-gallery-btn{
+
     width:44px;
     height:44px;
-    font-size:26px;
+
+    font-size:24px;
   }
 
-  .zoom-prev{
-    left:10px;
-  }
+  #wireZoomImg,
+  .wire-zoom-anim{
 
-  .zoom-next{
-    right:10px;
+    width:92vw;
+    height:70vh;
   }
-
 }
+
 
 
 /* ================= TUTORIAL PAGE ================= */
 
-.tutorial-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:24px;
-  margin-top:24px;
-}
 
-/* CARD */
-.project-card{
-  background:white;
-  border-radius:20px;
-  overflow:hidden;
-
-  border:1px solid #dbeeff;
-
-  box-shadow:
-    0 8px 20px rgba(0,0,0,.08);
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease;
-}
-
-.project-card:hover{
-  transform:translateY(-4px);
-
-  box-shadow:
-    0 14px 28px rgba(0,151,157,.14);
-}
-
-/* IMAGE */
-.project-card img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
-/* CONTENT */
-.project-card-content{
-  padding:18px;
-}
-
-.project-card h3{
-  color:var(--accent);
-  margin-bottom:10px;
-}
-
-.project-card p{
-  color:var(--text);
-  line-height:1.6;
-  margin-bottom:16px;
-}
-
-/* BUTTON */
-.project-card .btn{
-  width:100%;
-  text-align:center;
-}
-
-/* HERO */
-.tutorial-hero{
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent),
-      var(--accent2)
-    );
-
-  border-radius:24px;
-
-  padding:40px;
-
-  color:white;
-
-  margin-bottom:32px;
-
-  box-shadow:
-    0 12px 28px rgba(0,0,0,.16);
-}
-
-.tutorial-hero h1{
-  font-size:42px;
-  margin-bottom:14px;
-}
-
-.tutorial-hero p{
-  max-width:700px;
-  line-height:1.7;
-}
-
-/* FAQ */
-.faq-box{
-  background:white;
-
-  border-radius:16px;
-
-  padding:18px;
-
-  margin-bottom:14px;
-
-  box-shadow:
-    0 6px 14px rgba(0,0,0,.06);
-}
-
-.faq-box summary{
-  font-weight:700;
-  color:var(--accent);
-  cursor:pointer;
-}
-
-.faq-box p{
-  margin-top:12px;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-
-  .tutorial-hero{
-    padding:24px;
-  }
-
-  .tutorial-hero h1{
-    font-size:32px;
-  }
-
-  .tutorial-grid{
-    grid-template-columns:1fr;
-  }
-
-}
 
 /*-------------___ Main page css ___-------------*/
 
@@ -1517,13 +1504,23 @@ nav a,
   display:grid;
 
   grid-template-columns:
-    repeat(auto-fit,minmax(260px,320px));
+    repeat(2,minmax(260px,320px));
 
   justify-content:center;
 
   gap:24px;
 
   margin:42px 0;
+}
+
+@media(max-width:600px){
+
+  .info-grid{
+
+    grid-template-columns:minmax(260px,320px);
+
+  }
+
 }
 
 /* cards */
@@ -1671,6 +1668,18 @@ nav a,
   padding-left:18px;
 }
 
+.lp-title{
+  width:100%;
+  text-align:center;
+  font-size:32px;
+  font-weight:800;
+  margin:30px 0 20px 0;
+  color:#111;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 /* ========================= CHECKBOX ========================= */
 
 .lp-check{
@@ -1931,7 +1940,7 @@ nav a,
 
 /* MOBILE */
 
-@media(max-width:900px){
+@media(max-width:899px){
 
   .compare{
     min-width:680px;
@@ -2807,7 +2816,7 @@ textarea {
 
 /* ========================= MOBILE ========================= */
 
-@media(max-width:900px){
+@media(max-width:899px){
 
   .tutorial-hero,
   .wiring-layout{
@@ -2956,10 +2965,6 @@ footer{
     margin:auto;
   }
 
-  .info-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
-
   .spec-grid{
     grid-template-columns:1fr 2fr;
   }
@@ -2997,25 +3002,6 @@ footer{
   nav::-webkit-scrollbar{
     height:0;
   }
-
-  /* bigger touch targets */
-  nav a,
-  .dropdown-btn,
-  .btn,
-  .btn-action,
-  .gallery-btn{
-    min-height:44px;
-  }
-
-  /* disable hover jump on touch */
-  nav a:hover,
-  .dropdown-btn:hover,
-  .quick-links a:hover,
-  .info-card:hover,
-  .lp-card:hover,
-  .example-item:hover{
-    transform:none;
-  }
 }
 
 /* ================================================================================ MOBILE ==================================================================================== */
@@ -3029,38 +3015,6 @@ footer{
 
   nav{
     overflow:visible;
-  }
-
-  .dropdown{
-    position:static;
-  }
-
-  .dropdown-menu{
-
-    position:fixed;
-
-    top:70px; /* below header */
-    left:12px;
-    right:12px;
-
-    width:auto;
-    max-height:70vh;
-
-    overflow-y:auto;
-
-    z-index:99999;
-
-    border-radius:18px;
-
-    box-shadow:
-      0 14px 34px rgba(0,0,0,.18),
-      0 0 20px rgba(0,151,157,.12);
-  }
-
-  /* optional better spacing */
-  .dropdown-menu a{
-    padding:14px 16px;
-    font-size:15px;
   }
 
   html,
@@ -3116,16 +3070,6 @@ footer{
     padding-bottom:4px;
 
     -webkit-overflow-scrolling:touch;
-  }
-
-  nav a,
-  .dropdown{
-    flex:0 0 auto;
-  }
-
-  .dropdown{
-    width:auto;
-    min-width:140px;
   }
 
   .mini-nav{
@@ -3420,11 +3364,8 @@ footer{
 
 }
 
-/* ========================================================================== MOBILE JS SUPPORT ============================================================================== */
-
-
 /* ======================= 💻 SMALL LAPTOPS (≤900px)======================= */
-@media (max-width: 900px){
+@media (max-width: 899px){
 
   .mini-nav{
     right:20%;
@@ -3497,7 +3438,7 @@ html, body {
 
 /* ========================= NAV SCROLL (ONLY MOBILE) ========================= */
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
 
   nav {
     display: flex;
@@ -3521,40 +3462,9 @@ html, body {
   }
 }
 
-/* ========================= DROPDOWN FIX MOBILE ========================= */
-
-@media (max-width: 768px) {
-
-  .dropdown {
-    position: static;
-    width: 100%;
-  }
-
-  .dropdown-menu {
-    position: fixed;
-    top: 70px;
-    left: 10px;
-    right: 10px;
-
-    width: auto;
-    max-height: 70vh;
-
-    overflow-y: auto;
-
-    z-index: 99999;
-
-    border-radius: 16px;
-  }
-
-  .dropdown-menu a {
-    font-size: 15px;
-    padding: 14px;
-  }
-}
-
 /* ========================= MAIN LAYOUT FIX ========================= */
 
-@media (max-width: 900px) {
+@media (max-width: 899px) {
 
   main {
     width: 100%;
@@ -3658,6 +3568,103 @@ img, video, canvas {
   .hardware-layout {
     gap: 24px;
   }
+}
+
+
+/* ================= DROPDOWNS ================= */
+
+.dropdown{
+  position:relative;
+}
+
+.dropdown-menu{
+
+  position:absolute;
+
+  top:100%;
+  left:0;
+
+  min-width:220px;
+  max-width:min(90vw,400px);
+
+  max-height:70vh;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  z-index:99999;
+}
+
+/* MOBILE + TABLETS */
+
+@media (max-width:900px){
+
+  .dropdown{
+    position:static;
+  }
+
+  .dropdown-menu{
+
+    position:fixed;
+
+    top:80px;
+    left:10px;
+    right:10px;
+
+    width:auto;
+    max-width:none;
+
+    max-height:70vh;
+
+    overflow-y:auto;
+
+    border-radius:16px;
+
+    z-index:999999;
+  }
+
+}
+@media (max-width:899px) and (orientation:landscape){
+
+  main{
+    padding-top:90px;
+  }
+
+  .dropdown-menu{
+    max-height:55vh;
+  }
+
+  .wire-box{
+    min-height:220px;
+  }
+
+}
+
+/* ========================= LAPTOP DROPDOWN FIX (900px–1400px) ========================= */
+@media (min-width: 899px) and (max-width: 1400px){
+
+  .dropdown{
+    position: relative;
+  }
+
+  .dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    min-width: 220px;
+    max-width: 360px;
+
+    max-height: 60vh;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    z-index: 999999;
+
+    display: block;
+  }
+
 }
 
 
