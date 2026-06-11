@@ -13,7 +13,7 @@
 
 <body>
 
-<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="Arduino Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
+<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
 <div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
 <a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
 <div id="rotateWarning">
@@ -160,36 +160,341 @@
 
 <section id="setup" class="page">
 
+<h1>IDE / CLI Setup</h1>
 
+<details>
+<summary>Arduino IDE Setup</summary>
+
+<li>🧰 Open Arduino IDE after installation</li>
+<li>Go to <b>File → Preferences</b></li>
+<li>Paste board manager URL if needed (ESP32 / ESP8266 etc.)</li>
+<li>Go to <b>Tools → Board</b> and select your board</li>
+<li>Go to <b>Tools → Port</b> and select USB port</li>
+
+<p>Now your IDE is ready to upload code.</p>
+
+</details>
+
+<div style="height:3vh"></div>
+
+<details>
+<summary>Arduino CLI Setup</summary>
+
+<li>⌨️ Open terminal / CMD</li>
+<li>Run: <code>arduino-cli version</code></li>
+<li>Install core: <code>arduino-cli core update-index</code></li>
+<li>Install board: <code>arduino-cli core install arduino:avr</code></li>
+<li>Check device: <code>arduino-cli board list</code></li>
+
+<p>Now CLI is ready for compiling and uploading.</p>
+
+</details>
+
+<div style="height: 2vh"></div>
+
+<div class="info-card">
+<h3>Setup Summary</h3>
+<ul>
+<li>IDE = visual setup (click-based)</li>
+<li>CLI = terminal-based control</li>
+<li>Both need board + port configured</li>
+</ul>
+</div>
 
 </section>
 
 <section id="f-p" class="page">
 
+<h1>First Arduino Project</h1>
 
+<div class="info-card">
+<h3>Before You Start</h3>
+<ul>
+<li>Make sure Arduino IDE or CLI is installed</li>
+<li>Connect your Arduino board with USB cable</li>
+<li>Check that drivers are installed (if needed)</li>
+</ul>
+</div>
+
+<div style="height:2vh"></div>
+
+<details>
+<summary>Step 1: Prepare Board (IDE)</summary>
+
+<li>Open Arduino IDE</li>
+<li>Go to <b>Tools → Board</b> → select your board (e.g. Arduino Uno)</li>
+<li>Go to <b>Tools → Port</b> → select USB port</li>
+
+<p>If port is missing, reconnect USB or install drivers.</p>
+
+</details>
+
+<details>
+<summary>Step 1: Prepare Board (CLI)</summary>
+
+<li>Open CMD / Terminal</li>
+<li>Run: <code>arduino-cli board list</code></li>
+<li>Confirm your board appears in the list</li>
+<li>If not, reconnect USB cable</li>
+
+<p>Then install board core if needed:</p>
+
+<pre>
+arduino-cli core update-index
+arduino-cli core install arduino:avr
+</pre>
+
+</details>
+
+<div style="height:2vh"></div>
+
+<details>
+<summary>Step 2: Wiring (LED Setup)</summary>
+
+<li>Connect LED long leg → Pin 13</li>
+<li>Connect LED short leg → 220Ω resistor</li>
+<li>Resistor → GND (ground pin)</li>
+
+<p>This prepares hardware for testing.</p>
+
+</details>
+
+<div style="height:2vh"></div>
+
+<details>
+<summary>Step 3: Write Code (IDE)</summary>
+
+<li>In Arduino IDE click <b>New Sketch</b></li>
+<li>Delete default code</li>
+<li>Paste this code:</li>
+
+<pre>
+void setup() {
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}
+</pre>
+
+</details>
+
+<details>
+<summary>Step 3: Write Code (CLI)</summary>
+
+<li>Create file: <code>blink.ino</code></li>
+
+<p>Paste same code into file:</p>
+
+<pre>
+void setup() {
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}
+</pre>
+
+</details>
+
+<div style="height:2vh"></div>
+
+<details>
+<summary>Step 4: Upload Code</summary>
+
+<li><b>IDE:</b> Click Upload button (→ arrow icon)</li>
+
+<li><b>CLI:</b> Run commands:</li>
+
+<pre>
+arduino-cli compile --fqbn arduino:avr:uno blink
+arduino-cli upload -p COM3 --fqbn arduino:avr:uno blink
+</pre>
+
+<p>(Replace COM3 with your actual port)</p>
+
+</details>
+
+<div style="height:2vh"></div>
+
+<details>
+<summary>Step 5: Test Result</summary>
+
+<li>LED should turn ON for 1 second</li>
+<li>Then OFF for 1 second</li>
+<li>If nothing happens:</li>
+
+<ul>
+  <li>Check wiring direction of LED</li>
+  <li>Check board port selection</li>
+  <li>Try different USB cable</li>
+</ul>
+
+</details>
+
+<div style="height:2vh"></div>
+
+<div class="info-card">
+<h3>What You Learned</h3>
+<ul>
+<li>How to prepare IDE and CLI</li>
+<li>How Arduino code structure works</li>
+<li>How upload process actually runs</li>
+<li>How to test and debug hardware</li>
+</ul>
+</div>
 
 </section>
 
 <section id="blink" class="page">
 
+<h1>Advanced Blink</h1>
 
+<details>
+<summary>Custom Blink Speed</summary>
+
+<p>Change delay values to control speed:</p>
+
+<pre>
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(200);
+  digitalWrite(13, LOW);
+  delay(200);
+}
+</pre>
+
+</details>
+
+<details>
+<summary>Multiple LEDs Blink</summary>
+
+<p>Connect LEDs to pins 8, 9, 10</p>
+
+<pre>
+void setup() {
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(8, HIGH);
+  digitalWrite(9, LOW);
+  digitalWrite(10, HIGH);
+  delay(500);
+}
+</pre>
+
+</details>
 
 </section>
 
 <section id="mm" class="page">
 
+<h1>Serial Monitor Basics</h1>
 
+<details>
+<summary>First Serial Output</summary>
+
+<pre>
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  Serial.println("Hello Arduino");
+  delay(1000);
+}
+</pre>
+
+<p>Open Serial Monitor (Ctrl + Shift + M)</p>
+
+</details>
+
+<details>
+<summary>Sensor Simulation Output</summary>
+
+<pre>
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int value = analogRead(A0);
+  Serial.println(value);
+  delay(500);
+}
+</pre>
+
+</details>
 
 </section>
 
 <section id="Q-W" class="page">
 
+<h1>Quick Wiring Guide</h1>
 
+<details>
+<summary>Basic LED Wiring</summary>
+
+<li>LED long leg → Pin 13</li>
+<li>LED short leg → GND</li>
+<li>Add 220Ω resistor in series</li>
+
+</details>
+
+<details>
+<summary>Button Wiring</summary>
+
+<li>One side → 5V</li>
+<li>Other side → Pin 2</li>
+<li>Use 10kΩ pull-down resistor</li>
+
+</details>
+
+<details>
+<summary>Sensor Wiring</summary>
+
+<li>VCC → 5V</li>
+<li>GND → GND</li>
+<li>OUT → Analog pin (A0)</li>
+
+</details>
 
 </section>
 
 <section id="note" class="page">
 
+<h1>Important Notes</h1>
+
+<div class="info-card">
+<h3>Before You Continue</h3>
+<ul>
+<li>Always double-check wiring before powering board</li>
+<li>Wrong wiring can damage components</li>
+<li>Use resistors for LEDs and sensors</li>
+</ul>
+</div>
+
+<div style="height:2vh"></div>
+
+<div class="info-card">
+<h3>Programming Tips</h3>
+<ul>
+<li>Start with simple code first</li>
+<li>Test one component at a time</li>
+<li>Use Serial Monitor for debugging</li>
+</ul>
+</div>
 
 </section>
 </main>
@@ -202,5 +507,6 @@ Arduino Guide Ⓖ 2026
 
 </body>
 </html>
+
 
 
