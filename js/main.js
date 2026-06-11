@@ -506,7 +506,7 @@ function submitFeedback(){
 /*--------------------___ CLI download ___-----------------------------------*/
 function DownloadScript(){
 
-  const url = "https://github.com/user-attachments/files/28520518/Arduino-CLI-Help.py";
+  const url = "https://github.com/user-attachments/files/28847876/Arduino-CLI-Help.py";
 
   const a = document.createElement("a");
   a.href = url;
@@ -745,6 +745,7 @@ function checkOrientation(){
 window.addEventListener("load", checkOrientation);
 window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);
+
 
 
 
