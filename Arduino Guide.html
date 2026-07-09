@@ -13,8 +13,10 @@
 
 <body>
 
-<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
-<div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
+<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a>
+<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span class="dropdown-title">Board</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a> </div></div>
+<a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a>
+<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span>Extended</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
 <a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
 <div id="rotateWarning">
   <div class="rotate-box">
@@ -938,7 +940,12 @@
 
 </details>
 
-<p> Intrested in more visual hardware examples visit ---> <a class="next-link nl-blue nl-nounderline" href="hardwarevi-more.html#home">Visual examples</a> 
+<p>
+  Interested in more visual hardware examples? Visit →
+  <a class="btn" href="hardwarevi-more.html#home">
+    Visual Examples
+  </a>
+</p>
 </div>
 <!-- ZOOM -->
 <div id="wireOverlay" class="wire-overlay">
@@ -990,7 +997,10 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:89%; width:12px; height:12px; cursor:pointer;"
         title="0 (RX) Pin"
-        onclick="showPinInfo('0 (RX)  Digital / Serial', 'Used for USB serial communication. Receives data from computer. Avoid using when Serial Monitor is active.')"
+        onclick="showPinInfo('0 (RX) Digital / Serial',[
+'Receives serial data from the computer or another device.',
+'Common Components: Bluetooth Module, GPS Module, ESP8266, Serial Devices.',
+])"
       ></div>
       <div
         class="pin"
@@ -998,7 +1008,10 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:86%; width:12px; height:12px; cursor:pointer;"
         title="1 (TX) Pin"
-        onclick="showPinInfo('1 (TX)  Digital / Serial', 'Used for USB serial communication. Sends data to computer. Avoid using when Serial Monitor is active. ')"
+        onclick="showPinInfo('1 (TX) Digital / Serial',[
+'Sends serial data to the computer or another device.',
+'Common Components: Bluetooth Module, GPS Module, ESP8266, Serial Devices.',
+])"
       ></div>
       <div
         class="pin"
@@ -1006,7 +1019,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:83%; width:12px; height:12px; cursor:pointer;"
         title="2 Digital Pin"
-        onclick="showPinInfo('2	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
+        onclick="showPinInfo('2 Digital Pin',[
+'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
+'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
 	<div
         class="pin"
@@ -1014,7 +1032,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:80%; width:12px; height:12px; cursor:pointer;"
         title="3 Digital Pin"
-        onclick="showPinInfo('3	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
+        onclick="showPinInfo('3 Digital / PWM Pin',[
+'Supports PWM (~) for variable output such as brightness or speed.',
+'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1022,7 +1045,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:77%; width:12px; height:12px; cursor:pointer;"
         title="4 Digital Pin"
-        onclick="showPinInfo('4	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
+        onclick="showPinInfo('4 Digital Pin',[
+'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
+'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1030,7 +1058,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:74%; width:12px; height:12px; cursor:pointer;"
         title="5 Digital / PWM Pin"
-        onclick="showPinInfo('5	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
+        onclick="showPinInfo('5 Digital / PWM Pin',[
+'Supports PWM (~) for variable output such as brightness or speed.',
+'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
 	<div
         class="pin"
@@ -1038,7 +1071,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:71%; width:12px; height:12px; cursor:pointer;"
         title="6 Digital / PWM Pin"
-        onclick="showPinInfo('6	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
+        onclick="showPinInfo('6 Digital / PWM Pin',[
+'Supports PWM (~) for variable output such as brightness or speed.',
+'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1046,7 +1084,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:68%; width:12px; height:12px; cursor:pointer;"
         title="7 Digital Pin"
-        onclick="showPinInfo('7	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
+        onclick="showPinInfo('7 Digital Pin',[
+'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
+'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1054,7 +1097,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:62%; width:12px; height:12px; cursor:pointer;"
         title="8 Digital Pin"
-        onclick="showPinInfo('8	Digital', 'Normal digital I/O. Can be INPUT or OUTPUT. Reads HIGH or LOW. Used for buttons, LEDs, relays, logic signals.')"
+        onclick="showPinInfo('8 Digital Pin',[
+'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
+'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
 	<div
         class="pin"
@@ -1062,7 +1110,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:59%; width:12px; height:12px; cursor:pointer;"
         title="9 Digital / PWM Pin"
-        onclick="showPinInfo('9	Digital / PWM', 'Supports PWM (~). Used to control brightness or speed. PWM simulates analog output (0–255). Common for LEDs and motor drivers.')"
+        onclick="showPinInfo('9 Digital / PWM Pin',[
+'Supports PWM (~) for variable output such as brightness or speed.',
+'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1070,7 +1123,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:56%; width:12px; height:12px; cursor:pointer;"
         title="10 Digital / PWM /SPI Pin"
-        onclick="showPinInfo('10 Digital / PWM / SPI (SS)', 'PWM capable. SPI Slave Select pin. Used with SPI devices.')"
+        onclick="showPinInfo('10 Digital / PWM / SPI (SS)',[
+'PWM capable and SPI Slave Select (SS).',
+'Common Components: SD Card Module, Ethernet Shield, RFID Module, LED, Servo.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1078,7 +1136,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:53%; width:12px; height:12px; cursor:pointer;"
         title="11 Digital / PWM / SPI Pin"
-        onclick="showPinInfo('11 Digital / PWM / MOSI', 'PWM capable. SPI Master-Out-Slave-In. Data sent FROM Arduino.')"
+        onclick="showPinInfo('11 Digital / PWM / SPI (MOSI)',[
+'SPI Master Out Slave In. Sends data from Arduino to SPI devices.',
+'Common Components: SD Card Module, OLED (SPI), TFT Display, RFID Module.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
 	<div
         class="pin"
@@ -1086,7 +1149,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:50%; width:12px; height:12px; cursor:pointer;"
         title="12 Digital / SPI Pin"
-        onclick="showPinInfo('12 Digital / SPI (MISO)', 'SPI Master-In-Slave-Out. Data received BY Arduino.')"
+        onclick="showPinInfo('12 Digital / SPI (MISO)',[
+'SPI Master In Slave Out. Receives data from SPI devices.',
+'Common Components: SD Card Module, Ethernet Shield, RFID Module, Flash Memory.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1094,7 +1162,12 @@
         data-label="DIGITAL"
         style="position:absolute; top:9%; left:47%; width:12px; height:12px; cursor:pointer;"
         title="13 Digital Pin"
-        onclick="showPinInfo('13 Digital / LED', 'Connected to built-in LED. Good for testing and Blink example. LED is internally connected through resistor.')"
+        onclick="showPinInfo('13 Digital / LED',[
+'Connected to the built-in LED. Perfect for Blink and testing.',
+'Common Components: External LED, Relay Module, Buzzer, Logic Signals.',
+'Example Code: [Button Here]',
+'Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1102,7 +1175,10 @@
         data-label="POWER"
         style="position:absolute; top:9%; left:44%; width:12px; height:12px; cursor:pointer;"
         title="Ground Pin"
-        onclick="showPinInfo('GND (-)', 'Electrical reference point (0V). All components MUST share GND with Arduino. Multiple GND pins are internally connected.')"
+       onclick="showPinInfo('Ground (GND)',[
+'Electrical reference (0V). Every circuit must share a common ground.',
+'Common Components: Every electronic component connected to Arduino.',
+])"
       ></div>
       <div
         class="pin"
@@ -1110,7 +1186,10 @@
         data-label="POWER"
         style="position:absolute; top:87%; left:60%; width:12px; height:12px; cursor:pointer;"
         title="Ground Pin"
-        onclick="showPinInfo('GND (-)', 'Electrical reference point (0V). All components MUST share GND with Arduino. Multiple GND pins are internally connected.')"
+        onclick="showPinInfo('Ground (GND)',[
+'Electrical reference (0V). Every circuit must share a common ground.',
+'Common Components: Every electronic component connected to Arduino.',
+])"
       ></div>
        <div
         class="pin"
@@ -1118,7 +1197,12 @@
         data-label="ANALOG"
         style="position:absolute; top:87%; left:72%; width:12px; height:12px; cursor:pointer;"
         title="Analog A0 Pin"
-        onclick="showPinInfo('A0 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
+        onclick="showPinInfo('0 Analog Input',[
+'Reads analog voltages from 0V to 5V.',
+'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
        <div
         class="pin"
@@ -1126,7 +1210,12 @@
         data-label="ANALOG"
         style="position:absolute; top:87%; left:75%; width:12px; height:12px; cursor:pointer;"
         title="Analog A1 Pin"
-        onclick="showPinInfo('A1 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
+        onclick="showPinInfo('1 Analog Input',[
+'Reads analog voltages from 0V to 5V.',
+'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
        <div
         class="pin"
@@ -1134,7 +1223,12 @@
         data-label="ANALOG"
         style="position:absolute; top:87%; left:78%; width:12px; height:12px; cursor:pointer;"
         title="Analog A2 Pin"
-        onclick="showPinInfo('A2 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
+        onclick="showPinInfo('2 Analog Input',[
+'Reads analog voltages from 0V to 5V.',
+'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
        <div
         class="pin"
@@ -1142,7 +1236,12 @@
         data-label="ANALOG"
         style="position:absolute; top:87%; left:81%; width:12px; height:12px; cursor:pointer;"
         title="Analog A3 Pin"
-        onclick="showPinInfo('A3 Analog Input', 'Standard analog input pins. Used for sensors, voltage reading. Can also be used as digital pins.')"
+        onclick="showPinInfo('3 Analog Input',[
+'Reads analog voltages from 0V to 5V.',
+'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
        <div
         class="pin"
@@ -1150,7 +1249,12 @@
         data-label="ANALOG"
         style="position:absolute; top:87%; left:84%; width:12px; height:12px; cursor:pointer;"
         title="Analog A4 Pin"
-        onclick="showPinInfo('A4 – SDA (I²C Data)', 'I²C data line. Used with OLEDs, RTCs, sensors. Shared bus – multiple devices allowed.')"
+        onclick="showPinInfo('A4 - SDA (I²C)',[
+'I²C data line used for communication with compatible devices.',
+'Common Components: OLED Display, RTC Module, LCD I²C Adapter, EEPROM, Environmental Sensors.',
+'Example Code: [Button Here]',
+'Visual Wiring: [Button Here]'
+])"
       ></div>
        <div
         class="pin"
@@ -1158,7 +1262,12 @@
         data-label="ANALOG"
         style="position:absolute; top:87%; left:87%; width:12px; height:12px; cursor:pointer;"
         title="Analog A5 Pin"
-        onclick="showPinInfo('A5 – SCL (I²C Clock)', 'I²C clock line. Controls timing for I²C devices. Used together with SDA.')"
+        onclick="showPinInfo('A5 - SCL (I²C)',[
+'I²C clock line. Works together with SDA.',
+'Common Components: OLED Display, RTC Module, LCD I²C Adapter, EEPROM, Environmental Sensors.',
+'Example Code: [Button Here]',
+'Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
@@ -1166,7 +1275,10 @@
         data-label="POWER"
         style="position:absolute; top:87%; left:63%; width:12px; height:12px; cursor:pointer;"
         title="Ground Pin"
-        onclick="showPinInfo('GND (-)', 'Electrical reference point (0V). All components MUST share GND with Arduino. Multiple GND pins are internally connected.')"
+        onclick="showPinInfo('Ground (GND)',[
+'Electrical reference (0V). Every circuit must share a common ground.',
+'Common Components: Every electronic component connected to Arduino.',
+])"
       ></div>
       <div
         class="pin"
@@ -1174,7 +1286,10 @@
         data-label="POWER"
         style="position:absolute; top:87%; left:57%; width:12px; height:12px; cursor:pointer;"
         title="5V "
-        onclick="showPinInfo('5V', 'Provides regulated 5V power. Used to power sensors and modules. Limited current – do NOT power motors. Can also be used to supply 5V externally (careful).')"
+        onclick="showPinInfo('5V Power',[
+'Provides regulated 5V power for compatible components.',
+'Common Components: Sensors, LCD Display, OLED Display, Relay Module, Joystick, Servo (small), LEDs.',
+])"
       ></div>
       <div
         class="pin"
@@ -1182,7 +1297,10 @@
         data-label="POWER"
         style="position:absolute; top:87%; left:54%; width:12px; height:12px; cursor:pointer;"
         title="3.3V "
-        onclick="showPinInfo('3.3V', 'Provides regulated 3.3V power. Lower current than 5V (~50mA). Used for OLEDs, sensors, logic modules. Do NOT overload.')"
+        onclick="showPinInfo('3.3V Power',[
+'Provides regulated 3.3V output.',
+'Common Components: ESP8266, NRF24L01, 3.3V Sensors, SD Modules.',
+])"
       ></div>
       <div
         class="pin"
@@ -1190,7 +1308,10 @@
         data-label="POWER"
         style="position:absolute; top:87%; left:51%; width:12px; height:12px; cursor:pointer;"
         title="Reset Pin "
-        onclick="showPinInfo('Reset Pin', 'Pulling this pin LOW restarts the Arduino. Used by shields or external reset buttons. Does NOT erase the program.')"
+        onclick="showPinInfo('RESET',[
+'Restarts the Arduino without deleting the uploaded program.',
+'Common Components: Push Button, External Reset Circuit.',
+])"
       ></div>
 
       <div
@@ -1199,28 +1320,44 @@
         data-label="POWER"
         style="position:absolute; top:87%; left:66%; width:12px; height:12px; cursor:pointer;"
         title="VIN "
-        onclick="showPinInfo('VIN (V)', 'External power input (7–12V recommended). Feeds the onboard voltage regulator. NOT a stable output pin. Do not connect 5V here.')"
+        onclick="showPinInfo('VIN',[
+'External power input (7V-12V recommended).',
+'Common Components: Battery Pack, DC Power Supply, Barrel Jack Adapter.',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
         data-group="analog"
         style="position:absolute; top:9%; left:41%; width:12px; height:12px; cursor:pointer;"
         title="AREF Pin"
-        onclick="showPinInfo('AREF – Analog Reference', 'Sets reference voltage for analogRead(). Used for precise measurements. Advanced use – beginners can ignore.')"
+        onclick="showPinInfo('AREF',[
+'Provides a custom reference voltage for analog measurements.',
+'Common Components: Precision Voltage Reference, Analog Sensors.',
+'unsupported Example Code: [Button Here]',
+'unsupported Visual Wiring: [Button Here]'
+])"
       ></div>
       <div
         class="pin"
         data-group="analog"
         style="position:absolute; top:9%; left:38%; width:12px; height:12px; cursor:pointer;"
         title="SDA Pin"
-        onclick="showPinInfo('SDA normaly (A4)', 'Only if NOT using I²C or Talk to chips')"
+        onclick="showPinInfo('A4 - SDA (I²C)',[
+'I²C data line used for communication with compatible devices.',
+'Common Components: OLED Display, RTC Module, LCD I²C Adapter, EEPROM, Environmental Sensors.',
+])"
       ></div>
       <div
         class="pin"
         data-group="analog"
         style="position:absolute; top:9%; left:35%; width:12px; height:12px; cursor:pointer;"
         title="SCL Pin"
-        onclick="showPinInfo('SCL normaly (A5)', 'Only if NOT using I²C or Talk to chips')"
+        onclick="showPinInfo('A5 - SCL (I²C)',[
+'I²C clock line. Works together with SDA.',
+'Common Components: OLED Display, RTC Module, LCD I²C Adapter, EEPROM, Environmental Sensors.',
+
+])"
       ></div>
 
     </div>
@@ -1319,58 +1456,45 @@ function selectGroup(group) {
 }
 
 // Highlight the clicked pin and show its info
-function showPinInfo(title, description, pinEl) {
-  const info = document.getElementById('pinInfoDisplay');
-
-  // Toggle off if same pin clicked
-  if (pinEl && pinEl.classList.contains('active')) {
-    pinEl.classList.remove('active');
-    info.innerHTML = `<p>Click the pin on the image or select a pin group.</p>`;
-    return;
-  }
-
-  // Clear others
-  document.querySelectorAll('.pin.active').forEach(p=>{
-    p.classList.remove('active');
-  });
-
-  // Highlight this pin
-  if (pinEl) pinEl.classList.add('active');
-
-  // Show correct info
-  info.innerHTML = `
-    <h3>${title}</h3>
-    <p>${description}</p>
-  `;
-}
-
 let activePin = null;
 
 function showPinInfo(title, description) {
-  const info = document.getElementById('pinInfoDisplay');
 
-  // get the pin that was clicked (from the click event)
+  const info = document.getElementById("pinInfoDisplay");
   const pin = event.currentTarget;
 
-  // if same pin clicked again → unhighlight
-  if (activePin === pin) {
-    pin.classList.remove('active');
+  // Click same pin again -> unselect
+  if(activePin === pin){
+    pin.classList.remove("active");
     activePin = null;
-    info.innerHTML = `<p>Click the pin on the image to see details here.</p>`;
+
+    info.innerHTML = `
+      <p>Click the pin on the image or select a pin group.</p>
+    `;
     return;
   }
 
-  // clear previous highlight
-  document.querySelectorAll('.pin.active').forEach(p => {
-    p.classList.remove('active');
+  // Remove previous highlight
+  document.querySelectorAll(".pin.active").forEach(p=>{
+    p.classList.remove("active");
   });
 
-  // highlight new pin
-  pin.classList.add('active');
+  pin.classList.add("active");
   activePin = pin;
 
-  // show correct title + description
-  info.innerHTML = `<h3>${title}</h3><p>${description}</p>`;
+  // Convert to array if only one line was given
+  if(!Array.isArray(description)){
+    description = [description];
+  }
+
+  // Build paragraphs
+  let html = `<h3>${title}</h3>`;
+
+  description.forEach(line=>{
+    html += `<p>${line}</p>`;
+  });
+
+  info.innerHTML = html;
 }
 
 </script>
@@ -1632,5 +1756,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
 </body>
 </html>
+
+
 
 

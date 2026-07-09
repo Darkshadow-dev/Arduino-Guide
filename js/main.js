@@ -17,6 +17,8 @@ function activatePage(id, save = true) {
 
     target.classList.add("active");
 
+    updateDropdownTitles(id);
+
     if (save) {
       localStorage.setItem(STORAGE_KEY, id);
     }
@@ -158,27 +160,45 @@ document.addEventListener("click", () => {
     d.querySelector(".dropdown-menu").classList.remove("open");
   });
 });
+/*-----------------Dropdown title-----------------------------*/
+function updateDropdownTitles(page){
 
-/*------------ Side dropdown ----------------*/
-function toggleSideMenu(btn, e){
-  e.stopPropagation();
+  document.querySelectorAll(".dropdown").forEach(dropdown=>{
 
-  const panel = btn.nextElementSibling;
+    const title = dropdown.querySelector(".dropdown-title");
+    if(!title) return;
 
-  // close other side panels
-  document.querySelectorAll(".side-panel").forEach(p => {
-    if (p !== panel) p.classList.remove("open");
+    // Save the default title once
+    if(!title.dataset.defaultTitle){
+      title.dataset.defaultTitle = title.textContent.trim();
+    }
+
+    const links = dropdown.querySelectorAll(".dropdown-menu a");
+
+    let found = false;
+
+    links.forEach(link=>{
+
+      const href = link.getAttribute("href");
+
+      if(href && href.endsWith("#" + page)){
+        title.textContent = link.textContent.trim();
+        found = true;
+      }
+
+    });
+
+    // Restore the original title if page isn't in this dropdown
+    if(!found){
+      title.textContent = title.dataset.defaultTitle;
+    }
+
   });
 
-  panel.classList.toggle("open");
 }
-// close when clicking outside
-document.addEventListener("click", e => {
-  if (!e.target.closest(".side-menu")) {
-    document.querySelectorAll(".side-panel")
-      .forEach(p => p.classList.remove("open"));
-  }
-});
+
+/*------------ Side dropdown ----------------*/
+/* deleted on 8/7/2026 at 10:28*/
 
 function toggleLP(btn){
   const card = btn.parentElement;
@@ -189,48 +209,6 @@ function toggleLP(btn){
 
   card.classList.toggle("active");
 }
-
-/* progress system (toggle version) */
-
-document.querySelectorAll(".lp-check").forEach(box=>{
-  const text = box.previousElementSibling.textContent.trim();
-  const key = "lp_" + text;
-
-  if(localStorage.getItem(key)==="1"){
-    box.classList.add("done");
-  }
-
-  box.onclick = ()=>{
-    box.classList.toggle("done");
-
-    if(box.classList.contains("done")){
-      localStorage.setItem(key,"1");
-    }else{
-      localStorage.removeItem(key);
-    }
-
-    updateCard(box.closest(".lp-card"));
-  };
-});
-
-function updateCard(card){
-  const total = card.querySelectorAll(".lp-check").length;
-  const done  = card.querySelectorAll(".lp-check.done").length;
-
-  if(done === total){
-    card.classList.add("done");
-  }else{
-    card.classList.remove("done");
-  }
-}
-
-/* restore buttons on load */
-document.querySelectorAll(".lp-card").forEach(card=>{
-  updateCard(card);
-});
-
-
-
 
 /*-------------- Animation on hardwarevi page --------------*/
 /* ========================================= WIRE ANIMATIONS ========================================= */
@@ -745,6 +723,7 @@ function checkOrientation(){
 window.addEventListener("load", checkOrientation);
 window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);
+
 
 
 

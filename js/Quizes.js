@@ -68,7 +68,85 @@ pins:[
     {type:"mc",q:"Which pins can act as digital inputs?",a:["All GPIO pins","Only analog","Only PWM"],c:0},
     {type:"mc",q:"Which pin is usually used for status LED?",a:["13","7","2"],c:0},
     {type:"mc",q:"What happens if pin is floating?",a:["Random values","Always LOW","Always HIGH"],c:0}
-  ]
+  ],
+
+/* ---------- QUIZ 6 (Professional – 19 Q) ---------- */
+[
+{type:"mc",q:"An LED should be connected through a...",a:["220Ω resistor","Capacitor","Diode"],c:0},
+{type:"mc",q:"An OLED I2C display connects to...",a:["A4 & A5","D10 & D11","D2 & D3"],c:0},
+{type:"mc",q:"A push button is usually connected to...",a:["Digital pin","VIN","AREF"],c:0},
+{type:"mc",q:"A potentiometer output connects to...",a:["Analog pin","PWM pin","VIN"],c:0},
+{type:"mc",q:"A buzzer that plays tones is best connected to...",a:["PWM pin","5V only","AREF"],c:0},
+{type:"mc",q:"A servo motor signal wire is connected to...",a:["PWM pin","VIN","GND"],c:0},
+{type:"mc",q:"Which interface is used by most SD card modules?",a:["SPI","I2C","UART"],c:0},
+{type:"mc",q:"Which interface is used by many RTC modules?",a:["I2C","SPI","USB"],c:0},
+{type:"mc",q:"A joystick X/Y output should connect to...",a:["Analog pins","PWM pins","VIN"],c:0},
+{type:"mc",q:"An HC-SR04 Echo pin connects to...",a:["Digital input","Analog input","5V"],c:0},
+{type:"fill",q:"The Trigger pin of an ultrasonic sensor connects to a ______ pin.",c:"digital"},
+{type:"fill",q:"The signal wire of a servo is usually connected to pin __.",c:"9"},
+{type:"fill",q:"OLED SDA connects to __.",c:"A4"},
+{type:"fill",q:"OLED SCL connects to __.",c:"A5"},
+{type:"fill",q:"A button normally needs a ______ resistor.",c:"pull-up"},
+{type:"mcm",q:"Which components usually use analog inputs?",a:["Joystick","Potentiometer","LDR","LED"],c:[0,1,2]},
+{type:"mc",q:"What is the purpose of a resistor with an LED?",a:["Limit current","Increase voltage","Store power"],c:0},
+{type:"mc",q:"A relay module input is normally connected to...",a:["Digital output","Analog input","VIN"],c:0},
+{type:"mc",q:"A PIR motion sensor output is usually connected to...",a:["Digital input","PWM output","AREF"],c:0}
+],
+
+/* ---------- QUIZ 7 (Master – 22 Q) ---------- */
+[
+{type:"mc",q:"Which communication protocol uses MOSI, MISO and SCK?",a:["SPI","I2C","UART"],c:0},
+{type:"mc",q:"Which display commonly uses SPI?",a:["TFT Display","1602 I2C LCD","RTC"],c:0},
+{type:"mc",q:"A DHT11 sensor normally connects to...",a:["Digital pin","Analog pin","VIN"],c:0},
+{type:"mc",q:"An LDR with a voltage divider is read using...",a:["Analog pin","PWM pin","RX"],c:0},
+{type:"mc",q:"A flame sensor analog output connects to...",a:["Analog pin","SPI","5V"],c:0},
+{type:"mc",q:"Which component often needs PWM?",a:["LED dimming","Button","LDR"],c:0},
+{type:"mc",q:"Which component usually requires interrupts for best accuracy?",a:["Rotary encoder","LED","Potentiometer"],c:0},
+{type:"mc",q:"Which module shares one I2C bus with many devices?",a:["OLED","Servo","Relay"],c:0},
+{type:"fill",q:"The SPI clock pin is __.",c:"13"},
+{type:"fill",q:"SPI Slave Select is pin __.",c:"10"},
+{type:"fill",q:"The built-in LED is connected to pin __.",c:"13"},
+{type:"fill",q:"A joystick button usually connects to a ______ pin.",c:"digital"},
+{type:"fill",q:"An analog sensor usually outputs a changing ______.",c:"voltage"},
+{type:"fill",q:"A PWM signal ranges from 0 to __.",c:"255"},
+{type:"mcm",q:"Which devices commonly use I2C?",a:["OLED","RTC","BMP280","Servo"],c:[0,1,2]},
+{type:"mcm",q:"Which devices commonly use SPI?",a:["SD Card","TFT Display","Ethernet Shield","Joystick"],c:[0,1,2]},
+{type:"mc",q:"Which component is best tested using analogRead()?",a:["Potentiometer","Relay","LED"],c:0},
+{type:"mc",q:"A button should never be connected directly between...",a:["5V and GND","Digital pin and GND","Digital pin and 5V"],c:0},
+{type:"mc",q:"Which module measures distance?",a:["HC-SR04","DHT11","RTC"],c:0},
+{type:"mc",q:"Which module measures temperature and humidity?",a:["DHT11","BMP280","Joystick"],c:0},
+{type:"mc",q:"Which device normally needs a transistor when powered externally?",a:["DC Motor","Button","LDR"],c:0},
+{type:"mc",q:"Which component usually needs a flyback diode?",a:["Relay","LED","OLED"],c:0}
+],
+
+/* ---------- QUIZ 8 (Ultimate – 25 Q) ---------- */
+[
+{type:"mc",q:"A complete LED circuit requires...",a:["LED + resistor","LED only","LED + capacitor"],c:0},
+{type:"mc",q:"A potentiometer has how many pins?",a:["3","2","4"],c:0},
+{type:"mc",q:"Which component is commonly used for menu navigation?",a:["Joystick","Relay","LDR"],c:0},
+{type:"mc",q:"Which module stores files?",a:["SD Card","RTC","OLED"],c:0},
+{type:"mc",q:"Which module keeps time even when Arduino is off?",a:["RTC","Servo","Relay"],c:0},
+{type:"mc",q:"Which module measures atmospheric pressure?",a:["BMP280","HC-SR04","LDR"],c:0},
+{type:"mc",q:"Which sensor measures light?",a:["LDR","DHT11","Joystick"],c:0},
+{type:"mc",q:"Which device produces sound?",a:["Buzzer","Relay","Potentiometer"],c:0},
+{type:"mc",q:"Which output is best for controlling LED brightness?",a:["PWM","Analog input","SPI"],c:0},
+{type:"mc",q:"Which component allows variable voltage input?",a:["Potentiometer","Button","Relay"],c:0},
+{type:"fill",q:"A relay allows Arduino to switch ______ loads.",c:"high"},
+{type:"fill",q:"A joystick has __ analog axes.",c:"2"},
+{type:"fill",q:"An HC-SR04 has Trigger and ______ pins.",c:"Echo"},
+{type:"fill",q:"An OLED display usually uses the ______ protocol.",c:"I2C"},
+{type:"fill",q:"A TFT display commonly uses the ______ protocol.",c:"SPI"},
+{type:"fill",q:"A buzzer producing tones usually uses ______.",c:"PWM"},
+{type:"fill",q:"A servo receives repeated ______ pulses.",c:"PWM"},
+{type:"mcm",q:"Which devices normally need analogRead()?",a:["Potentiometer","Joystick","LDR","LED"],c:[0,1,2]},
+{type:"mcm",q:"Which modules commonly use SPI?",a:["SD Card","Ethernet Shield","TFT","RTC"],c:[0,1,2]},
+{type:"mcm",q:"Which modules commonly use I2C?",a:["OLED","RTC","BMP280","Servo"],c:[0,1,2]},
+{type:"mc",q:"Which component is safest to test first with the Blink sketch?",a:["LED","Servo","Relay"],c:0},
+{type:"mc",q:"Which sensor would you use to detect movement?",a:["PIR","LDR","Potentiometer"],c:0},
+{type:"mc",q:"Which component converts electrical energy into mechanical movement?",a:["Servo","OLED","RTC"],c:0},
+{type:"mc",q:"Which component converts rotation into an analog value?",a:["Potentiometer","Relay","Buzzer"],c:0},
+{type:"mc",q:"Which project would most likely require both an OLED and a joystick?",a:["Menu-driven device","Blink LED","Relay tester"],c:0}
+]
 ],
 
 /* =================== HARDWARE =================== */
@@ -186,6 +264,74 @@ hardware:[
   {type:"mc",q:"Which memory keeps data after power off?",a:["EEPROM","SRAM","Cache"],c:0},
   {type:"mc",q:"Which memory is volatile?",a:["SRAM","Flash","EEPROM"],c:0},
   {type:"mc",q:"Which part steps down VIN?",a:["Regulator","Crystal","SRAM"],c:0}
+],
+
+/* ---------- QUIZ 8 (Hardware Projects – 29) ---------- */
+[
+  {type:"mc",q:"An LED must normally be connected with a?",a:["Resistor","Capacitor","Crystal"],c:0},
+  {type:"mc",q:"Why is a resistor used with an LED?",a:["Limit current","Increase voltage","Store data"],c:0},
+  {type:"mc",q:"A push button is commonly connected between?",a:["Digital pin and GND","5V and VIN","A0 and A1"],c:0},
+  {type:"mc",q:"Which function is normally used to read a button?",a:["digitalRead()","analogWrite()","tone()"],c:0},
+  {type:"mc",q:"A potentiometer should normally connect its middle pin to?",a:["Analog input","GND","VIN"],c:0},
+  {type:"mc",q:"What does a potentiometer do?",a:["Provides adjustable voltage","Stores power","Amplifies current"],c:0},
+  {type:"mc",q:"An LDR (light sensor) measures?",a:["Light level","Temperature","Distance"],c:0},
+  {type:"mc",q:"A buzzer is mainly used to?",a:["Produce sound","Measure voltage","Store data"],c:0},
+  {type:"mc",q:"A servo motor needs?",a:["Signal + Power + GND","Only GND","Only 5V"],c:0},
+  {type:"mc",q:"Which Arduino pins can control a servo?",a:["Any digital pin","Only analog pins","Only VIN"],c:0},
+  {type:"mc",q:"An OLED display using I²C connects to?",a:["A4 & A5","D10 & D11","D0 & D1"],c:0},
+  {type:"mc",q:"A joystick module usually has outputs connected to?",a:["Analog pins","SPI pins","Power pins only"],c:0},
+  {type:"mc",q:"A relay module allows Arduino to control?",a:["High-power devices","Extra memory","USB communication"],c:0},
+  {type:"mc",q:"Which component measures distance?",a:["Ultrasonic sensor","LED","Button"],c:0},
+  {type:"mc",q:"HC-SR04 uses which pin types?",a:["Digital pins","Analog only","Power only"],c:0},
+  {type:"mc",q:"A DHT11 sensor measures?",a:["Temperature and humidity","Distance","Voltage"],c:0},
+  {type:"mc",q:"A PIR sensor detects?",a:["Motion","Pressure","Brightness"],c:0},
+  {type:"mc",q:"A flame sensor detects?",a:["Infrared light from fire","Humidity","Current"],c:0},
+  {type:"mc",q:"A sound sensor reacts to?",a:["Noise","Heat","Voltage"],c:0},
+  {type:"mc",q:"Why should every module share GND?",a:["Common electrical reference","More speed","Better memory"],c:0},
+  {type:"fill",q:"The LED's longer leg is the __",c:"anode"},
+  {type:"fill",q:"The LED's shorter leg is the __",c:"cathode"},
+  {type:"fill",q:"OLED displays usually use the __ communication protocol",c:"I2C"},
+  {type:"fill",q:"A joystick has __ analog axes",c:"2"},
+  {type:"fill",q:"A relay works like an electrically controlled __",c:"switch"},
+  {type:"fill",q:"A resistor value of __ ohms is common for LEDs",c:"220"},
+  {type:"fill",q:"The HC-SR04 has TRIG and __ pins",c:"ECHO"},
+  {type:"fill",q:"A servo usually rotates about __ degrees",c:"180"},
+  {type:"fill",q:"A breadboard allows building circuits without __",c:"soldering"}
+],
+
+/* ---------- QUIZ 9 (Project Knowledge – 31) ---------- */
+[
+  {type:"mc",q:"Before connecting any component you should first identify?",a:["Voltage and pin connections","Color","Brand"],c:0},
+  {type:"mc",q:"Connecting an LED directly to 5V without a resistor may?",a:["Damage the LED","Increase brightness safely","Charge the Arduino"],c:0},
+  {type:"mc",q:"Why do sensors usually have VCC, GND and Signal?",a:["Power and communication","Decoration","Programming"],c:0},
+  {type:"mc",q:"Which component is best for showing text?",a:["OLED display","Buzzer","Relay"],c:0},
+  {type:"mc",q:"Which component is best for making sound?",a:["Buzzer","Joystick","LED"],c:0},
+  {type:"mc",q:"Which component lets the user control movement in two directions?",a:["Joystick","Relay","Servo"],c:0},
+  {type:"mc",q:"A push button normally stays?",a:["Open until pressed","Always ON","Always OFF"],c:0},
+  {type:"mc",q:"Which module is best for measuring room temperature?",a:["DHT11","LED","Servo"],c:0},
+  {type:"mc",q:"Which module is best for obstacle detection?",a:["HC-SR04","Relay","Potentiometer"],c:0},
+  {type:"mc",q:"Why should motors often have their own power supply?",a:["They use more current","They need SPI","They use analog pins"],c:0},
+  {type:"mc",q:"Which component can dim an LED smoothly?",a:["PWM pin","VIN","RESET"],c:0},
+  {type:"mc",q:"Why use PWM instead of digital HIGH?",a:["Adjust brightness or speed","Increase voltage","Store data"],c:0},
+  {type:"mc",q:"What is the safest first step after wiring?",a:["Double-check connections","Upload random code","Disconnect GND"],c:0},
+  {type:"mc",q:"Which module is most useful for alarms?",a:["Buzzer","OLED","Joystick"],c:0},
+  {type:"mc",q:"A relay is commonly used to switch?",a:["Lights and appliances","Serial ports","Memory chips"],c:0},
+  {type:"mc",q:"Why are breadboards useful?",a:["Quick reusable circuits","Extra RAM","Programming"],c:0},
+  {type:"mc",q:"Which component usually uses analogRead()?",a:["Potentiometer","LED","Relay"],c:0},
+  {type:"mc",q:"Which component usually uses digitalRead()?",a:["Button","Servo","OLED"],c:0},
+  {type:"mc",q:"Which device commonly needs the Servo library?",a:["Servo motor","LED","Relay"],c:0},
+  {type:"mc",q:"What happens if GND is missing?",a:["Circuit usually won't work correctly","Everything speeds up","Voltage doubles"],c:0},
+  {type:"fill",q:"A button is usually connected to a __ pin",c:"digital"},
+  {type:"fill",q:"A potentiometer is usually connected to an __ pin",c:"analog"},
+  {type:"fill",q:"OLED displays usually need __ wires",c:"4"},
+  {type:"fill",q:"A servo has __ wires",c:"3"},
+  {type:"fill",q:"The DHT11 outputs __ data",c:"digital"},
+  {type:"fill",q:"The joystick push button is read as a __ input",c:"digital"},
+  {type:"fill",q:"PWM stands for Pulse Width __",c:"Modulation"},
+  {type:"fill",q:"The resistor protects the __",c:"LED"},
+  {type:"fill",q:"All modules should share a common __",c:"GND"},
+  {type:"fill",q:"A relay acts as an electrically controlled __",c:"switch"},
+  {type:"fill",q:"Always disconnect power before changing __",c:"wiring"}
 ]
 
 ],
@@ -324,8 +470,67 @@ software:[
   {type:"fill",q:"Fix: for i<10;",c:"for(int i=0;i<10;i++)"},
   {type:"fill",q:"Fix: pinMode(5, IN);",c:"pinMode(5, INPUT);"},
   {type:"fill",q:"Fix: digitalWrite(8, TRUE);",c:"digitalWrite(8, HIGH);"}
-]
+],
 
+/* ---------- QUIZ 9 ---------- */
+[
+{type:"mc",q:"Which data type stores only true or false?",a:["bool","int","float"],c:0},
+{type:"mc",q:"Which operator means 'not equal'?",a:["!=","==","="],c:0},
+{type:"mc",q:"Which loop always executes at least once?",a:["do...while","while","for"],c:0},
+{type:"mc",q:"Which keyword leaves a function immediately?",a:["return","break","continue"],c:0},
+{type:"mc",q:"Which symbol accesses an array element?",a:["[]","()","{}"],c:0},
+{type:"fill",q:"The first index of an array is __",c:"0"},
+{type:"fill",q:"A function that returns nothing uses the keyword __",c:"void"},
+{type:"mc",q:"Which comparison checks if x is greater than y?",a:["x>y","x<y","x==y"],c:0},
+{type:"mc",q:"Which keyword declares a variable that cannot change?",a:["const","#define","volatile"],c:0},
+{type:"fill",q:"The opposite of HIGH is __",c:"LOW"},
+{type:"mc",q:"Which library is commonly used for I2C communication?",a:["Wire","SPI","Servo"],c:0}
+],
+
+/* ---------- QUIZ 10 ---------- */
+[
+{type:"mc",q:"Which operator gives the remainder after division?",a:["%","/","*"],c:0},
+{type:"mc",q:"Which keyword creates an enumeration?",a:["enum","struct","typedef"],c:0},
+{type:"mc",q:"Which keyword defines a structure?",a:["struct","class","object"],c:0},
+{type:"mc",q:"Which keyword prevents compiler optimization?",a:["volatile","const","register"],c:0},
+{type:"mc",q:"Which operator increments by one?",a:["++","+=","--"],c:0},
+{type:"mc",q:"Which operator decrements by one?",a:["--","++","-="],c:0},
+{type:"mc",q:"Which keyword creates an infinite loop?",a:["while(true)","loop()","forever"],c:0},
+{type:"mc",q:"Which library controls SPI devices?",a:["SPI","Wire","Servo"],c:0},
+{type:"mc",q:"Which library controls servos?",a:["Servo","SPI","EEPROM"],c:0},
+{type:"mc",q:"Which library stores permanent values?",a:["EEPROM","Wire","SPI"],c:0},
+{type:"mc",q:"What does RAM store?",a:["Temporary data","Program code","Bootloader"],c:0},
+{type:"mc",q:"What stores the compiled sketch?",a:["Flash","SRAM","Cache"],c:0},
+{type:"mc",q:"Which memory survives power loss?",a:["EEPROM","SRAM","RAM"],c:0},
+{type:"mc",q:"What does recursion mean?",a:["A function calling itself","Repeating a loop","Restarting Arduino"],c:0},
+{type:"mc",q:"Which search is usually faster on sorted data?",a:["Binary Search","Linear Search","Random Search"],c:0},
+{type:"mc",q:"Which sort is generally faster for large arrays?",a:["Quick Sort","Bubble Sort","Selection Sort"],c:0},
+{type:"mc",q:"What is debugging?",a:["Finding program errors","Compiling code","Uploading sketches"],c:0},
+{type:"mc",q:"What is pseudocode?",a:["Algorithm written in plain language","Compiled code","Machine code"],c:0},
+{type:"mc",q:"Which operator performs logical AND?",a:["&&","||","&"],c:0},
+{type:"mc",q:"Which operator performs logical OR?",a:["||","&&","|"],c:0},
+{type:"fill",q:"A variable declared inside a function has __ scope.",c:"local"},
+{type:"fill",q:"A variable declared outside all functions has __ scope.",c:"global"},
+{type:"fill",q:"The keyword used to include a library is __",c:"#include"},
+{type:"fill",q:"The Arduino IDE compiles code before __",c:"uploading"},
+{type:"mc",q:"What is an algorithm?",a:["A sequence of steps","A variable","A compiler"],c:0},
+{type:"mc",q:"What is a compiler?",a:["Converts source code into machine code","Runs hardware","Stores variables"],c:0},
+{type:"mc",q:"What does IDE stand for?",a:["Integrated Development Environment","Internet Device Engine","Internal Driver Extension"],c:0},
+{type:"mc",q:"Which practice makes code easier to maintain?",a:["Using meaningful variable names","Using single-letter variables","Writing everything in loop()"],c:0}
+],
+
+/* ---------- QUIZ 11 ---------- */
+[
+{type:"mc",q:"What is Big-O notation used to describe?",a:["Algorithm efficiency","CPU speed","Memory size"],c:0},
+
+{type:"mc",q:"Why are pointers powerful in C/C++?",a:["They allow direct memory access","They increase CPU speed","They automatically prevent bugs"],c:0},
+
+{type:"mc",q:"Why is dynamic memory allocation used?",a:["To allocate memory while the program runs","To make the CPU faster","To increase clock speed"],c:0},
+
+{type:"mc",q:"What is a race condition?",a:["Two tasks accessing shared data without proper synchronization","A fast for-loop","Uploading two sketches at once"],c:0},
+
+{type:"mc",q:"Why is modular programming recommended?",a:["It improves reuse, maintenance, and testing","It increases CPU frequency","It reduces Flash memory automatically"],c:0}
+]
 
 
 ]
@@ -359,3 +564,4 @@ function clearDraft(){
 const board = {
   value: "uno"
 };
+

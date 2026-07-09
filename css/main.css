@@ -341,7 +341,7 @@ nav a:active{
   pointer-events:none;
 
   transition:
-    opacity .25s ease,
+    opacity .35s ease,
     transform .25s ease;
 
   z-index:999;
@@ -350,18 +350,22 @@ nav a:active{
 }
 
 /* arrow */
-.dropdown-btn span{
+.dropdown-arrow{
+
   display:inline-block;
 
   transition:
     transform .25s ease,
     color .2s ease;
+
 }
 
-/* open arrow */
-.dropdown.open .dropdown-btn span{
+/* rotate only arrow */
+.dropdown.open .dropdown-arrow{
+
   transform:rotate(180deg);
   color:var(--accent2);
+
 }
 
 /* OPEN STATE */
@@ -391,64 +395,7 @@ nav a:active{
     color .18s ease;
 }
 
-
-
-/*------------- Side panel --------------*/
-
-.side-menu{
-  position: relative;
-}
-
-.side-btn{
-  background: none;
-  border: none;
-  color: var(--accent);
-  padding: 8px 12px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-}
-
-.side-btn:hover{
-  background: rgba(0,151,157,.12);
-}
-
-.side-panel{
-  position: absolute;
-  right: 100%;
-  top: 0;
-  min-width: 180px;
-  background: white;
-  box-shadow: 0 6px 14px rgba(0,0,0,.2);
-  border-radius: 8px;
-
-  opacity: 0;
-  transform: translateX(10px);
-  pointer-events: none;
-  transition: .25s ease;
-
-  display: flex;
-  flex-direction: column;
-  z-index: 2000;
-}
-
-.side-panel.open{
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-.side-panel a{
-  padding: 10px 14px;
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.side-panel a:hover{
-  background: rgba(0,151,157,.15);
-}
+/* after over 6 months side menu and panel ware deleted fully*/
 
 /*---------- MINI NAV -----------*/
 
@@ -692,110 +639,264 @@ p{
 
 
 
-/*--------------------___ New cursor looks ___-----------------------------------------*/
+/*-------------------- CURSORS --------------------*/
 
 button,
 .lp-btn,
 .btn,
-.btn-action{
-  cursor: grab;
+.btn-action,
+.btn-group,
+.btn-submit{
+  cursor:grab;
 }
 
-button:active{
-  cursor: grabbing;
+button:active,
+.lp-btn:active,
+.btn:active,
+.btn-action:active,
+.btn-group:active,
+.btn-submit:active{
+  cursor:grabbing;
+}
+
+nav a,
+.quick-links a,
+.next-link{
+  cursor:pointer;
 }
 
 .example-item,
 .code-block,
 .pin{
-  cursor: crosshair;
-}
-
-nav a,
-.quick-links a{
-  cursor: pointer;
+  cursor:crosshair;
 }
 
 .zoom-box:hover,
-.tutorial-image img:hover{
-  cursor: zoom-in;
+.tutorial-image img:hover,
+.wire-img:hover,
+.wire-frame:hover{
+  cursor:zoom-in;
 }
 
 .lp-check{
-  cursor: cell;
+  cursor:cell;
 }
 
-.disabled{
-  cursor: not-allowed;
+.disabled,
+button:disabled{
+  cursor:not-allowed;
 }
 
-/*----------------___ Button CSS ___--------*/
+/*---------------- BUTTONS ----------------*/
 
-.btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #0077cc;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+.btn{
+  display:inline-block;
+  padding:10px 20px;
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+  color:white;
+  text-decoration:none;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  transition:
+    transform .2s,
+    box-shadow .2s;
+  box-shadow:
+    0 6px 16px rgba(0,151,157,.18);
 }
-.btn:hover {
-  background-color: #005fa3;
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 10px 22px rgba(0,151,157,.22);
 }
 
 .btn-action{
-  background: var(--accent2);
-  color: #003;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .2s;
+  background:var(--accent2);
+  color:#fff;
+  border:none;
+  padding:8px 16px;
+  border-radius:8px;
+  font-weight:700;
+  transition:.2s;
 }
 
 .btn-action:hover{
-  transform: translateY(-1px);
+  transform:translateY(-2px);
+  filter:brightness(1.08);
 }
-
 .btn-group{
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  color: var(--accent);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: .2s;
+  background:var(--panel);
+  color:var(--accent);
+  border:2px solid var(--accent);
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:700;
+  transition:.2s;
 }
 
 .btn-group:hover{
-  background: var(--accent);
-  color: #fff;
+  background:var(--accent);
+  color:#fff;
 }
 
 .btn-submit{
-  width:50%;
-  margin-top:18px;
-  margin-left:25%;
-  padding:12px;
-  background: var(--accent);
-  color:white;
+  display:block;
+  width:min(420px,100%);
+  margin:22px auto 0;
+  padding:14px;
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+  color:#fff;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   font-size:1.05rem;
   font-weight:700;
-  cursor:pointer;
-  transition:.25s;
+  transition:
+    transform .2s,
+    filter .2s;
 }
 
 .btn-submit:hover{
-  transform: scale(1.03);
-  filter: brightness(1.1);
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+}/*-------------------- CURSORS --------------------*/
+
+button,
+.lp-btn,
+.btn,
+.btn-action,
+.btn-group,
+.btn-submit{
+  cursor:grab;
 }
 
+button:active,
+.lp-btn:active,
+.btn:active,
+.btn-action:active,
+.btn-group:active,
+.btn-submit:active{
+  cursor:grabbing;
+}
+
+nav a,
+.quick-links a,
+.next-link{
+  cursor:pointer;
+}
+
+.example-item,
+.code-block,
+.pin{
+  cursor:crosshair;
+}
+
+.zoom-box:hover,
+.tutorial-image img:hover,
+.wire-img:hover,
+.wire-frame:hover{
+  cursor:zoom-in;
+}
+
+.lp-check{
+  cursor:cell;
+}
+
+.disabled,
+button:disabled{
+  cursor:not-allowed;
+}
+
+/*---------------- BUTTONS ----------------*/
+
+.btn{
+  display:inline-block;
+  padding:10px 20px;
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+  color:white;
+  text-decoration:none;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  transition:
+    transform .2s,
+    box-shadow .2s;
+  box-shadow:
+    0 6px 16px rgba(0,151,157,.18);
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 10px 22px rgba(0,151,157,.22);
+}
+
+.btn-action{
+  background:var(--accent2);
+  color:#fff;
+  border:none;
+  padding:8px 16px;
+  border-radius:8px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.btn-action:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+}
+
+.btn-group{
+  background:var(--panel);
+  color:var(--accent);
+  border:2px solid var(--accent);
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.btn-group:hover{
+  background:var(--accent);
+  color:#fff;
+}
+
+.btn-submit{
+  display:block;
+  width:min(420px,100%);
+  margin:22px auto 0;
+  padding:14px;
+  background:linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:1.05rem;
+  font-weight:700;
+  transition:
+    transform .2s,
+    filter .2s;
+}
+
+.btn-submit:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+}
 /*-------------------___ Arduino uno 3D CSS ___----------------------*/
 
 .special-layout .content {
@@ -900,7 +1001,7 @@ nav a,
 
 /* LEFT SIDE */
 .hardware-left{
-  max-width:520px;
+  max-width:100%;
 }
 
 .hardware-left img{
@@ -1572,19 +1673,14 @@ nav a,
 
 /* card */
 .lp-card{
-
+  position:relative;
   width:190px;
-
   border-radius:20px;
-
   background:white;
-
-  overflow:hidden;
-
+  overflow:visible; /* was hidden */
   transition:
     transform .2s ease,
     box-shadow .2s ease;
-
   box-shadow:
     0 8px 18px rgba(0,0,0,.08);
 }
@@ -1639,13 +1735,25 @@ nav a,
 
 /* dropdown */
 .lp-content{
-  max-height:0;
-  overflow:hidden;
-  transition:max-height .35s ease;
+  position:absolute;
+  top:100%;
+  left:0;
+  width:100%;
+  margin-top:8px;
+  background:white;
+  border-radius:16px;
+  box-shadow:0 12px 26px rgba(0,0,0,.14);
+  opacity:0;
+  transform:translateY(-10px);
+  pointer-events:none;
+  transition: opacity .25s,transform .25s;
+  z-index:100;
 }
 
 .lp-card.active .lp-content{
-  max-height:300px;
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
 }
 
 /* links */
@@ -1683,44 +1791,7 @@ nav a,
   justify-content:center;
   align-items:center;
 }
-/* ========================= CHECKBOX ========================= */
 
-.lp-check{
-
-  width:18px;
-  height:18px;
-
-  border-radius:6px;
-
-  cursor:pointer;
-
-  flex-shrink:0;
-
-  position:relative;
-
-  transition:
-    transform .15s ease,
-    background .15s ease;
-}
-
-.lp-check:hover{
-  transform:scale(1.1);
-}
-
-.lp-check.done{
-  background:#00c853;
-}
-
-.lp-check.done::after{
-  content:"✓";
-
-  color:white;
-  font-size:14px;
-
-  position:absolute;
-  left:3px;
-  top:-1px;
-}
 
 /* ========================= ANIMATIONS ========================= */
 
@@ -1750,16 +1821,38 @@ nav a,
 
 /* ========================= MOBILE ========================= */
 
-@media (max-width:600px){
-
-  .lp-card{
+@media (max-width:899px){
+  .lp-grid{
     width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
   }
-
-  .quick-links a{
-    max-width:none;
+  .lp-card{
+    width:170px;
+    border-radius:14px;
   }
-
+  .lp-btn{
+    padding:8px 6px;
+    font-size:14px;
+    min-height:42px;
+  }
+  .lp-content a{
+    padding:7px 10px;
+    font-size:13px;
+  }
+  .lp-content a:hover{
+    padding-left:14px;
+  }
+  .lp-title{
+    font-size:24px;
+    margin:20px 0 14px 0;
+  }
+  .lp-card.active .lp-content{
+    max-height:220px;
+  }
 }
 
 /*-----------------------------___ Board CSS ___-------------------------*/
@@ -3135,14 +3228,6 @@ footer{
     gap:16px;
   }
 
-  .lp-grid{
-    flex-direction:column;
-  }
-
-  .lp-card{
-    width:100%;
-  }
-
   .board-img{
     width:100%;
   }
@@ -3509,8 +3594,7 @@ html, body {
   }
 
   .info-grid,
-  .tutorial-grid,
-  .lp-grid {
+  .tutorial-grid {
     grid-template-columns: 1fr !important;
     display: grid;
   }
@@ -3702,3 +3786,6 @@ img, video, canvas {
   }
 
 }
+
+
+

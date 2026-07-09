@@ -12,8 +12,10 @@
 </head>
 <body>
 
-<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    Board <span>▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>    <a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a><div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    More <span>▾</span>  </button>
-<div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
+<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a>
+<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span class="dropdown-title">Board</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>
+<a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a>
+<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span>Extended</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
 <a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
 <div id="rotateWarning">
   <div class="rotate-box">
@@ -21,13 +23,212 @@
     <p>Only use in landscape mode!</p>
   </div>
 </div>
-
 <main>
 
 <section id="home" class="page active">
 
-<p>Experimental page for more hardware visual examples in 2lines insted of one!</p>
+  <h1>Hardware Visual Examples</h1>
+  <p>
+    Explore a visual collection of Arduino hardware examples designed to help you
+    understand components, connections, and their real-world usage.</p>
+  <p>
+    Each example provides a clearer view of how different parts work together, making it easier
+    to learn, build, and experiment with your own Arduino projects.
+  </p>
 
+  <div class="hardware-layout">
+
+
+<!-- ===================================================== LED ===================================================== -->
+<!-- RIGHT COLUMN -->
+<div class="hardware-left">
+<div style="height:10vh;"></div>
+
+<h3>Wiring LED to the Board</h3>
+
+<p>
+  Click on the
+  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html#examples">
+     Blink LED
+  </a>
+  example.
+</p>
+
+<details class="wiring-card">
+
+  <summary>LED Wiring</summary>
+
+  <p>LED with current-limiting resistor.</p>
+
+  <div class="wire-gallery" data-wire-gallery>
+
+    <button class="gallery-btn gallery-prev">‹</button>
+
+    <div class="wire-box">
+
+      <!-- ANIMATED -->
+      <div class="wire-slide active">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED-off.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED-on.png">
+
+        </div>
+
+      </div>
+
+
+      <!-- ANIMATED -->
+      <div class="wire-slide">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED-off,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED-on,board.png">
+
+        </div>
+
+      </div>
+
+      <!-- CIRCUIT -->
+      <div class="wire-slide">
+
+        <img class="wire-img"
+             src="Images/Circuit/Arduino-LED-circuit.png">
+
+      </div>
+
+    </div>
+
+    <button class="gallery-btn gallery-next">›</button>
+
+  </div>
+
+</details>
+
+<details>
+  <summary>Wiring Explained</summary>
+
+  <p><b>Connect</b> pin 13 to one end of the resistor.</p>
+
+  <p>
+    Then connect the positive end of the LED (longer leg)
+    to the other end of the 220Ω resistor.
+  </p>
+
+  <p>
+    Finally, connect the shorter leg of the LED
+    to Arduino GND.
+  </p>
+
+</details>
+
+
+</div>
+<!-- ===================================================== LED ===================================================== -->
+<!-- RIGHT COLUMN -->
+<div class="hardware-right">
+<div style="height:10vh;"></div>
+
+<h3>Wiring LED to the Board</h3>
+
+<p>
+  Click on the
+  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html#examples">
+     Blink LED
+  </a>
+  example.
+</p>
+
+<details class="wiring-card">
+
+  <summary>LED Wiring</summary>
+
+  <p>LED with current-limiting resistor.</p>
+
+  <div class="wire-gallery" data-wire-gallery>
+
+    <button class="gallery-btn gallery-prev">‹</button>
+
+    <div class="wire-box">
+
+      <!-- ANIMATED -->
+      <div class="wire-slide active">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED-off.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED-on.png">
+
+        </div>
+
+      </div>
+
+
+      <!-- ANIMATED -->
+      <div class="wire-slide">
+
+        <div class="wire-anim" data-wire-anim>
+
+          <img class="wire-frame active"
+               src="Images/Animated/Arduino-LED-off,board.png">
+
+          <img class="wire-frame"
+               src="Images/Animated/Arduino-LED-on,board.png">
+
+        </div>
+
+      </div>
+
+      <!-- CIRCUIT -->
+      <div class="wire-slide">
+
+        <img class="wire-img"
+             src="Images/Circuit/Arduino-LED-circuit.png">
+
+      </div>
+
+    </div>
+
+    <button class="gallery-btn gallery-next">›</button>
+
+  </div>
+
+</details>
+
+<details>
+  <summary>Wiring Explained</summary>
+
+  <p><b>Connect</b> pin 13 to one end of the resistor.</p>
+
+  <p>
+    Then connect the positive end of the LED (longer leg)
+    to the other end of the 220Ω resistor.
+  </p>
+
+  <p>
+    Finally, connect the shorter leg of the LED
+    to Arduino GND.
+  </p>
+
+</details>
+
+
+
+</div>
+  </div>
 </section>
 
 <section id="notfound" class="page">
@@ -51,6 +252,7 @@
 </div>
 </body>
 </html>
+
 
 
 

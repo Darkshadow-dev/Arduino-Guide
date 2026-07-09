@@ -738,15 +738,47 @@ function buildQuizButtons(){
 }
 function getRankImg(rank){
   switch(rank){
-    case "Beginner": return "Images/Rank/rank_beginner.png";
-    case "Starter": return "Images/Rank/rank_starter.png";
-    case "Learner": return "Images/Rank/rank_learner.png";
-    case "Intermediate": return "Images/Rank/rank_intermediate.png";
-    case "Advanced": return "Images/Rank/rank_advanced.png";
-    case "Expert": return "Images/Rank/rank_expert.png";
-    case "Master": return "Images/Rank/rank_master.png";
-    case "Legend": return "Images/Rank/rank_legend.png";
-    default: return "Images/Rank/rank_beginner.png";
+    case "Beginner": 
+      return "Images/Rank/rank_beginner.png";
+
+    case "Starter": 
+      return "Images/Rank/rank_starter.png";
+
+    case "Learner": 
+      return "Images/Rank/rank_learner.png";
+
+    case "Intermediate": 
+      return "Images/Rank/rank_intermediate.png";
+
+    case "Advanced": 
+      return "Images/Rank/rank_advanced.png";
+
+    case "Expert": 
+      return "Images/Rank/rank_expert.png";
+
+    case "Professional": 
+      return "Images/Rank/rank_expert.png";
+
+    case "Master": 
+      return "Images/Rank/rank_master.png";
+
+    case "Grandmaster": 
+      return "Images/Rank/rank_master.png";
+
+    case "Elite": 
+      return "Images/Rank/rank_legend.png";
+
+    case "Legend": 
+      return "Images/Rank/rank_legend.png";
+
+    case "Mythic": 
+      return "Images/Rank/rank_mythic.png";
+
+    case "Arduino Master": 
+      return "Images/Rank/rank_arduino_master.png";
+
+    default: 
+      return "Images/Rank/rank_beginner.png";
   }
 }
 
@@ -757,12 +789,17 @@ function updateRank(){
   let rank = "Beginner";
 
   if(score >= 10) rank = "Starter";
-  if(score >= 23) rank = "Learner";
+  if(score >= 25) rank = "Learner";
   if(score >= 50) rank = "Intermediate";
   if(score >= 80) rank = "Advanced";
   if(score >= 120) rank = "Expert";
-  if(score >= 180) rank = "Master";
-  if(score >= 230) rank = "Legend";
+  if(score >= 170) rank = "Professional";
+  if(score >= 220) rank = "Master";
+  if(score >= 270) rank = "Grandmaster";
+  if(score >= 320) rank = "Elite";
+  if(score >= 360) rank = "Legend";
+  if(score >= 390) rank = "Mythic";
+  if(score >= 402) rank = "Arduino Master";
 
 document.getElementById("rankBox").innerHTML = `
   <img src="${getRankImg(rank)}"
@@ -934,7 +971,7 @@ function renderSidebarQuizzes(){
 
   /* ================= CODE CHALLENGES (NEW PART) ================= */
   const codeChallenges = [
-    { name:"Blink LED Challenge", need:10, id:"blink", desc:"Make LED blink using Arduino code" },
+    { name:"Blink LED Challenge", need:180, id:"blink", desc:"Make LED blink using Arduino code" },
     { name:"Buzzer Challenge", need:190, id:"buzzer", desc:"Create buzzer pattern" },
     { name:"Multi LED Challenge", need:200, id:"multiled", desc:"Control multiple LEDs in sequence" },
     { name:"Custom Project", need:230, id:"custom", desc:"Build your own Arduino project" }
@@ -1186,5 +1223,7 @@ window.onload = () => {
 
 </body>
 </html>
+
+
 
 
