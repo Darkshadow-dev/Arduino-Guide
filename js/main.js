@@ -618,6 +618,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
 });
 
+
 /*--------------------------___ More page JS ___---------------------------*/
 
 
@@ -723,6 +724,7 @@ function checkOrientation(){
 window.addEventListener("load", checkOrientation);
 window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);
+
 
 
 
