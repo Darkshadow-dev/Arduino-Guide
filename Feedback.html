@@ -1290,7 +1290,7 @@
 </main>
 
 <footer>
-  Arduino Guide Ⓖ 2026
+  Arduino Guide Ⓖ  <span id="ieSecret"> 1989</span>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1424,6 +1424,37 @@ async function downloadOfflinePDF(returnOnly = false){
 return pdf;
 }
 
+const ie=document.getElementById("ieSecret");
+
+ie.style.cursor="pointer";
+
+ie.onclick=()=>{
+
+  if(localStorage.getItem("secret_ip")) return;
+
+  localStorage.setItem("secret_ip","1");
+
+  alert(
+`🕵️ Secret Found!
+🖥 Internet Explorer
+
+Developer Secret #?
+
+Internet Explorer was first
+released in 1995, not 1989.
+
+Why 1989?
+
+Because that's the year the
+World Wide Web was proposed.
+
+You discovered this hidden fact.
+
+You found one of the hidden developer secrets.
+Secrets Found: unknown`
+  );
+
+};
 </script>
 
 
@@ -1434,6 +1465,7 @@ return pdf;
 </div>
 </body>
 </html>
+
 
 
 

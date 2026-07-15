@@ -484,7 +484,7 @@ nav a:hover{
 <script src="js/Quizes.js"></script>
 <script>
 
-
+let currentQuiz = [];
 
 // ===== LOAD CATEGORY =====
 function loadCategory(category, btn){
@@ -527,6 +527,7 @@ data[category].forEach((quiz, i)=>{
 });
 
   loadQuiz(0);
+
 }
 
 // ===== LOAD QUIZ =====
@@ -558,7 +559,9 @@ if(draft){
   const quizArea = document.getElementById('quizArea');
   quizArea.innerHTML = '';
 
-  const quiz = data[currentCategory][index];
+currentQuiz = randomizeQuiz(data[currentCategory][index]);
+
+const quiz = currentQuiz;
   quiz.forEach((q, i)=>{
     const qDiv = document.createElement('div');
     qDiv.className = 'question';
@@ -637,7 +640,7 @@ function updateQuizButtonCounter(){
 btn.textContent = `Quiz ${currentQuizIndex+1}`;}
 // ===== SUBMIT QUIZ =====
 function submitQuiz(){
-  const quiz = data[currentCategory][currentQuizIndex];
+const quiz = currentQuiz;
   let score = 0;
 
   quiz.forEach((q,i)=>{
@@ -709,7 +712,8 @@ function retake(){
 
   userAnswers[currentQuizIndex] = [];
 
-  loadQuiz(currentQuizIndex);
+currentQuiz = [];
+loadQuiz(currentQuizIndex);
 
   document.getElementById("scoreBox").textContent = "";
   document.getElementById("submitBtn").disabled = false;
@@ -727,7 +731,8 @@ function buildQuizButtons(){
     const btn = document.createElement("button");
 
     let saved = progress[key];
-    let scoreText = saved ? `${saved.score}/${quiz.length}` : `0/${quiz.length}`;
+    let scoreText = saved ? `${saved.score}/${data[currentCategory][i].length}` : `0/${data[currentCategory][i].length}`;
+
 
     btn.textContent = `Quiz ${i+1} (${scoreText})`;
 
@@ -735,6 +740,72 @@ function buildQuizButtons(){
 
     box.appendChild(btn);
   });
+}
+
+function shuffleArray(arr){
+
+  const copy=[...arr];
+
+  for(let i=copy.length-1;i>0;i--){
+
+    const j=Math.floor(Math.random()*(i+1));
+
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+
+  }
+
+  return copy;
+
+}
+
+function shuffleQuestion(q){
+
+  if(q.type==="mc"){
+
+    const answers=q.a.map((text,index)=>({
+      text,
+      correct:index===q.c
+    }));
+
+    const shuffled=shuffleArray(answers);
+
+    return{
+      ...q,
+      a:shuffled.map(x=>x.text),
+      c:shuffled.findIndex(x=>x.correct)
+    };
+
+  }
+
+  if(q.type==="mcm"){
+
+    const answers=q.a.map((text,index)=>({
+      text,
+      correct:q.c.includes(index)
+    }));
+
+    const shuffled=shuffleArray(answers);
+
+    return{
+      ...q,
+      a:shuffled.map(x=>x.text),
+      c:shuffled
+        .map((x,index)=>x.correct?index:null)
+        .filter(x=>x!==null)
+    };
+
+  }
+
+  return {...q};
+
+}
+
+function randomizeQuiz(quiz){
+
+  const questions=shuffleArray(quiz);
+
+  return questions.map(q=>shuffleQuestion(q));
+
 }
 function getRankImg(rank){
   switch(rank){
@@ -969,13 +1040,20 @@ function renderSidebarQuizzes(){
 
 
 
+
   /* ================= CODE CHALLENGES (NEW PART) ================= */
-  const codeChallenges = [
-    { name:"Blink LED Challenge", need:180, id:"blink", desc:"Make LED blink using Arduino code" },
-    { name:"Buzzer Challenge", need:190, id:"buzzer", desc:"Create buzzer pattern" },
-    { name:"Multi LED Challenge", need:200, id:"multiled", desc:"Control multiple LEDs in sequence" },
-    { name:"Custom Project", need:230, id:"custom", desc:"Build your own Arduino project" }
-  ];
+const codeChallenges=[
+{name:"Blink LED Challenge",need:180,id:"blink",desc:"Blink the built-in LED"},
+{name:"Buzzer Challenge",need:190,id:"buzzer",desc:"Play tones with a buzzer"},
+{name:"Multi LED Challenge",need:200,id:"multiled",desc:"Control multiple LEDs"},
+{name:"Custom Project I",need:230,id:"custom1",desc:"Create your own Arduino project"},
+{name:"4 Digital Inputs Monitor",need:260,id:"monitor4",desc:"Read four buttons and print their states"},
+{name:"Joystick Monitor",need:290,id:"joystick",desc:"Display joystick X/Y values"},
+{name:"Joystick Servo Control",need:320,id:"servo",desc:"Move a servo or stepper using a joystick"},
+{name:"Smart Distance Scanner",need:350,id:"distance",desc:"Servo + ultrasonic sensor"},
+{name:"Radar System",need:380,id:"radar",desc:"Automatic scanner with distance display, buzzer and LED"},
+{name:"Custom Project II",need:400,id:"custom2",desc:"Large original Arduino project"}
+];
 
   // separator (optional visual)
   const sep = document.createElement("hr");
@@ -1001,88 +1079,568 @@ function renderSidebarQuizzes(){
   });
 }
 
-function normalize(code){
-  return code
+/*====================== Arduino Code Analyzer ======================*/
+
+function analyzeCode(raw){
+
+  const original=raw||"";
+
+  const code=original
+    .replace(/\r/g,"")
+    .replace(/\t/g," ")
+    .replace(/\/\/.*$/gm,"")
+    .replace(/\/\*[\s\S]*?\*\//g,"")
+    .replace(/\s+/g," ")
     .toLowerCase()
-    .replace(/\s+/g, " ");
+    .trim();
+
+  const data={
+
+    raw:original,
+    code:code,
+
+    lines:0,
+    comments:0,
+
+    setup:false,
+    loop:false,
+
+    libraries:[],
+    variables:[],
+    arrays:[],
+    pins:[],
+
+    functions:{},
+    keywords:{},
+
+    complexity:0
+
+  };
+
+  /*--------------- Lines ----------------*/
+
+  data.lines=original
+    .split("\n")
+    .filter(v=>v.trim()!="")
+    .length;
+
+  /*--------------- Comments ----------------*/
+
+  const comments=original.match(/\/\/.*|\/\*[\s\S]*?\*\//g);
+  data.comments=comments?comments.length:0;
+
+  /*--------------- setup / loop ----------------*/
+
+  data.setup=/void\s+setup\s*\(/i.test(original);
+  data.loop=/void\s+loop\s*\(/i.test(original);
+
+  /*--------------- Libraries ----------------*/
+
+  const libs=[
+    "servo",
+    "wire",
+    "spi",
+    "eeprom",
+    "liquidcrystal",
+    "liquidcrystal_i2c",
+    "adafruit_ssd1306",
+    "adafruit_gfx",
+    "stepper",
+    "irremote",
+    "dht",
+    "ezbutton"
+  ];
+
+  libs.forEach(lib=>{
+    if(code.includes("#include") && code.includes(lib)){
+      data.libraries.push(lib);
+    }
+  });
+
+  /*--------------- Variables ----------------*/
+
+  const vars=original.match(/\b(int|float|double|char|bool|byte|long|short|unsigned|String)\s+[A-Za-z_]\w*/g);
+
+  if(vars){
+    vars.forEach(v=>{
+      data.variables.push(v);
+    });
+  }
+
+  /*--------------- Arrays ----------------*/
+
+  const arrays=original.match(/\b(int|float|char|bool|byte|long|String)\s+[A-Za-z_]\w*\s*\[/g);
+
+  if(arrays){
+    arrays.forEach(v=>{
+      data.arrays.push(v);
+    });
+  }
+
+  /*--------------- Functions ----------------*/
+
+  const funcs=[
+
+    "pinmode",
+    "digitalwrite",
+    "digitalread",
+    "analogwrite",
+    "analogread",
+
+    "delay",
+    "delaymicroseconds",
+
+    "millis",
+    "micros",
+
+    "tone",
+    "notone",
+
+    "pulsein",
+
+    "serial.begin",
+    "serial.print",
+    "serial.println",
+    "serial.read",
+    "serial.available",
+
+    "attach",
+    "write",
+    "step",
+
+    "display",
+    "print",
+
+    "map",
+    "constrain"
+
+  ];
+
+  funcs.forEach(fn=>{
+
+    const escaped=fn.replace(".","\\.");
+
+    const count=(code.match(new RegExp(escaped+"\\s*\\(","g"))||[]).length;
+
+    data.functions[fn]=count;
+
+  });
+
+  /*--------------- Keywords ----------------*/
+
+  const keys=[
+    "if",
+    "else",
+    "switch",
+    "case",
+    "for",
+    "while",
+    "do",
+    "break",
+    "continue",
+    "return"
+  ];
+
+  keys.forEach(k=>{
+
+    data.keywords[k]=(code.match(new RegExp("\\b"+k+"\\b","g"))||[]).length;
+
+  });
+
+  /*--------------- Detect Pins ----------------*/
+
+  const pins=original.match(/\b(A[0-5]|[0-9]{1,2})\b/g);
+
+  if(pins){
+
+    data.pins=[...new Set(pins)];
+
+  }
+
+  /*--------------- Complexity ----------------*/
+
+  data.complexity=
+
+      data.lines
+    + data.variables.length*2
+    + data.arrays.length*3
+    + data.comments
+    + data.libraries.length*4
+    + Object.values(data.functions).reduce((a,b)=>a+b,0)
+    + Object.values(data.keywords).reduce((a,b)=>a+b,0);
+
+  return data;
+
 }
 
-// checks real function usage, not fake words
-function hasWord(code, word){
-  return new RegExp(`\\b${word}\\b`).test(code);
+/*================ EXTRA DETECTION =================*/
+
+function analogWriteCount(code){
+  return count(code,"analogwrite");
+}
+
+function digitalReadCount(code){
+  return count(code,"digitalread");
+}
+
+function serialCount(code){
+  return count(code,"serial.");
+}
+
+function delayCount(code){
+  return count(code,"delay");
+}
+
+function millisCount(code){
+  return count(code,"millis");
+}
+
+function switchCount(code){
+  return count(code,"switch");
+}
+
+function caseCount(code){
+  return count(code,"case");
+}
+
+function returnCount(code){
+  return count(code,"return");
+}
+
+function includeCount(code){
+  return (code.match(/#include/gi)||[]).length;
+}
+
+function usesWire(code){
+  return hasLibrary(code,"wire");
+}
+
+function usesSPI(code){
+  return hasLibrary(code,"spi");
+}
+
+function usesServo(code){
+  return hasLibrary(code,"servo");
+}
+
+function usesStepper(code){
+  return hasLibrary(code,"stepper");
+}
+
+function usesLiquidCrystal(code){
+  return hasLibrary(code,"liquidcrystal");
+}
+
+function usesEEPROM(code){
+  return hasLibrary(code,"eeprom");
+}
+
+function usesPin(code,pin){
+
+  return new RegExp("\\b"+pin+"\\b").test(code);
+
+}
+
+function usesPins(code,pins){
+
+  return pins.every(p=>usesPin(code,p));
+
+}
+
+function countPins(code){
+
+  const found=new Set();
+
+  const matches=code.match(/\b([0-9]|1[0-3]|a[0-5])\b/gi)||[];
+
+  matches.forEach(v=>found.add(v.toUpperCase()));
+
+  return found.size;
+
+}
+
+function hasSetup(code){
+  return has(code,"void setup(");
+}
+
+function hasLoop(code){
+  return has(code,"void loop(");
+}
+
+function hasIf(code){
+  return ifCount(code)>0;
+}
+
+function hasFor(code){
+  return count(code,"for")>0;
+}
+
+function hasWhile(code){
+  return count(code,"while")>0;
+}
+
+function hasSwitch(code){
+  return switchCount(code)>0;
+}
+
+function usesInterrupt(code){
+  return has(code,"attachinterrupt");
+}
+
+function usesMap(code){
+  return hasFunction(code,"map");
+}
+
+function usesConstrain(code){
+  return hasFunction(code,"constrain");
+}
+
+function usesRandom(code){
+  return hasFunction(code,"random");
+}
+
+function usesTone(code){
+  return hasFunction(code,"tone");
+}
+
+function usesNoTone(code){
+  return hasFunction(code,"notone");
+}
+
+function scoreCode(raw,code){
+
+  const c=complexity(raw,code);
+
+  let score=0;
+
+  score+=c.lines;
+  score+=c.vars*3;
+  score+=c.ifs*4;
+  score+=c.loops*6;
+  score+=c.pinModes*3;
+  score+=c.digitalWrites*2;
+  score+=c.analogReads*3;
+
+  score+=analogWriteCount(code)*3;
+  score+=digitalReadCount(code)*2;
+  score+=serialCount(code)*3;
+  score+=delayCount(code);
+  score+=millisCount(code)*4;
+  score+=switchCount(code)*5;
+  score+=caseCount(code);
+  score+=returnCount(code);
+
+  if(usesWire(code))score+=15;
+  if(usesSPI(code))score+=15;
+  if(usesServo(code))score+=15;
+  if(usesStepper(code))score+=20;
+  if(usesLiquidCrystal(code))score+=20;
+  if(usesEEPROM(code))score+=20;
+
+  score+=countPins(code);
+
+  return score;
+
+}
+
+function commonErrors(raw){
+
+  const errors=[];
+
+  if(!/void\s+setup\s*\(/i.test(raw))
+    errors.push("Missing setup()");
+
+  if(!/void\s+loop\s*\(/i.test(raw))
+    errors.push("Missing loop()");
+
+  if((raw.match(/\{/g)||[]).length!==(raw.match(/\}/g)||[]).length)
+    errors.push("Unmatched braces");
+
+  if(raw.includes("digitalWrite(")&&!raw.includes("pinMode("))
+    errors.push("digitalWrite without pinMode");
+
+  if(raw.includes("analogWrite(")&&!raw.includes("pinMode("))
+    errors.push("analogWrite without pinMode");
+
+  if(raw.includes("Serial.print")&&!raw.includes("Serial.begin"))
+    errors.push("Serial.begin missing");
+
+  return errors;
+
 }
 
 function submitCode(id){
 
-  const raw = editor ? editor.value : "";
-  const code = raw.toLowerCase().replace(/\s+/g," ");
+const raw=editor?editor.value:"";
+const code=normalize(raw);
+const info=complexity(raw,code);
 
-  let passed = false;
+let passed=false;
 
-  // ================= BLINK =================
-  if(id === "blink"){
+//================ BLINK =================
+if(id==="blink"){
 
-    const hasSetup = hasWord(code, "void setup");
-    const hasLoop  = hasWord(code, "void loop");
-    const hasPin   = hasWord(code, "pinmode");
-    const hasWrite = hasWord(code, "digitalwrite");
-    const hasDelay = hasWord(code, "delay");
-    const hasHigh  = hasWord(code, "high");
-    const hasLow   = hasWord(code, "low");
+passed=
+hasAll(code,[
+"void setup",
+"void loop",
+"pinmode(",
+"digitalwrite(",
+"delay("
+])&&
+count(code,"digitalwrite")>=2&&
+hasAny(code,["high","low"])&&
+info.lines>=8;
 
-    passed =
-      hasSetup &&
-      hasLoop &&
-      hasPin &&
-      hasWrite &&
-      hasDelay &&
-      hasHigh &&
-      hasLow;
-  }
+}
 
-  // ================= BUZZER =================
-  if(id === "buzzer"){
+//================ BUZZER =================
+else if(id==="buzzer"){
 
-    const hasTone = hasWord(code, "tone");
-    const hasDigital = hasWord(code, "digitalwrite");
+passed=
+hasFunction(code,"tone")&&
+hasFunction(code,"noTone")&&
+hasFunction(code,"delay")&&
+count(code,"tone")>=1&&
+info.lines>=8;
 
-    // better rule: tone preferred, digitalWrite optional fallback
-    passed = hasTone || hasDigital;
-  }
+}
 
-  // ================= MULTI LED =================
-  if(id === "multiled"){
+//================ MULTI LED =================
+else if(id==="multiled"){
 
-    const pinModeCount = (code.match(/\bpinmode\b/g) || []).length;
-    const writeCount = (code.match(/\bdigitalwrite\b/g) || []).length;
+passed=
+count(code,"pinmode")>=2&&
+count(code,"digitalwrite")>=4&&
+count(code,"delay")>=2&&
+hasAny(code,["for(","while("])&&
+info.lines>=12;
 
-    const hasSetup = hasWord(code, "pinmode");
+}
 
-    passed = hasSetup && writeCount >= 2;
-  }
+//================ OLD 4 PIN MONITOR =================
+else if(id==="monitor4"){
 
-  // ================= CUSTOM PROJECT =================
-  if(id === "custom"){
+passed=
+hasLibrary(code,"Serial")&&
+hasFunction(code,"Serial.begin")&&
+hasFunction(code,"Serial.print")&&
+count(code,"pinmode")>=4&&
+count(code,"digitalread")>=4&&
+info.lines>=18;
 
-    const title = document.getElementById("projTitle").value.trim();
-    const desc = document.getElementById("projDesc").value.trim();
+}
 
-    const hasCode = raw.trim().length > 30;
-    const hasStructure =
-      hasWord(code, "void setup") ||
-      hasWord(code, "void loop") ||
-      hasWord(code, "function") ||
-      hasWord(code, "#include");
+//================ JOYSTICK + MONITOR =================
+else if(id==="joystick"){
 
-    passed = title.length > 0 && desc.length > 0 && hasCode && hasStructure;
-  }
+passed=
+count(code,"analogread")>=2&&
+hasFunction(code,"Serial.begin")&&
+count(code,"serial.print")>=2&&
+count(code,"if")>=1&&
+info.lines>=18;
 
-  // ================= RESULT =================
-  if(passed){
-    alert("✅ Passed!");
-  } else {
-    alert("❌ Try again!");
-  }
+}
+
+//================ JOYSTICK + SERVO =================
+else if(id==="servo"){
+
+passed=
+hasLibrary(code,"Servo")&&
+hasFunction(code,"attach")&&
+hasFunction(code,"write")&&
+count(code,"analogread")>=2&&
+count(code,"map")>=1&&
+info.lines>=20;
+
+}
+
+//================ JOYSTICK + SERVO + SENSOR =================
+else if(id==="distance"){
+
+passed=
+(
+hasLibrary(code,"Servo")||
+hasLibrary(code,"Stepper")
+)&&
+count(code,"analogread")>=2&&
+count(code,"pulsein")>=1&&
+count(code,"digitalwrite")>=2&&
+count(code,"if")>=2&&
+info.lines>=28;
+
+}
+
+//================ RADAR =================
+else if(id==="radar"){
+
+passed=
+(
+hasLibrary(code,"Servo")||
+hasLibrary(code,"Stepper")
+)&&
+hasFunction(code,"pulseIn")&&
+hasFunction(code,"Serial.print")&&
+count(code,"tone")>=1&&
+count(code,"digitalwrite")>=2&&
+count(code,"for")>=1&&
+info.lines>=35;
+
+}
+
+//================ CUSTOM 1 =================
+else if(id==="custom1"){
+
+const title=document.getElementById("projTitle").value.trim();
+const desc=document.getElementById("projDesc").value.trim();
+
+passed=
+title.length>=5&&
+desc.length>=20&&
+info.lines>=40&&
+info.vars>=5&&
+info.ifs>=2&&
+info.loops>=1&&
+(
+count(code,"digitalwrite")+
+count(code,"analogread")+
+count(code,"analogwrite")+
+count(code,"serial.print")
+)>=8;
+
+}
+
+//================ CUSTOM 2 =================
+else if(id==="custom2"){
+
+const title=document.getElementById("projTitle").value.trim();
+const desc=document.getElementById("projDesc").value.trim();
+
+passed=
+title.length>=5&&
+desc.length>=30&&
+info.lines>=60&&
+info.vars>=8&&
+info.ifs>=4&&
+info.loops>=2&&
+(
+count(code,"digitalwrite")+
+count(code,"analogread")+
+count(code,"analogwrite")+
+count(code,"serial.print")+
+count(code,"tone")
+)>=15;
+
+}
+
+//================ RESULT =================
+if(passed){
+alert("✅ Challenge Passed!");
+}else{
+alert("❌ Challenge Failed.");
+}
+
 }
 
 async function startCodeChallenge(id){
@@ -1223,6 +1781,7 @@ window.onload = () => {
 
 </body>
 </html>
+
 
 
 
