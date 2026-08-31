@@ -9,11 +9,7 @@
 </head>
 <body>
 
-<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a>
-<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span class="dropdown-title">Board</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>
-<a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a>
-<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span>Extended</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
-<a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
+<div id="header"></div>
 <div id="rotateWarning">
   <div class="rotate-box">
     <h2>🔄 Rotate Device</h2>
@@ -197,7 +193,7 @@
 </div>
 
 </div>
-
+<p>Need a hand → <a class="next-link nl-blue nl-md nl-noneunderline"href="Arduino%20Tutorial.html#home"> Tutorial</a></p>
 </aside>
 
     <!-- MAIN EXAMPLE AREA -->
@@ -226,63 +222,312 @@
 <script src="js/Examples.js"></script>
 <script>/*--------------- Examples ---------------*/
 
+
+let exampleMode = localStorage.getItem("arduinoExampleMode") || "old";
+let currentExampleName = localStorage.getItem("arduinoExample") || null;
+let currentCategory = localStorage.getItem("arduinoExampleCategory") || "basic";
+
+
+function saveExampleState(){
+
+  localStorage.setItem(
+    "arduinoExampleMode",
+    exampleMode
+  );
+
+  if(currentExampleName){
+    localStorage.setItem(
+      "arduinoExample",
+      currentExampleName
+    );
+  }
+
+  localStorage.setItem(
+    "arduinoExampleCategory",
+    currentCategory
+  );
+
+}
+
+function showCategory(category){
+
+  currentCategory = category;
+
+  localStorage.setItem(
+    "arduinoExampleCategory",
+    category
+  );
+
+  document.querySelectorAll(".example-category").forEach(cat => {
+    cat.classList.remove("active");
+  });
+
+  const selected =
+    document.getElementById("cat-" + category);
+
+  if(selected){
+    selected.classList.add("active");
+  }
+
+  const select =
+    document.getElementById("categorySelect");
+
+  if(select){
+    select.value = category;
+  }
+
+}
+
+
+function toggleExampleMode(){
+
+  if(!currentExampleName) return;
+
+  exampleMode =
+    exampleMode === "old"
+      ? "new"
+      : "old";
+
+  saveExampleState();
+
+  renderExample();
+
+}
+
+function getActiveExamples(){
+
+  return exampleMode === "new"
+    ? newExamples
+    : examples;
+
+}
+
+function renderExample(){
+
+  const box =
+    document.getElementById("exampleBox");
+
+  if(!box || !currentExampleName) return;
+
+  const ex =
+    getActiveExamples()[currentExampleName];
+
+  if(!ex) return;
+
+  const title =
+    box.querySelector("#exampleTitle");
+
+  const text =
+    box.querySelector("#exampleText");
+
+  const codeBlock =
+    box.querySelector("#exampleCodeBlock");
+
+
+  if(title){
+    title.textContent = ex.title;
+  }
+
+  if(text){
+    text.textContent = ex.text;
+  }
+
+
+  if(codeBlock){
+
+    codeBlock.dataset.filename =
+      ex.filename;
+
+    codeBlock.innerHTML = `
+
+      <div class="example-code-buttons">
+
+        <button
+          class="cli-btn"
+          onclick="copyCode(this)">
+          Copy
+        </button>
+
+        <button
+          class="cli-btn"
+          onclick="downloadCode(this)">
+          Download
+        </button>
+
+        <button
+          id="exampleModeSwitch"
+          class="example-switch ${exampleMode === "new" ? "active" : ""}"
+          onclick="toggleExampleMode()"
+          aria-label="Switch example explanation">
+        </button>
+
+      </div>
+
+      <pre>${highlightCode(ex.code)}</pre>
+
+    `;
+
+  }
+
+}
+
 function loadExample(name){
 
-activatePage("examples", false);
+  activatePage("examples", false);
 
-const ex = examples[name];
-const box = document.getElementById("exampleBox");
+  currentExampleName = name;
 
-if(!ex) return;
+  window.currentExampleName = name;
 
-box.innerHTML = `
+  saveExampleState();
 
-<h2>${ex.title}</h2>
-<p>${ex.text}</p>
+  const ex =
+    getActiveExamples()[name];
 
-<div class="code-block" data-filename="${ex.filename}">
-<button class="cli-btn" onclick="copyCode(this)">Copy</button>
-<button class="cli-btn" style="right:70px" onclick="downloadCode(this)">Download</button>
+  const box =
+    document.getElementById("exampleBox");
 
-<pre>${highlightCode(ex.code)}</pre>
-</div>
+  if(!ex || !box) return;
 
-<div class="cli-cmd-container">
 
-<h3>CLI Commands</h3>
-<p>
-Use to check your port:
-<code class="cli-inline" onclick="copyCmd(this)">
-<a class="next-link nl-blue nl-md nl-noneunderline">arduino-cli board list</a>
-</code>
-</p>
-<div class="cli-row">
+  box.innerHTML = `
 
-<button class="cli-btn" onclick="copyCompile('${ex.filename}')">
-Copy Compile
-</button>
+    <h2 id="exampleTitle">
+      ${ex.title}
+    </h2>
 
-<button class="cli-btn" onclick="copyUpload('${ex.filename}')">
-Copy Upload
-</button>
+    <p id="exampleText">
+      ${ex.text}
+    </p>
 
-<select class="cli-port-select" id="comPort">
-<option>COM3</option>
-<option>COM4</option>
-<option>COM5</option>
-<option>COM6</option>
-<option>COM7</option>
-<option>COM8</option>
-<option>COM9</option>
-<option>COM10</option>
-</select>
 
-</div>
+    <div
+      class="code-block"
+      id="exampleCodeBlock"
+      data-filename="${ex.filename}">
 
-</div>
-<div style="height:20vh;"></div>
-`;
+      <div class="example-code-buttons">
+
+        <button
+          class="cli-btn"
+          onclick="copyCode(this)">
+          Copy
+        </button>
+
+        <button
+          class="cli-btn"
+          onclick="downloadCode(this)">
+          Download
+        </button>
+
+        <button
+          id="exampleModeSwitch"
+          class="example-switch ${exampleMode === "new" ? "active" : ""}"
+          onclick="toggleExampleMode()"
+          aria-label="Switch example explanation">
+        </button>
+
+      </div>
+
+      <pre>${highlightCode(ex.code)}</pre>
+
+    </div>
+
+
+    <div class="cli-cmd-container">
+
+      <h3>CLI Commands</h3>
+
+      <p>
+        Use to check your port:
+
+        <code
+          class="cli-inline"
+          onclick="copyCmd(this)">
+
+          <a class="next-link nl-blue nl-md nl-noneunderline">
+            arduino-cli board list
+          </a>
+
+        </code>
+
+      </p>
+
+
+      <div class="cli-row">
+
+        <button
+          class="cli-btn"
+          onclick="copyCompile('${ex.filename}')">
+          Copy Compile
+        </button>
+
+        <button
+          class="cli-btn"
+          onclick="copyUpload('${ex.filename}')">
+          Copy Upload
+        </button>
+
+        <select
+          class="cli-port-select"
+          id="comPort">
+
+          <option>COM3</option>
+          <option>COM4</option>
+          <option>COM5</option>
+          <option>COM6</option>
+          <option>COM7</option>
+          <option>COM8</option>
+          <option>COM9</option>
+          <option>COM10</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div style="height:20vh;"></div>
+
+  `;
+
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* Restore category */
+
+  showCategory(currentCategory);
+
+
+  /* Restore example */
+
+  if(currentExampleName){
+
+    const source =
+      getActiveExamples();
+
+    if(source[currentExampleName]){
+
+      loadExample(currentExampleName);
+
+    }else{
+
+      /* If the saved example no longer exists,
+         clear only the invalid example. */
+
+      currentExampleName = null;
+
+      localStorage.removeItem(
+        "arduinoExample"
+      );
+
+    }
+
+  }
+
+});
 
 function highlightCode(code){
   return code
@@ -366,6 +611,215 @@ function showPopup(text){
   },3000);
 }
 
+const EXAMPLES_CATEGORY_KEY = "arduinoGuide_examplesCategory";
+const EXAMPLES_SELECTED_KEY = "arduinoGuide_selectedExample";
+
+
+/* Save currently selected category */
+function saveExamplesCategory(category) {
+    localStorage.setItem(EXAMPLES_CATEGORY_KEY, category);
+}
+
+
+/* Save currently selected example */
+function saveSelectedExample(example) {
+    localStorage.setItem(EXAMPLES_SELECTED_KEY, example);
+}
+
+
+/* Restore saved category and example */
+function restoreExamplesState() {
+
+    const savedCategory =
+        localStorage.getItem(EXAMPLES_CATEGORY_KEY);
+
+    const savedExample =
+        localStorage.getItem(EXAMPLES_SELECTED_KEY);
+
+
+    /* Restore category */
+    if (savedCategory) {
+
+        const select =
+            document.getElementById("categorySelect");
+
+        if (select) {
+            select.value = savedCategory;
+        }
+
+        showCategory(savedCategory);
+    }
+
+
+    /* Restore example */
+    if (savedExample && getActiveExamples()[savedExample]) {
+        loadExample(savedExample);
+    }
+}
+
+
+/* Save category whenever the category changes */
+function showCategory(category) {
+
+    saveExamplesCategory(category);
+
+    document
+        .querySelectorAll(".example-category")
+        .forEach(cat => {
+            cat.classList.remove("active");
+        });
+
+
+    const selected =
+        document.getElementById("cat-" + category);
+
+    if (selected) {
+        selected.classList.add("active");
+    }
+
+
+    const select =
+        document.getElementById("categorySelect");
+
+    if (select && select.value !== category) {
+        select.value = category;
+    }
+}
+
+
+/* Modify loadExample so the selected example is saved */
+const originalLoadExample = loadExample;
+
+loadExample = function(name) {
+
+    saveSelectedExample(name);
+
+    originalLoadExample(name);
+};
+
+function getExampleCategory(example){
+
+    const categories = {
+        basic: [
+            "blink",
+            "button",
+            "button-led",
+            "buzzer"
+        ],
+
+        intermediate: [
+            "pwm",
+            "multi-led",
+            "analog",
+            "joystick",
+            "oled"
+        ],
+
+        advanced: [
+            "serial",
+            "timer",
+            "interrupts",
+            "eeprom",
+            "pwm-control"
+        ],
+
+        voltage: [
+            "battery-monitor",
+            "usb-monitor",
+            "solar-monitor",
+            "power-supply-test",
+            "low-voltage-alert"
+        ],
+
+        test: [
+            "led-test",
+            "speaker-test",
+            "button-test",
+            "relay-test",
+            "sensor-test"
+        ]
+    };
+
+    for(const category in categories){
+
+        if(categories[category].includes(example)){
+            return category;
+        }
+
+    }
+
+    return null;
+}
+
+
+function loadExampleFromURL(){
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const example =
+        params.get("example");
+
+    if(!example){
+        return false;
+    }
+
+    const source =
+        getActiveExamples();
+
+    if(!source[example]){
+        return false;
+    }
+
+    const category =
+        getExampleCategory(example);
+
+    if(category){
+
+        currentCategory = category;
+
+        localStorage.setItem(
+            "arduinoExampleCategory",
+            category
+        );
+
+        showCategory(category);
+
+    }
+
+    loadExample(example);
+
+    return true;
+}
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    showCategory(currentCategory);
+
+    if(!loadExampleFromURL() && currentExampleName){
+
+        const source =
+            getActiveExamples();
+
+        if(source[currentExampleName]){
+
+            const category =
+                getExampleCategory(currentExampleName);
+
+            if(category){
+                showCategory(category);
+            }
+
+            loadExample(currentExampleName);
+
+        }
+
+    }
+
+});
+
+
 </script>
 
 <script type="module" src="js/Live.js"></script>
@@ -373,10 +827,13 @@ function showPopup(text){
   <span class="dot"></span>
   Online: <span id="onlineCount">0</span>
 </div>
-
+<script src="js/components.js"></script>
 
 </body>
 </html>
+
+
+
 
 
 

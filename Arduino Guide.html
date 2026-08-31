@@ -13,11 +13,7 @@
 
 <body>
 
-<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a>
-<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span class="dropdown-title">Board</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a> </div></div>
-<a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a>
-<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span>Extended</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
-<a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
+<div id="header"></div>
 <div id="rotateWarning">
   <div class="rotate-box">
     <h2>🔄 Rotate Device</h2>
@@ -30,8 +26,8 @@
 
 
 <section id="home" class="page active">
-  <h2>Welcome to Learn Arduino visually — even without owning one.</h2>
-<div class="info-block">
+  <h2 class="lp-title" >Welcome to Learn Arduino visually — even without owning one.</h2>
+<div class="info-blockv2">
 
   <b>What is this?</b>
   <p>A visual Arduino guide that teaches hardware + code together.</p>
@@ -44,14 +40,13 @@
 
 </div>
 
-<div class="quick-links">
-  <a href="#board">What is Arduino?</a>
-  <a href="Examples.html#examples">Try Your First Example </a>
-</div>
-
 <div class="start-box">
   <p><b>Start in under 30 seconds:</b></p>
-  <a href="#uno" class="start-btn">Explore the Arduino Board</a>
+  <a href="#board" class="start-btn">Explore the Arduino capabilities</a>
+</div>
+<div class="quick-links">
+  <a href="#uno">How does Arduino look?</a>
+  <a href="Examples.html#examples">Try Your First Example </a>
 </div>
 
   <h2 class="lp-title" >Learning Path</h2>
@@ -307,7 +302,7 @@
     </table>
   </div>
 
-<p>Ready to explore the pins?  <a class="next-link nl-blue nl-md nl-noneunderline"    href="#uno">See what each pin does →</a></p>
+<p>Ready to explore the pins? See what each pin does → <a class="next-link nl-blue nl-md nl-noneunderline"href="#uno"> 3D Board</a></p>
 </section>
 
 
@@ -500,6 +495,7 @@
 </div>
 
   </details>
+<p>Ready to Connect? Garb wires, board, and learn how → <a class="next-link nl-blue nl-md nl-noneunderline"href="#hardwarevi"> Connect it</a></p>
 </section>
 
 
@@ -537,15 +533,15 @@
     or breadboards.
   </p>
 
-  <details>
-    <summary>More about Components</summary>
+    <h2>More about Components</h2>
     <p>The longer pin of LEDs is the (<b>+</b>) positive end.</p>
     <p>The shorter pin of LEDs is the (<b>−</b>) negative end and should always be connected to the Arduino's GND (<b>−</b>).</p>
     <p>
-      You can connect all negative ends of LEDs, displays, and even motors together to one GND pin.
-      <b>Note:</b> It is recommended to connect all LEDs, all displays, or one or two motors to a single GND—not all devices combined on the same GND line.
+      You can connect all negative ends of LEDs, displays, and even motors together to one GND pin.</p>
+      <p><b>Note:</b> It is recommended to connect all LEDs, all displays, or one or two motors to a individual (one per commponent) GND—not all devices combined on the same GND line.
     </p>
-  </details>
+
+    <p>Most if not all arduino (uno's) have 3+ GND and expantion holes where you can weld on new pins!</p>
 </div>
 
 <!-- RIGHT COLUMN -->
@@ -568,7 +564,7 @@
 <p>
   Click on the
   <a class="next-link nl-green nl-noneunderline nl-md"
-     href="Examples.html#examples">
+     href="Examples.html?example=blink#examples">
      Blink LED
   </a>
   example.
@@ -659,7 +655,7 @@
 <p>
   Click on the
   <a class="next-link nl-green nl-noneunderline nl-md"
-     href="Examples.html#examples">
+     href="Examples.html?example=multi-led#examples">
      Multi LED
   </a>
   example.
@@ -763,7 +759,7 @@
 <p>
   Click on the
   <a class="next-link nl-green nl-noneunderline nl-md"
-     href="Examples.html#examples">
+     href="Examples.html?example=oled#examples">
      Oled 4-Pin Display
   </a>
   example.
@@ -854,7 +850,7 @@
 <p>
   Click on the
   <a class="next-link nl-green nl-noneunderline nl-md"
-     href="Examples.html#examples">
+     href="Examples.html?example=buzzer#examples">
      Buzzer / Speaker
   </a>
   example.
@@ -939,13 +935,17 @@
   </p>
 
 </details>
+<div style="height:10vh;"></div>
+<details class="wiring-card">
 
-<p>
-  Interested in more visual hardware examples? Visit →
+  <summary>More Wiring Showcase's</summary>
+
+  <p>More visual examples to try out</p>
   <a class="btn" href="hardwarevi-more.html#home">
     Visual Examples
   </a>
-</p>
+</details>
+<p>Code and upload, Ready? Well let's go → <a class="next-link nl-blue nl-md nl-noneunderline"href="Examples.html#examples"> Last Step?</a></p>
 </div>
 <!-- ZOOM -->
 <div id="wireOverlay" class="wire-overlay">
@@ -979,6 +979,7 @@
     <button class="btn-group" onclick="selectGroup('power')">Show Power Pins</button>
     <button class="btn-group" onclick="selectGroup('analog')">Show Analog Pins</button>
     <button class="btn-group" onclick="selectGroup('digital')">Show Digital Pins</button>
+<p>Ready to learn hardware? Go check it out → <a class="next-link nl-blue nl-md nl-noneunderline"href="#hardware"> Components</a></p>
   <div class="content">
     <!-- Image container with clickable pin -->
     <div style="position:relative; flex:1 1 300px;">
@@ -1739,12 +1740,11 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
 </main>
 
-<footer>
-  Arduino Guide Ⓖ 2026
-</footer>
+<div id="footer"></div>
 <script type="module" src="3DRender.js"></script>
 <script src="js/main.js"></script>
 <script type="module" src="js/Live.js"></script>
+<script src="js/components.js"></script>
 <div class="live-counter" id="liveCounter">
   <span class="dot"></span>
   Online: <span id="onlineCount">0</span>
@@ -1756,6 +1756,9 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
 </body>
 </html>
+
+
+
 
 
 

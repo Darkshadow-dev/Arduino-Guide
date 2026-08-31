@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -9,507 +10,1963 @@
 <link rel="icon" type="image/png" href="Images/Website-Guide.png">
 <link rel="stylesheet" href="css/main.css">
 
+<style>
+
+/* =========================================================
+   ARDUINO TUTORIAL PAGE
+========================================================= */
+
+.tutorial-page{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+/* =========================================================
+   TUTORIAL HEADER
+========================================================= */
+
+.tutorial-header{
+  text-align:center;
+  margin:20px auto 35px;
+}
+
+.tutorial-header h1{
+  margin:0 0 10px;
+}
+
+.tutorial-header p{
+  max-width:750px;
+  margin:auto;
+  line-height:1.6;
+}
+
+/* =========================================================
+   TUTORIAL NAVIGATION
+========================================================= */
+
+.tutorial-nav{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:0 auto 35px;
+}
+
+.tutorial-nav a{
+  padding:9px 14px;
+  border-radius:10px;
+  background:var(--panel);
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:bold;
+  transition:.18s ease;
+}
+
+.tutorial-nav a:hover{
+  transform:translateY(-2px);
+}
+
+/* =========================================================
+   LEARNING PATH
+========================================================= */
+
+.tutorial-path{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(170px,1fr));
+  gap:16px;
+  margin:30px auto 45px;
+}
+
+.tutorial-path .lp-card{
+  width:auto;
+}
+
+@media(max-width:800px){
+  .tutorial-path{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:500px){
+  .tutorial-path{
+    grid-template-columns:1fr;
+  }
+}
+
+/* =========================================================
+   TUTORIAL INTRO
+========================================================= */
+
+.tutorial-intro{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(260px,1fr));
+  gap:18px;
+  margin-bottom:35px;
+}
+
+@media(max-width:700px){
+  .tutorial-intro{
+    grid-template-columns:1fr;
+  }
+}
+
+/* =========================================================
+   LESSON
+========================================================= */
+
+.lesson{
+  max-width:950px;
+  margin:0 auto;
+  padding:25px;
+  background:var(--panel);
+  border-radius:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,.06);
+}
+
+.lesson h1{
+  margin-top:0;
+  margin-bottom:10px;
+}
+
+.lesson h2{
+  margin-top:35px;
+}
+
+.lesson h3{
+  margin-top:25px;
+  color:var(--accent);
+}
+
+.lesson-intro{
+  font-size:1.05rem;
+  line-height:1.65;
+  margin-bottom:25px;
+}
+
+/* =========================================================
+   GOAL BOX
+========================================================= */
+
+.lesson-goal{
+  border-left:4px solid var(--accent);
+  padding:12px 16px;
+  margin:20px 0;
+  background:rgba(255,255,255,.35);
+  border-radius:8px;
+}
+
+.lesson-goal b{
+  color:var(--accent);
+}
+
+/* =========================================================
+   REQUIREMENTS
+========================================================= */
+
+.requirements{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(220px,1fr));
+  gap:12px;
+  margin:20px 0;
+}
+
+.requirement{
+  padding:12px 14px;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+@media(max-width:600px){
+  .requirements{
+    grid-template-columns:1fr;
+  }
+}
+
+/* =========================================================
+   STEPS
+========================================================= */
+
+.tutorial-steps{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin:25px 0;
+}
+
+.tutorial-step{
+  position:relative;
+  padding:18px 18px 18px 58px;
+  background:white;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.tutorial-step::before{
+  content:attr(data-step);
+  position:absolute;
+  left:16px;
+  top:17px;
+
+  width:28px;
+  height:28px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:var(--accent);
+  color:white;
+  font-weight:bold;
+}
+
+.tutorial-step h3{
+  margin:0 0 7px;
+}
+
+.tutorial-step p{
+  margin:5px 0;
+}
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.tutorial-details{
+  margin:15px 0;
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
+
+.tutorial-details summary{
+  cursor:pointer;
+  padding:14px 16px;
+  font-weight:bold;
+  color:var(--accent);
+}
+
+.tutorial-details > *:not(summary){
+  margin-left:18px;
+  margin-right:18px;
+}
+
+/* =========================================================
+   CODE
+========================================================= */
+
+.tutorial-code{
+  position:relative;
+  margin:18px 0;
+}
+
+.tutorial-code pre{
+  margin:0;
+  padding:18px;
+  overflow-x:auto;
+  border-radius:10px;
+  background:#111;
+  color:#eee;
+  font-family:Consolas,Monaco,monospace;
+  font-size:.9rem;
+  line-height:1.55;
+}
+
+.tutorial-code code{
+  font-family:inherit;
+}
+
+/* =========================================================
+   INLINE CODE
+========================================================= */
+
+.lesson code{
+  padding:2px 5px;
+  border-radius:5px;
+  background:rgba(0,0,0,.07);
+  font-family:Consolas,Monaco,monospace;
+}
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result-box{
+  margin:25px 0;
+  padding:16px 18px;
+  border-left:4px solid var(--accent);
+  border-radius:10px;
+  background:white;
+}
+
+.result-box h3{
+  margin-top:0;
+}
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.warning-box{
+  margin:20px 0;
+  padding:15px 18px;
+  border-left:4px solid var(--accent2);
+  border-radius:10px;
+  background:white;
+}
+
+.warning-box h3{
+  margin-top:0;
+}
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+.tutorial-image{
+  display:block;
+  max-width:100%;
+  width:auto;
+  margin:20px auto;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.1);
+}
+
+/* =========================================================
+   COMMAND LIST
+========================================================= */
+
+.command-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin:18px 0;
+}
+
+.command{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  background:white;
+  border-radius:9px;
+}
+
+.command code{
+  flex:1;
+}
+
+/* =========================================================
+   NEXT LESSON
+========================================================= */
+
+.lesson-next{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:35px;
+  padding-top:20px;
+  border-top:1px solid rgba(0,0,0,.08);
+}
+
+.lesson-next a{
+  text-decoration:none;
+  font-weight:bold;
+}
+
+@media(max-width:600px){
+  .lesson-next{
+    flex-direction:column;
+  }
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.tutorial-progress{
+  max-width:700px;
+  margin:20px auto 35px;
+  text-align:center;
+}
+
+.tutorial-progress-bar{
+  height:7px;
+  border-radius:99px;
+  background:rgba(0,0,0,.08);
+  overflow:hidden;
+}
+
+.tutorial-progress-bar span{
+  display:block;
+  height:100%;
+  width:10%;
+  background:var(--accent);
+  border-radius:99px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+  .tutorial-page{
+    padding:12px;
+  }
+
+  .lesson{
+    padding:16px;
+    border-radius:14px;
+  }
+
+  .tutorial-step{
+    padding-left:50px;
+  }
+
+  .tutorial-code pre{
+    font-size:.82rem;
+  }
+
+}
+
+</style>
+
 </head>
 
 <body>
 
-<header><div class="topbar"><img src="Images/logo-left.png" class="logo left">    <div class="title">Arduino Guide</div>    <img src="Images/logo-right.png" class="logo right"> </div>  <nav>    <a href="Arduino%20Guide.html#home">Home</a>
-<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span class="dropdown-title">Board</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">  <a href="Arduino%20Guide.html#board" onclick="selectLink(this)">Board</a>  <a href="Arduino%20Guide.html#uno" onclick="selectLink(this)">Arduino Uno 3D</a>  <a href="Arduino%20Guide.html#hardware" onclick="selectLink(this)">Hardware</a>  <a href="Arduino%20Guide.html#hardwarevi" onclick="selectLink(this)">Hardware Visual</a></div></div>
-<a href="Arduino%20Guide.html#more">Arduino Explained</a>    <a href="Examples.html#examples">Examples</a> <span class="nav-spacer"></span><a href="https://darkshadow-dev.github.io/community/Arduino%20Community.html">Community</a> <a href="Arduino Code.html">Code beta</a> <span class="nav-spacer"></span><a href="Arduino Tutorial.html#home">Tutorials</a> <a href="Arduino Quiz.html">Quizes</a>   <a href="Feedback.html#about">Feedback</a>
-<div class="dropdown">  <button class="dropdown-btn" onclick="toggleDropdown(this, event)">    <span>Extended</span> <span class="dropdown-arrow">▾</span>  </button><div class="dropdown-menu">    <a href="Arduino%20Guide%20Extra.html#more">More of all</a> <a href="Arduino%20Download.html#download">Cli Download</a> <a href="Arduino%20Talking.html#Talk">Talking about Guide</a> <a href="Guidelines%20More.html#home">More from us</a>
-<a href="Arduino%20Overview.html#home">Gude Over-View</a></div></div>  </nav></header>
+<div id="header"></div>
+
 <div id="rotateWarning">
   <div class="rotate-box">
     <h2>🔄 Rotate Device</h2>
     <p>Only use in landscape mode!</p>
   </div>
 </div>
-<main>
-  <a class="lp-title next-link nl-nounderline" href="Arduino Tutorial.html#home" >Tutorials: </a>
 
-  <div class="lp-grid">
+<main class="tutorial-page">
+<div style="height:10vh;"></div>
+  <h2 class="lp-title" >Arduino Tutorials feel free to explore</h2>
+<div class="info-block">
 
-    <div class="lp-card">
-      <button class="lp-btn" onclick="toggleLP(this)">Basic Tutorials</button>
-<div class="lp-content">
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#ide/cli-install">Install IDE/CLI</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
-</div>
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#setup">Setup IDE/CLI</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
-</div>
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#f-p">First project</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
-</div>
-</div>
-    </div>
-
-    <div class="lp-card">
-      <button class="lp-btn" onclick="toggleLP(this)">Code Tutorials</button>
-      <div class="lp-content">
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#blink">All Blink</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
-</div>
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#mm">Multi with monitor</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
-</div>
-      </div>
-    </div>
+  <b>About this page</b>
+  <p>    Learn Arduino from your first installation to real projects,
+    hardware connections, programming, debugging and communication.</p>
 
 
-    <div class="lp-card">
-      <button class="lp-btn" onclick="toggleLP(this)">Hardware Tutorials</button>
-      <div class="lp-content">
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#Q-W">Quick Wiring</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
 </div>
-<div class="lp-item">
-  <a href="Arduino Tutorial.html#note">To be noted</a>
-  <span class="lp-check" onclick="toggleCheck(this)"></span>
-</div>
-      </div>
-    </div>
+<div class="tutorial-progress">
+
+  <div class="tutorial-progress-label">
+    <span>Tutorial Progress</span>
+    <span id="tutorialProgressText">0 / 7</span>
   </div>
+
+  <div class="tutorial-progress-bar">
+    <span id="tutorialProgressBar"></span>
+  </div>
+
+  <!-- This starts hidden and appears at 100%. -->
+  <button
+    id="advancedTutorialsBtn"
+    class="lp-btn"
+    style="display:none;"
+    onclick="openAdvancedTutorials()">
+    Advanced Tutorials →
+  </button>
+
+</div>
+<div class="tutorial-path">
+
+  <div class="lp-card">
+
+
+<button class="lp-btn" onclick="toggleLP(this)">
+  Basic Tutorials
+</button>
+
+<div class="lp-content">
+
+  <div class="lp-item">
+    <a href="#ide/cli-install">Install IDE / CLI</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+  <div class="lp-item">
+    <a href="#setup">Setup IDE / CLI</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+  <div class="lp-item">
+    <a href="#f-p">First Project</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+</div>
+
+
+  </div>
+
+  <div class="lp-card">
+
+
+<button class="lp-btn" onclick="toggleLP(this)">
+  Code Tutorials
+</button>
+
+<div class="lp-content">
+
+  <div class="lp-item">
+    <a href="#blink">Blink</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+  <div class="lp-item">
+    <a href="#mm">Serial Monitor</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+</div>
+
+
+  </div>
+
+  <div class="lp-card">
+
+
+<button class="lp-btn" onclick="toggleLP(this)">
+  Project Tutorials
+</button>
+
+<div class="lp-content">
+
+  <!-- Future projects -->
+
+</div>
+
+
+  </div>
+
+  <div class="lp-card">
+
+
+<button class="lp-btn" onclick="toggleLP(this)">
+  Hardware Tutorials
+</button>
+
+<div class="lp-content">
+
+  <div class="lp-item">
+    <a href="#Q-W">Quick Wiring</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+  <div class="lp-item">
+    <a href="#note">Important Notes</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+</div>
+
+  </div>
+
+</div>
+
+
+<!-- NEW SECTION BELOW -->
+
 
 <section id="home" class="page active">
 
+  <div class="tutorial-intro">
 
-<div style="height:5vh;"></div>
+
 <div class="info-card">
+
   <h3>What You Will Learn</h3>
+
   <ul>
-    <li>How Arduino digital and analog pins behave in real circuits</li>
-    <li>How code sends signals to control LEDs, sensors, and motors</li>
-    <li>How to build basic wiring setups step-by-step</li>
-    <li>How Serial, I²C, and SPI communication work in practice</li>
+    <li>How Arduino pins behave in real circuits</li>
+    <li>How code controls hardware</li>
+    <li>How to build projects step-by-step</li>
+    <li>How Serial, I²C and SPI work</li>
+    <li>How to troubleshoot hardware and code</li>
   </ul>
+
 </div>
 
-<div style="height: 2vh"></div>
 
 <div class="info-card">
-  <h3>How This Tutorial Works</h3>
+
+  <h3>How These Tutorials Work</h3>
+
   <ul>
-    <li>Open each lesson to learn one concept at a time</li>
-    <li>Follow step-by-step examples with code and wiring</li>
-    <li>Use interactive sections to understand pin behavior</li>
-    <li>Everything runs offline with no external tools required</li>
+    <li>Start with the basics</li>
+    <li>Follow each step in order</li>
+    <li>Run the code yourself</li>
+    <li>Compare your result with the expected result</li>
+    <li>Use troubleshooting when something fails</li>
   </ul>
+
 </div>
 
-<div style="height: 2vh"></div>
 
 <div class="info-card">
+
   <h3>Who This Is For</h3>
+
   <ul>
-    <li>Complete beginners starting with Arduino</li>
-    <li>Students learning electronics and programming basics</li>
-    <li>Hobby makers building first projects</li>
-    <li>Visual learners who prefer practical examples</li>
+    <li>Complete beginners</li>
+    <li>Students</li>
+    <li>Hobby makers</li>
+    <li>Visual learners</li>
   </ul>
+
 </div>
 
-<div style="height: 2vh"></div>
 
 <div class="info-card">
-  <h3>Important Notes</h3>
-  <ul>
-    <li>Focus is on understanding real hardware behavior</li>
-    <li>Skills learned apply to most microcontroller platforms</li>
-    <li>You can follow along even without physical Arduino hardware</li>
-  </ul>
+
+  <h3>Recommended Order</h3>
+
+  <ol>
+    <li>Download</li>
+    <li>Setup</li>
+    <li>First Project</li>
+    <li>Code Tutorials</li>
+    <li>Hardware</li>
+    <li>Serial Monitor</li>
+    <li>Projects</li>
+    <li>Problems & Notes</li>
+  </ol>
+
 </div>
-</section>
 
-<section id="ide/cli-install" class="page">
-<h1> Arduino IDE/CLI Download</h1>
-<details><summary>IDE Download Tutorial</summary>
-      <li>🧰 Arduino IDE: <a class="next-link nl-blue nl-md nl-noneunderline" href="https://www.arduino.cc/en/software/" target="_blank" rel="noopener noreferrer">arduino.cc/en/software</a></li>
 
-<p>For IDE download click the link and scroll down till you see the Arduino IDE version and download button, then click download</p>
-<p>Looks like this:</p> <img src="Images/dl.png">
-</details>
-<div style="height:3vh"></div>
-<details><summary>CLI download Tutorial</summary>
-      <li>⌨️ Arduino CLI: <a class="next-link nl-blue nl-md nl-nounderline" href="https://github.com/arduino/arduino-cli/releases" target="_blank" rel="noopener noreferrer">arduino-cli documentation</a></li>
-<p>For CLI download click the link and scroll down till you see the Assets and show more (21) assets, then scroll down till it look same as the image then select your operating system and download the cli and set it up</p>
-<img src="Images/dc.png">
-<div style="height:3vh"></div>
-
-      <li>Or go to our <a class="next-link nl-blue nl-nounderline" href="Arduino%20Download.html#download">Arduino cli download</a> Page</li>
-      <li>To easy setup and download Arduino Command Line Interface (CLI)</p>
-</details>
-
-<div style="height: 2vh"></div>
-
-<div class="info-card">
-  <h3>About This Tutorial</h3>
-  <ul>
-    <li>Learn where to safely download the official Arduino IDE and Arduino CLI</li>
-    <li>Follow step-by-step instructions with screenshots for each download page</li>
-    <li>Understand the difference between the graphical IDE and the command-line CLI</li>
-    <li>Choose the correct download for your operating system</li>
-    <li>Prepare your computer for future Arduino programming tutorials</li>
-  </ul>
+  </div>
 
 </section>
 
-<section id="setup" class="page">
 
-<h1>IDE / CLI Setup</h1>
+<!-- NEW SECTION BELOW -->
 
-<details>
-<summary>Arduino IDE Setup</summary>
 
-<li>🧰 Open Arduino IDE after installation</li>
-<li>Go to <b>File → Preferences</b></li>
-<li>Paste board manager URL if needed (ESP32 / ESP8266 etc.)</li>
-<li>Go to <b>Tools → Board</b> and select your board</li>
-<li>Go to <b>Tools → Port</b> and select USB port</li>
+<section id="ide/cli-install" class="page" tut-id="1">
 
-<p>Now your IDE is ready to upload code.</p>
+<div class="lesson">
 
-</details>
+  <h1>1. Download Arduino Tools</h1>
 
-<div style="height:3vh"></div>
+  <p class="lesson-intro">
+    Before writing your first Arduino program, you need a way to
+    create, compile and upload your code.
+  </p>
 
-<details>
-<summary>Arduino CLI Setup</summary>
+  <div class="lesson-goal">
 
-<li>⌨️ Open terminal / CMD</li>
-<li>Run: <code>arduino-cli version</code></li>
-<li>Install core: <code>arduino-cli core update-index</code></li>
-<li>Install board: <code>arduino-cli core install arduino:avr</code></li>
-<li>Check device: <code>arduino-cli board list</code></li>
+<b>Goal:</b>
+Install the Arduino IDE or Arduino CLI so your computer
+is ready for the next tutorial.
 
-<p>Now CLI is ready for compiling and uploading.</p>
+  </div>
 
-</details>
+  <div class="requirements">
 
-<div style="height: 2vh"></div>
+<div class="requirement">
+  🖥️ A Windows, Linux or macOS computer
+</div>
 
-<div class="info-card">
-<h3>Setup Summary</h3>
-<ul>
-<li>IDE = visual setup (click-based)</li>
-<li>CLI = terminal-based control</li>
-<li>Both need board + port configured</li>
-</ul>
+<div class="requirement">
+  🔌 USB cable suitable for your Arduino board
+</div>
+
+  </div>
+  <details class="tutorial-details" open>
+<summary>Arduino IDE Download</summary>
+
+<p>
+  Download the Arduino IDE from the official Arduino website.
+</p>
+
+<p>
+  <a
+    class="next-link nl-blue nl-md nl-noneunderline"
+    href="https://www.arduino.cc/en/software/"
+    target="_blank"
+    rel="noopener noreferrer">
+    Open Arduino IDE Download
+  </a>
+</p>
+
+<p>
+  Find the Arduino IDE download section and select the version
+  for your operating system.
+</p>
+
+<img
+  src="Images/dl.png"
+  alt="Arduino IDE download page"
+  class="tutorial-image">
+
+  </details>
+
+  <details class="tutorial-details">
+<summary>Arduino CLI Download</summary>
+
+<p>
+  Arduino CLI allows you to control Arduino projects from
+  CMD, PowerShell or another terminal.
+</p>
+
+<p>
+  <a
+    class="next-link nl-blue nl-md nl-noneunderline"
+    href="https://github.com/arduino/arduino-cli/releases"
+    target="_blank"
+    rel="noopener noreferrer">
+    Open Arduino CLI Releases
+  </a>
+</p>
+
+<p>
+  Download the package matching your operating system.
+</p>
+
+<img
+  src="Images/dc.png"
+  alt="Arduino CLI download page"
+  class="tutorial-image">
+  </details>
+
+  <div class="result-box">
+
+
+<h3>When You're Done</h3>
+
+<p>
+  You should have Arduino IDE installed, Arduino CLI installed,
+  or both if you want to learn both workflows.
+</p>
+
+  </div>
+
+  <div class="lesson-next">
+
+<a href="#home">← Tutorial Home</a>
+
+<a href="#setup">Next: Setup →</a>
+
+  </div>
+
 </div>
 
 </section>
 
-<section id="f-p" class="page">
+<!-- NEW SECTION BELOW -->
 
-<h1>First Arduino Project</h1>
 
-<div class="info-card">
-<h3>Before You Start</h3>
-<ul>
-<li>Make sure Arduino IDE or CLI is installed</li>
-<li>Connect your Arduino board with USB cable</li>
-<li>Check that drivers are installed (if needed)</li>
-</ul>
+
+<section id="setup" class="page" tut-id="2">
+
+<div class="lesson">
+
+  <h1>2. Arduino IDE / CLI Setup</h1>
+
+  <p class="lesson-intro">
+    Now that the tools are installed, connect your Arduino and
+    configure your computer so it can communicate with the board.
+  </p>
+
+  <div class="tutorial-steps">
+
+<div class="tutorial-step" data-step="1">
+
+  <h3>Connect the Arduino</h3>
+
+  <p>
+    Connect the Arduino to your computer using USB.
+  </p>
+
 </div>
 
-<div style="height:2vh"></div>
 
-<details>
-<summary>Step 1: Prepare Board (IDE)</summary>
+<div class="tutorial-step" data-step="2">
 
-<li>Open Arduino IDE</li>
-<li>Go to <b>Tools → Board</b> → select your board (e.g. Arduino Uno)</li>
-<li>Go to <b>Tools → Port</b> → select USB port</li>
+  <h3>Configure the IDE</h3>
 
-<p>If port is missing, reconnect USB or install drivers.</p>
+  <p>
+    Open Arduino IDE and select your board from
+    <b>Tools → Board</b>.
+  </p>
 
-</details>
+  <p>
+    Then select the correct port from
+    <b>Tools → Port</b>.
+  </p>
 
-<details>
-<summary>Step 1: Prepare Board (CLI)</summary>
+</div>
 
-<li>Open CMD / Terminal</li>
-<li>Run: <code>arduino-cli board list</code></li>
-<li>Confirm your board appears in the list</li>
-<li>If not, reconnect USB cable</li>
 
-<p>Then install board core if needed:</p>
+<div class="tutorial-step" data-step="3">
 
-<pre>
-arduino-cli core update-index
-arduino-cli core install arduino:avr
-</pre>
+  <h3>Test the CLI</h3>
 
-</details>
+  <p>Open CMD or Terminal and run:</p>
 
-<div style="height:2vh"></div>
+  <div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+    <pre><code>arduino-cli version</code></pre>
+  </div>
 
-<details>
-<summary>Step 2: Wiring (LED Setup)</summary>
+</div>
 
-<li>Connect LED long leg → Pin 13</li>
-<li>Connect LED short leg → 220Ω resistor</li>
-<li>Resistor → GND (ground pin)</li>
 
-<p>This prepares hardware for testing.</p>
+<div class="tutorial-step" data-step="4">
 
-</details>
+  <h3>Find the Arduino</h3>
 
-<div style="height:2vh"></div>
+  <div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+    <pre><code>arduino-cli board list</code></pre>
+  </div>
 
-<details>
-<summary>Step 3: Write Code (IDE)</summary>
+</div>
 
-<li>In Arduino IDE click <b>New Sketch</b></li>
-<li>Delete default code</li>
-<li>Paste this code:</li>
 
-<pre>
-void setup() {
+<div class="tutorial-step" data-step="5">
+
+  <h3>Install the Uno Core</h3>
+
+  <div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+    <pre><code>arduino-cli core update-index
+arduino-cli core install arduino:avr</code></pre> </div>
+</div>
+
+  </div>
+
+  <div class="result-box">
+
+<h3>Expected Result</h3>
+
+<p>
+  The IDE should recognize your board and the CLI should be
+  able to detect it.
+</p>
+
+  </div>
+
+  <div class="lesson-next">
+
+<a href="#ide/cli-install">← Previous</a>
+
+<a href="#f-p">Next: First Project →</a>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- NEW SECTION BELOW -->
+
+
+
+<section id="f-p" class="page" tut-id="3">
+
+<div class="lesson">
+
+  <h1>3. Your First Arduino Project</h1>
+
+  <p class="lesson-intro">
+    This is where everything comes together. You will connect an LED,
+    write your first program and upload it to the Arduino.
+  </p>
+
+  <div class="lesson-goal">
+
+<b>Goal:</b>
+Make an LED turn ON and OFF repeatedly.
+
+
+  </div>
+
+  <div class="requirements">
+
+<div class="requirement">🔌 Arduino Uno</div>
+<div class="requirement">💡 LED</div>
+<div class="requirement">🟫 220Ω resistor</div>
+<div class="requirement">🔗 Jumper wires</div>
+<div class="requirement">🔌 USB cable</div>
+
+  </div>
+
+  <div class="tutorial-steps">
+
+
+<div class="tutorial-step" data-step="1">
+
+  <h3>Prepare the Board</h3>
+
+  <p>
+    Connect your Arduino to the computer.
+  </p>
+
+  <p>
+    In the IDE select your Arduino board and USB port.
+  </p>
+
+</div>
+
+
+<div class="tutorial-step" data-step="2">
+
+  <h3>Wire the LED</h3>
+
+  <p>
+    Connect the LED and resistor according to the wiring diagram
+    used in the Arduino Guide <a class="next-link nl-blue nl-nounderline" href="Arduino Guide.html#hardwarevi"> LED Example</a>.
+  </p>
+
+  <p>
+    The resistor limits the current through the LED.
+  </p>
+
+</div>
+
+
+<div class="tutorial-step" data-step="3">
+
+  <h3>Create the Sketch</h3>
+
+  <p>
+    Create a new Arduino sketch and enter:
+  </p>
+
+<div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+<pre><code>void setup() {
+  // Set digital pin 13 as an output.
   pinMode(13, OUTPUT);
 }
 
 void loop() {
+  // Turn the LED ON.
   digitalWrite(13, HIGH);
+
+  // Wait for one second.
   delay(1000);
+
+  // Turn the LED OFF.
   digitalWrite(13, LOW);
+
+  // Wait for one second.
   delay(1000);
-}
-</pre>
+}</code></pre>
 
-</details>
+</div>
 
-<details>
-<summary>Step 3: Write Code (CLI)</summary>
 
-<li>Create file: <code>blink.ino</code></li>
 
-<p>Paste same code into file:</p>
+  </div>
 
-<pre>
-void setup() {
-  pinMode(13, OUTPUT);
-}
+</div>
 
-void loop() {
-  digitalWrite(13, HIGH);
-  delay(1000);
-  digitalWrite(13, LOW);
-  delay(1000);
-}
-</pre>
 
-</details>
+<div class="tutorial-step" data-step="4">
 
-<div style="height:2vh"></div>
+  <h3>Upload and Compile</h3>
 
-<details>
-<summary>Step 4: Upload Code</summary>
+  <p>
+    In Arduino IDE press the Upload button.
+  </p>
 
-<li><b>IDE:</b> Click Upload button (→ arrow icon)</li>
+  <p>
+    Using Arduino CLI commands:
+  </p>
 
-<li><b>CLI:</b> Run commands:</li>
+  <div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
 
-<pre>
-arduino-cli compile --fqbn arduino:avr:uno blink
-arduino-cli upload -p COM3 --fqbn arduino:avr:uno blink
-</pre>
+<pre><code>arduino-cli compile --fqbn arduino:avr:uno blink
+arduino-cli upload -p COM3 --fqbn arduino:avr:uno blink</code></pre>
 
-<p>(Replace COM3 with your actual port)</p>
 
-</details>
+  </div>
 
-<div style="height:2vh"></div>
+  <p>
+    Replace <code>COM3</code> with your actual Arduino port.
+  </p>
 
-<details>
-<summary>Step 5: Test Result</summary>
+</div>
 
-<li>LED should turn ON for 1 second</li>
-<li>Then OFF for 1 second</li>
-<li>If nothing happens:</li>
+
+<div class="tutorial-step" data-step="5">
+
+  <h3>Watch the Result</h3>
+
+  <p>
+    The LED should turn ON for one second and OFF for one second.
+  </p>
+
+</div>
+
+
+  </div>
+
+  <div class="result-box">
+
+
+<h3>🎉 You Made Your First Project</h3>
+
+<p>
+  You have now completed the basic Arduino workflow:
+</p>
+
+<ol>
+  <li>Connect hardware</li>
+  <li>Write code</li>
+  <li>Compile</li>
+  <li>Upload</li>
+  <li>Test</li>
+</ol>
+
+
+  </div>
+
+  <details class="tutorial-details">
+
+
+<summary>If It Does Not Work</summary>
 
 <ul>
-  <li>Check wiring direction of LED</li>
-  <li>Check board port selection</li>
-  <li>Try different USB cable</li>
+  <li>Check the selected board.</li>
+  <li>Check the selected port.</li>
+  <li>Check the USB cable.</li>
+  <li>Check LED orientation.</li>
+  <li>Check the resistor and wiring.</li>
+  <li>Try uploading again.</li>
 </ul>
 
-</details>
+  </details>
 
-<div style="height:2vh"></div>
+  <div class="lesson-next">
 
-<div class="info-card">
-<h3>What You Learned</h3>
-<ul>
-<li>How to prepare IDE and CLI</li>
-<li>How Arduino code structure works</li>
-<li>How upload process actually runs</li>
-<li>How to test and debug hardware</li>
-</ul>
+
+<a href="#setup">← Previous</a>
+
+<a href="#blink">Next: Code Tutorials →</a>
+
+
+  </div>
+
 </div>
 
 </section>
 
-<section id="blink" class="page">
+<!-- NEW SECTION BELOW -->
 
-<h1>Advanced Blink</h1>
+<section id="blink" class="page" tut-id="4">
 
-<details>
-<summary>Custom Blink Speed</summary>
+<div class="lesson">
 
-<p>Change delay values to control speed:</p>
+  <h1>4. Blink Code Tutorials</h1>
 
-<pre>
-void loop() {
+  <p class="lesson-intro">
+    Now that your first project works, start changing the program
+    and learn how Arduino code controls hardware.
+  </p>
+
+  <details class="tutorial-details" open>
+
+<summary>Change Blink Speed</summary>
+
+<p>
+  The <code>delay()</code> function controls how long Arduino waits.
+</p>
+
+<div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+<pre><code>void loop() {
+  // Turn the LED ON.
   digitalWrite(13, HIGH);
+
+  // Wait 200 milliseconds.
   delay(200);
+
+  // Turn the LED OFF.
   digitalWrite(13, LOW);
+
+  // Wait another 200 milliseconds.
   delay(200);
-}
-</pre>
+}</code></pre>
 
-</details>
+</div>
 
-<details>
-<summary>Multiple LEDs Blink</summary>
+<div class="result-box">
 
-<p>Connect LEDs to pins 8, 9, 10</p>
+  <h3>Result</h3>
 
-<pre>
-void setup() {
+  <p>
+    The LED now blinks much faster.
+  </p>
+
+</div>
+
+  </details>
+
+
+  <details class="tutorial-details">
+
+<summary>Multiple LEDs</summary>
+
+<p>
+  Connect LEDs to pins 8, 9 and 10.
+</p>
+
+<div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+<pre><code>void setup() {
+  // Set pin 8 as an output.
   pinMode(8, OUTPUT);
+
+  // Set pin 9 as an output.
   pinMode(9, OUTPUT);
+
+  // Set pin 10 as an output.
   pinMode(10, OUTPUT);
 }
 
 void loop() {
+  // Turn LED on pin 8 ON.
   digitalWrite(8, HIGH);
-  digitalWrite(9, LOW);
-  digitalWrite(10, HIGH);
-  delay(500);
-}
-</pre>
 
-</details>
+  // Turn LED on pin 9 OFF.
+  digitalWrite(9, LOW);
+
+  // Turn LED on pin 10 ON.
+  digitalWrite(10, HIGH);
+
+  // Keep this pattern for 500 milliseconds.
+  delay(500);
+}</code></pre>
+
+</div>
+
+  </details>
+
+  <div class="lesson-next">
+
+<a href="#f-p">← First Project</a>
+
+<a href="#mm">Next: Serial Monitor →</a>
+
+  </div>
+
+</div>
 
 </section>
 
-<section id="mm" class="page">
+<!-- NEW SECTION BELOW -->
 
-<h1>Serial Monitor Basics</h1>
+<section id="mm" class="page" tut-id="5">
 
-<details>
+<div class="lesson">
+
+  <h1>5. Serial Monitor</h1>
+
+  <p class="lesson-intro">
+    Serial communication lets Arduino send information back to your
+    computer. It is one of the most useful tools for debugging projects.
+  </p>
+
+  <details class="tutorial-details" open>
+
 <summary>First Serial Output</summary>
 
-<pre>
-void setup() {
+<div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+<pre><code>void setup() {
+  // Start serial communication at 9600 baud.
   Serial.begin(9600);
 }
 
 void loop() {
+  // Send text to the Serial Monitor.
   Serial.println("Hello Arduino");
+
+  // Wait one second before sending it again.
   delay(1000);
-}
-</pre>
+}</code></pre>
 
-<p>Open Serial Monitor (Ctrl + Shift + M)</p>
+</div>
 
-</details>
+<p>
+  Open Serial Monitor and set the baud rate to
+  <b>9600</b>.
+</p>
 
-<details>
-<summary>Sensor Simulation Output</summary>
+<div class="result-box">
 
-<pre>
-void setup() {
+  <h3>Expected Result</h3>
+
+  <p>
+    You should see:
+  </p>
+
+  <div class="tutorial-code">
+
+<pre><code>Hello Arduino
+Hello Arduino
+Hello Arduino</code></pre>
+
+  </div>
+
+</div>
+
+  </details>
+
+
+  <details class="tutorial-details">
+
+<summary>Read an Analog Sensor</summary>
+
+<div class="tutorial-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy
+</button>
+<pre><code>void setup() {
+  // Start serial communication at 9600 baud.
   Serial.begin(9600);
 }
 
 void loop() {
+  // Read the analog value from pin A0.
   int value = analogRead(A0);
-  Serial.println(value);
-  delay(500);
-}
-</pre>
 
-</details>
+  // Send the value to the Serial Monitor.
+  Serial.println(value);
+
+  // Wait half a second before reading again.
+  delay(500);
+}</code></pre>
+
+</div>
+
+<p>
+  This continuously reads A0 and sends the value to the computer.
+</p>
+
+  </details>
+
+  <div class="lesson-next">
+
+<a href="#blink">← Code Tutorials</a>
+
+<a href="#Q-W">Next: Hardware →</a>
+
+  </div>
+
+</div>
 
 </section>
 
-<section id="Q-W" class="page">
+<!-- NEW SECTION BELOW -->
 
-<h1>Quick Wiring Guide</h1>
 
-<details>
-<summary>Basic LED Wiring</summary>
 
-<li>LED long leg → Pin 13</li>
-<li>LED short leg → GND</li>
-<li>Add 220Ω resistor in series</li>
+<section id="Q-W" class="page" tut-id="6">
 
-</details>
+<div class="lesson">
 
-<details>
+  <h1>6. Quick Wiring Guide</h1>
+
+  <p class="lesson-intro">
+    Before moving into larger projects, learn the basic connection
+    patterns used by common Arduino components.
+  </p>
+
+  <details class="tutorial-details" open>
+
+
+<summary>LED Wiring</summary>
+
+<ul>
+  <li>Arduino pin → resistor</li>
+  <li>Resistor → LED positive leg</li>
+  <li>LED negative leg → GND</li>
+</ul>
+
+
+  </details>
+
+  <details class="tutorial-details">
+
+
 <summary>Button Wiring</summary>
 
-<li>One side → 5V</li>
-<li>Other side → Pin 2</li>
-<li>Use 10kΩ pull-down resistor</li>
+<ul>
+  <li>Connect the button to a digital input.</li>
+  <li>Use an appropriate pull-up or pull-down configuration.</li>
+  <li>Read the button state using <code>digitalRead()</code>.</li>
+</ul>
 
-</details>
 
-<details>
+  </details>
+
+  <details class="tutorial-details">
+
+
 <summary>Sensor Wiring</summary>
 
-<li>VCC → 5V</li>
-<li>GND → GND</li>
-<li>OUT → Analog pin (A0)</li>
+<ul>
+  <li>VCC → appropriate power pin</li>
+  <li>GND → Arduino GND</li>
+  <li>Signal → appropriate Arduino input</li>
+</ul>
 
-</details>
+  </details>
+
+  <div class="warning-box">
+
+
+<h3>⚠ Important</h3>
+
+<p>
+  Never assume that every module uses 5V. Check the component's
+  required voltage before connecting it.
+</p>
+
+
+  </div>
+
+  <div class="lesson-next">
+
+
+<a href="#mm">← Serial Monitor</a>
+
+<a href="#note">Next: Notes →</a>
+
+
+  </div>
+
+</div>
 
 </section>
 
-<section id="note" class="page">
+<!-- NEW SECTION BELOW -->
 
-<h1>Important Notes</h1>
 
-<div class="info-card">
-<h3>Before You Continue</h3>
+
+<section id="note" class="page" tut-id="7">
+
+<div class="lesson">
+
+  <h1>7. Notes & Troubleshooting</h1>
+
+  <p class="lesson-intro">
+    When a project does not work, do not immediately change everything.
+    Check one part at a time.
+  </p>
+
+  <details class="tutorial-details" open>
+
+
+<summary>Hardware Problems</summary>
+
 <ul>
-<li>Always double-check wiring before powering board</li>
-<li>Wrong wiring can damage components</li>
-<li>Use resistors for LEDs and sensors</li>
+  <li>Check GND connections.</li>
+  <li>Check component orientation.</li>
+  <li>Check resistor values.</li>
+  <li>Check the selected pins.</li>
+  <li>Check the USB connection.</li>
 </ul>
-</div>
 
-<div style="height:2vh"></div>
 
-<div class="info-card">
-<h3>Programming Tips</h3>
+  </details>
+
+  <details class="tutorial-details">
+
+
+<summary>Upload Problems</summary>
+
 <ul>
-<li>Start with simple code first</li>
-<li>Test one component at a time</li>
-<li>Use Serial Monitor for debugging</li>
+  <li>Check the selected board.</li>
+  <li>Check the selected port.</li>
+  <li>Close other programs using the serial port.</li>
+  <li>Reconnect the Arduino.</li>
+  <li>Try uploading again.</li>
 </ul>
+
+  </details>
+
+  <details class="tutorial-details">
+
+
+<summary>Code Problems</summary>
+
+<ul>
+  <li>Check spelling.</li>
+  <li>Check brackets.</li>
+  <li>Check semicolons.</li>
+  <li>Check pin numbers.</li>
+  <li>Read the compiler error from the beginning.</li>
+</ul>
+
+
+  </details>
+
+  <div class="result-box">
+
+
+<h3>Debugging Rule</h3>
+
+<p>
+  Change one thing at a time. If you change the wiring, code and
+  board configuration simultaneously, it becomes much harder to
+  find the actual problem.
+</p>
+
+
+  </div>
+
+  <div class="lesson-next">
+
+
+<a href="#Q-W">← Hardware</a>
+
+<a href="#home">Back to Tutorial Home →</a>
+
+
+  </div>
+
 </div>
 
 </section>
+
+<!-- NEW SECTION BELOW -->
+
+
+
+<section class="page">
+
+<div class="lesson">
+
+  <h1>More Tutorials Coming Next</h1>
+
+  <p class="lesson-intro">
+    The tutorial system is designed to grow beyond the beginner lessons.
+  </p>
+
+  <div class="command-list">
+
+
+<div class="command">
+  <b>8</b>
+  <span>All Arduino Commands</span>
+</div>
+
+<div class="command">
+  <b>9</b>
+  <span>Advanced Hardware Connections</span>
+</div>
+
+<div class="command">
+  <b>10</b>
+  <span>Continue the First Project</span>
+</div>
+
+<div class="command">
+  <b>11</b>
+  <span>Project 2</span>
+</div>
+
+<div class="command">
+  <b>12</b>
+  <span>Project 3</span>
+</div>
+
+<div class="command">
+  <b>13</b>
+  <span>Problems & Troubleshooting</span>
+</div>
+
+<div class="command">
+  <b>14</b>
+  <span>Serial Monitor</span>
+</div>
+
+<div class="command">
+  <b>15</b>
+  <span>I²C Communication</span>
+</div>
+
+<div class="command">
+  <b>16</b>
+  <span>SPI Communication</span>
+</div>
+
+<div class="command">
+  <b>17</b>
+  <span>Libraries</span>
+</div>
+
+
+  </div>
+
+</div>
+
+</section>
+
 </main>
+<div id="copyPopup">Copied!</div>
 
-<footer>
-Arduino Guide Ⓖ 2026
-</footer>
+<div id="footer"></div>
 
 <script src="js/main.js"></script>
 
+<script type="module" src="js/Live.js"></script>
+<script src="js/components.js"></script>
+<div class="live-counter" id="liveCounter">
+  <span class="dot"></span>
+  Online: <span id="onlineCount">0</span>
+</div>
+<script>
+function escapeHTML(str){
+    return str
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+}
+
+
+function highlightCode(code){
+
+    let html = escapeHTML(code);
+
+    const comments = [];
+
+    html = html.replace(/\/\/.*$/gm,function(match){
+        comments.push(match);
+        return "___COMMENT_" + (comments.length - 1) + "___";
+    });
+
+
+
+    const strings = [];
+
+    html = html.replace(/"(?:\\.|[^"\\])*"/g,function(match){
+        strings.push(match);
+        return "___STRING_" + (strings.length - 1) + "___";
+    });
+
+
+    html = html.replace(
+        /\b(void|int|long|float|double|char|byte|bool|boolean|unsigned|signed|const|static|if|else|for|while|do|switch|case|break|continue|return)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+
+    /*
+       Arduino functions
+    */
+
+    html = html.replace(
+        /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+    html = html.replace(
+        /\b(Serial|begin|print|println|available|read)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+
+    /*
+       Arduino constants
+    */
+
+    html = html.replace(
+        /\b(HIGH|LOW|OUTPUT|INPUT|INPUT_PULLUP|LED_BUILTIN|true|false)\b/g,
+        '<span style="color:#fbbf24">$1</span>'
+    );
+
+    html = html.replace(
+        /\b(A0|A1|A2|A3|A4|A5)\b/g,
+        '<span style="color:#fbbf24">$1</span>'
+    );
+
+
+    /*
+       Preprocessor
+    */
+
+    html = html.replace(
+        /(#include\s*&lt;.*?&gt;|#define\s+\w+)/g,
+        '<span style="color:#f472b6">$1</span>'
+    );
+
+
+    /*
+       Libraries
+    */
+
+    html = html.replace(
+        /\b(Adafruit_SSD1306|Adafruit_GFX|Wire|SPI)\b/g,
+        '<span style="color:#60a5fa">$1</span>'
+    );
+
+
+    /*
+       Library constants
+    */
+
+    html = html.replace(
+        /\b(SSD1306_SWITCHCAPVCC|WHITE|BLACK)\b/g,
+        '<span style="color:#22c55e">$1</span>'
+    );
+
+
+    /*
+       Objects
+    */
+
+    html = html.replace(
+        /\b(display)\b/g,
+        '<span style="color:#e879f9">$1</span>'
+    );
+
+
+    /*
+       Numbers
+    */
+
+    html = html.replace(
+        /\b\d+(?:\.\d+)?\b/g,
+        '<span style="color:#a78bfa">$&</span>'
+    );
+
+
+    /*
+       Restore strings
+    */
+
+    strings.forEach(function(value,index){
+        html = html.replace(
+            "___STRING_" + index + "___",
+            '<span style="color:#fbbf24">' + value + '</span>'
+        );
+    });
+
+
+    /*
+       Restore comments LAST
+    */
+
+    comments.forEach(function(value,index){
+        html = html.replace(
+            "___COMMENT_" + index + "___",
+            '<span style="color:#22c55e">' + value + '</span>'
+        );
+    });
+
+
+    return html;
+}
+
+
+/* =========================================================
+   AUTOMATICALLY HIGHLIGHT ALL TUTORIAL CODE
+========================================================= */
+
+function highlightAllCode(){
+
+    const blocks = document.querySelectorAll(
+        ".tutorial-code pre code"
+    );
+
+    blocks.forEach(function(block){
+
+        /*
+           Prevent highlighting the same code twice.
+        */
+
+        if(block.dataset.highlighted === "true"){
+            return;
+        }
+
+
+        /*
+           textContent gets the original code,
+           without destroying indentation.
+        */
+
+        const code = block.textContent;
+
+        block.innerHTML = highlightCode(code);
+
+        block.dataset.highlighted = "true";
+    });
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    highlightAllCode();
+
+});
+
+function copyCmd(el){
+
+const cmd = el.innerText;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Text copied");
+
+}
+
+
+function copyCompile(name){
+
+const cmd =
+`arduino-cli compile --fqbn arduino:avr:uno ${name}`;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Compile command copied");
+
+}
+
+function copyUpload(name){
+
+const port = document.getElementById("comPort").value;
+
+const cmd =
+`arduino-cli upload -p ${port} --fqbn arduino:avr:uno ${name}`;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Upload command copied");
+}
+
+function showPopup(text){
+  const popup = document.getElementById("copyPopup");
+  popup.textContent = text;
+  popup.classList.add("show");
+
+  setTimeout(()=>{
+    popup.classList.remove("show");
+  },3000);
+}
+
+const TUTORIAL_TOTAL = 7;
+const TUTORIAL_STORAGE = "arduinoTutorialProgress";
+
+function getTutorialProgress(){
+
+    const saved = localStorage.getItem(TUTORIAL_STORAGE);
+
+    if(!saved){
+        return [];
+    }
+
+    try{
+        return JSON.parse(saved);
+    }catch(error){
+
+        console.warn("Tutorial progress could not be loaded.");
+
+        return [];
+    }
+}
+
+function saveTutorialProgress(progress){
+
+    localStorage.setItem(
+        TUTORIAL_STORAGE,
+        JSON.stringify(progress)
+    );
+}
+
+function activateTutorial(tutorialID){
+
+    const id = Number(tutorialID);
+
+    /* Ignore invalid IDs. */
+    if(id < 1 || id > TUTORIAL_TOTAL){
+        return;
+    }
+
+    let progress = getTutorialProgress();
+
+    /* Don't add the same tutorial twice. */
+    if(!progress.includes(id)){
+
+        progress.push(id);
+
+        /* Keep IDs sorted. */
+        progress.sort(function(a,b){
+            return a - b;
+        });
+
+        saveTutorialProgress(progress);
+    }
+
+    updateTutorialProgress();
+}
+
+function updateTutorialProgress(){
+
+    const progress = getTutorialProgress();
+
+    const completed = progress.length;
+
+    const percent =
+        (completed / TUTORIAL_TOTAL) * 100;
+
+
+    /* Update progress bar. */
+    const bar =
+        document.getElementById("tutorialProgressBar");
+
+    if(bar){
+        bar.style.width = percent + "%";
+    }
+
+
+    /* Update text beside Beginner → Advanced. */
+    const text =
+        document.getElementById("tutorialProgressText");
+
+    if(text){
+
+        text.textContent =
+            completed + " / " + TUTORIAL_TOTAL;
+    }
+
+    const advancedButton =
+        document.getElementById("advancedTutorialsBtn");
+
+    if(advancedButton){
+
+        if(completed >= TUTORIAL_TOTAL){
+
+            advancedButton.style.display = "inline-block";
+
+        }else{
+
+            advancedButton.style.display = "none";
+        }
+    }
+}
+
+function markCurrentTutorial(){
+
+    const activeSection =
+        document.querySelector(
+            ".page.active[tut-id]"
+        );
+
+    if(!activeSection){
+        return;
+    }
+
+    const tutorialID =
+        activeSection.getAttribute("tut-id");
+
+    activateTutorial(tutorialID);
+}
+
+function openAdvancedTutorials(){
+
+    window.location.hash = "#advanced";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    updateTutorialProgress();
+
+    setTimeout(function(){
+
+        markCurrentTutorial();
+
+    },100);
+
+});
+
+function checkTutorialHash(){
+
+    const hash = window.location.hash;
+
+    if(!hash){
+        return;
+    }
+    const sectionID = hash.substring(1);
+
+    const section =
+        document.getElementById(sectionID);
+
+    if(!section){
+        return;
+    }
+    const tutorialID =
+        section.getAttribute("tut-id");
+
+    if(tutorialID){
+
+        activateTutorial(tutorialID);
+    }
+}
+window.addEventListener(
+    "hashchange",
+    checkTutorialHash
+);
+
+document.addEventListener(
+    "DOMContentLoaded",
+    checkTutorialHash
+);
+</script>
+
 </body>
 </html>
-
 
 
 
