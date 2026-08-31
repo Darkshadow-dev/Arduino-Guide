@@ -529,34 +529,98 @@ function copyCode(btn){
     setTimeout(()=>btn.textContent="Copy",900);
   });
 }
-function downloadCode(btn){
-  const old = btn.innerText;
-  btn.innerText = "Downloading...";
 
-  const block = btn.parentElement;
-  const code = block.querySelector("pre").innerText;
-  const name = block.dataset.filename || "code";
+function copyCode(button){
 
-  downloadFile(code, name + ".ino");
+  const codeBlock = button.closest(".code-block");
 
-  setTimeout(()=>{
-    downloadFile(code, name + ".txt");
-    btn.innerText = "✔ Downloaded";
-    setTimeout(()=> btn.innerText = old, 1500);
-  }, 1000);
+  if(!codeBlock) return;
+
+  const pre = codeBlock.querySelector("pre");
+
+  if(!pre) return;
+
+  const code = pre.textContent;
+
+  navigator.clipboard.writeText(code)
+    .then(() => {
+      showPopup("Code copied");
+    })
+    .catch(() => {
+
+      /* Fallback for local/file:// pages */
+      const textarea = document.createElement("textarea");
+
+      textarea.value = code;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+
+      document.body.appendChild(textarea);
+
+      textarea.select();
+
+      try{
+        document.execCommand("copy");
+        showPopup("Code copied");
+      }catch(error){
+        showPopup("Copy failed");
+      }
+
+      textarea.remove();
+
+    });
+
 }
 
-function downloadFile(content, filename){
-  const blob = new Blob([content], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
+function downloadCode(button){
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
+  const codeBlock = button.closest(".code-block");
+
+  if(!codeBlock) return;
+
+  const pre = codeBlock.querySelector("pre");
+
+  if(!pre) return;
+
+  const code = pre.textContent;
+
+  let filename =
+    codeBlock.dataset.filename || "arduino-example";
+
+  /*
+    Prevent duplicate extensions.
+    blink-explanation -> blink-explanation.ino
+  */
+
+  if(!filename.toLowerCase().endsWith(".ino")){
+    filename += ".ino";
+  }
+
+  const blob =
+    new Blob([code], {
+      type:"text/plain;charset=utf-8"
+    });
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
 
   URL.revokeObjectURL(url);
+
+  showPopup("Code downloaded");
 }
+
 
 let cliMode = false;
 
@@ -727,6 +791,607 @@ window.addEventListener("orientationchange", checkOrientation);
 
 
 
+/* ================================================================ Account ============================================= */
+
+const GUIDE_ACCOUNT_KEYS = [
+    "arduinoTutorialProgress",
+    "secret_ie",
+    "arduino_code",
+    "progress",
+    "secret_ip",
+    "secret_id",
+    "arduinoExampleMode",
+    "arduinoExample",
+    "arduinoExampleCategory",
+    "firebase:host:arduino-guideg-default-rtdb.europe-west1.firebasedatabase.app",
+    "communityUser",
+    "userId",
+    "arduino_name"
+];
+
+const GUIDE_ACCOUNT_FILENAME = "Arduino-Guide-Account.json";
+
+let guideAccountFile = null;
+let guideAccountLastModified = 0;
+let guideAccountSaving = false;
+let guideAccountLoading = false;
+
+function guideGetLocalStorageData(){
+
+    const data = {};
+
+    GUIDE_ACCOUNT_KEYS.forEach(key => {
+
+        const value = localStorage.getItem(key);
+
+        if(value !== null){
+            data[key] = value;
+        }
+
+    });
+
+    return data;
+}
+
+function guideLoadLocalStorageData(data){
+
+    if(!data || typeof data !== "object"){
+        return;
+    }
+
+    guideAccountLoading = true;
+
+    try{
+
+        GUIDE_ACCOUNT_KEYS.forEach(key => {
+
+            if(Object.prototype.hasOwnProperty.call(data,key)){
+
+                const value = data[key];
+
+                if(value === null || value === undefined){
+
+                    localStorage.removeItem(key);
+
+                }else{
+
+                    localStorage.setItem(key,String(value));
+
+                }
+
+            }
+
+        });
+
+    }finally{
+
+        guideAccountLoading = false;
+
+    }
+
+}
+
+async function createGuideAccount(){
+
+    if(!window.showSaveFilePicker){
+
+        alert(
+            "Your browser does not support direct account files.\n\n" +
+            "Please use a Chromium-based browser such as Chrome or Edge."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        guideAccountFile = await window.showSaveFilePicker({
+
+            suggestedName: GUIDE_ACCOUNT_FILENAME,
+
+            types: [
+                {
+                    description: "Arduino Guide Account",
+                    accept: {
+                        "application/json": [".json"]
+                    }
+                }
+            ]
+
+        });
+
+        await guideSaveAccountFile();
+
+        await guideStoreAccountHandle();
+
+        guideStartAccountWatcher();
+
+        console.log("Arduino Guide account created.");
+
+    }catch(error){
+
+        if(error.name !== "AbortError"){
+            console.error(
+                "Could not create Arduino Guide account:",
+                error
+            );
+        }
+
+    }
+
+}
+
+async function openGuideAccount(){
+
+    if(!window.showOpenFilePicker){
+
+        alert(
+            "Your browser does not support account files."
+        );
+
+        return;
+
+    }
+
+    try{
+
+        const handles = await window.showOpenFilePicker({
+
+            multiple: false,
+
+            types: [
+                {
+                    description: "Arduino Guide Account",
+                    accept: {
+                        "application/json": [".json"]
+                    }
+                }
+            ]
+
+        });
+
+        guideAccountFile = handles[0];
+
+        await guideLoadAccountFile();
+
+        await guideStoreAccountHandle();
+
+        guideStartAccountWatcher();
+
+        console.log("Arduino Guide account loaded.");
+
+    }catch(error){
+
+        if(error.name !== "AbortError"){
+            console.error(
+                "Could not open Arduino Guide account:",
+                error
+            );
+        }
+
+    }
+
+}
+
+async function guideSaveAccountFile(){
+
+    if(!guideAccountFile){
+        return;
+    }
+
+    if(guideAccountSaving){
+        return;
+    }
+
+    guideAccountSaving = true;
+
+    try{
+
+        const data = guideGetLocalStorageData();
+
+        const account = {
+            format: "Arduino Guide Account",
+            version: 1,
+            updated: new Date().toISOString(),
+            data: data
+        };
+
+        const writable =
+            await guideAccountFile.createWritable();
+
+        await writable.write(
+            JSON.stringify(account,null,4)
+        );
+
+        await writable.close();
+
+        const file =
+            await guideAccountFile.getFile();
+
+        guideAccountLastModified =
+            file.lastModified;
+
+    }catch(error){
+
+        console.error(
+            "Could not save Arduino Guide account:",
+            error
+        );
+
+    }finally{
+
+        guideAccountSaving = false;
+
+    }
+
+}
+
+async function guideLoadAccountFile(){
+
+    if(!guideAccountFile){
+        return;
+    }
+
+    if(guideAccountLoading){
+        return;
+    }
+
+    guideAccountLoading = true;
+
+    try{
+
+        const file =
+            await guideAccountFile.getFile();
+
+        const text =
+            await file.text();
+
+        const account =
+            JSON.parse(text);
+
+        if(
+            !account ||
+            account.format !== "Arduino Guide Account" ||
+            !account.data
+        ){
+
+            console.warn(
+                "This is not a valid Arduino Guide account file."
+            );
+
+            return;
+
+        }
+
+        guideLoadLocalStorageData(
+            account.data
+        );
+
+        guideAccountLastModified =
+            file.lastModified;
+
+        const currentPage =
+            localStorage.getItem("arduino-last-page");
+
+        if(
+            currentPage &&
+            typeof activatePage === "function"
+        ){
+
+            activatePage(currentPage,false);
+
+        }
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "arduinoAccountLoaded",
+                {
+                    detail: account.data
+                }
+            )
+        );
+
+        console.log(
+            "Arduino Guide account loaded from file."
+        );
+
+    }catch(error){
+
+        console.error(
+            "Could not load Arduino Guide account:",
+            error
+        );
+
+    }finally{
+
+        guideAccountLoading = false;
+
+    }
+
+}
+
+async function guideCheckAccountFile(){
+
+    if(!guideAccountFile){
+        return;
+    }
+
+    try{
+
+        const file =
+            await guideAccountFile.getFile();
+
+        if(
+            file.lastModified !==
+            guideAccountLastModified
+        ){
+
+            console.log(
+                "Arduino Guide account changed. Reloading..."
+            );
+
+            await guideLoadAccountFile();
+
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Could not check Arduino Guide account file:",
+            error
+        );
+
+    }
+
+}
+
+function guideStartAccountWatcher(){
+
+    if(!guideAccountFile){
+        return;
+    }
+
+    /*
+       Check every 1 second.
+
+       This detects manual changes made to the JSON file.
+    */
+
+    if(window.guideAccountWatcher){
+        clearInterval(
+            window.guideAccountWatcher
+        );
+    }
+
+    window.guideAccountWatcher =
+        setInterval(
+            guideCheckAccountFile,
+            1000
+        );
+
+}
+
+function guideWatchLocalStorage(){
+
+    const originalSetItem =
+        localStorage.setItem.bind(localStorage);
+
+    const originalRemoveItem =
+        localStorage.removeItem.bind(localStorage);
+
+    const originalClear =
+        localStorage.clear.bind(localStorage);
+
+    localStorage.setItem = function(key,value){
+
+        const result =
+            originalSetItem(key,value);
+
+        if(
+            !guideAccountLoading &&
+            GUIDE_ACCOUNT_KEYS.includes(key) &&
+            guideAccountFile
+        ){
+
+            guideSaveAccountFile();
+
+        }
+
+        return result;
+
+    };
+    localStorage.removeItem = function(key){
+
+        const result =
+            originalRemoveItem(key);
+
+        if(
+            !guideAccountLoading &&
+            GUIDE_ACCOUNT_KEYS.includes(key) &&
+            guideAccountFile
+        ){
+
+            guideSaveAccountFile();
+
+        }
+
+        return result;
+
+    };
+
+    localStorage.clear = function(){
+
+        const result =
+            originalClear();
+
+        if(
+            !guideAccountLoading &&
+            guideAccountFile
+        ){
+
+            guideSaveAccountFile();
+
+        }
+
+        return result;
+
+    };
+
+}
+
+window.addEventListener("storage",function(event){
+
+    if(
+        GUIDE_ACCOUNT_KEYS.includes(event.key) &&
+        guideAccountFile
+    ){
+
+        guideSaveAccountFile();
+
+    }
+
+});
+
+function guideOpenHandleDB(){
+
+    return new Promise((resolve,reject)=>{
+
+        const request =
+            indexedDB.open(
+                "ArduinoGuideAccountDB",
+                1
+            );
+
+        request.onupgradeneeded = function(){
+
+            const db = request.result;
+
+            if(!db.objectStoreNames.contains("account")){
+                db.createObjectStore("account");
+            }
+
+        };
+
+        request.onsuccess = function(){
+            resolve(request.result);
+        };
+
+        request.onerror = function(){
+            reject(request.error);
+        };
+
+    });
+
+}
+async function guideStoreAccountHandle(){
+
+    if(!guideAccountFile){
+        return;
+    }
+
+    try{
+
+        const db =
+            await guideOpenHandleDB();
+
+        const transaction =
+            db.transaction(
+                "account",
+                "readwrite"
+            );
+
+        transaction
+            .objectStore("account")
+            .put(
+                guideAccountFile,
+                "fileHandle"
+            );
+
+    }catch(error){
+
+        console.warn(
+            "Could not remember account file:",
+            error
+        );
+
+    }
+
+}
+
+async function guideRestoreAccountHandle(){
+
+    try{
+        const db =
+            await guideOpenHandleDB();
+        const handle =
+            await new Promise((resolve,reject)=>{
+
+                const transaction =
+                    db.transaction(
+                        "account",
+                        "readonly"
+                    );
+
+                const request =
+                    transaction
+                        .objectStore("account")
+                        .get("fileHandle");
+
+                request.onsuccess =
+                    () => resolve(request.result);
+
+                request.onerror =
+                    () => reject(request.error);
+            });
+        if(!handle){
+            return false;
+        }
+
+        let permission =
+            await handle.queryPermission({
+                mode:"readwrite"
+            });
+
+        if(permission !== "granted"){
+            permission =
+                await handle.requestPermission({
+                    mode:"readwrite"
+                });
+        }
+
+        if(permission !== "granted"){
+            return false;
+        }
+
+        guideAccountFile = handle;
+        await guideLoadAccountFile();
+        guideStartAccountWatcher();
+        console.log(
+            "Arduino Guide account automatically restored."
+        );
+        return true;
+
+    }catch(error){
+        console.warn(
+            "Could not restore Arduino Guide account:",
+            error
+        );
+        return false;
+    }
+}
+
+async function initializeGuideAccountSystem(){
+    guideWatchLocalStorage();
+    await guideRestoreAccountHandle();
+}
+
+window.addEventListener(
+    "load",
+    function(){
+        initializeGuideAccountSystem();
+    }
+);
 
 
 

@@ -464,7 +464,8 @@ main{
   padding:120px 16px 15vh;
 }
 
-/*Top*/
+/* === TOP BAR === */
+
 .topbar{
   display:flex;
   align-items:center;
@@ -492,9 +493,103 @@ main{
   text-align:center;
 }
 
-.logo.left{ left:12px; }
-.logo.right{ right:12px; }
+.logo.left{
+  left:12px;
+}
 
+.account-buttons{
+  position:absolute;
+  right:12px;
+
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+/* Small icon buttons */
+
+.account-btn{
+  width:32px;
+  height:32px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+  border-radius:9px;
+
+  padding:0;
+
+  font-size:16px;
+  line-height:1;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    background .15s ease;
+}
+
+/* CREATE */
+
+.account-btn.create{
+  background:var(--accent);
+  color:white;
+
+  box-shadow:0 3px 9px rgba(0,0,0,.15);
+}
+
+/* LOAD */
+
+.account-btn.load{
+  background:var(--panel);
+  color:var(--accent);
+
+  border:1px solid var(--accent);
+
+  box-shadow:0 3px 8px rgba(0,0,0,.10);
+}
+
+/* Hover */
+
+.account-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 5px 13px rgba(0,0,0,.18);
+}
+
+/* Click */
+
+.account-btn:active{
+  transform:scale(.92);
+}
+
+@media(max-width:700px){
+
+  .account-buttons{
+    right:8px;
+    gap:4px;
+  }
+
+  .account-btn{
+    width:29px;
+    height:29px;
+    font-size:14px;
+    border-radius:8px;
+  }
+
+  .logo{
+    left:8px;
+    width:32px;
+    height:32px;
+  }
+
+  .title{
+    font-size:17px;
+  }
+
+}
 /* Make summary look clickable */
 summary {
   cursor: pointer;
@@ -1601,41 +1696,62 @@ button:disabled{
   left:140%;
 }
 
+/* =========================================================
+   COMPACT INFO BLOCK
+========================================================= */
+
+.info-blockv2{
+  background:var(--panel);
+  border-left:4px solid var(--accent);
+  padding:10px 12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  color:var(--text);
+  box-shadow:0 4px 12px rgba(0,0,0,.10);
+  font-size:.88rem;
+  line-height:1.4;
+  max-width:30vw;
+  margin-left:32vw;
+}
+
+.info-blockv2 b{
+  color:var(--accent);
+}
+
+.info-blockv2 h2,
+.info-blockv2 h3,
+.info-blockv2 h4{
+  margin:0 0 5px;
+  font-size:1em;
+}
+
+.info-blockv2 p{
+  margin:0;
+}
+
 /* ========================= INFO GRID ========================= */
 
 .info-grid{
-
   display:grid;
-
   grid-template-columns:
     repeat(2,minmax(260px,320px));
-
   justify-content:center;
-
   gap:24px;
-
   margin:42px 0;
 }
 
 @media(max-width:600px){
-
   .info-grid{
-
     grid-template-columns:minmax(260px,320px);
-
   }
 
 }
 
 /* cards */
 .info-card{
-
   background:white;
-
   padding:22px;
-
   border-radius:20px;
-
   transition:
     transform .2s ease,
     box-shadow .2s ease;
@@ -1646,11 +1762,9 @@ button:disabled{
 
 /* hover */
 .info-card:hover{
-
   transform:
     translateY(-5px)
     scale(1.015);
-
   box-shadow:
     0 14px 28px rgba(0,151,157,.12);
 }
@@ -1854,6 +1968,8 @@ button:disabled{
     max-height:220px;
   }
 }
+
+
 
 /*-----------------------------___ Board CSS ___-------------------------*/
 
@@ -2470,6 +2586,115 @@ button:disabled{
 
 }
 
+.example-code-buttons{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:40px;
+}
+
+.example-switch{
+  position:relative;
+  width:82px;
+  height:30px;
+  margin-left:2px;
+  border:2px solid var(--accent);
+  border-radius:999px;
+  background:var(--panel);
+  cursor:pointer;
+  overflow:hidden;
+  transition:
+    background .3s ease,
+    border-color .3s ease,
+    box-shadow .3s ease;
+  box-shadow:0 3px 10px rgba(0,0,0,.12);
+}
+.example-switch::before{
+  content:"";
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--accent);
+  z-index:2;
+  transition:
+    transform .4s cubic-bezier(.68,-.55,.27,1.55),
+    background .25s ease,
+    box-shadow .25s ease;
+}
+
+.example-switch::after{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding-left:18px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:-1px;
+  color:var(--accent);
+  pointer-events:none;
+  transition:
+    opacity .2s ease,
+    transform .3s ease;
+}
+
+.example-switch.active{
+  background:var(--accent);
+  box-shadow:
+    0 4px 14px rgba(0,0,0,.2);
+}
+
+.example-switch.active::before{
+  transform:translateX(52px);
+  background:white;
+  box-shadow:
+    0 2px 7px rgba(0,0,0,.3);
+}
+
+
+.example-switch.active::after{
+  color:white;
+  padding-left:0;
+  padding-right:18px;
+}
+.example-switch:active::before{
+  transform:scale(.82);
+}
+
+.example-switch.active:active::before{
+  transform:translateX(52px) scale(.82);
+}
+
+@media(max-width:700px){
+
+  .example-code-buttons{
+    gap:5px;
+  }
+
+  .example-switch{
+    width:70px;
+    height:28px;
+  }
+
+  .example-switch::before{
+    width:18px;
+    height:18px;
+  }
+
+  .example-switch.active::before{
+    transform:translateX(42px);
+  }
+
+  .example-switch.active:active::before{
+    transform:translateX(42px) scale(.82);
+  }
+
+}
 /* ---------------- CODE BLOCK ---------------- */
 .code-block{
   position:relative;
@@ -3786,6 +4011,9 @@ img, video, canvas {
   }
 
 }
+
+
+
 
 
 
