@@ -473,13 +473,13 @@
   </div>
 
   <!-- This starts hidden and appears at 100%. -->
-  <button
+<button
     id="advancedTutorialsBtn"
     class="lp-btn"
     style="display:none;"
-    onclick="openAdvancedTutorials()">
-    Advanced Tutorials →
-  </button>
+    onclick="window.location.href='Tutorials Extended.html#home';">
+    <b>Extended Tutorials →</b>
+</button>
 
 </div>
 <div class="tutorial-path">
@@ -488,7 +488,7 @@
 
 
 <button class="lp-btn" onclick="toggleLP(this)">
-  Basic Tutorials
+  Starting Tutorials
 </button>
 
 <div class="lp-content">
@@ -546,7 +546,21 @@
 
 <div class="lp-content">
 
-  <!-- Future projects -->
+  <div class="lp-item">
+    <a href="#s-p">Second Project</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+  <div class="lp-item">
+    <a href="#n-p">New Project</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
+  <div class="lp-item">
+    <a href="#m-p">More Project's</a>
+    <span class="lp-check" onclick="toggleCheck(this)"></span>
+  </div>
+
 
 </div>
 
@@ -557,7 +571,7 @@
 
 
 <button class="lp-btn" onclick="toggleLP(this)">
-  Hardware Tutorials
+  Tips to use
 </button>
 
 <div class="lp-content">
@@ -758,9 +772,9 @@ is ready for the next tutorial.
 
   <div class="lesson-next">
 
-<a href="#home">← Tutorial Home</a>
+<a class="next-link nl-blue nl-noinderline" href="#home">← Tutorial Home</a>
 
-<a href="#setup">Next: Setup →</a>
+<a class="next-link nl-blue nl-noinderline" href="#setup">Next: Setup →</a>
 
   </div>
 
@@ -873,9 +887,9 @@ arduino-cli core install arduino:avr</code></pre> </div>
 
   <div class="lesson-next">
 
-<a href="#ide/cli-install">← Previous</a>
+<a class="next-link nl-blue nl-noinderline" href="#ide/cli-install">← Previous</a>
 
-<a href="#f-p">Next: First Project →</a>
+<a class="next-link nl-blue nl-noinderline" href="#f-p">Next: First Project →</a>
 
   </div>
 
@@ -997,30 +1011,236 @@ void loop() {
   <h3>Upload and Compile</h3>
 
   <p>
-    In Arduino IDE press the Upload button.
+    In Arduino IDE, press the <b>Upload</b> button to compile your sketch
+    and send it to the Arduino.
   </p>
 
   <p>
-    Using Arduino CLI commands:
+    With Arduino CLI, you normally use two commands:
+    <b>compile</b> first, then <b>upload</b>.
   </p>
 
   <div class="tutorial-code">
+
 <button class="copy-btn"
 onclick="copyCmd(this.parentElement.querySelector('pre'))">
-Copy
-</button>
+Copy </button>
 
 <pre><code>arduino-cli compile --fqbn arduino:avr:uno blink
 arduino-cli upload -p COM3 --fqbn arduino:avr:uno blink</code></pre>
 
-
   </div>
 
-  <p>
-    Replace <code>COM3</code> with your actual Arduino port.
-  </p>
+  <details class="tutorial-details">
+
+<summary>How the compile command works</summary>
+
+<div class="tutorial-code">
+
+<pre><code>arduino-cli compile --fqbn arduino:avr:uno blink</code></pre>
 
 </div>
+
+<p>
+  <code>arduino-cli</code>
+  tells the computer to use Arduino CLI.
+</p>
+
+<p>
+  <code>compile</code>
+  tells Arduino CLI to compile the sketch.
+</p>
+
+<p>
+  <code>--fqbn</code>
+  tells Arduino CLI which exact board to compile for.
+  FQBN means <b>Fully Qualified Board Name</b>.
+</p>
+
+<p>
+  <code>arduino:avr:uno</code>
+  is the FQBN for the Arduino Uno using the AVR platform.
+</p>
+
+<p>
+  <code>blink</code>
+  is the sketch folder containing your Arduino project.
+</p>
+
+<p>
+  For example, if your project is:
+</p>
+
+<div class="tutorial-code">
+
+<pre><code>blink/
+└── blink.ino</code></pre>
+
+</div>
+
+<p>
+  You run the command from the directory containing the
+  <code>blink</code> folder.
+</p>
+
+  </details>
+
+  <details class="tutorial-details">
+
+<summary>How the upload command works</summary>
+
+<div class="tutorial-code">
+
+<pre><code>arduino-cli upload -p COM3 --fqbn arduino:avr:uno blink</code></pre>
+
+</div>
+
+<p>
+  <code>arduino-cli</code>
+  tells the computer to use Arduino CLI.
+</p>
+
+<p>
+  <code>upload</code>
+  tells Arduino CLI to upload the compiled sketch to the board.
+</p>
+
+<p>
+  <code>-p COM3</code>
+  selects the serial port where the Arduino is connected.
+</p>
+
+<p>
+  Replace <code>COM3</code> with the port shown for your Arduino.
+</p>
+
+<p>
+  <code>--fqbn arduino:avr:uno</code>
+  tells Arduino CLI that the target board is an
+  <b>Arduino Uno</b>.
+</p>
+
+<p>
+  <code>blink</code>
+  tells Arduino CLI which sketch you want to upload.
+</p>
+
+  </details>
+
+  <details class="tutorial-details">
+
+<summary>Compile vs Upload</summary>
+
+<p>
+  These are two different operations.
+</p>
+
+<ul>
+  <li>
+    <b>Compile</b> — converts your Arduino code into a form the
+    microcontroller can run.
+  </li>
+
+  <li>
+    <b>Upload</b> — sends the compiled program to the Arduino.
+  </li>
+</ul>
+
+<p>
+  You can think of it like this:
+</p>
+
+<div class="tutorial-code">
+
+<pre><code>Arduino code
+     ↓
+  compile
+     ↓
+Compiled program
+     ↓
+  upload
+     ↓
+Arduino Uno</code></pre>
+
+</div>
+
+  </details>
+
+  <details class="tutorial-details">
+
+<summary>Finding Your COM Port</summary>
+
+<p>
+  On Windows, your Arduino may appear as something such as
+  <code>COM3</code>, <code>COM4</code>, or <code>COM5</code>.
+</p>
+
+<p>
+  You can check the available ports with:
+</p>
+
+<div class="tutorial-code">
+
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy </button>
+
+<pre><code>arduino-cli board list</code></pre>
+
+</div>
+
+<p>
+  This command asks Arduino CLI to list connected boards and their
+  detected ports.
+</p>
+
+<p>
+  Find your Arduino in the output and use its port with
+  <code>-p</code>.
+</p>
+
+  </details>
+
+  <details class="tutorial-details">
+
+<summary>Changing the Board</summary>
+
+<p>
+  The FQBN changes depending on the board you are using.
+</p>
+
+<p>
+  For this tutorial we are using:
+</p>
+
+<div class="tutorial-code">
+
+<pre><code>--fqbn arduino:avr:uno</code></pre>
+
+</div>
+
+<p>
+  If you use another board, you must use that board's FQBN instead.
+  This is why <code>--fqbn</code> is important: Arduino CLI needs to know
+  exactly which board it is compiling and uploading for.
+</p>
+
+  </details>
+
+  <p>
+    <b>Quick summary:</b>
+  </p>
+
+<ul>
+  <li><code>compile</code> → build the sketch.</li>
+  <li><code>upload</code> → send it to the Arduino.</li>
+  <li><code>--fqbn</code> → choose the board.</li>
+  <li><code>-p</code> → choose the serial port.</li>
+  <li><code>blink</code> → choose the sketch folder.</li>
+</ul>
+
+</div>
+
 
 
 <div class="tutorial-step" data-step="5">
@@ -1075,9 +1295,9 @@ arduino-cli upload -p COM3 --fqbn arduino:avr:uno blink</code></pre>
   <div class="lesson-next">
 
 
-<a href="#setup">← Previous</a>
+<a  class="next-link nl-blue nl-noinderline"href="#setup">← Previous</a>
 
-<a href="#blink">Next: Code Tutorials →</a>
+<a class="next-link nl-blue nl-noinderline" href="#blink">Next: Code Tutorials →</a>
 
 
   </div>
@@ -1185,9 +1405,9 @@ void loop() {
 
   <div class="lesson-next">
 
-<a href="#f-p">← First Project</a>
+<a class="next-link nl-blue nl-noinderline" href="#f-p">← First Project</a>
 
-<a href="#mm">Next: Serial Monitor →</a>
+<a class="next-link nl-blue nl-noinderline" href="#mm">Next: Serial Monitor →</a>
 
   </div>
 
@@ -1293,9 +1513,9 @@ void loop() {
 
   <div class="lesson-next">
 
-<a href="#blink">← Code Tutorials</a>
+<a class="next-link nl-blue nl-noinderline" href="#blink">← Code Tutorials</a>
 
-<a href="#Q-W">Next: Hardware →</a>
+<a class="next-link nl-blue nl-noinderline" href="#s-p">Second Project →</a>
 
   </div>
 
@@ -1305,13 +1525,535 @@ void loop() {
 
 <!-- NEW SECTION BELOW -->
 
-
-
-<section id="Q-W" class="page" tut-id="6">
+<section id="s-p" class="page" tut-id="6">
 
 <div class="lesson">
 
-  <h1>6. Quick Wiring Guide</h1>
+  <h1>6. Second Project — OLED + Joystick Game</h1>
+
+  <p class="lesson-intro">
+    You already know the basic Arduino concepts. Now you can combine
+    different parts together and build something that behaves like a
+    real project.
+  </p>
+
+  <details class="tutorial-details" open>
+
+<summary>What We Are Building</summary>
+
+<p>
+  In this project we will make a small game using an
+  <b>OLED display</b> and a <b>joystick</b>.
+</p>
+
+<p>
+  The joystick controls a player on the OLED screen.
+  The goal can be as simple as reaching an object, avoiding an obstacle,
+  or collecting points.
+</p>
+
+<p>
+  The important part is not making a huge game.
+  The important part is learning how several parts of Arduino code
+  can work together.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Hardware</summary>
+
+<ul>
+  <li>Arduino Uno</li>
+  <li>OLED display</li>
+  <li>Joystick module</li>
+  <li>Breadboard</li>
+  <li>Jumper wires</li>
+  <li>USB cable</li>
+</ul>
+
+<p>
+  Use the <b>Hardware Visual</b> page when you need help identifying
+  the pins and wiring.
+</p>
+
+<p>
+  On an Arduino Uno, the usual I²C pins are:
+</p>
+
+<ul>
+  <li><b>A4</b> — SDA</li>
+  <li><b>A5</b> — SCL</li>
+</ul>
+
+<p>
+  Check the voltage requirements of your particular OLED module before
+  connecting VCC.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Read the Joystick</summary>
+
+<div class="tutorial-code">
+
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy </button>
+
+<pre><code>void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int x = analogRead(A0);
+  int y = analogRead(A1);
+
+  Serial.print("X: ");
+  Serial.print(x);
+  Serial.print("  Y: ");
+  Serial.println(y);
+
+  delay(100);
+}</code></pre>
+
+</div>
+
+<p>
+  This is a good first test before making the game.
+  Move the joystick and watch the values change in the Serial Monitor.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Build the Game</summary>
+
+<p>
+  Once the joystick works and the OLED works, combine them.
+</p>
+
+<p>
+  A simple game can work like this:
+</p>
+
+<ul>
+  <li>The player starts in the middle of the screen.</li>
+  <li>The joystick moves the player.</li>
+  <li>An object appears somewhere on the screen.</li>
+  <li>Touching the object gives you a point.</li>
+  <li>The object moves to a new position.</li>
+</ul>
+
+<p>
+  You can then add your own rules, enemies, sounds, menus, levels,
+  lives, timers, or anything else you want.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Don't Copy the Project Forever</summary>
+
+<p>
+  This project is meant to teach you how to combine hardware and code.
+  Once you understand it, start changing it.
+</p>
+
+<p>
+  Change the player, change the controls, change the goal,
+  add buttons, add a buzzer, or turn it into a completely different game.
+</p>
+
+<p>
+  From this point onward, the projects do not have to come from the guide.
+  You can start creating your own.
+</p>
+
+</details>
+
+<div class="lesson-next">
+
+<a class="next-link nl-blue nl-noinderline" href="#mm">← Serial Monitor</a>
+
+<a class="next-link nl-blue nl-noinderline" href="#n-p">New Project →</a>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- NEW SECTION BELOW -->
+
+<section id="n-p" class="page" tut-id="7">
+
+<div class="lesson">
+
+  <h1>7. New Project — Create Your Own</h1>
+
+  <p class="lesson-intro">
+    At this point you have learned enough to start making projects
+    without following a tutorial step by step.
+  </p>
+
+  <details class="tutorial-details" open>
+
+<summary>Start With an Idea</summary>
+
+<p>
+  Think of something you would like Arduino to do.
+</p>
+
+<p>
+  It does not need to be complicated.
+  A project can start with one LED, one button, or one sensor.
+</p>
+
+<p>
+  For example:
+</p>
+
+<ul>
+  <li>A reaction-time game</li>
+  <li>An automatic night light</li>
+  <li>A temperature display</li>
+  <li>A small alarm</li>
+  <li>A digital dice</li>
+  <li>A traffic light</li>
+  <li>A distance warning system</li>
+  <li>A sensor monitor</li>
+</ul>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Build It in Pieces</summary>
+
+<p>
+  Do not try to write the entire project at once.
+</p>
+
+<p>
+  Test each part separately first.
+</p>
+
+<ul>
+  <li>Make the LED work.</li>
+  <li>Make the button work.</li>
+  <li>Make the sensor work.</li>
+  <li>Make the display work.</li>
+  <li>Then combine them.</li>
+</ul>
+
+<p>
+  This makes finding problems much easier.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Use the Guide When You Get Stuck</summary>
+
+<p>
+  You do not need to remember every pin, command, or wiring diagram.
+</p>
+
+<p>
+  The Arduino Guide is also a reference.
+  Come back whenever you need an answer.
+</p>
+
+<p>
+  Need to know what pin 11 does?
+  Check the hardware reference.
+</p>
+
+<p>
+  Need an example?
+  Check the examples.
+</p>
+
+<p>
+  Need wiring?
+  Open Hardware Visual.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Your Project Does Not Have to Match Anyone Else's</summary>
+
+<p>
+  There is no single correct project.
+</p>
+
+<p>
+  Two people can use the same Arduino and make completely different
+  things.
+</p>
+
+<p>
+  Change the code.
+  Change the hardware.
+  Combine examples.
+  Add your own ideas.
+</p>
+
+<p>
+  The goal is not to finish another tutorial.
+  The goal is to make something yourself.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Start Making</summary>
+
+<p>
+  When you have an idea, these tools can help you get started:
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Arduino Code.html">Arduino Code Beta</a>
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Arduino Download.html#download">Arduino Downloads</a>
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Arduino Guide.html#hardwarevi">Hardware Visual</a>
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Examples.html#examples">Examples</a>
+</p>
+
+</details>
+
+<div class="lesson-next">
+
+<a class="next-link nl-blue nl-noinderline" href="#s-p">← Second Project</a>
+
+<a class="next-link nl-blue nl-noinderline" href="#m-p">More Projects →</a>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- NEW SECTION BELOW -->
+
+<section id="m-p" class="page" tut-id="8">
+
+<div class="lesson">
+
+  <h1>8. More Projects — What Can You Build?</h1>
+
+  <p class="lesson-intro">
+    Arduino can be used for much more than blinking LEDs.
+    Once you know the basics, you can combine code, sensors, displays,
+    motors, buttons, and other hardware to create your own systems.
+  </p>
+
+  <details class="tutorial-details" open>
+
+<summary>Lights and LEDs</summary>
+
+<ul>
+  <li>Automatic lights</li>
+  <li>Traffic lights</li>
+  <li>LED indicators</li>
+  <li>Light effects</li>
+  <li>RGB lighting systems</li>
+</ul>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Displays</summary>
+
+<ul>
+  <li>Digital clocks</li>
+  <li>Temperature displays</li>
+  <li>Sensor dashboards</li>
+  <li>Menus</li>
+  <li>Game screens</li>
+  <li>Information displays</li>
+</ul>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Sensors</summary>
+
+<ul>
+  <li>Temperature monitors</li>
+  <li>Light sensors</li>
+  <li>Distance sensors</li>
+  <li>Motion detectors</li>
+  <li>Sound detection</li>
+  <li>Environmental monitors</li>
+</ul>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Games</summary>
+
+<ul>
+  <li>Reaction games</li>
+  <li>Joystick games</li>
+  <li>Button games</li>
+  <li>OLED games</li>
+  <li>Score systems</li>
+  <li>Simple menus</li>
+</ul>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Motors and Machines</summary>
+
+<ul>
+  <li>Servo projects</li>
+  <li>Motor controllers</li>
+  <li>Robotic mechanisms</li>
+  <li>Automatic systems</li>
+  <li>Moving sensor systems</li>
+</ul>
+
+<p>
+  Larger motors and other high-current devices may require a suitable
+  driver, transistor, MOSFET, external power supply, or other circuitry.
+  Do not connect high-current loads directly to an Arduino pin.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Communication</summary>
+
+<ul>
+  <li>Serial projects</li>
+  <li>I²C devices</li>
+  <li>SPI devices</li>
+  <li>Bluetooth projects</li>
+  <li>Wireless projects</li>
+  <li>Communication between controllers</li>
+</ul>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Combine Everything</summary>
+
+<p>
+  The most interesting projects can combine several categories.
+</p>
+
+<p>
+  For example:
+</p>
+
+<ul>
+  <li><b>Joystick + OLED + buzzer</b> → a small game</li>
+  <li><b>Sensor + OLED + LEDs</b> → a monitoring station</li>
+  <li><b>Button + display + sensor</b> → an information system</li>
+  <li><b>Sensor + motor</b> → an automatic machine</li>
+</ul>
+
+<p>
+  You are no longer limited to the examples in this guide.
+  You can combine them and create something completely new.
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>Your Tools</summary>
+
+<p>
+  Once you are ready to start building, use the rest of the guide as
+  your workshop.
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Arduino Code.html">Code Beta</a>
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Arduino Download.html#download">Downloads</a>
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Arduino Guide.html#hardwarevi">Hardware Visual</a>
+</p>
+
+<p>
+  <a class="next-link nl-blue nl-noinderline" href="Examples.html#examples">Examples</a>
+</p>
+
+</details>
+
+<details class="tutorial-details">
+
+<summary>There Is No Final Project</summary>
+
+<p>
+  This is where the tutorial path stops being about following lessons.
+</p>
+
+<p>
+  Keep experimenting.
+  Keep changing your code.
+  Build something useful, something fun, or something nobody else has
+  made before.
+</p>
+
+<p>
+  And when you forget something, come back to the guide and look it up.
+</p>
+
+</details>
+
+<div class="lesson-next">
+
+<a class="next-link nl-blue nl-noinderline" href="#n-p">← New Project</a>
+
+<a class="next-link nl-blue nl-noinderline" href="#Q-W">Hardware →</a>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<section id="Q-W" class="page" tut-id="9">
+
+<div class="lesson">
+
+  <h1>9. Quick Wiring Guide</h1>
 
   <p class="lesson-intro">
     Before moving into larger projects, learn the basic connection
@@ -1375,9 +2117,9 @@ void loop() {
   <div class="lesson-next">
 
 
-<a href="#mm">← Serial Monitor</a>
+<a class="next-link nl-blue nl-noinderline" href="#m-p">← More Projects</a>
 
-<a href="#note">Next: Notes →</a>
+<a class="next-link nl-blue nl-noinderline" href="#note">Next: Notes →</a>
 
 
   </div>
@@ -1390,11 +2132,11 @@ void loop() {
 
 
 
-<section id="note" class="page" tut-id="7">
+<section id="note" class="page" tut-id="10">
 
 <div class="lesson">
 
-  <h1>7. Notes & Troubleshooting</h1>
+  <h1>10. Notes & Troubleshooting</h1>
 
   <p class="lesson-intro">
     When a project does not work, do not immediately change everything.
@@ -1465,83 +2207,9 @@ void loop() {
   <div class="lesson-next">
 
 
-<a href="#Q-W">← Hardware</a>
+<a class="next-link nl-blue nl-noinderline" href="#Q-W">← Hardware</a>
 
-<a href="#home">Back to Tutorial Home →</a>
-
-
-  </div>
-
-</div>
-
-</section>
-
-<!-- NEW SECTION BELOW -->
-
-
-
-<section class="page">
-
-<div class="lesson">
-
-  <h1>More Tutorials Coming Next</h1>
-
-  <p class="lesson-intro">
-    The tutorial system is designed to grow beyond the beginner lessons.
-  </p>
-
-  <div class="command-list">
-
-
-<div class="command">
-  <b>8</b>
-  <span>All Arduino Commands</span>
-</div>
-
-<div class="command">
-  <b>9</b>
-  <span>Advanced Hardware Connections</span>
-</div>
-
-<div class="command">
-  <b>10</b>
-  <span>Continue the First Project</span>
-</div>
-
-<div class="command">
-  <b>11</b>
-  <span>Project 2</span>
-</div>
-
-<div class="command">
-  <b>12</b>
-  <span>Project 3</span>
-</div>
-
-<div class="command">
-  <b>13</b>
-  <span>Problems & Troubleshooting</span>
-</div>
-
-<div class="command">
-  <b>14</b>
-  <span>Serial Monitor</span>
-</div>
-
-<div class="command">
-  <b>15</b>
-  <span>I²C Communication</span>
-</div>
-
-<div class="command">
-  <b>16</b>
-  <span>SPI Communication</span>
-</div>
-
-<div class="command">
-  <b>17</b>
-  <span>Libraries</span>
-</div>
+<a class="next-link nl-blue nl-noinderline" href="#home">Back to Tutorial Home →</a>
 
 
   </div>
@@ -1796,7 +2464,7 @@ function showPopup(text){
   },3000);
 }
 
-const TUTORIAL_TOTAL = 7;
+const TUTORIAL_TOTAL = 10;
 const TUTORIAL_STORAGE = "arduinoTutorialProgress";
 
 function getTutorialProgress(){
@@ -1912,11 +2580,6 @@ function markCurrentTutorial(){
         activeSection.getAttribute("tut-id");
 
     activateTutorial(tutorialID);
-}
-
-function openAdvancedTutorials(){
-
-    window.location.hash = "#advanced";
 }
 
 document.addEventListener("DOMContentLoaded", function(){

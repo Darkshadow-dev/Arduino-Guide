@@ -141,6 +141,7 @@ select{
 <button onclick="location.href='Arduino Quiz.html'">Quizes</button>
 <button onclick="location.href='Arduino Tutorial.html#home'">Tutorials</button>
 <button onclick="location.href='https://darkshadow-dev.github.io/community/Arduino%20Community.html'">Community</button>
+<button onclick="location.href='Arduino Uno.html'">Test</button>
 <div class="live-counter" id="liveCounter">
   <span class="dot"></span>
   Online: <span id="onlineCount">0</span>
@@ -319,25 +320,84 @@ function safeCompilePing(){
 
 /* COMPILE */
 async function compileCode(){
-  consoleBox.textContent = "Compiling...";
 
-  try{
-    const res = await fetch("https://arduino-guide-6.onrender.com/compile",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        code: editor.value,
-        name: filename.value
-      })
-    });
+    consoleBox.textContent = "Compiling...";
 
-    const data = await res.json();
-    consoleBox.textContent = data.output || "No output";
+    try{
 
-  }catch{
-    consoleBox.textContent = "Server error";
-  }
+        const res = await fetch(
+            "https://arduino-guide-6.onrender.com/compile",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    code:editor.value,
+                    name:filename.value
+                })
+            }
+        );
+
+        const data = await res.json();
+
+        const output = data.output || "No output";
+
+        consoleBox.textContent = output;
+
+        /*
+        ========================================================
+        SAVE COMPILED SNAPSHOT
+        ========================================================
+        */
+
+        if(data.success){
+
+            localStorage.setItem(
+                "arduino_compiled",
+                output
+            );
+
+            /*
+            Save the exact source that was compiled.
+            View uses this ONLY as the compiled snapshot.
+            */
+
+            localStorage.setItem(
+                "arduino_compiled_code",
+                editor.value
+            );
+
+            localStorage.setItem(
+                "arduino_compiled_name",
+                filename.value
+            );
+
+            localStorage.setItem(
+                "arduino_compile_success",
+                "true"
+            );
+
+        }else{
+
+            localStorage.setItem(
+                "arduino_compile_success",
+                "false"
+            );
+
+        }
+
+    }catch(error){
+
+        consoleBox.textContent = "Server error";
+
+        localStorage.setItem(
+            "arduino_compile_success",
+            "false"
+        );
+    }
 }
+
 
 /* ================= EXAMPLES (FIXED ALL) ================= */
 function loadExample(name){
@@ -454,6 +514,7 @@ saveLocal();
 
 </body>
 </html>
+
 
 
 

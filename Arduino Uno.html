@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Arduino View</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+}
+
+body{
+    background:#808080;
+    font-family:monospace;
+}
+
+#backButton{
+    position:fixed;
+    top:10px;
+    left:10px;
+    z-index:10;
+    background:#444;
+    color:white;
+    border:1px solid #222;
+    padding:7px 12px;
+    cursor:pointer;
+    font-family:monospace;
+}
+
+#backButton:hover{
+    background:#555;
+}
+
+#workspace{
+    position:absolute;
+    width:90vw;
+    height:90vh;
+    left:5vw;
+    top:5vh;
+    background:white;
+    border:1px solid #333;
+    overflow:hidden;
+}
+
+#simulator{
+    position:absolute;
+    inset:0;
+    background:white;
+}
+
+/*
+============================================================
+PIN OUTPUT
+============================================================
+*/
+
+.pin-output{
+    position:absolute;
+    width:80px;
+    height:80px;
+    background:black;
+    display:none;
+}
+
+#pin13{
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+</style>
+
+</head>
+
+<body>
+
+<button id="backButton" onclick="history.back()">← Back</button>
+
+<div id="workspace">
+
+```
+<div id="simulator">
+
+    <!-- Arduino digital pin 13 / LED_BUILTIN -->
+    <div
+        id="pin13"
+        class="pin-output">
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+/*
+============================================================
+SIMULATOR
+============================================================
+*/
+
+const pin13 = document.getElementById("pin13");
+
+/*
+============================================================
+IMPORTANT
+============================================================
+
+DO NOT use:
+
+arduino_code
+
+The editor may contain newer uncompiled code.
+
+View only uses:
+
+arduino_compiled_code
+
+This is the exact source saved when Compile succeeded.
+*/
+
+const compiledCode =
+    localStorage.getItem("arduino_compiled_code");
+
+/*
+============================================================
+PIN STATE
+============================================================
+*/
+
+const pins = {};
+
+/*
+============================================================
+SET DIGITAL PIN
+============================================================
+*/
+
+function setPin(pin,state){
+
+    pin = String(pin);
+
+    pins[pin] = state;
+
+    /*
+    LED_BUILTIN on Arduino UNO is pin 13.
+    */
+
+    if(pin === "13"){
+
+        if(state === "HIGH"){
+
+            pin13.style.display = "block";
+
+        }else{
+
+            pin13.style.display = "none";
+
+        }
+
+    }
+
+}
+
+/*
+============================================================
+GET LOOP CODE
+============================================================
+*/
+
+function getLoopCode(source){
+
+    const match =
+        source.match(
+            /void\s+loop\s*\(\s*\)\s*\{/i
+        );
+
+    if(!match){
+        return "";
+    }
+
+    const start =
+        match.index + match[0].length;
+
+    let depth = 1;
+
+    for(let i = start; i < source.length; i++){
+
+        if(source[i] === "{"){
+            depth++;
+        }
+
+        if(source[i] === "}"){
+            depth--;
+
+            if(depth === 0){
+
+                return source.substring(
+                    start,
+                    i
+                );
+
+            }
+
+        }
+
+    }
+
+    return "";
+}
+
+/*
+============================================================
+PARSE ARDUINO LOOP
+============================================================
+*/
+
+function parseLoop(source){
+
+    const loopCode =
+        getLoopCode(source);
+
+    if(!loopCode){
+        return [];
+    }
+
+    const commands = [];
+
+    /*
+    Supports:
+
+    digitalWrite(13,HIGH);
+    digitalWrite(13,LOW);
+
+    digitalWrite(LED_BUILTIN,HIGH);
+    digitalWrite(LED_BUILTIN,LOW);
+
+    delay(1000);
+    */
+
+    const regex =
+        /digitalWrite\s*\(\s*(LED_BUILTIN|\d+)\s*,\s*(HIGH|LOW)\s*\)|delay\s*\(\s*(\d+)\s*\)/gi;
+
+    let match;
+
+    while(
+        (match = regex.exec(loopCode))
+        !== null
+    ){
+
+        /*
+        DIGITAL WRITE
+        */
+
+        if(match[1]){
+
+            let pin =
+                match[1];
+
+            /*
+            LED_BUILTIN = Arduino UNO pin 13
+            */
+
+            if(
+                pin.toUpperCase()
+                === "LED_BUILTIN"
+            ){
+
+                pin = "13";
+
+            }
+
+            commands.push({
+                type:"digital",
+                pin:pin,
+                state:match[2].toUpperCase()
+            });
+
+        }
+
+        /*
+        DELAY
+        */
+
+        else if(match[3]){
+
+            commands.push({
+                type:"delay",
+                time:Number(match[3])
+            });
+
+        }
+
+    }
+
+    return commands;
+}
+
+/*
+============================================================
+DELAY
+============================================================
+*/
+
+function delay(ms){
+
+    return new Promise(
+        resolve => setTimeout(
+            resolve,
+            ms
+        )
+    );
+
+}
+
+/*
+============================================================
+RUN PROGRAM
+============================================================
+*/
+
+async function runProgram(){
+
+    /*
+    Nothing has ever been compiled.
+    */
+
+    if(!compiledCode){
+
+        return;
+
+    }
+
+    const commands =
+        parseLoop(compiledCode);
+
+    /*
+    No supported loop commands.
+    */
+
+    if(commands.length === 0){
+
+        return;
+
+    }
+
+    /*
+    Arduino loop() repeats forever.
+    */
+
+    while(true){
+
+        for(const command of commands){
+
+            /*
+            digitalWrite()
+            */
+
+            if(
+                command.type
+                === "digital"
+            ){
+
+                setPin(
+                    command.pin,
+                    command.state
+                );
+
+            }
+
+            /*
+            delay()
+            */
+
+            else if(
+                command.type
+                === "delay"
+            ){
+
+                await delay(
+                    command.time
+                );
+
+            }
+
+        }
+
+    }
+
+}
+
+/*
+============================================================
+START
+============================================================
+*/
+
+runProgram();
+
+</script>
+
+</body>
+</html>
+

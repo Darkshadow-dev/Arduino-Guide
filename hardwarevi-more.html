@@ -40,80 +40,57 @@
 <div class="hardware-left">
 <div style="height:10vh;"></div>
 
-<h3>Wiring LED to the Board</h3>
+<h3>Wiring LED using PWM</h3>
 
 <p>
   Click on the
   <a class="next-link nl-green nl-noneunderline nl-md"
-     href="Examples.html#examples">
-     Blink LED
+     href="Examples.html?example=pwm#examples">
+     PWM LED
   </a>
   example.
 </p>
 
 <details class="wiring-card">
 
-  <summary>LED Wiring</summary>
+  <summary>Wiring PWM LED</summary>
 
-  <p>LED with current-limiting resistor.</p>
-
+  <p></p>
   <div class="wire-gallery" data-wire-gallery>
-
     <button class="gallery-btn gallery-prev">‹</button>
-
     <div class="wire-box">
 
       <!-- ANIMATED -->
       <div class="wire-slide active">
-
         <div class="wire-anim" data-wire-anim>
-
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED-off.png">
-
+               src="Wiring Images/Animated/Arduino-PWM-off.png">
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED-on.png">
-
-        </div>
-
-      </div>
-
+               src="Wiring Images/Animated/Arduino-PWM-on.png">
+        </div>      </div>
 
       <!-- ANIMATED -->
       <div class="wire-slide">
-
         <div class="wire-anim" data-wire-anim>
-
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED-off,board.png">
-
+               src="Wiring Images/Animated/Arduino-PWM-off,board.png">
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED-on,board.png">
-
-        </div>
-
-      </div>
+               src="Wiring Images/Animated/Arduino-PWM-on,board.png">
+        </div></div>
 
       <!-- CIRCUIT -->
       <div class="wire-slide">
-
         <img class="wire-img"
-             src="Images/Circuit/Arduino-LED-circuit.png">
-
-      </div>
-
-    </div>
-
+             src="Wiring Images/Circuit/Arduino-PWM-circuit.png">
+      </div></div>
     <button class="gallery-btn gallery-next">›</button>
-
   </div>
-
 </details>
 
 <details>
   <summary>Wiring Explained</summary>
 
-  <p><b>Connect</b> pin 13 to one end of the resistor.</p>
+  <p><b>Connect</b> pin 9 to one end of the resistor.</p>
 
   <p>
     Then connect the positive end of the LED (longer leg)
@@ -133,75 +110,52 @@
 <!-- RIGHT COLUMN -->
 <div class="hardware-right">
 <div style="height:10vh;"></div>
-
-<h3>Wiring LED to the Board</h3>
+<h3>Wiring LED and a Button</h3>
 
 <p>
   Click on the
   <a class="next-link nl-green nl-noneunderline nl-md"
-     href="Examples.html#examples">
-     Blink LED
+     href="Examples.html?example=button-led#examples">
+     Button LED
   </a>
   example.
 </p>
 
+
 <details class="wiring-card">
 
-  <summary>LED Wiring</summary>
+  <summary>Wiring LED + Button</summary>
 
-  <p>LED with current-limiting resistor.</p>
-
+  <p></p>
   <div class="wire-gallery" data-wire-gallery>
-
     <button class="gallery-btn gallery-prev">‹</button>
-
     <div class="wire-box">
 
       <!-- ANIMATED -->
       <div class="wire-slide active">
-
         <div class="wire-anim" data-wire-anim>
-
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED-off.png">
-
+               src="Wiring Images/Animated/Arduino-BTN-LED-off.png">
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED-on.png">
-
-        </div>
-
-      </div>
-
+               src="Wiring Images/Animated/Arduino-BTN-LED-on.png">
+        </div>      </div>
 
       <!-- ANIMATED -->
       <div class="wire-slide">
-
         <div class="wire-anim" data-wire-anim>
-
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED-off,board.png">
-
+               src="Wiring Images/Animated/Arduino-BTN-LED-off,board.png">
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED-on,board.png">
-
-        </div>
-
-      </div>
+               src="Wiring Images/Animated/Arduino-BTN-LED-on,board.png">
+        </div></div>
 
       <!-- CIRCUIT -->
       <div class="wire-slide">
-
         <img class="wire-img"
-             src="Images/Circuit/Arduino-LED-circuit.png">
-
-      </div>
-
-    </div>
-
+             src="Wiring Images/Circuit/Arduino-BTN-LED-circuit.png">
+      </div></div>
     <button class="gallery-btn gallery-next">›</button>
-
   </div>
-
 </details>
 
 <details>
@@ -210,8 +164,17 @@
   <p><b>Connect</b> pin 13 to one end of the resistor.</p>
 
   <p>
-    Then connect the positive end of the LED (longer leg)
-    to the other end of the 220Ω resistor.
+    Then connect the other side of the resistor to leg 1 on push button.
+    And then leg 4 to positive leg of the LED.
+  </p>
+  <p>
+    All push buttons are 1 2 3 4 and intrnaly 1-3 2-4 are connected to get push=on do 1-4 or 2-3!
+  </p>
+  <p>
+   If you want push=stop do 1-3 or 2-4,
+  </p>
+  <p>
+   Only pushing the button will turn the LED on!
   </p>
 
   <p>
@@ -221,10 +184,29 @@
 
 </details>
 
-
-
 </div>
   </div>
+
+<!-- ZOOM -->
+<div id="wireOverlay" class="wire-overlay">
+
+  <button id="zoomPrev" class="zoom-gallery-btn zoom-prev">‹</button>
+
+  <!-- NORMAL -->
+  <img id="wireZoomImg">
+
+  <!-- ANIMATION -->
+  <div id="wireZoomAnim" class="wire-zoom-anim">
+
+    <img class="wire-zoom-frame active">
+
+    <img class="wire-zoom-frame">
+
+  </div>
+
+  <button id="zoomNext" class="zoom-gallery-btn zoom-next">›</button>
+
+</div>
 </section>
 
 <section id="notfound" class="page">
@@ -245,6 +227,9 @@
   Online: <span id="onlineCount">0</span>
 </div>
 <script src="js/components.js"></script>
+<div id="zoomOverlay" class="zoom-overlay">
+  <img id="zoomImg">
+</div>
 </body>
 </html>
 

@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="Images/Website-Guide.png">
+
+<title>Arduino Tutorials</title>
+
+<link rel="stylesheet" href="css/main.css">
+<style>
+
+.extended-hero {
+width: 90%;
+margin: 30px auto 20px;
+padding: 45px;
+border: 1px solid #d8d8d8;
+background: #ffffff;
+box-sizing: border-box;
+}
+
+.extended-label {
+font-size: 12px;
+font-weight: bold;
+letter-spacing: 2px;
+color: #16834a;
+}
+
+.extended-hero h1 {
+margin: 10px 0;
+font-size: 42px;
+}
+
+.extended-hero p {
+max-width: 750px;
+color: #666;
+line-height: 1.7;
+font-size: 17px;
+}
+
+.tutorial-levels {
+width: 90%;
+margin: 20px auto 50px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+}
+
+.level-panel {
+padding: 30px;
+border: 1px solid #d5d5d5;
+background: #fff;
+box-sizing: border-box;
+}
+
+.level-panel.intermediate {
+border-top: 5px solid #16834a;
+}
+
+.level-panel.advanced {
+border-top: 5px solid #333;
+}
+
+.level-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.level-tag,
+.card-level {
+font-size: 11px;
+font-weight: bold;
+letter-spacing: 1.5px;
+}
+
+.level-panel.intermediate .level-tag,
+.intermediate .card-level {
+color: #16834a;
+}
+
+.level-panel.advanced .level-tag,
+.advanced .card-level {
+color: #444;
+}
+
+.level-panel h2 {
+margin: 15px 0 10px;
+font-size: 28px;
+}
+
+.level-panel p {
+color: #666;
+line-height: 1.6;
+}
+
+.level-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 20px 0;
+}
+
+.level-topics a {
+    display: inline-block;
+    padding: 7px 10px;
+    background: #f3f3f3;
+    border: 1px solid #dedede;
+    color: #444;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: transform .15s, background .15s, border-color .15s;
+}
+
+.level-topics a:hover {
+    transform: translateY(-2px);
+    background: #fff;
+    border-color: #aaa;
+    color: #222;
+}
+
+.level-topics span,
+.card-meta span {
+padding: 6px 9px;
+background: #f3f3f3;
+border: 1px solid #e3e3e3;
+font-size: 12px;
+}
+
+.level-button {
+border: 0;
+padding: 12px 18px;
+background: #222;
+color: #fff;
+cursor: pointer;
+font-weight: bold;
+}
+
+.level-button:hover {
+background: #16834a;
+}
+
+.tutorial-library {
+width: 90%;
+margin: 0 auto 60px;
+}
+
+.library-header {
+display: flex;
+justify-content: space-between;
+align-items: end;
+gap: 20px;
+margin-bottom: 20px;
+}
+
+.library-header h2 {
+margin: 8px 0 0;
+font-size: 30px;
+}
+
+.tutorial-filters {
+    display: flex;
+    gap: 6px;
+}
+
+.tutorial-filters button {
+    padding: 9px 14px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.tutorial-filters button:hover {
+    background: #eee;
+}
+
+.tutorial-filters button.filter-active {
+    background: #e2e2e2;
+    border-color: #aaa;
+    color: #555;
+}
+.tutorial-card-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 12px;
+}
+
+.extended-card {
+display: flex;
+min-height: 210px;
+border: 1px solid #d7d7d7;
+background: #fff;
+transition: transform .15s, box-shadow .15s;
+}
+
+.extended-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+
+.card-content {
+padding: 24px;
+}
+
+.card-content h3 {
+margin: 7px 0;
+font-size: 22px;
+}
+
+.card-content p {
+color: #666;
+line-height: 1.5;
+}
+
+.card-meta {
+display: flex;
+flex-wrap: wrap;
+gap: 6px;
+margin: 15px 0;
+}
+
+.card-content a {
+color: #16834a;
+text-decoration: none;
+font-weight: bold;
+}
+
+.card-content a:hover {
+text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+
+.tutorial-levels,
+.tutorial-card-grid {
+    grid-template-columns: 1fr;
+}
+
+.extended-hero {
+    padding: 30px;
+}
+
+.extended-hero h1 {
+    font-size: 32px;
+}
+
+.library-header {
+    display: block;
+}
+
+.tutorial-filters {
+    margin-top: 15px;
+}
+
+}
+
+@media (max-width: 500px) {
+
+.extended-hero,
+.tutorial-levels,
+.tutorial-library {
+    width: 94%;
+}
+
+.extended-card {
+    display: block;
+}
+
+.card-number {
+    width: 100%;
+    height: 45px;
+}
+
+}
+
+.intermediate-tutorial {
+    width: 90%;
+    max-width: 1200px;
+    margin: 35px auto 70px;
+}
+
+.it-header {
+    background: #fff;
+    border: 1px solid #d7d7d7;
+    border-left: 6px solid #16834a;
+    padding: 38px 42px;
+    margin-bottom: 18px;
+}
+
+.it-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #16834a;
+    margin-bottom: 8px;
+}
+
+.it-header h1 {
+    margin: 0 0 12px;
+    font-size: 38px;
+    color: #222;
+}
+
+.it-header p {
+    max-width: 850px;
+    margin: 0;
+    color: #666;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+.it-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+}
+
+.it-meta span {
+    padding: 7px 10px;
+    background: #f4f4f4;
+    border: 1px solid #dedede;
+    color: #555;
+    font-size: 11px;
+}
+
+.it-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 18px;
+    align-items: start;
+}
+
+.it-main {
+    min-width: 0;
+}
+
+.it-sidebar {
+    background: #fff;
+    border: 1px solid #d7d7d7;
+    padding: 22px;
+    position: sticky;
+    top: 20px;
+}
+
+.it-sidebar-title {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    color: #16834a;
+    margin-bottom: 12px;
+}
+
+.it-sidebar a {
+    display: block;
+    padding: 9px 0;
+    border-bottom: 1px solid #eee;
+    color: #444;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.it-sidebar a:hover {
+    color: #16834a;
+}
+
+.it-box {
+    background: #fff;
+    border: 1px solid #d7d7d7;
+    margin-bottom: 16px;
+    padding: 28px;
+}
+
+.it-box h2 {
+    margin: 0 0 14px;
+    font-size: 25px;
+    color: #222;
+}
+
+.it-box h3 {
+    margin: 22px 0 9px;
+    font-size: 18px;
+    color: #333;
+}
+
+.it-box p {
+    color: #555;
+    line-height: 1.7;
+    margin: 8px 0;
+}
+
+.it-box ul,
+.it-box ol {
+    color: #555;
+    line-height: 1.7;
+}
+
+.it-box li {
+    margin-bottom: 5px;
+}
+
+.it-note {
+    padding: 15px 17px;
+    margin: 18px 0;
+    background: #f5faf7;
+    border-left: 4px solid #16834a;
+    color: #444;
+    line-height: 1.6;
+}
+
+.it-warning {
+    padding: 15px 17px;
+    margin: 18px 0;
+    background: #faf7f2;
+    border-left: 4px solid #b57932;
+    color: #555;
+    line-height: 1.6;
+}
+
+.it-code {
+    position: relative;
+    margin: 18px 0;
+    background: #171717;
+    border: 1px solid #333;
+}
+
+.it-code .copy-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 2;
+}
+
+.it-code pre {
+    margin: 0;
+    padding: 22px;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+.it-code code {
+    color: #f1f1f1;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.it-result {
+    margin-top: 18px;
+    padding: 18px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+}
+
+.it-result strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.it-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.it-small-box {
+    padding: 18px;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+}
+
+.it-small-box strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.it-small-box p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.it-challenge {
+    border: 2px solid #16834a;
+    background: #fff;
+    padding: 25px;
+    margin-top: 18px;
+}
+
+.it-challenge h2 {
+    color: #16834a;
+}
+
+.it-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.it-back,
+.it-related {
+    display: inline-block;
+    padding: 11px 16px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.it-back:hover,
+.it-related:hover {
+    border-color: #16834a;
+    color: #16834a;
+}
+
+@media (max-width: 850px) {
+    .it-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .it-sidebar {
+        position: static;
+        order: -1;
+    }
+
+    .it-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .intermediate-tutorial {
+        width: 94%;
+    }
+
+    .it-header {
+        padding: 28px;
+    }
+
+    .it-header h1 {
+        font-size: 30px;
+    }
+
+    .it-box {
+        padding: 21px;
+    }
+
+    .it-footer {
+        flex-direction: column;
+    }
+
+    .it-back,
+    .it-related {
+        text-align: center;
+    }
+}
+
+.tutorial-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    margin-top: 25px;
+}
+
+.page-arrow {
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.page-arrow:hover:not(:disabled) {
+    border-color: #16834a;
+    color: #16834a;
+}
+
+.page-arrow:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.page-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 1px solid #999;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+.page-dot:hover {
+    border-color: #16834a;
+}
+
+.page-dot.active {
+    background: #16834a;
+    border-color: #16834a;
+}
+
+@media (max-width: 600px) {
+    .tutorial-pagination {
+        gap: 12px;
+    }
+
+    .page-arrow {
+        padding: 9px 12px;
+        font-size: 12px;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div id="header"></div>
+
+<main>
+
+<section id="home" class="page active">
+
+<div class="extended-hero">
+    <div>
+        <span class="extended-label">EXTENDED TUTORIALS</span>
+        <h1>Go Beyond the Basics</h1>
+        <p>
+            Learn how Arduino projects are built, controlled and expanded.
+            These tutorials are independent, so you can open the one you need
+            instead of following another fixed path.
+        </p>
+    </div>
+</div>
+
+<div class="tutorial-levels">
+
+<div class="level-panel intermediate">
+    <div class="level-top">
+        <span class="level-tag">INTERMEDIATE</span>
+    </div>
+
+    <h2>Build Real Projects</h2>
+
+    <p>
+        Combine components, write larger programs and learn techniques
+        that turn simple Arduino examples into complete projects.
+    </p>
+
+<div class="level-topics">
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED</a>
+    <a href="#ext-serial">Serial</a>
+    <a href="#ext-inputs">Inputs</a>
+    <a href="#ext-state">State</a>
+    <a href="#ext-libraries">Libraries</a>
+</div>
+
+    <button class="level-button" onclick="showTutorialLevel('intermediate')">
+        Explore Intermediate →
+    </button>
+</div>
+
+
+<div class="level-panel advanced">
+    <div class="level-top">
+        <span class="level-tag">ADVANCED</span>
+    </div>
+
+    <h2>Understand Arduino</h2>
+
+    <p>
+        Go deeper into programming and the hardware itself. Learn how
+        Arduino handles memory, timing, interrupts and registers.
+    </p>
+
+<div class="level-topics">
+    <a href="#ext-interrupts">Interrupts</a>
+    <a href="#ext-timers">Timers</a>
+    <a href="#ext-memory">EEPROM</a>
+    <a href="#ext-memory">Registers</a>
+    <a href="#ext-memory">Memory</a>
+    <a href="#ext-memory">Optimization</a>
+</div>
+
+    <button class="level-button" onclick="showTutorialLevel('advanced')">
+        Explore Advanced →
+    </button>
+</div>
+
+</div>
+
+<div class="tutorial-library">
+
+<div class="library-header">
+    <div>
+        <span class="extended-label">TUTORIAL LIBRARY</span>
+        <h2>Choose What You Want to Learn</h2>
+    </div>
+
+<div class="tutorial-filters">
+    <button class="filter-active" onclick="filterTutorials('all', this)">All</button>
+    <button onclick="filterTutorials('intermediate', this)">Intermediate</button>
+    <button onclick="filterTutorials('advanced', this)">Advanced</button>
+</div>
+</div>
+
+
+<div class="tutorial-card-grid">
+<article class="extended-card" data-level="intermediate" data-topic="timing">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Non-Blocking Timing</h3>
+        <p>
+            Use millis() instead of delay() to run several things at
+            different times without stopping the entire program.
+        </p>
+        <div class="card-meta">
+            <span>millis()</span>
+            <span>Timing</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-millis">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="sensors">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Sensors</h3>
+        <p>
+            Read sensors, process their values and use the results to
+            control other parts of a project.
+        </p>
+        <div class="card-meta">
+            <span>Analog</span>
+            <span>Digital</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-sensors">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="display">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>OLED Interfaces</h3>
+        <p>
+            Build useful display interfaces with values, status information,
+            menus and simple graphics.
+        </p>
+        <div class="card-meta">
+            <span>OLED</span>
+            <span>I²C</span>
+        </div>
+        <a class="next-link nl-green nl-nounderline"  href="#ext-oled">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="programming">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>State Machines</h3>
+        <p>
+            Organize projects into clear states instead of filling loop()
+            with increasingly complicated conditions.
+        </p>
+        <div class="card-meta">
+            <span>Logic</span>
+            <span>Program Flow</span>
+        </div>
+        <a class="next-link nl-green nl-nounderline"  href="#ext-state">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="input">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Multiple Inputs</h3>
+        <p>
+            Handle buttons, switches, joysticks and other inputs together
+            without creating confusing input logic.
+        </p>
+        <div class="card-meta">
+            <span>Buttons</span>
+            <span>Joystick</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-inputs">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="output">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>PWM Control</h3>
+        <p>
+            Control LED brightness and compatible hardware using PWM
+            outputs.
+        </p>
+        <div class="card-meta">
+            <span>PWM</span>
+            <span>analogWrite()</span>
+        </div>
+        <a class="next-link nl-green nl-nounderline"  href="#ext-pwm">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="serial">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Serial Commands</h3>
+        <p>
+            Turn the Serial Monitor into a command interface for controlling
+            and testing your Arduino.
+        </p>
+        <div class="card-meta">
+            <span>Serial</span>
+            <span>Commands</span>
+        </div>
+        <a class="next-link nl-green nl-nounderline"  href="#ext-serial">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="functions">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Custom Functions</h3>
+        <p>
+            Split larger sketches into reusable functions that make code
+            easier to understand.
+        </p>
+        <div class="card-meta">
+            <span>Functions</span>
+            <span>Code Structure</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-functions">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="libraries">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Using Libraries</h3>
+        <p>
+            Learn what Arduino libraries do and how to understand the
+            functions they provide.
+        </p>
+        <div class="card-meta">
+            <span>Libraries</span>
+            <span>Code</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-libraries">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="i2c">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>I²C Devices</h3>
+        <p>
+            Connect multiple I²C devices and understand how addresses
+            allow them to share the same bus.
+        </p>
+        <div class="card-meta">
+            <span>I²C</span>
+            <span>SDA / SCL</span>
+        </div>
+        <a class="next-link nl-green nl-nounderline"  href="#ext-i2c">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="projects">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Joystick Projects</h3>
+        <p>
+            Combine joystick input with displays and outputs to create
+            interactive projects.
+        </p>
+        <div class="card-meta">
+            <span>Joystick</span>
+            <span>OLED</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-joystick">Open Tutorial →</a>
+    </div>
+</article>
+
+<article class="extended-card" data-level="intermediate" data-topic="data">
+    <div class="card-content">
+        <span class="card-level">INTERMEDIATE</span>
+        <h3>Data Processing</h3>
+        <p>
+            Convert raw sensor readings into useful values, ranges,
+            averages and decisions.
+        </p>
+        <div class="card-meta">
+            <span>Sensor Data</span>
+            <span>Math</span>
+        </div>
+        <a  class="next-link nl-green nl-nounderline" href="#ext-data">Open Tutorial →</a>
+    </div>
+</article>
+
+
+    <article class="extended-card"
+             data-level="advanced"
+             data-topic="interrupts">
+
+        <div class="card-content">
+            <span class="card-level">ADVANCED</span>
+
+            <h3>Interrupts</h3>
+
+            <p>
+                Learn how interrupts allow the microcontroller to react
+                to events without constantly checking for them.
+            </p>
+
+            <div class="card-meta">
+                <span>ATmega328P</span>
+                <span>Hardware</span>
+            </div>
+
+            <a  class="next-link nl-green nl-nounderline" href="#ext-interrupts">Open Tutorial →</a>
+        </div>
+
+    </article>
+
+
+    <article class="extended-card"
+             data-level="advanced"
+             data-topic="timers">
+
+        <div class="card-content">
+            <span class="card-level">ADVANCED</span>
+
+            <h3>Timers</h3>
+
+            <p>
+                Understand hardware timers and learn why timing does not
+                always need delay().
+            </p>
+
+            <div class="card-meta">
+                <span>Timers</span>
+                <span>Timing</span>
+            </div>
+
+            <a class="next-link nl-green nl-nounderline" href="#ext-timers">Open Tutorial →</a>
+        </div>
+
+    </article>
+
+
+    <article class="extended-card"
+             data-level="advanced"
+             data-topic="memory">
+
+        <div class="card-content">
+            <span class="card-level">ADVANCED</span>
+
+            <h3>Arduino Memory</h3>
+
+            <p>
+                Understand Flash, SRAM and EEPROM and learn how memory
+                affects larger Arduino programs.
+            </p>
+
+            <div class="card-meta">
+                <span>Memory</span>
+                <span>ATmega328P</span>
+            </div>
+
+            <a class="next-link nl-green nl-nounderline" href="#ext-memory">Open Tutorial →</a>
+        </div>
+
+    </article>
+
+</div>
+</div>
+
+<div class="tutorial-pagination"></div>
+</div>
+</section>
+
+<section id="ext-millis" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · PROGRAMMING</span>
+    <h1>Non-Blocking Timing</h1>
+    <p>
+        Learn how to use millis() to control timing without stopping the
+        entire Arduino program with delay().
+    </p>
+
+    <div class="it-meta">
+        <span>millis()</span>
+        <span>Timing</span>
+        <span>Arduino Uno</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Why delay() becomes a problem</h2>
+
+    <p>
+        delay() completely pauses the program for the specified amount of
+        time. This is fine for simple projects, but becomes a problem when
+        several things need to happen at once.
+    </p>
+
+    <div class="it-code">
+<button class="copy-btn"
+onclick="copyCmd(this.parentElement.querySelector('pre'))">
+Copy </button>
+        <pre><code>digitalWrite(LED_BUILTIN, HIGH);
+delay(1000);
+digitalWrite(LED_BUILTIN, LOW);
+delay(1000);</code></pre>
+    </div>
+
+    <p>
+        During those delays your program cannot normally perform other
+        tasks in the same loop.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Using millis()</h2>
+
+    <p>
+        millis() returns the number of milliseconds that have passed since
+        the Arduino started running the sketch.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>unsigned long previousMillis = 0;
+const unsigned long interval = 1000;
+
+void setup() {
+    pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop() {
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= interval) {
+        previousMillis = currentMillis;
+
+        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    }
+}</code></pre>
+    </div>
+
+    <div class="it-note">
+        The program keeps running while it waits for the next interval.
+        This allows other code to execute inside loop().
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Multiple timers</h2>
+
+    <p>
+        One of the biggest advantages of millis() is that different parts
+        of your project can have different schedules.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>unsigned long lastLED = 0;
+unsigned long lastSerial = 0;
+
+void loop() {
+    unsigned long now = millis();
+
+    if (now - lastLED >= 500) {
+        lastLED = now;
+        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    }
+
+    if (now - lastSerial >= 1000) {
+        lastSerial = now;
+        Serial.println("Running...");
+    }
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Make one LED blink every 500 ms while the Serial Monitor prints
+        a message every 2 seconds.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+
+<section id="ext-sensors" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · HARDWARE</span>
+    <h1>Sensors</h1>
+    <p>
+        Move beyond simply reading a sensor. Learn how to process sensor
+        values and turn them into useful decisions and outputs.
+    </p>
+
+    <div class="it-meta">
+        <span>Analog</span>
+        <span>Digital</span>
+        <span>Sensor Data</span>
+        <span>Arduino Uno</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Reading a sensor</h2>
+
+    <p>
+        Many Arduino sensors provide either an analog value or a digital
+        state. Analog inputs on the Uno normally produce values from
+        0 to 1023.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int sensorValue = analogRead(A0);
+
+Serial.println(sensorValue);
+
+delay(200);</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Turning a reading into a decision</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int sensorValue = analogRead(A0);
+
+if (sensorValue > 600) {
+    digitalWrite(LED_BUILTIN, HIGH);
+} else {
+    digitalWrite(LED_BUILTIN, LOW);
+}</code></pre>
+    </div>
+
+    <p>
+        This creates a simple threshold system. The same idea can be used
+        for light sensors, potentiometers, joysticks and many other inputs.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Mapping values</h2>
+
+    <p>
+        map() can convert a value from one range into another.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int sensorValue = analogRead(A0);
+
+int brightness = map(
+    sensorValue,
+    0,
+    1023,
+    0,
+    255
+);
+
+analogWrite(9, brightness);</code></pre>
+    </div>
+
+    <div class="it-note">
+        map() changes the numerical range. It does not automatically smooth
+        noisy sensor readings.
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Connect a potentiometer to A0 and use its position to control the
+        brightness of an LED on a PWM pin.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-oled" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · DISPLAY</span>
+    <h1>OLED Interfaces</h1>
+    <p>
+        Build useful OLED interfaces that display sensor values, status
+        information, menus and other project data.
+    </p>
+
+    <div class="it-meta">
+        <span>OLED</span>
+        <span>I²C</span>
+        <span>Display</span>
+        <span>Adafruit GFX</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Basic OLED structure</h2>
+
+    <p>
+        A typical I²C OLED uses SDA and SCL for communication. On an Arduino
+        Uno these are A4 and A5.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+Adafruit_SSD1306 display(128, 64, &amp;Wire, -1);
+
+void setup() {
+    display.begin(
+        SSD1306_SWITCHCAPVCC,
+        0x3C
+    );
+
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setCursor(0, 0);
+    display.println("Arduino");
+    display.display();
+}
+
+void loop() {
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Displaying changing values</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int value = analogRead(A0);
+
+display.clearDisplay();
+
+display.setCursor(0, 0);
+display.println("Sensor:");
+
+display.setCursor(0, 20);
+display.println(value);
+
+display.display();</code></pre>
+    </div>
+
+    <p>
+        The important pattern is to draw the new screen and then call
+        display.display() to send the buffer to the OLED.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Building an interface</h2>
+
+    <div class="it-grid">
+        <div class="it-small-box">
+            <strong>Header</strong>
+            <p>Project name or current mode.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>Main Value</strong>
+            <p>Sensor reading or important information.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>Status</strong>
+            <p>Show whether something is active.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>Controls</strong>
+            <p>Show available buttons or joystick actions.</p>
+        </div>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Create an OLED screen showing a sensor value at the top and an
+        ON/OFF status underneath it.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+
+<section id="ext-state" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · PROGRAMMING</span>
+    <h1>State Machines</h1>
+    <p>
+        Learn how to structure projects around clearly defined states
+        instead of creating increasingly complicated conditions.
+    </p>
+
+    <div class="it-meta">
+        <span>Logic</span>
+        <span>Program Flow</span>
+        <span>State</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>What is a state?</h2>
+
+    <p>
+        A state represents what your project is currently doing.
+    </p>
+
+    <div class="it-grid">
+        <div class="it-small-box">
+            <strong>MENU</strong>
+            <p>The user is selecting something.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>GAME</strong>
+            <p>The main program is running.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>PAUSED</strong>
+            <p>The project is temporarily stopped.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>ERROR</strong>
+            <p>The project detected a problem.</p>
+        </div>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Simple state system</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>enum State {
+    MENU,
+    GAME,
+    PAUSED
+};
+
+State currentState = MENU;
+
+void loop() {
+
+    switch (currentState) {
+
+        case MENU:
+            runMenu();
+            break;
+
+        case GAME:
+            runGame();
+            break;
+
+        case PAUSED:
+            runPaused();
+            break;
+    }
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Changing state</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>if (buttonPressed) {
+    currentState = GAME;
+}
+
+if (pausePressed) {
+    currentState = PAUSED;
+}</code></pre>
+    </div>
+
+    <p>
+        This becomes especially useful for OLED menus, games, control
+        panels and projects with several operating modes.
+    </p>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Create three states: MENU, RUNNING and PAUSED. Use a button to
+        switch between them and display the current state in Serial Monitor.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-inputs" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · INPUT</span>
+    <h1>Multiple Inputs</h1>
+    <p>
+        Learn how to handle several buttons, switches, joysticks and other
+        inputs inside the same project.
+    </p>
+
+    <div class="it-meta">
+        <span>Buttons</span>
+        <span>Joystick</span>
+        <span>Digital Input</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Using several buttons</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>const int buttonA = 2;
+const int buttonB = 3;
+const int buttonC = 4;
+
+void setup() {
+    pinMode(buttonA, INPUT_PULLUP);
+    pinMode(buttonB, INPUT_PULLUP);
+    pinMode(buttonC, INPUT_PULLUP);
+}
+
+void loop() {
+
+    if (digitalRead(buttonA) == LOW) {
+        Serial.println("Button A");
+    }
+
+    if (digitalRead(buttonB) == LOW) {
+        Serial.println("Button B");
+    }
+
+    if (digitalRead(buttonC) == LOW) {
+        Serial.println("Button C");
+    }
+}</code></pre>
+    </div>
+
+    <div class="it-note">
+        INPUT_PULLUP uses the Arduino's internal pull-up resistor. With
+        this arrangement the button reads LOW when pressed.
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Combining digital and analog inputs</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int x = analogRead(A0);
+int y = analogRead(A1);
+
+bool button = digitalRead(2) == LOW;
+
+if (button && x > 700) {
+    Serial.println("Action!");
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Use two buttons and a joystick. Make one button change a mode,
+        another button trigger an action and the joystick control a value.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-pwm" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · OUTPUT</span>
+    <h1>PWM Control</h1>
+    <p>
+        Learn how PWM can be used to control LED brightness and compatible
+        hardware such as motor drivers.
+    </p>
+
+    <div class="it-meta">
+        <span>PWM</span>
+        <span>analogWrite()</span>
+        <span>Arduino Uno</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>What PWM does</h2>
+
+    <p>
+        On the Arduino Uno, PWM rapidly switches a digital output on and
+        off. The duty cycle controls how much of the time the signal is HIGH.
+    </p>
+
+    <p>
+        PWM is available on pins 3, 5, 6, 9, 10 and 11 on a standard Uno.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>LED brightness</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>const int led = 9;
+
+void setup() {
+    pinMode(led, OUTPUT);
+}
+
+void loop() {
+
+    for (int brightness = 0;
+         brightness &lt;= 255;
+         brightness++) {
+
+        analogWrite(led, brightness);
+        delay(5);
+    }
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Using a sensor</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int sensor = analogRead(A0);
+
+int brightness = map(
+    sensor,
+    0,
+    1023,
+    0,
+    255
+);
+
+analogWrite(9, brightness);</code></pre>
+    </div>
+
+    <div class="it-warning">
+        analogWrite() does not produce a true variable analog voltage on
+        a normal Uno PWM pin. It produces a PWM signal.
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Use a potentiometer to smoothly control an LED's brightness.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-serial" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · COMMUNICATION</span>
+    <h1>Serial Commands</h1>
+    <p>
+        Turn the Serial Monitor into a simple command interface for
+        controlling and testing your Arduino.
+    </p>
+
+    <div class="it-meta">
+        <span>Serial</span>
+        <span>Commands</span>
+        <span>Debugging</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Reading Serial input</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>void setup() {
+    Serial.begin(9600);
+    Serial.println("Arduino Ready");
+}
+
+void loop() {
+
+    if (Serial.available()) {
+
+        char command = Serial.read();
+
+        if (command == '1') {
+            digitalWrite(LED_BUILTIN, HIGH);
+        }
+
+        if (command == '0') {
+            digitalWrite(LED_BUILTIN, LOW);
+        }
+    }
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Building commands</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>if (Serial.available()) {
+
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command == "on") {
+        digitalWrite(LED_BUILTIN, HIGH);
+        Serial.println("LED ON");
+    }
+
+    else if (command == "off") {
+        digitalWrite(LED_BUILTIN, LOW);
+        Serial.println("LED OFF");
+    }
+
+    else {
+        Serial.println("Unknown command");
+    }
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-result">
+    <strong>Example commands</strong>
+    <code>on</code><br>
+    <code>off</code>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Create commands such as <code>led on</code>, <code>led off</code>
+        and <code>status</code>.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-functions" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · PROGRAMMING</span>
+    <h1>Custom Functions</h1>
+    <p>
+        Learn how to divide larger Arduino programs into reusable pieces
+        that are easier to understand and maintain.
+    </p>
+
+    <div class="it-meta">
+        <span>Functions</span>
+        <span>Code Structure</span>
+        <span>Reusable Code</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Why use functions?</h2>
+
+    <p>
+        Instead of placing everything inside loop(), you can give related
+        operations their own functions.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>void turnLEDOn() {
+    digitalWrite(LED_BUILTIN, HIGH);
+}
+
+void turnLEDOff() {
+    digitalWrite(LED_BUILTIN, LOW);
+}
+
+void loop() {
+
+    turnLEDOn();
+    delay(500);
+
+    turnLEDOff();
+    delay(500);
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Functions with parameters</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>void setLED(int pin, int state) {
+    digitalWrite(pin, state);
+}
+
+void loop() {
+
+    setLED(8, HIGH);
+    delay(500);
+
+    setLED(8, LOW);
+    delay(500);
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Functions that return values</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int readSensor() {
+    return analogRead(A0);
+}
+
+void loop() {
+
+    int value = readSensor();
+
+    Serial.println(value);
+
+    delay(200);
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Create functions for reading a sensor, controlling an LED and
+        printing the sensor value.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-libraries" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · LIBRARIES</span>
+    <h1>Using Libraries</h1>
+    <p>
+        Learn what Arduino libraries provide, how to use them and how to
+        understand unfamiliar library functions.
+    </p>
+
+    <div class="it-meta">
+        <span>Libraries</span>
+        <span>Code</span>
+        <span>APIs</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>What is a library?</h2>
+
+    <p>
+        A library is reusable code written to provide functionality that
+        would otherwise need to be written manually.
+    </p>
+
+    <p>
+        Display libraries, sensor libraries and communication libraries
+        are common examples.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Including a library</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;</code></pre>
+    </div>
+
+    <p>
+        #include tells the compiler that your sketch needs declarations
+        provided by the library.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Learning a library</h2>
+
+    <ol>
+        <li>Find the library documentation or examples.</li>
+        <li>Look at the constructor or setup code.</li>
+        <li>Find the functions you need.</li>
+        <li>Start with the library's example.</li>
+        <li>Change one thing at a time.</li>
+    </ol>
+
+    <div class="it-note">
+        Arduino libraries often include example sketches. These are one of
+        the fastest ways to understand how a library is intended to work.
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Install a display or sensor library and modify one of its example
+        sketches to display your own information.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+
+<section id="ext-joystick" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · PROJECTS</span>
+    <h1>Joystick Projects</h1>
+    <p>
+        Combine joystick input with displays and outputs to create
+        interactive Arduino projects.
+    </p>
+
+    <div class="it-meta">
+        <span>Joystick</span>
+        <span>Analog Input</span>
+        <span>OLED</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Reading a joystick</h2>
+
+    <p>
+        A typical analog joystick provides two analog axes and often a
+        push-button switch.
+    </p>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int x = analogRead(A0);
+int y = analogRead(A1);
+int button = digitalRead(2);
+
+Serial.print("X: ");
+Serial.print(x);
+
+Serial.print(" Y: ");
+Serial.print(y);
+
+Serial.print(" Button: ");
+Serial.println(button);</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Detecting directions</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int x = analogRead(A0);
+int y = analogRead(A1);
+
+if (x &lt; 400) {
+    Serial.println("LEFT");
+}
+
+if (x &gt; 600) {
+    Serial.println("RIGHT");
+}
+
+if (y &lt; 400) {
+    Serial.println("UP");
+}
+
+if (y &gt; 600) {
+    Serial.println("DOWN");    
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Adding an OLED</h2>
+
+    <p>
+        The joystick can control a cursor, menu selection, game character
+        or other interface while the OLED displays the result.
+    </p>
+
+    <div class="it-grid">
+        <div class="it-small-box">
+            <strong>X axis</strong>
+            <p>Move left and right.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>Y axis</strong>
+            <p>Move up and down.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>Button</strong>
+            <p>Select or activate something.</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>OLED</strong>
+            <p>Display the interface.</p>
+        </div>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Build a simple OLED menu controlled entirely with a joystick.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-i2c" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · COMMUNICATION</span>
+    <h1>I²C Devices</h1>
+    <p>
+        Learn how multiple devices can communicate with an Arduino through
+        the same I²C bus.
+    </p>
+
+    <div class="it-meta">
+        <span>I²C</span>
+        <span>SDA</span>
+        <span>SCL</span>
+        <span>Addresses</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>The I²C bus</h2>
+
+    <p>
+        I²C uses two main communication lines: SDA for data and SCL for
+        the clock.
+    </p>
+
+    <div class="it-grid">
+        <div class="it-small-box">
+            <strong>SDA</strong>
+            <p>Serial Data</p>
+        </div>
+
+        <div class="it-small-box">
+            <strong>SCL</strong>
+            <p>Serial Clock</p>
+        </div>
+    </div>
+
+    <div class="it-note">
+        On a standard Arduino Uno, SDA is A4 and SCL is A5.
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Device addresses</h2>
+
+    <p>
+        I²C devices normally have addresses. This allows a controller to
+        communicate with a specific device on the bus.
+    </p>
+
+    <p>
+        For example, an OLED commonly uses an address such as
+        <code>0x3C</code>, although the actual address depends on the module.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Multiple devices</h2>
+
+    <p>
+        Several compatible I²C devices can share SDA and SCL as long as
+        their addresses do not conflict and the electrical requirements
+        are satisfied.
+    </p>
+
+    <div class="it-code">
+        <pre><code>Arduino A4 ───── SDA ───── Device A
+                     └──── Device B
+
+Arduino A5 ───── SCL ───── Device A
+                     └──── Device B</code></pre>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Connect an I²C OLED and another I²C device. Find their addresses
+        and use the same SDA and SCL lines.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+<section id="ext-data" class="page">
+
+<div class="intermediate-tutorial">
+
+<div class="it-header">
+    <span class="it-label">INTERMEDIATE · DATA</span>
+    <h1>Data Processing</h1>
+    <p>
+        Learn how to turn raw Arduino readings into useful information
+        using ranges, averages, mapping and calculations.
+    </p>
+
+    <div class="it-meta">
+        <span>Sensor Data</span>
+        <span>Math</span>
+        <span>Filtering</span>
+    </div>
+</div>
+
+<div class="it-layout">
+
+<div class="it-main">
+
+<div class="it-box">
+    <h2>Raw data</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int value = analogRead(A0);
+
+Serial.println(value);</code></pre>
+    </div>
+
+    <p>
+        Raw sensor values are often not the final values your project needs.
+        Processing lets you turn them into something more useful.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Average readings</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>long total = 0;
+
+for (int i = 0; i &lt; 10; i++) {
+    total += analogRead(A0);
+}
+
+int average = total / 10;
+
+Serial.println(average);</code></pre>
+    </div>
+
+    <p>
+        Taking several readings and averaging them can reduce the effect
+        of small changes and electrical noise.
+    </p>
+</div>
+
+<div class="it-box">
+    <h2>Convert the data</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int raw = analogRead(A0);
+
+int percent = map(
+    raw,
+    0,
+    1023,
+    0,
+    100
+);
+
+Serial.print(percent);
+Serial.println("%");</code></pre>
+    </div>
+</div>
+
+<div class="it-box">
+    <h2>Use processed data</h2>
+
+    <div class="it-code">
+        <button class="copy-btn" onclick="copyCmd(this.parentElement.querySelector('pre'))">Copy</button>
+        <pre><code>int raw = analogRead(A0);
+
+int percent = map(
+    raw,
+    0,
+    1023,
+    0,
+    100
+);
+
+if (percent &lt; 20) {
+    Serial.println("LOW");
+}
+else if (percent &lt; 80) {
+    Serial.println("NORMAL");
+}
+else {
+    Serial.println("HIGH");
+}</code></pre>
+    </div>
+</div>
+
+<div class="it-challenge">
+    <h2>Try It</h2>
+    <p>
+        Read a sensor ten times, calculate the average, convert the result
+        into a percentage and display LOW, NORMAL or HIGH.
+    </p>
+</div>
+
+</div>
+
+<div class="it-sidebar">
+    <div class="it-sidebar-title">INTERMEDIATE</div>
+    <a href="#ext-millis">Non-Blocking Timing</a>
+    <a href="#ext-sensors">Sensors</a>
+    <a href="#ext-oled">OLED Interfaces</a>
+    <a href="#ext-state">State Machines</a>
+    <a href="#ext-inputs">Multiple Inputs</a>
+    <a href="#ext-pwm">PWM Control</a>
+    <a href="#ext-serial">Serial Commands</a>
+    <a href="#ext-functions">Custom Functions</a>
+    <a href="#ext-libraries">Using Libraries</a>
+    <a href="#ext-i2c">I²C Devices</a>
+    <a href="#ext-joystick">Joystick Projects</a>
+    <a href="#ext-data">Data Processing</a>
+    <a href="#home">Home</a>
+</div>
+
+</div>
+</div>
+
+</section>
+
+<section id="notfound" class="page">
+    <h2>404 – Page Not Found</h2>
+    <p>The section you tried to open does not exist.</p>
+    <button onclick="goHome()">Go Home</button>
+</section>
+
+</main>
+
+<div id="footer"></div>
+
+<script src="js/main.js"></script>
+<div id="copyPopup">Copied!</div>
+
+<script type="module" src="js/Live.js"></script>
+<div class="live-counter" id="liveCounter">
+  <span class="dot"></span>
+  Online: <span id="onlineCount">0</span>
+</div>
+<script src="js/components.js"></script>
+
+<script>
+const tutorialsPerPage = 6;
+let currentTutorialPage = 1;
+let currentTutorialFilter = "all";
+
+function getTutorialCards() {
+    return Array.from(document.querySelectorAll(".extended-card"));
+}
+
+function filterTutorials(level, button) {
+    currentTutorialFilter = level;
+    currentTutorialPage = 1;
+
+    document.querySelectorAll(".tutorial-filters button").forEach(btn => {
+        btn.classList.remove("filter-active");
+    });
+
+    if (button) {
+        button.classList.add("filter-active");
+    }
+
+    renderTutorialPage();
+}
+
+function renderTutorialPage() {
+    const cards = getTutorialCards();
+
+    const filteredCards = cards.filter(card => {
+        return currentTutorialFilter === "all" ||
+               card.dataset.level === currentTutorialFilter;
+    });
+
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredCards.length / tutorialsPerPage)
+    );
+
+    if (currentTutorialPage > totalPages) {
+        currentTutorialPage = totalPages;
+    }
+
+    cards.forEach(card => {
+        card.style.display = "none";
+    });
+
+    const start = (currentTutorialPage - 1) * tutorialsPerPage;
+    const end = start + tutorialsPerPage;
+
+    filteredCards.slice(start, end).forEach(card => {
+        card.style.display = "";
+    });
+
+    updateTutorialPagination(totalPages);
+}
+
+function changeTutorialPage(page) {
+    const cards = getTutorialCards();
+
+    const filteredCards = cards.filter(card => {
+        return currentTutorialFilter === "all" ||
+               card.dataset.level === currentTutorialFilter;
+    });
+
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredCards.length / tutorialsPerPage)
+    );
+
+    if (page < 1 || page > totalPages) {
+        return;
+    }
+
+    currentTutorialPage = page;
+    renderTutorialPage();
+
+    const library = document.querySelector(".tutorial-library");
+
+    if (library) {
+        library.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+function updateTutorialPagination(totalPages) {
+    const pagination = document.querySelector(".tutorial-pagination");
+
+    if (!pagination) {
+        return;
+    }
+
+    pagination.innerHTML = "";
+
+    const previous = document.createElement("button");
+    previous.className = "page-arrow";
+    previous.textContent = "← Previous";
+    previous.disabled = currentTutorialPage === 1;
+    previous.onclick = function() {
+        changeTutorialPage(currentTutorialPage - 1);
+    };
+
+    pagination.appendChild(previous);
+
+    const dots = document.createElement("div");
+    dots.className = "page-dots";
+
+    for (let i = 1; i <= totalPages; i++) {
+        const dot = document.createElement("button");
+
+        dot.className = "page-dot";
+
+        if (i === currentTutorialPage) {
+            dot.classList.add("active");
+        }
+
+        dot.setAttribute("aria-label", "Page " + i);
+
+        dot.onclick = function() {
+            changeTutorialPage(i);
+        };
+
+        dots.appendChild(dot);
+    }
+
+    pagination.appendChild(dots);
+
+    const next = document.createElement("button");
+    next.className = "page-arrow";
+    next.textContent = "Next →";
+    next.disabled = currentTutorialPage === totalPages;
+    next.onclick = function() {
+        changeTutorialPage(currentTutorialPage + 1);
+    };
+
+    pagination.appendChild(next);
+}
+
+function showTutorialLevel(level) {
+    filterTutorials(level);
+
+    const library = document.querySelector(".tutorial-library");
+
+    if (library) {
+        library.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    renderTutorialPage();
+});
+function copyCmd(el){
+
+const cmd = el.innerText;
+
+navigator.clipboard.writeText(cmd);
+
+showPopup("Text copied");
+
+}
+
+function showPopup(text){
+  const popup = document.getElementById("copyPopup");
+  popup.textContent = text;
+  popup.classList.add("show");
+
+  setTimeout(()=>{
+    popup.classList.remove("show");
+  },3000);
+}
+
+
+function highlightCode(code){
+  return code
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+
+    .replace(/(\/\/.*)/g,'<span style="color:#22c55e">$1</span>')
+    .replace(/\b(void|int|setup|loop|digitalWrite|delay|pinMode)\b/g,
+      '<span style="color:#38bdf8">$1</span>')
+.replace(/\b(Serial|begin|println|millis|analogRead|analogWrite)\b/g,
+  '<span style="color:#38bdf8">$1</span>')
+.replace(/(#include\s*&lt;.*?&gt;)/g,
+  '<span style="color:#f472b6">$1</span>')
+.replace(/\b(#define|#include)\b/g,
+  '<span style="color:#f472b6">$1</span>')
+.replace(/\b(Adafruit_SSD1306|Adafruit_GFX|Wire)\b/g,
+  '<span style="color:#60a5fa">$1</span>')
+.replace(/\b(SSD1306_SWITCHCAPVCC|WHITE|BLACK)\b/g,
+  '<span style="color:#22c55e">$1</span>')
+.replace(/\b(display)\b/g,
+  '<span style="color:#e879f9">$1</span>')
+    .replace(/\b(HIGH|LOW|OUTPUT|INPUT)\b/g,
+      '<span style="color:#fbbf24">$1</span>')
+    .replace(/\b(\d+)\b/g,
+      '<span style="color:#a78bfa">$1</span>');
+
+}
+
+function escapeHTML(str){
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+function highlightAllCode() { document.querySelectorAll(".it-code pre code").forEach(code => { const raw = code.textContent; code.innerHTML = highlightCode(raw); }); } document.addEventListener("DOMContentLoaded", highlightAllCode);
+</script>
+</body>
+</html>
+
+
+

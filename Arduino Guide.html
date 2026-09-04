@@ -370,7 +370,8 @@
 
 <p>
   Digital pins can be either <b>ON (HIGH)</b> or <b>OFF (LOW)</b>.
-  See the LED example on the <a class="next-link nl-blue nl-md nl-noneunderline" href="#examples">Examples</a> page.
+  See the LED example on the  <a class="next-link nl-green nl-noneunderline nl-md"
+     href="Examples.html?example=blink#examples">Examples</a> page.
 </p>
 
   <ul>
@@ -506,43 +507,363 @@
   <div class="hardware-layout">
   <!-- LEFT COLUMN -->
 <div class="hardware-left">
-  <h2>Arduino Board Hardware and Components Visual - Visual Illustrations</h2>
+  <h2>Arduino Board Hardware and Components Visual</h2>
+
   <p class="page-intro">
     This page connects <b>real wiring</b> with <b>hardware concepts</b>.
-    Open an example on the right to see how physical components
-    connect to the Arduino board.
+    Use this section as a quick reference when you need to know what
+    a pin, component, or connection does.
   </p>
 
   <p>
-    Arduino boards are built around a microcontroller and include
-    power regulation, communication pins, and headers for expansion.
+    You do not have to follow this page from top to bottom.
+    If you already know Arduino, use it as a reference while building
+    your own projects.
   </p>
 
-  <img src="Images/Arduino-uno.png" alt="Arduino board">
+  <img src="Images/Arduino-uno.png" alt="Arduino Uno board">
+  <p>Quick Tips to use if needed:</p>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Arduino Uno Basics</strong></summary>
 
-  <h3>Core Parts</h3>
-  <ul>
-    <li>Microcontroller (ATmega328P)</li>
-    <li>USB interface</li>
-    <li>Voltage regulator</li>
-    <li>Pin headers</li>
-  </ul>
-
-  <p>
-    Components connect directly to these pins using jumper wires
-    or breadboards.
-  </p>
-
-    <h2>More about Components</h2>
-    <p>The longer pin of LEDs is the (<b>+</b>) positive end.</p>
-    <p>The shorter pin of LEDs is the (<b>−</b>) negative end and should always be connected to the Arduino's GND (<b>−</b>).</p>
     <p>
-      You can connect all negative ends of LEDs, displays, and even motors together to one GND pin.</p>
-      <p><b>Note:</b> It is recommended to connect all LEDs, all displays, or one or two motors to a individual (one per commponent) GND—not all devices combined on the same GND line.
+      The Arduino Uno uses an <b>ATmega328P</b> microcontroller.
+      The pins around the board allow it to communicate with LEDs,
+      buttons, sensors, displays, motors, and other electronics.
     </p>
 
-    <p>Most if not all arduino (uno's) have 3+ GND and expantion holes where you can weld on new pins!</p>
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Core Parts</strong></summary>
+
+    <ul>
+      <li><b>ATmega328P</b> — the main microcontroller.</li>
+      <li><b>USB port</b> — connects the Arduino to a computer and can provide power.</li>
+      <li><b>DC barrel jack</b> — external power input.</li>
+      <li><b>Voltage regulator</b> — helps regulate incoming power.</li>
+      <li><b>Digital pins</b> — pins 0–13 for digital input/output.</li>
+      <li><b>Analog pins</b> — pins A0–A5 for reading analog signals.</li>
+      <li><b>Power pins</b> — 5V, 3.3V, VIN and GND.</li>
+      <li><b>Reset button</b> — restarts the running program.</li>
+      <li><b>Pin headers</b> — provide connections for components and expansion.</li>
+    </ul>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Digital Pins — 0 to 13</strong></summary>
+
+    <p>
+      Digital pins can normally be used as <b>INPUT</b> or <b>OUTPUT</b>.
+      They can read a signal or control a component.
+    </p>
+
+    <p>
+      For example, an LED can be controlled from pin 13,
+      while a button can be connected to another digital pin.
+    </p>
+
+    <p>
+      <b>Pin 0 (RX)</b> and <b>Pin 1 (TX)</b> are also used for
+      serial communication. Be careful when using them while uploading
+      or communicating with the computer.
+    </p>
+
+    <p>
+      <b>Pin 11?</b> It is a normal digital pin and also supports
+      <b>PWM</b> and <b>SPI</b> functions.
+    </p>
+
+    <p>
+      <b>Pin 12?</b> Digital pin with SPI support.
+    </p>
+
+    <p>
+      <b>Pin 13?</b> Digital pin connected to the Uno's built-in LED.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>PWM Pins</strong></summary>
+
+    <p>
+      Pins marked with <b>~</b> support PWM.
+      On the Arduino Uno these are:
+    </p>
+
+    <p>
+      <b>3, 5, 6, 9, 10 and 11</b>
+    </p>
+
+    <p>
+      PWM can be used for things such as controlling LED brightness
+      or controlling the speed of some motors.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Analog Pins</strong></summary>
+
+    <p>
+      <b>A0–A5</b> can read changing voltages from analog sensors
+      and other components.
+    </p>
+
+    <p>
+      A common example is a potentiometer or analog sensor connected
+      between power, GND and one analog input.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>I²C — A4 and A5</strong></summary>
+
+    <p>
+      On the Arduino Uno:
+    </p>
+
+    <ul>
+      <li><b>A4 = SDA</b></li>
+      <li><b>A5 = SCL</b></li>
+    </ul>
+
+    <p>
+      These pins are commonly used by I²C displays, sensors and other
+      I²C devices.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>SPI Pins</strong></summary>
+
+    <p>
+      The main SPI pins on the Uno are:
+    </p>
+
+    <ul>
+      <li><b>10 = SS</b></li>
+      <li><b>11 = MOSI</b></li>
+      <li><b>12 = MISO</b></li>
+      <li><b>13 = SCK</b></li>
+    </ul>
+
+    <p>
+      SPI is commonly used by displays, SD cards, sensors and other
+      high-speed peripherals.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Power Pins</strong></summary>
+
+    <ul>
+      <li><b>5V</b> — regulated 5V supply.</li>
+      <li><b>3.3V</b> — regulated 3.3V supply.</li>
+      <li><b>GND</b> — ground / negative reference.</li>
+      <li><b>VIN</b> — voltage supplied to the board's external power input.</li>
+    </ul>
+
+    <p>
+      Always check the voltage requirements of the component you are
+      connecting. Not every module is designed for 5V.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>What Is GND?</strong></summary>
+
+    <p>
+      <b>GND</b> means ground. It provides the electrical reference
+      and return path for a circuit.
+    </p>
+
+    <p>
+      When connecting a normal LED, sensor, button, display or buzzer,
+      the circuit will commonly need a connection back to Arduino GND.
+    </p>
+
+    <p>
+      Multiple components can share Arduino GND when the wiring and
+      power requirements are appropriate.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>LED + and −</strong></summary>
+
+    <p>
+      A typical LED has two legs:
+    </p>
+
+    <ul>
+      <li><b>Longer leg</b> — usually positive / anode (+).</li>
+      <li><b>Shorter leg</b> — usually negative / cathode (−).</li>
+    </ul>
+
+    <p>
+      The negative side is commonly connected toward GND.
+      The positive side should normally be connected through a
+      <b>current-limiting resistor</b>.
+    </p>
+
+    <p>
+      A resistor is important because connecting an LED directly
+      to a power source can allow too much current to flow.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Resistors</strong></summary>
+
+    <p>
+      Resistors limit current and control electrical signals.
+    </p>
+
+    <p>
+      For basic LEDs, a resistor such as <b>220Ω</b> is commonly used,
+      although the correct value depends on the LED and circuit.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Buttons</strong></summary>
+
+    <p>
+      A button is commonly used as a digital input.
+      The Arduino reads whether the input is HIGH or LOW.
+    </p>
+
+    <p>
+      A button circuit normally needs a defined pull-up or pull-down
+      state so the input does not randomly change when the button
+      is not pressed.
+    </p>
+
+    <p>
+      Arduino's internal <b>INPUT_PULLUP</b> can often simplify
+      basic button circuits.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Buzzer</strong></summary>
+
+    <p>
+      A buzzer can be connected to a digital or PWM-capable pin
+      depending on the type of buzzer and how it is being controlled.
+    </p>
+
+    <p>
+      A <b>passive buzzer</b> can be driven with changing frequencies,
+      while an <b>active buzzer</b> normally produces its own tone
+      when powered.
+    </p>
+
+    <p>
+      Larger buzzers, speakers and motors may require a transistor,
+      driver or separate power source instead of being driven directly
+      from an Arduino pin.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Sensors — Quick Rule</strong></summary>
+
+    <p>
+      Sensors can communicate with Arduino in different ways.
+    </p>
+
+    <ul>
+      <li><b>Analog</b> — usually read with A0–A5.</li>
+      <li><b>Digital</b> — usually read with a digital pin.</li>
+      <li><b>I²C</b> — commonly uses SDA and SCL.</li>
+      <li><b>SPI</b> — uses the SPI communication pins.</li>
+      <li><b>Serial</b> — communicates through serial TX/RX.</li>
+    </ul>
+
+    <p>
+      Always check the module's pin labels and voltage requirements
+      before connecting it.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Breadboards</strong></summary>
+
+    <p>
+      A breadboard lets you build circuits without permanently
+      soldering the components together.
+    </p>
+
+    <p>
+      The holes are electrically connected in groups underneath
+      the board. Power rails are commonly used to distribute
+      5V and GND around the circuit.
+    </p>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Quick Pin Reference</strong></summary>
+
+    <ul>
+      <li><b>0</b> — RX / Serial</li>
+      <li><b>1</b> — TX / Serial</li>
+      <li><b>3</b> — PWM</li>
+      <li><b>5</b> — PWM</li>
+      <li><b>6</b> — PWM</li>
+      <li><b>9</b> — PWM</li>
+      <li><b>10</b> — PWM / SPI SS</li>
+      <li><b>11</b> — PWM / SPI MOSI</li>
+      <li><b>12</b> — SPI MISO</li>
+      <li><b>13</b> — SPI SCK / Built-in LED</li>
+      <li><b>A0–A5</b> — Analog input</li>
+      <li><b>A4</b> — I²C SDA</li>
+      <li><b>A5</b> — I²C SCL</li>
+      <li><b>5V</b> — 5V power</li>
+      <li><b>3.3V</b> — 3.3V power</li>
+      <li><b>GND</b> — Ground</li>
+      <li><b>VIN</b> — External power input</li>
+    </ul>
+
+  </details>
+<div style="height:2vh;"></div>
+  <details>
+    <summary><strong>Before You Connect Something</strong></summary>
+
+    <ul>
+      <li>Check the component's required voltage.</li>
+      <li>Check which pin is power and which is GND.</li>
+      <li>Use a resistor where the circuit requires one.</li>
+      <li>Do not short 5V directly to GND.</li>
+      <li>Do not assume a motor or speaker can be powered directly from an Arduino pin.</li>
+      <li>Check the wiring before powering the circuit.</li>
+    </ul>
+
+    <p>
+      <b>Remember:</b> this section is a reference, not a path you
+      have to complete. If you only came here because you forgot
+      what pin 11 does, find pin 11 and get back to your project.
+    </p>
+
+  </details>
+
 </div>
+
 
 <!-- RIGHT COLUMN -->
 <div class="hardware-right">
@@ -588,10 +909,10 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED-off.png">
+               src="Wiring Images/Animated/Arduino-LED-off.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED-on.png">
+               src="Wiring Images/Animated/Arduino-LED-on.png">
 
         </div>
 
@@ -604,10 +925,10 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED-off,board.png">
+               src="Wiring Images/Animated/Arduino-LED-off,board.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED-on,board.png">
+               src="Wiring Images/Animated/Arduino-LED-on,board.png">
 
         </div>
 
@@ -617,7 +938,7 @@
       <div class="wire-slide">
 
         <img class="wire-img"
-             src="Images/Circuit/Arduino-LED-circuit.png">
+             src="Wiring Images/Circuit/Arduino-LED-circuit.png">
 
       </div>
 
@@ -679,16 +1000,16 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED's-off.png">
+               src="Wiring Images/Animated/Arduino-LED's-off.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED's-on1.png">
+               src="Wiring Images/Animated/Arduino-LED's-on1.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED's-on2.png">
+               src="Wiring Images/Animated/Arduino-LED's-on2.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED's-on3.png">
+               src="Wiring Images/Animated/Arduino-LED's-on3.png">
 
         </div>
 
@@ -700,16 +1021,16 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-LED's-off,board.png">
+               src="Wiring Images/Animated/Arduino-LED's-off,board.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED's-on1,board.png">
+               src="Wiring Images/Animated/Arduino-LED's-on1,board.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED's-on2,board.png">
+               src="Wiring Images/Animated/Arduino-LED's-on2,board.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-LED's-on3,board.png">
+               src="Wiring Images/Animated/Arduino-LED's-on3,board.png">
 
         </div>
 
@@ -718,7 +1039,7 @@
       <div class="wire-slide">
 
         <img class="wire-img"
-             src="Images/Circuit/Arduino-LED's-circuit.png">
+             src="Wiring Images/Circuit/Arduino-LED's-circuit.png">
 
       </div>
 
@@ -783,10 +1104,10 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-Oled4-off.png">
+               src="Wiring Images/Animated/Arduino-Oled4-off.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-Oled4-on.png">
+               src="Wiring Images/Animated/Arduino-Oled4-on.png">
 
         </div>
 
@@ -798,10 +1119,10 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-Oled4-off,board.png">
+               src="Wiring Images/Animated/Arduino-Oled4-off,board.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-Oled4-on,board.png">
+               src="Wiring Images/Animated/Arduino-Oled4-on,board.png">
 
         </div>
 
@@ -811,7 +1132,7 @@
       <div class="wire-slide">
 
         <img class="wire-img"
-             src="Images/Circuit/Arduino-OLED-circuit.png">
+             src="Wiring Images/Circuit/Arduino-OLED-circuit.png">
 
       </div>
 
@@ -874,10 +1195,10 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-Buzzer.png">
+               src="Wiring Images/Animated/Arduino-Buzzer.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-Buzzer-active.png">
+               src="Wiring Images/Animated/Arduino-Buzzer-active.png">
 
         </div>
 
@@ -890,10 +1211,10 @@
         <div class="wire-anim" data-wire-anim>
 
           <img class="wire-frame active"
-               src="Images/Animated/Arduino-Buzzer,board.png">
+               src="Wiring Images/Animated/Arduino-Buzzer,board.png">
 
           <img class="wire-frame"
-               src="Images/Animated/Arduino-Buzzer-active,board.png">
+               src="Wiring Images/Animated/Arduino-Buzzer-active,board.png">
 
         </div>
 
@@ -903,7 +1224,7 @@
       <div class="wire-slide">
 
         <img class="wire-img"
-             src="Images/Circuit/Arduino-Buzzer-circuit.png">
+             src="Wiring Images/Circuit/Arduino-Buzzer-circuit.png">
 
       </div>
 
@@ -1023,8 +1344,6 @@
         onclick="showPinInfo('2 Digital Pin',[
 'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
 'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
 	<div
@@ -1036,8 +1355,6 @@
         onclick="showPinInfo('3 Digital / PWM Pin',[
 'Supports PWM (~) for variable output such as brightness or speed.',
 'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1049,8 +1366,6 @@
         onclick="showPinInfo('4 Digital Pin',[
 'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
 'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1061,10 +1376,7 @@
         title="5 Digital / PWM Pin"
         onclick="showPinInfo('5 Digital / PWM Pin',[
 'Supports PWM (~) for variable output such as brightness or speed.',
-'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
-])"
+'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',])"
       ></div>
 	<div
         class="pin"
@@ -1074,10 +1386,7 @@
         title="6 Digital / PWM Pin"
         onclick="showPinInfo('6 Digital / PWM Pin',[
 'Supports PWM (~) for variable output such as brightness or speed.',
-'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
-])"
+'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',])"
       ></div>
       <div
         class="pin"
@@ -1087,10 +1396,7 @@
         title="7 Digital Pin"
         onclick="showPinInfo('7 Digital Pin',[
 'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
-'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
-])"
+'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',])"
       ></div>
       <div
         class="pin"
@@ -1101,8 +1407,6 @@
         onclick="showPinInfo('8 Digital Pin',[
 'Normal digital INPUT or OUTPUT pin. Reads HIGH or LOW.',
 'Common Components: LED, Push Button, Toggle Switch, Relay Module, Buzzer, PIR Motion Sensor, Reed Switch.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
 	<div
@@ -1114,8 +1418,6 @@
         onclick="showPinInfo('9 Digital / PWM Pin',[
 'Supports PWM (~) for variable output such as brightness or speed.',
 'Common Components: LED, RGB LED, DC Motor (through driver), Servo, Buzzer.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1127,8 +1429,6 @@
         onclick="showPinInfo('10 Digital / PWM / SPI (SS)',[
 'PWM capable and SPI Slave Select (SS).',
 'Common Components: SD Card Module, Ethernet Shield, RFID Module, LED, Servo.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1140,8 +1440,6 @@
         onclick="showPinInfo('11 Digital / PWM / SPI (MOSI)',[
 'SPI Master Out Slave In. Sends data from Arduino to SPI devices.',
 'Common Components: SD Card Module, OLED (SPI), TFT Display, RFID Module.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
 	<div
@@ -1153,8 +1451,6 @@
         onclick="showPinInfo('12 Digital / SPI (MISO)',[
 'SPI Master In Slave Out. Receives data from SPI devices.',
 'Common Components: SD Card Module, Ethernet Shield, RFID Module, Flash Memory.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1166,8 +1462,6 @@
         onclick="showPinInfo('13 Digital / LED',[
 'Connected to the built-in LED. Perfect for Blink and testing.',
 'Common Components: External LED, Relay Module, Buzzer, Logic Signals.',
-'Example Code: [Button Here]',
-'Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1201,8 +1495,6 @@
         onclick="showPinInfo('0 Analog Input',[
 'Reads analog voltages from 0V to 5V.',
 'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
        <div
@@ -1214,8 +1506,6 @@
         onclick="showPinInfo('1 Analog Input',[
 'Reads analog voltages from 0V to 5V.',
 'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
        <div
@@ -1227,8 +1517,6 @@
         onclick="showPinInfo('2 Analog Input',[
 'Reads analog voltages from 0V to 5V.',
 'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
        <div
@@ -1240,8 +1528,6 @@
         onclick="showPinInfo('3 Analog Input',[
 'Reads analog voltages from 0V to 5V.',
 'Common Components: Potentiometer, Joystick, Light Sensor (LDR), Temperature Sensor, Sound Sensor, Soil Moisture Sensor, Flex Sensor.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
        <div
@@ -1253,8 +1539,6 @@
         onclick="showPinInfo('A4 - SDA (I²C)',[
 'I²C data line used for communication with compatible devices.',
 'Common Components: OLED Display, RTC Module, LCD I²C Adapter, EEPROM, Environmental Sensors.',
-'Example Code: [Button Here]',
-'Visual Wiring: [Button Here]'
 ])"
       ></div>
        <div
@@ -1266,8 +1550,6 @@
         onclick="showPinInfo('A5 - SCL (I²C)',[
 'I²C clock line. Works together with SDA.',
 'Common Components: OLED Display, RTC Module, LCD I²C Adapter, EEPROM, Environmental Sensors.',
-'Example Code: [Button Here]',
-'Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1324,7 +1606,6 @@
         onclick="showPinInfo('VIN',[
 'External power input (7V-12V recommended).',
 'Common Components: Battery Pack, DC Power Supply, Barrel Jack Adapter.',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
@@ -1335,8 +1616,6 @@
         onclick="showPinInfo('AREF',[
 'Provides a custom reference voltage for analog measurements.',
 'Common Components: Precision Voltage Reference, Analog Sensors.',
-'unsupported Example Code: [Button Here]',
-'unsupported Visual Wiring: [Button Here]'
 ])"
       ></div>
       <div
