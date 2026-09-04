@@ -782,86 +782,6 @@ button:disabled{
   cursor:not-allowed;
 }
 
-/*---------------- BUTTONS ----------------*/
-
-.btn{
-  display:inline-block;
-  padding:10px 20px;
-  background:linear-gradient(
-    135deg,
-    var(--accent),
-    var(--accent2)
-  );
-  color:white;
-  text-decoration:none;
-  border:none;
-  border-radius:10px;
-  font-weight:700;
-  transition:
-    transform .2s,
-    box-shadow .2s;
-  box-shadow:
-    0 6px 16px rgba(0,151,157,.18);
-}
-
-.btn:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 10px 22px rgba(0,151,157,.22);
-}
-
-.btn-action{
-  background:var(--accent2);
-  color:#fff;
-  border:none;
-  padding:8px 16px;
-  border-radius:8px;
-  font-weight:700;
-  transition:.2s;
-}
-
-.btn-action:hover{
-  transform:translateY(-2px);
-  filter:brightness(1.08);
-}
-.btn-group{
-  background:var(--panel);
-  color:var(--accent);
-  border:2px solid var(--accent);
-  padding:8px 14px;
-  border-radius:10px;
-  font-weight:700;
-  transition:.2s;
-}
-
-.btn-group:hover{
-  background:var(--accent);
-  color:#fff;
-}
-
-.btn-submit{
-  display:block;
-  width:min(420px,100%);
-  margin:22px auto 0;
-  padding:14px;
-  background:linear-gradient(
-    135deg,
-    var(--accent),
-    var(--accent2)
-  );
-  color:#fff;
-  border:none;
-  border-radius:12px;
-  font-size:1.05rem;
-  font-weight:700;
-  transition:
-    transform .2s,
-    filter .2s;
-}
-
-.btn-submit:hover{
-  transform:translateY(-2px);
-  filter:brightness(1.08);
 }/*-------------------- CURSORS --------------------*/
 
 button,
@@ -938,19 +858,39 @@ button:disabled{
     0 10px 22px rgba(0,151,157,.22);
 }
 
+/* ACTION BUTTON */
 .btn-action{
-  background:var(--accent2);
-  color:#fff;
+  position:relative;
+  padding:12px 20px;
+  border-radius:12px;
   border:none;
-  padding:8px 16px;
-  border-radius:8px;
-  font-weight:700;
-  transition:.2s;
+  cursor:pointer;
+
+  background:var(--accent);
+  color:#fff;
+  font-weight:600;
+  font-size:14px;
+
+  transition:all 0.2s ease;
+  overflow:hidden;
 }
 
-.btn-action:hover{
-  transform:translateY(-2px);
-  filter:brightness(1.08);
+/* loading state */
+.btn-action.loading{
+  pointer-events:none;
+  opacity:0.8;
+}
+
+/* progress bar inside button */
+.btn-action::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  height:3px;
+  width:0%;
+  background:var(--accent2);
+  transition:width linear;
 }
 
 .btn-group{
@@ -1125,32 +1065,22 @@ button:disabled{
       var(--panel),
       #ffffff
     );
-
   border:2px solid #b9e3ff;
-
   border-radius:18px;
-
   padding:18px;
-
   color:var(--text);
-
   margin-bottom:20px;
-
   box-shadow:
     0 10px 28px rgba(0,151,157,.10),
     0 0 0 1px rgba(255,255,255,.7) inset;
-
   overflow:hidden;
-
   transition:
     transform .2s ease,
     box-shadow .2s ease;
 }
 
 .wiring-card:hover{
-
   transform:translateY(-2px);
-
   box-shadow:
     0 14px 32px rgba(0,151,157,.14),
     0 0 0 1px rgba(255,255,255,.8) inset;
@@ -1159,39 +1089,27 @@ button:disabled{
 /* ============================================== SUMMARY ============================================= */
 
 .wiring-card summary{
-
   cursor:pointer;
-
   font-weight:700;
   font-size:18px;
-
   color:var(--accent);
-
   padding:12px 16px;
-
   border-radius:14px;
-
   background:
     linear-gradient(
       90deg,
       #dff5ff,
       #ecfff5
     );
-
   border:1px solid #b8e9ff;
-
   list-style:none;
-
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   transition:
     background .15s ease,
     transform .15s ease;
 }
-
-/* REMOVE DEFAULT ARROW */
 
 .wiring-card summary::-webkit-details-marker{
   display:none;
@@ -1200,33 +1118,24 @@ button:disabled{
 /* CUSTOM ICON */
 
 .wiring-card summary::after{
-
   content:"+";
-
   font-size:24px;
   font-weight:bold;
-
   color:var(--accent2);
-
   transition:.2s;
 }
 
 .wiring-card[open] summary::after{
-
   content:"−";
-
   transform:rotate(180deg);
 }
 
 /* HOVER */
 
 .wiring-card summary:hover{
-
   background:
     linear-gradient(
-      90deg,
-      #d3f1ff,
-      #dfffea
+      90deg,#d3f1ff,#dfffea
     );
 }
 
@@ -1247,23 +1156,16 @@ button:disabled{
     );
 
   border:2px solid #c8ebff;
-
   border-radius:18px;
-
   padding:16px;
-
   width:420px;
   height:420px;
-
   margin:auto;
-
   display:flex;
   justify-content:center;
   align-items:center;
-
   position:relative;
   overflow:hidden;
-
   box-shadow:
     0 10px 24px rgba(0,151,157,.10);
 }
@@ -1509,12 +1411,6 @@ button:disabled{
     height:70vh;
   }
 }
-
-
-
-/* ================= TUTORIAL PAGE ================= */
-
-
 
 /*-------------___ Main page css ___-------------*/
 
@@ -2005,49 +1901,6 @@ button:disabled{
   box-shadow .25s ease;
 }
 
-/* DETAILS */
-
-#board details{
-  background:var(--panel);
-  border-radius:16px;
-  overflow:hidden;
-  margin:20px 0;
-  border:1px solid rgba(255,255,255,.06);
-  box-shadow:0 6px 20px rgba(0,0,0,.12);
-}
-
-#board summary{
-  cursor:pointer;
-  padding:18px;
-  font-size:1.05rem;
-  user-select:none;
-  position:relative;
-  transition:background .2s ease;
-}
-
-#board summary:hover{
-  background:rgba(255,255,255,.03);
-}
-
-#board summary::-webkit-details-marker{
-  display:none;
-}
-
-#board summary::after{
-  content:"+";
-  position:absolute;
-  right:18px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:1.3rem;
-  color:var(--accent);
-  transition:.25s;
-}
-
-#board details[open] summary::after{
-  transform:translateY(-50%) rotate(45deg);
-}
-
 /* SPEC GRID */
 
 .spec-grid{
@@ -2200,11 +2053,6 @@ button:disabled{
 
   #board{
     width:95%;
-  }
-
-  #board summary{
-    padding:15px;
-    font-size:1rem;
   }
 
   .compare{
@@ -2548,23 +2396,6 @@ button:disabled{
 }
 
 /* =========================
-   SCROLLBAR
-========================= */
-
-.examples-menu::-webkit-scrollbar{
-  width:8px;
-}
-
-.examples-menu::-webkit-scrollbar-thumb{
-  background:rgba(0,151,157,.35);
-  border-radius:20px;
-}
-
-.examples-menu::-webkit-scrollbar-track{
-  background:transparent;
-}
-
-/* =========================
    ANIMATION
 ========================= */
 
@@ -2830,33 +2661,6 @@ button:disabled{
 
 /*----------------------___ Feedback CSS ___------------------------*/
 
-.about-image-box{
-  width:100%;
-  max-width:800px;
-  height:220px;
-
-  margin:16px auto 20px auto;
-  border:2px dashed #cfeaff;
-  border-radius:12px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:#f7fcff;
-  color:#7aaecb;
-  font-size:14px;
-  text-align:center;
-}
-
-/* When you add an image */
-.about-image-box img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  border-radius:10px;
-}
-
 .form-panel {
   width: 100%;
   max-width: var(--max);
@@ -2982,40 +2786,6 @@ textarea {
   box-shadow: var(--accent);
 }
 
-/* ACTION BUTTON */
-.btn-action{
-  position:relative;
-  padding:12px 20px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-
-  background:var(--accent);
-  color:#fff;
-  font-weight:600;
-  font-size:14px;
-
-  transition:all 0.2s ease;
-  overflow:hidden;
-}
-
-/* loading state */
-.btn-action.loading{
-  pointer-events:none;
-  opacity:0.8;
-}
-
-/* progress bar inside button */
-.btn-action::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:0;
-  height:3px;
-  width:0%;
-  background:var(--accent2);
-  transition:width linear;
-}
 /* container spacing */
 #downloadList{
   display:flex;
@@ -3072,86 +2842,6 @@ textarea {
   0%{opacity:1;}
   50%{opacity:0.4;}
   100%{opacity:1;}
-}
-
-
-/* ========================= TUTORIAL PAGE ========================= */
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:24px;
-}
-
-.project-card{
-  background:white;
-  border-radius:20px;
-  overflow:hidden;
-
-  box-shadow:0 8px 20px rgba(0,0,0,.08);
-
-  transition:.2s ease;
-}
-
-.project-card:hover{
-  transform:translateY(-4px);
-}
-
-.project-card img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
-.project-card h3,
-.project-card p{
-  padding-left:18px;
-  padding-right:18px;
-}
-
-.project-card h3{
-  margin-top:16px;
-  color:var(--accent);
-}
-
-.project-card p{
-  padding-bottom:18px;
-}
-
-/* ========================= FAQ ========================= */
-
-.faq-box{
-  background:white;
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:14px;
-
-  box-shadow:0 6px 14px rgba(0,0,0,.06);
-}
-
-.faq-box summary{
-  font-weight:700;
-  color:var(--accent);
-}
-
-.faq-box p{
-  margin-top:10px;
-}
-
-/* ========================= MOBILE ========================= */
-
-@media(max-width:899px){
-
-  .tutorial-hero,
-  .wiring-layout{
-    grid-template-columns:1fr;
-  }
-
-  .tutorial-hero{
-    padding:24px;
-  }
-
-  .tutorial-hero-text h1{
-    font-size:32px;
-  }
-
 }
 
 /*--------------------------___ More pages ___------------------------------------*/

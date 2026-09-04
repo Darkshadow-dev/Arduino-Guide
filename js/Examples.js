@@ -1,22 +1,6 @@
 let selectedPort = "COM8";
 const examples = {
 
-code:{
-title:"What and why",
-text:"Explanation of Arduino syntax and commands.",
-filename:"code",
-code:`
-// Arduino commands must be typed exactly
-
-pinMode(LED_BUILTIN, OUTPUT);
-digitalWrite(LED_BUILTIN, HIGH);
-delay(1000);
-
-// Commands are case sensitive
-// HIGH LOW INPUT OUTPUT must be capital letters
-`
-},
-
 blink:{
 title:"Blink LED",
 text:"Blink the built-in LED every second.",
@@ -60,23 +44,17 @@ title:"Button + LED",
 text:"Turn an LED on when a button is pressed.",
 filename:"button-led",
 code:`
-void setup(){
-  pinMode(2, INPUT_PULLUP);
-  pinMode(LED_BUILTIN, OUTPUT);
+void setup() {
+  pinMode(13, OUTPUT);
 }
 
-void loop(){
+void loop() {
 
-  if(digitalRead(2) == LOW){
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-  }
+  digitalWrite(13, HIGH);
 
 }
 `
 },
-
 pwm:{
 title:"PWM LED",
 text:"Control LED brightness using PWM.",
@@ -745,38 +723,29 @@ void loop() { // Starts loop(). It repeats continuously.
 
 "button-led":{
   title:"Button + LED — Explanation",
-  text:"Explaining how a button can control an LED.",
+  text:"Explaining how a push button can control the flow of electricity to an LED.",
   filename:"button-led-explanation",
   code:`
 
-void setup() { // Starts setup(). Runs once when the Arduino starts.
+void setup() { // Starts setup(). Runs once when the Arduino starts or resets.
 
-  pinMode(2, INPUT_PULLUP); // Sets pin 2 as a button input.
-                           // INPUT_PULLUP activates the internal pull-up resistor.
-                           // The input normally reads HIGH.
-                           // Pressing the button should connect the pin to GND, making it LOW.
+  pinMode(13, OUTPUT); // Sets digital pin 13 as an OUTPUT.
+                      // This allows the Arduino to send HIGH or LOW through pin 13.
+                      // In this circuit, pin 13 supplies electricity to the button and LED.
 
-  pinMode(LED_BUILTIN, OUTPUT); // Sets the built-in LED pin as an output.
-                               // On an Arduino Uno this is normally pin 13.
-
-} // Ends setup().
+} // Ends setup(). The Arduino now moves to loop().
 
 
-void loop() { // Starts the repeating loop.
+void loop() { // Starts loop(). Everything inside repeats continuously.
 
-  if(digitalRead(2) == LOW){ // Reads pin 2 and checks if its value is LOW.
-                             // With INPUT_PULLUP, LOW normally means the button is pressed.
-
-    digitalWrite(LED_BUILTIN, HIGH); // If the button is pressed, turn the LED ON.
-
-  } else { // Runs when the button is NOT pressed.
-
-    digitalWrite(LED_BUILTIN, LOW); // Turn the LED OFF.
-
-  } // Ends the if/else decision.
+  digitalWrite(13, HIGH); // Sets pin 13 HIGH.
+                         // Electricity is now available at pin 13.
+                         // The electricity travels through the resistor to the button.
+                         // The button determines whether the circuit is open or closed.
 
 } // Ends loop().
-  // The Arduino checks the button again when loop() repeats.
+  // loop() starts again immediately.
+  // Pin 13 remains HIGH, so electricity is continuously supplied to the circuit.
 
 `
 },
@@ -1643,4 +1612,5 @@ void loop(){ // Starts the repeating loop.
 }
 
 };
+
 

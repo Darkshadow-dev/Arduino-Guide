@@ -657,30 +657,7 @@ function toggleView(){
   document.getElementById("viewToggle").textContent =
     cliMode ? "Normal View" : "CLI / IDE";
 }
-function showCategory(category){
 
-  // hide ALL categories
-  document.querySelectorAll(".example-category")
-  .forEach(cat=>{
-    cat.classList.remove("active");
-  });
-
-  // show selected category ONLY
-  const selected =
-    document.getElementById("cat-" + category);
-
-  if(selected){
-    selected.classList.add("active");
-  }
-
-}
-
-// load BASIC only on startup
-window.addEventListener("DOMContentLoaded", ()=>{
-
-  showCategory("basic");
-
-});
 
 
 /*--------------------------___ More page JS ___---------------------------*/
