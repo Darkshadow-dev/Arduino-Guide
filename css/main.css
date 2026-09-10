@@ -1801,6 +1801,18 @@ button:disabled{
   justify-content:center;
   align-items:center;
 }
+.lp-sub_title{
+  width:100%;
+  text-align:center;
+  font-size:18px;
+  font-weight:400;
+  margin:5px 0 10px 0;
+  color:#111;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 
 
 /* ========================= ANIMATIONS ========================= */
