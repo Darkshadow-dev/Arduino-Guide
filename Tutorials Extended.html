@@ -228,10 +228,6 @@ text-decoration: none;
 font-weight: bold;
 }
 
-.card-content a:hover {
-text-decoration: underline;
-}
-
 @media (max-width: 800px) {
 
 .tutorial-levels,
@@ -344,7 +340,7 @@ text-decoration: underline;
     border: 1px solid #d7d7d7;
     padding: 22px;
     position: sticky;
-    top: 20px;
+    top: 100px;
 }
 
 .it-sidebar-title {
@@ -2682,32 +2678,120 @@ function showPopup(text){
 }
 
 
+/* SYNTAX */
 function highlightCode(code){
-  return code
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
+    code = code
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
 
-    .replace(/(\/\/.*)/g,'<span style="color:#22c55e">$1</span>')
-    .replace(/\b(void|int|setup|loop|digitalWrite|delay|pinMode)\b/g,
-      '<span style="color:#38bdf8">$1</span>')
-.replace(/\b(Serial|begin|println|millis|analogRead|analogWrite)\b/g,
-  '<span style="color:#38bdf8">$1</span>')
-.replace(/(#include\s*&lt;.*?&gt;)/g,
-  '<span style="color:#f472b6">$1</span>')
-.replace(/\b(#define|#include)\b/g,
-  '<span style="color:#f472b6">$1</span>')
-.replace(/\b(Adafruit_SSD1306|Adafruit_GFX|Wire)\b/g,
-  '<span style="color:#60a5fa">$1</span>')
-.replace(/\b(SSD1306_SWITCHCAPVCC|WHITE|BLACK)\b/g,
-  '<span style="color:#22c55e">$1</span>')
-.replace(/\b(display)\b/g,
-  '<span style="color:#e879f9">$1</span>')
-    .replace(/\b(HIGH|LOW|OUTPUT|INPUT)\b/g,
-      '<span style="color:#fbbf24">$1</span>')
-    .replace(/\b(\d+)\b/g,
-      '<span style="color:#a78bfa">$1</span>');
+    const tokens = [];
 
+    const save = html => {
+        const id = `___PROTECTEDTOKEN${tokens.length}___`;
+        tokens.push(html);
+        return id;
+    };
+
+    /* Comments */
+    code = code.replace(/(\/\/.*)$/gm,
+        m => save(`<span style="color:#22c55e">${m}</span>`));
+
+    code = code.replace(/(\/\*[\s\S]*?\*\/)/g,
+        m => save(`<span style="color:#22c55e">${m}</span>`));
+
+    /* Strings */
+    code = code.replace(/("(?:\\.|[^"\\])*")/g,
+        m => save(`<span style="color:#f59e0b">${m}</span>`));
+
+    code = code.replace(/('(?:\\.|[^'\\])*')/g,
+        m => save(`<span style="color:#f59e0b">${m}</span>`));
+
+    /* Preprocessor */
+    code = code.replace(
+        /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning)\b[^\n]*)/g,
+        m => save(`<span style="color:#f472b6">${m}</span>`)
+    );
+
+    /* Arduino functions */
+    code = code.replace(
+        /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+    /* Serial / communication */
+    code = code.replace(
+        /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+    /* Arduino special functions */
+    code = code.replace(
+        /\b(attachInterrupt|detachInterrupt|interrupts|noInterrupts|tone|noTone|pulseIn|pulseInLong|shiftIn|shiftOut)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+    /* Arduino constants */
+    code = code.replace(
+        /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56)\b/g,
+        '<span style="color:#fbbf24">$1</span>'
+    );
+
+    /* Pin / hardware related */
+    code = code.replace(
+        /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET)\b/g,
+        '<span style="color:#60a5fa">$1</span>'
+    );
+
+    /* Common C/C++ types */
+    code = code.replace(
+        /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t)\b/g,
+        '<span style="color:#c084fc">$1</span>'
+    );
+
+    /* C/C++ keywords */
+    code = code.replace(
+        /\b(if|else|for|while|do|switch|case|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|new|delete|true|false|nullptr)\b/g,
+        '<span style="color:#fb7185">$1</span>'
+    );
+
+    /* Arduino libraries */
+    code = code.replace(
+        /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper)\b/g,
+        '<span style="color:#60a5fa">$1</span>'
+    );
+
+    /* Display / library objects */
+    code = code.replace(
+        /\b(display|Serial|Wire|lcd|servo|sensor|oled|screen)\b/g,
+        '<span style="color:#e879f9">$1</span>'
+    );
+
+    /* Mathematical functions */
+    code = code.replace(
+        /\b(abs|min|max|constrain|map|pow|sqrt|sin|cos|tan|random|randomSeed)\b/g,
+        '<span style="color:#2dd4bf">$1</span>'
+    );
+
+    /* Common C/C++ functions */
+    code = code.replace(
+        /\b(sizeof|memcpy|memset|strcmp|strlen|strcpy|atoi|atof)\b/g,
+        '<span style="color:#2dd4bf">$1</span>'
+    );
+
+    /* Numbers */
+    code = code.replace(
+        /\b(0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?[fFlLuU]*)\b/g,
+        '<span style="color:#a78bfa">$1</span>'
+    );
+
+    /* Restore comments, strings and preprocessor */
+    code = code.replace(
+        /___PROTECTEDTOKEN(\d+)___/g,
+        (_,i) => tokens[i]
+    );
+
+    return code;
 }
 
 function escapeHTML(str){
