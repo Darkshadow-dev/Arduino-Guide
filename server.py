@@ -4,7 +4,8 @@ import subprocess
 import os
 import json
 import re
-
+import secrets
+import GSE
 app = Flask(__name__)
 CORS(app)
 
@@ -15,6 +16,14 @@ os.environ["ARDUINO_DATA_DIR"] = "/opt/render/project/src/.arduino"
 
 BASE = os.path.abspath("sketches")
 os.makedirs(BASE, exist_ok=True)
+
+GSE_BASE = os.path.abspath("gse")
+os.makedirs(GSE_BASE, exist_ok=True)
+
+SIMULATOR_URL = (
+    "https://darkshadow-dev.github.io/"
+    "Arduino-Guide/Arduino%20Uno.html"
+)
 
 CLI = "/opt/render/project/src/bin/arduino-cli"
 
@@ -802,6 +811,107 @@ def session():
         "status": "ok"
     })
 
+
+@app.route("/create", methods=["POST"])
+def create_gse():
+
+    data = request.json or {}
+
+    code = data.get("code", "")
+    board = data.get(
+        "board",
+        "arduino:avr:uno"
+    )
+
+    if not code.strip():
+        return jsonify({
+            "success": False,
+            "error": "No Arduino code supplied."
+        }), 400
+
+    try:
+
+        executable = GSE.compile_gse(
+            code,
+            board
+        )
+
+        token = secrets.token_urlsafe(16)
+
+        path = os.path.join(
+            GSE_BASE,
+            token + ".json"
+        )
+
+        with open(
+            path,
+            "w",
+            encoding="utf-8"
+        ) as f:
+            json.dump(
+                executable,
+                f,
+                indent=2
+            )
+
+        return jsonify({
+            "success": True,
+            "token": token,
+            "url": (
+                SIMULATOR_URL +
+                "?gse=" +
+                token
+            )
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 400
+
+
+@app.route("/gse/<token>", methods=["GET"])
+def get_gse(token):
+
+    if not token or "/" in token or "\\" in token:
+        return jsonify({
+            "success": False,
+            "error": "Invalid GSE token."
+        }), 400
+
+    path = os.path.join(
+        GSE_BASE,
+        token + ".json"
+    )
+
+    if not os.path.exists(path):
+        return jsonify({
+            "success": False,
+            "error": "GSE not found."
+        }), 404
+
+    try:
+
+        with open(
+            path,
+            "r",
+            encoding="utf-8"
+        ) as f:
+            executable = json.load(f)
+
+        return jsonify({
+            "success": True,
+            "executable": executable
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 # ============================================================
 # RUN
