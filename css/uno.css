@@ -882,13 +882,7 @@ body{
         0 0 18px rgba(255,210,70,.7);
 }
 
-.simButton.pressed{
-    transform:translateY(3px);
-}
 
-.simButton.pressed .buttonCap{
-    transform:translateY(3px);
-}
 
 /* ============================================================
    LABELS
