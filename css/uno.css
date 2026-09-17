@@ -89,7 +89,7 @@ body{
 }
 
 #simulatorConsole{
-    position:absolute;
+    position:sticky;
     left:18px;
     top:62px;
     width:270px;
@@ -493,7 +493,7 @@ body{
 #ledBank{
     position:absolute;
     left:20px;
-    bottom:87px;
+    bottom:105px;
     display:grid;
     grid-template-columns:repeat(6,26px);
     gap:13px 12px;
