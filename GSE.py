@@ -500,6 +500,66 @@ def tokenize_lines(code):
     ]
 
 
+def parse_if(lines, index):
+    line = lines[index].strip()
+
+    if line.startswith("else if"):
+        condition_text = line[
+            line.find("(") + 1:
+            line.rfind(")")
+        ]
+    else:
+        condition_text = line[
+            line.find("(") + 1:
+            line.rfind(")")
+        ]
+
+    condition = parse_expression(condition_text)
+
+    index += 1
+
+    if index >= len(lines) or lines[index].strip() != "{":
+        raise ValueError(
+            "Expected { after if condition."
+        )
+
+    then_block, index = parse_block(
+        lines,
+        index + 1
+    )
+
+    else_block = []
+
+    if index < len(lines):
+        next_line = lines[index].strip()
+
+        if next_line.startswith("else if"):
+            else_block, index = parse_if(
+                lines,
+                index
+            )
+
+        elif next_line == "else":
+            index += 1
+
+            if index >= len(lines) or lines[index].strip() != "{":
+                raise ValueError(
+                    "Expected { after else."
+                )
+
+            else_block, index = parse_block(
+                lines,
+                index + 1
+            )
+
+    return [{
+        "op": "IF",
+        "condition": condition,
+        "then": then_block,
+        "else": else_block
+    }], index
+
+
 def parse_block(lines, index=0):
     instructions = []
 
@@ -510,58 +570,12 @@ def parse_block(lines, index=0):
             return instructions, index + 1
 
         if line.startswith("if"):
-            condition_text = line[
-                line.find("(") + 1:
-                line.rfind(")")
-            ]
-
-            condition = parse_expression(condition_text)
-
-            index += 1
-
-            if index >= len(lines) or lines[index].strip() != "{":
-                raise ValueError(
-                    "Expected { after if condition."
-                )
-
-            then_block, index = parse_block(
+            parsed, index = parse_if(
                 lines,
-                index + 1
+                index
             )
 
-            else_block = []
-
-            if index < len(lines):
-                next_line = lines[index].strip()
-
-                if next_line.startswith("else if"):
-                    false_block, index = parse_block(
-                        lines,
-                        index
-                    )
-
-                    else_block = false_block
-
-                elif next_line == "else":
-                    index += 1
-
-                    if index >= len(lines) or lines[index].strip() != "{":
-                        raise ValueError(
-                            "Expected { after else."
-                        )
-
-                    else_block, index = parse_block(
-                        lines,
-                        index + 1
-                    )
-
-            instructions.append({
-                "op": "IF",
-                "condition": condition,
-                "then": then_block,
-                "else": else_block
-            })
-
+            instructions.extend(parsed)
             continue
 
         variable = parse_variable(line)
