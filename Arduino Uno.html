@@ -960,107 +960,45 @@ body{
     </div>
 
 </div>
-
-<script>/*
+<script>
+/*
 ============================================================
 GUIDELINES ARDUINO UNO SIMULATOR
 ============================================================
 */
 
-const simulator =
-    document.getElementById("simulator");
+const simulator=document.getElementById("simulator");
+const statusBox=document.getElementById("simulatorStatus");
+const consoleBox=document.getElementById("simulatorConsole");
 
-const statusBox =
-    document.getElementById("simulatorStatus");
+const GSE_SERVER="https://arduino-guide-6.onrender.com";
+let gse=null;
+const token=new URLSearchParams(window.location.search).get("gse");
 
-const consoleBox =
-    document.getElementById("simulatorConsole");
-
-
-/*
-============================================================
-SERVER
-============================================================
-*/
-
-const GSE_SERVER =
-    "https://arduino-guide-6.onrender.com";
-
-
-/*
-============================================================
-GSE
-============================================================
-*/
-
-let gse = null;
-
-const token =
-    new URLSearchParams(
-        window.location.search
-    ).get("gse");
-
-
-/*
-============================================================
-SIMULATOR STATE
-============================================================
-*/
-
-const simulatorState = {
+const simulatorState={
     pins:{},
     analogPins:{},
     serial:[],
     time:0
 };
 
-
 /*
 ============================================================
-STATUS
+STATUS / CONSOLE
 ============================================================
 */
 
-function setStatus(
-    text,
-    type=""
-){
-
-    if(!statusBox){
-        return;
-    }
-
-    statusBox.textContent =
-        text;
-
-    statusBox.className =
-        type;
-
+function setStatus(text,type=""){
+    if(!statusBox)return;
+    statusBox.textContent=text;
+    statusBox.className=type;
 }
 
-
-/*
-============================================================
-CONSOLE
-============================================================
-*/
-
-function simulatorLog(
-    text
-){
-
-    if(!consoleBox){
-        return;
-    }
-
-    consoleBox.textContent +=
-        text + "\n";
-
-    consoleBox.scrollTop =
-        consoleBox.scrollHeight;
-
+function simulatorLog(text){
+    if(!consoleBox)return;
+    consoleBox.textContent+=text+"\n";
+    consoleBox.scrollTop=consoleBox.scrollHeight;
 }
-
 
 /*
 ============================================================
@@ -1069,162 +1007,42 @@ LOAD GSE
 */
 
 async function loadGSE(){
-
-    if(!token){
-
-        throw new Error(
-            "No GSE token was provided."
-        );
-
-    }
-
-    setStatus(
-        "Loading GSE..."
-    );
-
-    const response =
-        await fetch(
-            GSE_SERVER +
-            "/gse/" +
-            encodeURIComponent(token)
-        );
-
-    if(!response.ok){
-
-        throw new Error(
-            "GSE server returned HTTP " +
-            response.status
-        );
-
-    }
-
-    const data =
-        await response.json();
-
-    if(
-        !data ||
-        !data.success ||
-        !data.executable
-    ){
-
-        throw new Error(
-            data.error ||
-            "Invalid GSE response."
-        );
-
-    }
-
-    gse =
-        data.executable;
-
+    if(!token)throw new Error("No GSE token was provided.");
+    setStatus("Loading GSE...");
+    const response=await fetch(GSE_SERVER+"/gse/"+encodeURIComponent(token));
+    if(!response.ok)throw new Error("GSE server returned HTTP "+response.status);
+    const data=await response.json();
+    if(!data||!data.success||!data.executable)throw new Error(data.error||"Invalid GSE response.");
+    gse=data.executable;
     validateGSE();
-
-    simulatorLog(
-        "GSE loaded."
-    );
-
+    simulatorLog("GSE loaded.");
 }
-
-
-/*
-============================================================
-VALIDATE GSE
-============================================================
-*/
 
 function validateGSE(){
-
-    if(!gse){
-
-        throw new Error(
-            "GSE executable is missing."
-        );
-
-    }
-
-    if(
-        gse.format !== "GSE"
-    ){
-
-        throw new Error(
-            "Invalid GSE format."
-        );
-
-    }
-
-    if(
-        typeof gse.version !== "number"
-    ){
-
-        throw new Error(
-            "Invalid GSE version."
-        );
-
-    }
-
-    if(
-        !gse.program
-    ){
-
-        throw new Error(
-            "GSE program is missing."
-        );
-
-    }
-
-    if(
-        !Array.isArray(
-            gse.program.setup
-        )
-    ){
-
-        throw new Error(
-            "GSE setup is invalid."
-        );
-
-    }
-
-    if(
-        !Array.isArray(
-            gse.program.loop
-        )
-    ){
-
-        throw new Error(
-            "GSE loop is invalid."
-        );
-
-    }
-
+    if(!gse)throw new Error("GSE executable is missing.");
+    if(gse.format!=="GSE")throw new Error("Invalid GSE format.");
+    if(typeof gse.version!=="number")throw new Error("Invalid GSE version.");
+    if(!gse.program)throw new Error("GSE program is missing.");
+    if(!Array.isArray(gse.program.setup))throw new Error("GSE setup is invalid.");
+    if(!Array.isArray(gse.program.loop))throw new Error("GSE loop is invalid.");
 }
-
 
 /*
 ============================================================
-PIN HELPERS
+PIN STATE
 ============================================================
 */
 
-function getPin(
-    pin
-){
-
-    if(
-        !simulatorState.pins[pin]
-    ){
-
-        simulatorState.pins[pin] = {
+function getPin(pin){
+    if(!simulatorState.pins[pin]){
+        simulatorState.pins[pin]={
             mode:null,
             value:0,
             pwm:0
         };
-
     }
-
     return simulatorState.pins[pin];
-
 }
-
 
 /*
 ============================================================
@@ -1232,20 +1050,21 @@ PIN MODE
 ============================================================
 */
 
-function executePinMode(
-    instruction
-){
+function executePinMode(instruction){
+    const pin=getPin(instruction.pin);
+    pin.mode=instruction.mode;
 
-    const pin =
-        getPin(
-            instruction.pin
-        );
+    const element=document.querySelector(
+        '.digitalPin[data-pin="'+instruction.pin+'"]'
+    );
 
-    pin.mode =
-        instruction.mode;
+    if(element){
+        element.dataset.mode=instruction.mode;
+        element.title="Pin "+instruction.pin+" • "+instruction.mode;
+    }
 
+    updateButtonVisual(instruction.pin);
 }
-
 
 /*
 ============================================================
@@ -1253,74 +1072,41 @@ DIGITAL WRITE
 ============================================================
 */
 
-function executeDigitalWrite(
-    instruction
-){
-
-    const pin =
-        getPin(
-            instruction.pin
-        );
-
-    pin.value =
-        instruction.value ? 1 : 0;
-
-    updateDigitalPin(
-        instruction.pin
-    );
-
+function executeDigitalWrite(instruction){
+    const pin=getPin(instruction.pin);
+    pin.value=instruction.value?1:0;
+    pin.pwm=pin.value?255:0;
+    updateDigitalPin(instruction.pin);
+    updateExternalLED(instruction.pin);
 }
-
 
 /*
 ============================================================
-ANALOG WRITE / PWM
+DIGITAL READ
 ============================================================
 */
 
-function executeAnalogWrite(
-    instruction
-){
-
-    const pin =
-        getPin(
-            instruction.pin
-        );
-
-    let value =
-        Number(
-            instruction.value
-        );
-
-    if(
-        Number.isNaN(value)
-    ){
-
-        value = 0;
-
-    }
-
-    value =
-        Math.max(
-            0,
-            Math.min(
-                255,
-                value
-            )
-        );
-
-    pin.pwm =
-        value;
-
-    pin.value =
-        value > 0 ? 1 : 0;
-
-    updateAnalogPin(
-        instruction.pin
-    );
-
+function executeDigitalRead(instruction){
+    const pin=getPin(instruction.pin);
+    return pin.input?1:0;
 }
 
+/*
+============================================================
+PWM
+============================================================
+*/
+
+function executeAnalogWrite(instruction){
+    const pin=getPin(instruction.pin);
+    let value=Number(instruction.value);
+    if(Number.isNaN(value))value=0;
+    value=Math.max(0,Math.min(255,value));
+    pin.pwm=value;
+    pin.value=value>0?1:0;
+    updateDigitalPin(instruction.pin);
+    updateExternalLED(instruction.pin);
+}
 
 /*
 ============================================================
@@ -1328,53 +1114,28 @@ DIGITAL PIN DISPLAY
 ============================================================
 */
 
-function updateDigitalPin(
-    pinNumber
-){
+function updateDigitalPin(pinNumber){
+    const element=document.querySelector(
+        '.digitalPin[data-pin="'+pinNumber+'"]'
+    );
+    if(!element)return;
 
-    const element =
-        document.querySelector(
-            '.digitalPin[data-pin="' +
-            pinNumber +
-            '"]'
-        );
+    const pin=getPin(pinNumber);
 
-    if(!element){
-        return;
+    element.classList.toggle("high",!!pin.value);
+    element.style.opacity=pin.pwm===0
+        ?"0.45"
+        :String(0.45+(pin.pwm/255)*0.55);
+
+    element.title=
+        "Pin "+pinNumber+
+        " • "+(pin.mode||"UNSET")+
+        " • "+(pin.value?"HIGH":"LOW");
+
+    if(Number(pinNumber)===13){
+        updateBuiltinLED(pin.pwm);
     }
-
-    const pin =
-        getPin(
-            pinNumber
-        );
-
-    if(pin.value){
-
-        element.classList.add(
-            "high"
-        );
-
-    }
-    else{
-
-        element.classList.remove(
-            "high"
-        );
-
-    }
-
-    if(
-        Number(pinNumber) === 13
-    ){
-
-        updateBuiltinLED(
-            pin.value
-        );
-
-    }
-
 }
-
 
 /*
 ============================================================
@@ -1382,136 +1143,105 @@ BUILT-IN LED
 ============================================================
 */
 
-function updateBuiltinLED(
-    value
-){
+function updateBuiltinLED(value){
+    const led=document.getElementById("builtinLed");
+    if(!led)return;
 
-    const led =
-        document.getElementById(
-            "builtinLed"
-        );
+    value=Number(value)||0;
 
-    if(!led){
+    if(value<=0){
+        led.classList.remove("on");
+        led.style.opacity=".35";
         return;
     }
 
-    if(value){
-
-        led.classList.add(
-            "on"
-        );
-
-    }
-    else{
-
-        led.classList.remove(
-            "on"
-        );
-
-    }
-
+    led.classList.add("on");
+    led.style.opacity=String(.25+(value/255)*.75);
 }
-
 
 /*
 ============================================================
-ANALOG / PWM DISPLAY
+EXTERNAL LEDS
 ============================================================
 */
 
-function updateAnalogPin(
-    pinNumber
-){
-
-    const element =
-        document.querySelector(
-            '.digitalPin[data-pin="' +
-            pinNumber +
-            '"]'
-        );
-
-    if(!element){
-        return;
-    }
-
-    const pin =
-        getPin(
-            pinNumber
-        );
-
-    const pwm =
-        pin.pwm;
-
-    element.style.opacity =
-        pwm === 0
-            ? "0.35"
-            : String(
-                0.35 +
-                (pwm / 255) * 0.65
-            );
-
-    element.title =
-        "PWM: " +
-        pwm +
-        "/255";
-
-    if(
-        Number(pinNumber) === 13
-    ){
-
-        updateBuiltinLEDPWM(
-            pwm
-        );
-
-    }
-
-}
-
-
-/*
-============================================================
-BUILT-IN LED PWM
-============================================================
-*/
-
-function updateBuiltinLEDPWM(
-    value
-){
-
-    const led =
-        document.getElementById(
-            "builtinLed"
-        );
-
-    if(!led){
-        return;
-    }
-
-    if(value <= 0){
-
-        led.classList.remove(
-            "on"
-        );
-
-        led.style.opacity =
-            "0.35";
-
-        return;
-
-    }
-
-    led.classList.add(
-        "on"
+function updateExternalLED(pinNumber){
+    const led=document.querySelector(
+        '.externalLed[data-pin="'+pinNumber+'"]'
     );
+    if(!led)return;
 
-    led.style.opacity =
-        String(
-            0.25 +
-            (value / 255) * 0.75
-        );
+    const pin=getPin(pinNumber);
+    const value=Number(pin.pwm)||0;
 
+    led.classList.toggle("on",value>0);
+    led.style.opacity=value>0
+        ?String(.3+(value/255)*.7)
+        :".45";
+    led.title=
+        "LED on pin "+pinNumber+
+        " • PWM "+value+"/255";
 }
 
+/*
+============================================================
+BUTTONS
+============================================================
+*/
+
+function updateButtonVisual(pinNumber){
+    const button=document.querySelector(
+        '.pinButton[data-pin="'+pinNumber+'"]'
+    );
+    if(!button)return;
+
+    const pin=getPin(pinNumber);
+
+    button.classList.toggle(
+        "active",
+        !!pin.input
+    );
+}
+
+function setupButtons(){
+    document.querySelectorAll(".pinButton").forEach(button=>{
+        const pinNumber=Number(button.dataset.pin);
+
+        button.addEventListener("mousedown",()=>{
+            const pin=getPin(pinNumber);
+            pin.input=1;
+            updateButtonVisual(pinNumber);
+            simulatorLog("Button "+pinNumber+" → HIGH");
+        });
+
+        button.addEventListener("mouseup",()=>{
+            const pin=getPin(pinNumber);
+            pin.input=0;
+            updateButtonVisual(pinNumber);
+            simulatorLog("Button "+pinNumber+" → LOW");
+        });
+
+        button.addEventListener("mouseleave",()=>{
+            const pin=getPin(pinNumber);
+            pin.input=0;
+            updateButtonVisual(pinNumber);
+        });
+
+        button.addEventListener("touchstart",event=>{
+            event.preventDefault();
+            const pin=getPin(pinNumber);
+            pin.input=1;
+            updateButtonVisual(pinNumber);
+        });
+
+        button.addEventListener("touchend",event=>{
+            event.preventDefault();
+            const pin=getPin(pinNumber);
+            pin.input=0;
+            updateButtonVisual(pinNumber);
+        });
+    });
+}
 
 /*
 ============================================================
@@ -1519,26 +1249,14 @@ DELAY
 ============================================================
 */
 
-function executeDelay(
-    milliseconds
-){
-
-    return new Promise(
-        resolve => {
-
-            setTimeout(
-                resolve,
-                Math.max(
-                    0,
-                    Number(milliseconds) || 0
-                )
-            );
-
-        }
-    );
-
+function executeDelay(milliseconds){
+    return new Promise(resolve=>{
+        setTimeout(
+            resolve,
+            Math.max(0,Number(milliseconds)||0)
+        );
+    });
 }
-
 
 /*
 ============================================================
@@ -1546,136 +1264,62 @@ EXECUTE INSTRUCTION
 ============================================================
 */
 
-async function executeInstruction(
-    instruction
-){
+async function executeInstruction(instruction){
+    if(!instruction)return;
 
-    if(!instruction){
-        return;
-    }
-
-    switch(
-        instruction.op
-    ){
-
+    switch(instruction.op){
         case "PIN_MODE":
-
-            executePinMode(
-                instruction
-            );
-
+            executePinMode(instruction);
             break;
-
 
         case "DIGITAL_WRITE":
-
-            executeDigitalWrite(
-                instruction
-            );
-
+            executeDigitalWrite(instruction);
             break;
 
+        case "DIGITAL_READ":
+            executeDigitalRead(instruction);
+            break;
 
         case "ANALOG_WRITE":
-
-            executeAnalogWrite(
-                instruction
-            );
-
+            executeAnalogWrite(instruction);
             break;
-
 
         case "DELAY":
-
-            await executeDelay(
-                instruction.ms
-            );
-
-            simulatorState.time +=
-                Number(
-                    instruction.ms
-                ) || 0;
-
+            await executeDelay(instruction.ms);
+            simulatorState.time+=Number(instruction.ms)||0;
             break;
 
-
         default:
-
             throw new Error(
-                "Unsupported GSE operation: " +
+                "Unsupported GSE operation: "+
                 instruction.op
             );
-
     }
-
 }
-
 
 /*
 ============================================================
-EXECUTE PROGRAM
+PROGRAM
 ============================================================
 */
 
-async function executeProgram(
-    instructions
-){
-
-    for(
-        const instruction
-        of instructions
-    ){
-
-        await executeInstruction(
-            instruction
-        );
-
+async function executeProgram(instructions){
+    for(const instruction of instructions){
+        await executeInstruction(instruction);
     }
-
 }
-
-
-/*
-============================================================
-SETUP
-============================================================
-*/
 
 async function executeSetup(){
-
-    simulatorLog(
-        "Running setup..."
-    );
-
-    await executeProgram(
-        gse.program.setup
-    );
-
-    simulatorLog(
-        "Setup complete."
-    );
-
+    simulatorLog("Running setup...");
+    await executeProgram(gse.program.setup);
+    simulatorLog("Setup complete.");
 }
-
-
-/*
-============================================================
-LOOP
-============================================================
-*/
 
 async function executeLoop(){
-
     while(true){
-
-        await executeProgram(
-            gse.program.loop
-        );
-
+        await executeProgram(gse.program.loop);
     }
-
 }
-
 
 /*
 ============================================================
@@ -1684,68 +1328,34 @@ START
 */
 
 async function startSimulator(){
-
     try{
-
         if(!token){
-
-            setStatus(
-                "No GSE token.",
-                "error"
-            );
-
+            setStatus("No GSE token.","error");
             return;
-
         }
 
+        setupButtons();
         await loadGSE();
 
-        setStatus(
-            "GSE loaded. Starting...",
-            "ready"
-        );
+        setStatus("GSE loaded. Starting...","ready");
 
         await executeSetup();
 
-        setStatus(
-            "Simulator running.",
-            "ready"
-        );
+        setStatus("Simulator running.","ready");
 
         await executeLoop();
-
     }
     catch(error){
-
-        console.error(
-            "Simulator error:",
-            error
-        );
-
+        console.error("Simulator error:",error);
         setStatus(
-            "Simulator error: " +
-            error.message,
+            "Simulator error: "+error.message,
             "error"
         );
-
-        simulatorLog(
-            "ERROR: " +
-            error.message
-        );
-
+        simulatorLog("ERROR: "+error.message);
     }
-
 }
-
-
-/*
-============================================================
-START
-============================================================
-*/
 
 startSimulator();
 </script>
-
 </body>
 </html>
