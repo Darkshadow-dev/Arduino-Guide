@@ -300,7 +300,7 @@
 const simulator=document.getElementById("simulator");
 const statusBox=document.getElementById("simulatorStatus");
 const consoleBox=document.getElementById("simulatorConsole");
-
+const gseVariables = {};
 const GSE_SERVER="https://arduino-guide-6.onrender.com";
 let gse=null;
 const token=new URLSearchParams(window.location.search).get("gse");
@@ -377,6 +377,42 @@ function validateGSE(){
     }
 }
 
+function resolveGSEValue(value){
+    if(value && typeof value === "object"){
+
+        if(value.type==="VALUE"){
+            return resolveGSEValue(value.value);
+        }
+
+        if(value.type==="CALL"){
+
+            if(value.function==="digitalRead"){
+                return executeDigitalRead({
+                    pin:resolveGSEValue(value.args[0])
+                });
+            }
+
+            if(value.function==="analogRead"){
+                return executeAnalogRead({
+                    pin:resolveGSEValue(value.args[0])
+                });
+            }
+
+            throw new Error(
+                "Unsupported expression function: "+
+                value.function
+            );
+        }
+    }
+
+    if(typeof value==="string" &&
+       Object.prototype.hasOwnProperty.call(gseVariables,value)){
+        return gseVariables[value];
+    }
+
+    return value;
+}
+
 /* ============================================================
    PIN STATE
    ============================================================ */
@@ -421,13 +457,15 @@ function executePinMode(instruction){
    ============================================================ */
 
 function executeDigitalWrite(instruction){
-    const pin=getPin(instruction.pin);
+    const pinNumber=resolveGSEValue(instruction.pin);
+    const value=resolveGSEValue(instruction.value);
+    const pin=getPin(pinNumber);
 
-    pin.value=instruction.value?1:0;
+    pin.value=value?1:0;
     pin.pwm=pin.value?255:0;
 
-    updateDigitalPin(instruction.pin);
-    updateExternalLED(instruction.pin);
+    updateDigitalPin(pinNumber);
+    updateExternalLED(pinNumber);
 }
 
 /* ============================================================
@@ -435,18 +473,22 @@ function executeDigitalWrite(instruction){
    ============================================================ */
 
 function executeDigitalRead(instruction){
-    const pin=getPin(instruction.pin);
+    const pinNumber=resolveGSEValue(instruction.pin);
+    const pin=getPin(pinNumber);
+
     return pin.input?1:0;
 }
-
 /* ============================================================
    PWM
    ============================================================ */
 
 function executeAnalogWrite(instruction){
-    const pin=getPin(instruction.pin);
+    const pinNumber=resolveGSEValue(instruction.pin);
+    const pin=getPin(pinNumber);
 
-    let value=Number(instruction.value);
+    let value=Number(
+        resolveGSEValue(instruction.value)
+    );
 
     if(Number.isNaN(value))value=0;
 
@@ -455,10 +497,9 @@ function executeAnalogWrite(instruction){
     pin.pwm=value;
     pin.value=value>0?1:0;
 
-    updateDigitalPin(instruction.pin);
-    updateExternalLED(instruction.pin);
+    updateDigitalPin(pinNumber);
+    updateExternalLED(pinNumber);
 }
-
 /* ============================================================
    DIGITAL PIN DISPLAY
    ============================================================ */
@@ -977,12 +1018,20 @@ function stopBuzzer(log=true){
 }
 
 function executeSerialBegin(baud){
-    simulatorState.serialBaud=Number(baud)||9600;
-    simulatorLog("Serial started at "+simulatorState.serialBaud+" baud.");
+    simulatorState.serialBaud=Number(
+        resolveGSEValue(baud)
+    )||9600;
+
+    simulatorLog(
+        "Serial started at "+
+        simulatorState.serialBaud+
+        " baud."
+    );
 }
 
 function executeSerialPrint(value,newLine=false){
-    let text=String(value);
+    const resolved=resolveGSEValue(value);
+    const text=String(resolved);
 
     if(newLine){
         simulatorLog(text);
@@ -1017,6 +1066,15 @@ async function executeInstruction(instruction){
 
     switch(instruction.op){
 
+case "DECLARE":
+    gseVariables[instruction.name]=
+        resolveGSEValue(instruction.value);
+    break;
+
+case "ASSIGN":
+    gseVariables[instruction.name]=
+        resolveGSEValue(instruction.value);
+    break;
         case "TONE":
             startBuzzer(
                 instruction.pin,

@@ -2,7 +2,7 @@
 import re
 
 
-GSE_VERSION = 1
+GSE_VERSION = 2
 
 
 def clean_line(line):
@@ -57,8 +57,63 @@ def split_arguments(text):
         args.append(current.strip())
 
     return args
+def parse_expression(value):
+    value = value.strip()
+
+    if re.fullmatch(r"\w+\s*\([^()]*\)", value):
+        match = re.match(r"^(\w+)\s*\((.*)\)$", value)
+
+        return {
+            "type": "CALL",
+            "function": match.group(1),
+            "args": [
+                parse_value(arg)
+                for arg in split_arguments(match.group(2))
+            ]
+        }
+
+    return {
+        "type": "VALUE",
+        "value": parse_value(value)
+    }
 
 
+def parse_variable(line):
+    line = clean_line(line)
+
+    match = re.match(
+        r"^(int|long|float|double|bool|boolean|byte|String|unsigned(?:\s+long)?)\s+(\w+)(?:\s*=\s*(.*))?;?$",
+        line
+    )
+
+    if match:
+        variable_type = match.group(1)
+        name = match.group(2)
+        value = match.group(3)
+
+        return {
+            "op": "DECLARE",
+            "type": variable_type,
+            "name": name,
+            "value": parse_expression(value) if value is not None else {
+                "type": "VALUE",
+                "value": 0
+            }
+        }
+
+    match = re.match(
+        r"^(\w+)\s*=\s*(.+);?$",
+        line
+    )
+
+    if match:
+        return {
+            "op": "ASSIGN",
+            "name": match.group(1),
+            "value": parse_expression(match.group(2))
+        }
+
+    return None
 def parse_value(value):
     value = value.strip()
 
