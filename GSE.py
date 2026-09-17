@@ -520,7 +520,9 @@ def parse_block(lines, index=0):
             index += 1
 
             if index >= len(lines) or lines[index].strip() != "{":
-                raise ValueError("Expected { after if condition.")
+                raise ValueError(
+                    "Expected { after if condition."
+                )
 
             then_block, index = parse_block(
                 lines,
@@ -544,7 +546,9 @@ def parse_block(lines, index=0):
                     index += 1
 
                     if index >= len(lines) or lines[index].strip() != "{":
-                        raise ValueError("Expected { after else.")
+                        raise ValueError(
+                            "Expected { after else."
+                        )
 
                     else_block, index = parse_block(
                         lines,
@@ -560,9 +564,17 @@ def parse_block(lines, index=0):
 
             continue
 
-        instructions.append(
-            parse_instruction(line)
-        )
+        variable = parse_variable(line)
+
+        if variable is not None:
+            instructions.append(variable)
+            index += 1
+            continue
+
+        instruction = parse_instruction(line)
+
+        if instruction is not None:
+            instructions.append(instruction)
 
         index += 1
 
