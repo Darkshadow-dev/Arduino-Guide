@@ -486,6 +486,12 @@ body{
     pointer-events:none;
 }
 
+#joystick{
+    pointer-events:auto;
+    cursor:grab;
+    user-select:none;
+}
+
 /* ============================================================
    LED BANK
    ============================================================ */
@@ -537,6 +543,145 @@ body{
 .ledTeal{color:#38d8bb;background:#21695e;}
 .ledWarm{color:#ffbf45;background:#78531d;}
 
+/* ============================================================
+   DIGITAL LED NUMBERS
+   ============================================================ */
+
+.externalLed{
+    cursor:default;
+}
+
+.externalLed span{
+    position:absolute;
+    left:50%;
+    top:24px;
+    transform:translateX(-50%);
+    color:#625f58;
+    font:7px monospace;
+    white-space:nowrap;
+}
+
+.externalLed.on span{
+    color:#222;
+    font-weight:bold;
+}
+
+/* ============================================================
+   BUTTON BANK
+   ============================================================ */
+
+#buttonBank{
+    position:absolute;
+    left:142px;
+    bottom:51px;
+    display:grid;
+    grid-template-columns:repeat(4,48px);
+    gap:10px;
+    pointer-events:auto;
+}
+
+.pinButton{
+    width:48px;
+    height:48px;
+    background:#292b2d;
+    border:2px solid #555;
+    border-radius:5px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    cursor:pointer;
+    user-select:none;
+    transition:.1s;
+}
+
+.pinButton span{
+    color:#aaa;
+    font:7px monospace;
+}
+
+.buttonCap{
+    width:25px;
+    height:25px;
+    border-radius:50%;
+    background:#a33;
+    border:2px solid #622;
+    color:#eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font:bold 5px monospace;
+    transition:.1s;
+}
+
+.pinButton.active{
+    border-color:#61df7b;
+    box-shadow:0 0 10px rgba(70,255,100,.4);
+}
+
+.pinButton.active .buttonCap{
+    background:#48e878;
+    border-color:#21763b;
+    color:#102015;
+    transform:scale(.88);
+}
+
+.toggleButton .buttonCap{
+    border-radius:4px;
+    background:#555;
+    border-color:#333;
+}
+
+/* ============================================================
+   POTENTIOMETER
+   ============================================================ */
+
+#potentiometer{
+    position:absolute;
+    right:28px;
+    bottom:52px;
+    width:72px;
+    height:72px;
+    background:#292b2d;
+    border:2px solid #555;
+    border-radius:7px;
+    pointer-events:auto;
+    user-select:none;
+}
+
+#potKnob{
+    position:absolute;
+    left:13px;
+    top:8px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#18191b;
+    border:4px solid #666;
+    cursor:grab;
+    transform:rotate(-45deg);
+}
+
+#potKnob::after{
+    content:"";
+    position:absolute;
+    left:17px;
+    top:3px;
+    width:3px;
+    height:14px;
+    background:#ddd;
+    border-radius:2px;
+}
+
+#potValue{
+    position:absolute;
+    bottom:5px;
+    width:100%;
+    text-align:center;
+    color:#aaa;
+    font:7px monospace;
+}
 /* ============================================================
    OLED 4 PIN
    ============================================================ */
@@ -672,6 +817,15 @@ body{
     font:8px monospace;
 }
 
+#joystick.active{
+    cursor:grabbing;
+    border-color:#63e879;
+    box-shadow:0 0 12px rgba(70,255,100,.35);
+}
+
+#joystickStick{
+    transition:transform .08s;
+}
 /* ============================================================
    SENSOR BLOCKS
    ============================================================ */
@@ -923,27 +1077,51 @@ body{
                     DISTANCE<br>SENSOR
                 </div>
 
-                <div id="ledBank">
+<div id="ledBank">
+    <div class="externalLed ledRed" data-pin="2"><span>2</span></div>
+    <div class="externalLed ledOrange" data-pin="3"><span>3</span></div>
+    <div class="externalLed ledYellow" data-pin="4"><span>4</span></div>
+    <div class="externalLed ledGreen" data-pin="5"><span>5</span></div>
+    <div class="externalLed ledBlue" data-pin="6"><span>6</span></div>
+    <div class="externalLed ledPurple" data-pin="7"><span>7</span></div>
 
-                    <div class="externalLed ledRed"></div>
-                    <div class="externalLed ledOrange"></div>
-                    <div class="externalLed ledYellow"></div>
-                    <div class="externalLed ledGreen"></div>
-                    <div class="externalLed ledBlue"></div>
-                    <div class="externalLed ledPurple"></div>
+    <div class="externalLed ledPink" data-pin="8"><span>8</span></div>
+    <div class="externalLed ledCyan" data-pin="9"><span>9</span></div>
+    <div class="externalLed ledWhite" data-pin="10"><span>10</span></div>
+    <div class="externalLed ledLime" data-pin="11"><span>11</span></div>
+    <div class="externalLed ledTeal" data-pin="12"><span>12</span></div>
+    <div class="externalLed ledWarm" data-pin="13"><span>13</span></div>
+</div>
 
-                    <div class="externalLed ledPink"></div>
-                    <div class="externalLed ledCyan"></div>
-                    <div class="externalLed ledWhite"></div>
-                    <div class="externalLed ledLime"></div>
-                    <div class="externalLed ledTeal"></div>
-                    <div class="externalLed ledWarm"></div>
+ <div id="ledLabel" class="componentLabel">
+    DIGITAL LEDS • PIN 2–13
+</div>
 
-                </div>
+<div id="buttonBank">
+    <div class="pinButton pushButton" data-pin="2">
+        <div class="buttonCap">PUSH</div>
+        <span>D2</span>
+    </div>
 
-                <div id="ledLabel" class="componentLabel">
-                    12 × RGB-STYLE SIMULATED LEDS
-                </div>
+    <div class="pinButton pushButton" data-pin="3">
+        <div class="buttonCap">PUSH</div>
+        <span>D3</span>
+    </div>
+
+    <div class="pinButton toggleButton" data-pin="4">
+        <div class="buttonCap">ON</div>
+        <span>D4</span>
+    </div>
+
+    <div class="pinButton toggleButton" data-pin="5">
+        <div class="buttonCap">OFF</div>
+        <span>D5</span>
+    </div>
+</div>
+<div id="potentiometer">
+    <div id="potKnob"></div>
+    <div id="potValue">A0<br>0</div>
+</div>
 
             </div>
 
@@ -959,8 +1137,7 @@ body{
 
     </div>
 
-</div>
-<script>
+</div><script>
 /*
 ============================================================
 GUIDELINES ARDUINO UNO SIMULATOR
@@ -1035,11 +1212,12 @@ PIN STATE
 
 function getPin(pin){
     if(!simulatorState.pins[pin]){
-        simulatorState.pins[pin]={
-            mode:null,
-            value:0,
-            pwm:0
-        };
+simulatorState.pins[pin]={
+    mode:null,
+    value:0,
+    pwm:0,
+    input:0
+};
     }
     return simulatorState.pins[pin];
 }
@@ -1182,7 +1360,6 @@ function updateExternalLED(pinNumber){
         "LED on pin "+pinNumber+
         " • PWM "+value+"/255";
 }
-
 /*
 ============================================================
 BUTTONS
@@ -1196,50 +1373,135 @@ function updateButtonVisual(pinNumber){
     if(!button)return;
 
     const pin=getPin(pinNumber);
+    button.classList.toggle("active",!!pin.input);
 
-    button.classList.toggle(
-        "active",
-        !!pin.input
-    );
+    const cap=button.querySelector(".buttonCap");
+    if(cap&&button.classList.contains("toggleButton")){
+        cap.textContent=pin.input?"ON":"OFF";
+    }
 }
 
 function setupButtons(){
     document.querySelectorAll(".pinButton").forEach(button=>{
         const pinNumber=Number(button.dataset.pin);
+        const toggle=button.classList.contains("toggleButton");
 
-        button.addEventListener("mousedown",()=>{
+        if(toggle){
+            button.addEventListener("click",()=>{
+                const pin=getPin(pinNumber);
+                pin.input=pin.input?0:1;
+                updateButtonVisual(pinNumber);
+                simulatorLog("Toggle "+pinNumber+" → "+(pin.input?"HIGH":"LOW"));
+            });
+            return;
+        }
+
+        const press=()=>{
             const pin=getPin(pinNumber);
             pin.input=1;
             updateButtonVisual(pinNumber);
-            simulatorLog("Button "+pinNumber+" → HIGH");
-        });
+        };
 
-        button.addEventListener("mouseup",()=>{
+        const release=()=>{
             const pin=getPin(pinNumber);
             pin.input=0;
             updateButtonVisual(pinNumber);
-            simulatorLog("Button "+pinNumber+" → LOW");
-        });
+        };
 
-        button.addEventListener("mouseleave",()=>{
-            const pin=getPin(pinNumber);
-            pin.input=0;
-            updateButtonVisual(pinNumber);
-        });
+        button.addEventListener("mousedown",press);
+        button.addEventListener("mouseup",release);
+        button.addEventListener("mouseleave",release);
 
         button.addEventListener("touchstart",event=>{
             event.preventDefault();
-            const pin=getPin(pinNumber);
-            pin.input=1;
-            updateButtonVisual(pinNumber);
+            press();
         });
 
         button.addEventListener("touchend",event=>{
             event.preventDefault();
-            const pin=getPin(pinNumber);
-            pin.input=0;
-            updateButtonVisual(pinNumber);
+            release();
         });
+    });
+}
+
+/*
+============================================================
+JOYSTICK
+============================================================
+*/
+
+const joystickState={
+    x:0,
+    y:0,
+    pressed:0
+};
+
+function updateJoystick(){
+    const joystick=document.getElementById("joystick");
+    const stick=document.getElementById("joystickStick");
+    if(!joystick||!stick)return;
+
+    stick.style.transform=
+        "translate("+joystickState.x+"px,"+
+        joystickState.y+"px)";
+
+    joystick.classList.toggle("active",!!joystickState.pressed);
+}
+
+function setupJoystick(){
+    const joystick=document.getElementById("joystick");
+    if(!joystick)return;
+
+    const move=event=>{
+        const rect=joystick.getBoundingClientRect();
+        const source=event.touches?event.touches[0]:event;
+
+        let x=source.clientX-rect.left-45;
+        let y=source.clientY-rect.top-45;
+
+        const distance=Math.sqrt(x*x+y*y);
+        const max=25;
+
+        if(distance>max){
+            x=x/distance*max;
+            y=y/distance*max;
+        }
+
+        joystickState.x=x;
+        joystickState.y=y;
+        joystickState.pressed=1;
+        updateJoystick();
+    };
+
+    const release=()=>{
+        joystickState.x=0;
+        joystickState.y=0;
+        joystickState.pressed=0;
+        updateJoystick();
+    };
+
+    joystick.addEventListener("mousedown",event=>{
+        move(event);
+        document.addEventListener("mousemove",move);
+        document.addEventListener("mouseup",()=>{
+            document.removeEventListener("mousemove",move);
+            release();
+        },{once:true});
+    });
+
+    joystick.addEventListener("touchstart",event=>{
+        event.preventDefault();
+        move(event);
+    });
+
+    joystick.addEventListener("touchmove",event=>{
+        event.preventDefault();
+        move(event);
+    });
+
+    joystick.addEventListener("touchend",event=>{
+        event.preventDefault();
+        release();
     });
 }
 
@@ -1334,8 +1596,9 @@ async function startSimulator(){
             return;
         }
 
-        setupButtons();
-        await loadGSE();
+       setupButtons();
+setupJoystick();
+await loadGSE();
 
         setStatus("GSE loaded. Starting...","ready");
 
