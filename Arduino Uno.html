@@ -18,6 +18,7 @@
             GUIDELINES ARDUINO SIMULATOR
         </div>
 
+
         <div id="simulatorStatus">
             Loading simulator...
         </div>
@@ -891,12 +892,6 @@ async function executeInstruction(instruction){
    PROGRAM
    ============================================================ */
 
-async function executeProgram(instructions){
-    for(const instruction of instructions){
-        await executeInstruction(instruction);
-    }
-}
-
 async function executeSetup(){
     simulatorLog("Running setup...");
 
@@ -907,11 +902,23 @@ async function executeSetup(){
     simulatorLog("Setup complete.");
 }
 
+async function executeProgram(instructions){
+    for(let i = 0; i < instructions.length; i++){
+        await executeInstruction(instructions[i]);
+
+        if(i % 25 === 0){
+            await new Promise(resolve => setTimeout(resolve, 0));
+        }
+    }
+}
+
 async function executeLoop(){
     while(true){
-        await executeProgram(
-            gse.program.loop
-        );
+        await executeProgram(gse.program.loop);
+
+        simulatorState.time += 1;
+
+        await new Promise(resolve => setTimeout(resolve, 1));
     }
 }
 
@@ -976,3 +983,4 @@ startSimulator();
 
 </body>
 </html>
+
