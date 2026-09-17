@@ -80,6 +80,12 @@ def parse_value(value):
     if value == "LED_BUILTIN":
         return 13
 
+    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+        return value[1:-1]
+
+    if len(value) >= 2 and value[0] == "'" and value[-1] == "'":
+        return value[1:-1]
+
     if re.fullmatch(r"-?\d+", value):
         return int(value)
 
@@ -87,7 +93,6 @@ def parse_value(value):
         return float(value)
 
     return value
-
 
 def parse_instruction(line):
     line = clean_line(line)
@@ -179,45 +184,52 @@ def parse_instruction(line):
             "us": parse_value(args[0])
         }
 
-    if function == "tone":
-        if len(args) < 2:
+    if function=="tone":
+        if len(args)<2:
             raise ValueError("tone requires at least 2 arguments")
 
-        instruction = {
-            "op": "TONE",
-            "pin": parse_value(args[0]),
-            "frequency": parse_value(args[1])
+        instruction={
+            "op":"TONE",
+            "pin":parse_value(args[0]),
+            "frequency":parse_value(args[1])
         }
 
-        if len(args) >= 3:
-            instruction["duration"] = parse_value(args[2])
+        if len(args)>=3:
+            instruction["duration"]=parse_value(args[2])
 
         return instruction
 
-    if function == "noTone":
-        if len(args) != 1:
+    if function=="noTone":
+        if len(args)!=1:
             raise ValueError("noTone requires 1 argument")
 
         return {
-            "op": "NO_TONE",
-            "pin": parse_value(args[0])
+            "op":"NO_TONE",
+            "pin":parse_value(args[0])
         }
 
-    if function == "Serial.begin":
+    if function=="Serial.begin":
+        if len(args)!=1:
+            raise ValueError("Serial.begin requires 1 argument")
+
         return {
-            "op": "SERIAL_BEGIN",
-            "baud": parse_value(args[0])
+            "op":"SERIAL_BEGIN",
+            "baud":parse_value(args[0])
         }
 
-    if function in ("print", "println"):
+    if function=="Serial.print":
         return {
-            "op": "SERIAL_PRINT" if function == "print"
-                    else "SERIAL_PRINTLN",
-            "value": args[0] if args else ""
+            "op":"SERIAL_PRINT",
+            "value":parse_value(args[0]) if args else ""
+        }
+
+    if function=="Serial.println":
+        return {
+            "op":"SERIAL_PRINTLN",
+            "value":parse_value(args[0]) if args else ""
         }
 
     return None
-
 
 def extract_function(code, name):
     pattern = re.compile(
@@ -315,3 +327,4 @@ def compile_gse(source, board="arduino:avr:uno"):
             "loop": loop
         }
     }
+

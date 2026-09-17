@@ -845,6 +845,43 @@ body{
     top:155px;
 }
 
+#buzzer{
+    position:absolute;
+    right:25px;
+    top:190px;
+    width:75px;
+    height:65px;
+    background:#292b2d;
+    border:2px solid #555;
+    border-radius:6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    color:#aaa;
+    font:8px monospace;
+    text-align:center;
+    pointer-events:auto;
+}
+
+#buzzerTop{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    background:#111;
+    border:3px solid #444;
+    box-shadow:inset 0 0 8px #000;
+}
+
+#buzzer.active #buzzerTop{
+    background:#e5b93f;
+    border-color:#fff0a0;
+    box-shadow:
+        0 0 8px #e5c34f,
+        0 0 18px rgba(255,210,70,.7);
+}
+
 /* ============================================================
    LABELS
    ============================================================ */

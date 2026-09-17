@@ -276,7 +276,10 @@
                     <div id="potKnob"></div>
                     <div id="potValue">A0<br>0</div>
                 </div>
-
+<div id="buzzer">
+    <div id="buzzerTop"></div>
+    <span>BUZZER<br>D6</span>
+</div>
             </div>
 
         </div>
@@ -484,6 +487,29 @@ function updateDigitalPin(pinNumber){
     }
 }
 
+function executeAnalogRead(instruction){
+    const pin=String(instruction.pin);
+
+    if(pin==="A0"){
+        return potentiometerState.value;
+    }
+
+    if(pin==="A1"){
+        return Math.round(
+            ((joystickState.x+25)/50)*1023
+        );
+    }
+
+    if(pin==="A2"){
+        return Math.round(
+            ((joystickState.y+25)/50)*1023
+        );
+    }
+
+    return Number(
+        simulatorState.analogPins[pin]||0
+    );
+}
 /* ============================================================
    BUILT-IN LED
    ============================================================ */
@@ -834,6 +860,81 @@ function setupPotentiometer(){
     );
 }
 
+let audioContext=null;
+let buzzerOscillator=null;
+let buzzerGain=null;
+
+function startBuzzer(pinNumber,frequency){
+    const buzzer=document.getElementById("buzzer");
+    if(!buzzer)return;
+
+    if(!audioContext){
+        audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    }
+
+    if(audioContext.state==="suspended"){
+        audioContext.resume();
+    }
+
+    stopBuzzer(false);
+
+    buzzerOscillator=audioContext.createOscillator();
+    buzzerGain=audioContext.createGain();
+
+    buzzerOscillator.type="square";
+    buzzerOscillator.frequency.value=Number(frequency)||440;
+    buzzerGain.gain.value=.08;
+
+    buzzerOscillator.connect(buzzerGain);
+    buzzerGain.connect(audioContext.destination);
+
+    buzzerOscillator.start();
+    buzzer.classList.add("active");
+
+    simulatorLog("Tone D"+pinNumber+" • "+frequency+" Hz");
+}
+
+
+function stopBuzzer(log=true){
+    const buzzer=document.getElementById("buzzer");
+
+    if(buzzerOscillator){
+        try{
+            buzzerOscillator.stop();
+        }catch(error){}
+        buzzerOscillator.disconnect();
+        buzzerOscillator=null;
+    }
+
+    if(buzzerGain){
+        buzzerGain.disconnect();
+        buzzerGain=null;
+    }
+
+    if(buzzer)buzzer.classList.remove("active");
+
+    if(log)simulatorLog("Buzzer stopped.");
+}
+
+function executeSerialBegin(baud){
+    simulatorState.serialBaud=Number(baud)||9600;
+    simulatorLog("Serial started at "+simulatorState.serialBaud+" baud.");
+}
+
+function executeSerialPrint(value,newLine=false){
+    let text=String(value);
+
+    if(newLine){
+        simulatorLog(text);
+        return;
+    }
+
+    if(!consoleBox)return;
+
+    consoleBox.textContent+=text;
+    consoleBox.scrollTop=consoleBox.scrollHeight;
+}
+
 /* ============================================================
    DELAY
    ============================================================ */
@@ -856,6 +957,22 @@ async function executeInstruction(instruction){
 
     switch(instruction.op){
 
+        case "TONE":
+            startBuzzer(
+                instruction.pin,
+                instruction.frequency
+            );
+
+            if(instruction.duration!==undefined){
+                await executeDelay(instruction.duration);
+                stopBuzzer();
+            }
+            break;
+
+        case "NO_TONE":
+            stopBuzzer();
+            break;
+
         case "PIN_MODE":
             executePinMode(instruction);
             break;
@@ -868,8 +985,24 @@ async function executeInstruction(instruction){
             executeDigitalRead(instruction);
             break;
 
+        case "ANALOG_READ":
+            executeAnalogRead(instruction);
+            break;
+
         case "ANALOG_WRITE":
             executeAnalogWrite(instruction);
+            break;
+
+        case "SERIAL_BEGIN":
+            executeSerialBegin(instruction.baud);
+            break;
+
+        case "SERIAL_PRINT":
+            executeSerialPrint(instruction.value,false);
+            break;
+
+        case "SERIAL_PRINTLN":
+            executeSerialPrint(instruction.value,true);
             break;
 
         case "DELAY":
@@ -878,6 +1011,12 @@ async function executeInstruction(instruction){
             simulatorState.time+=
                 Number(instruction.ms)||0;
 
+            break;
+
+        case "DELAY_US":
+            await executeDelay(
+                Number(instruction.us||0)/1000
+            );
             break;
 
         default:
