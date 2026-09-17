@@ -477,21 +477,15 @@ async function runSimulator(){
             }
         );
 
-        if(!res.ok){
-            throw new Error(
-                "Simulator server request failed."
-            );
-        }
-
         const data = await res.json();
 
-        if(!data.success){
+        if(!res.ok || !data.success){
             throw new Error(
                 data.error ||
+                data.output ||
                 "Failed to create simulator."
             );
         }
-
         consoleBox.textContent =
             "Simulator created.\nOpening...";
 
@@ -631,6 +625,7 @@ saveLocal();
 
 </body>
 </html>
+
 
 
 

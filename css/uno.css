@@ -521,7 +521,7 @@ body{
 
 .externalLed.on{
     box-shadow:0 0 12px currentColor;
-    filter:brightness(1.4);
+    filter:brightness(2.4);
 }
 
 .externalLed span{
@@ -885,3 +885,4 @@ body{
     color:#626871;
     font:9px monospace;
 }
+
