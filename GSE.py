@@ -321,8 +321,6 @@ def extract_function(code, name):
     raise ValueError(
         "Unclosed " + name + "()"
     )
-
-
 def compile_function(code):
     instructions = []
 
@@ -338,17 +336,12 @@ def compile_function(code):
         if line in ("{", "}"):
             continue
 
-        # Variable declarations are not supported yet.
-        if re.match(
-            r"^(int|long|float|double|bool|boolean|byte|String|unsigned)\b",
-            line
-        ):
-            raise ValueError(
-                "Variables are not supported by GSE yet: " +
-                line
-            )
+        variable = parse_variable(line)
 
-        # if / loops are not supported yet.
+        if variable:
+            instructions.append(variable)
+            continue
+
         if re.match(
             r"^(if|else|for|while|do|switch)\b",
             line
