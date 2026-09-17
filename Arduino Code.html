@@ -141,7 +141,7 @@ select{
 <button onclick="location.href='Arduino Quiz.html'">Quizes</button>
 <button onclick="location.href='Arduino Tutorial.html#home'">Tutorials</button>
 <button onclick="location.href='https://darkshadow-dev.github.io/community/Arduino%20Community.html'">Community</button>
-<button onclick="location.href='Arduino Uno.html'">Test</button>
+<button onclick="runSimulator()">Run Simulator</button>
 <div class="live-counter" id="liveCounter">
   <span class="dot"></span>
   Online: <span id="onlineCount">0</span>
@@ -455,7 +455,66 @@ async function compileCode(){
         );
     }
 }
+/* ================= RUN SIMULATOR ================= */
+async function runSimulator(){
 
+    consoleBox.textContent = "Creating simulator...";
+
+    try{
+
+        const res = await fetch(
+            "https://arduino-guide-6.onrender.com/create",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    code:editor.value,
+                    name:filename.value,
+                    board:"arduino:avr:uno"
+                })
+            }
+        );
+
+        if(!res.ok){
+            throw new Error(
+                "Simulator server request failed."
+            );
+        }
+
+        const data = await res.json();
+
+        if(!data.success){
+            throw new Error(
+                data.error ||
+                "Failed to create simulator."
+            );
+        }
+
+        consoleBox.textContent =
+            "Simulator created.\nOpening...";
+
+        if(!data.url){
+            throw new Error(
+                "Server did not return a simulator URL."
+            );
+        }
+
+        window.location.href = data.url;
+
+    }catch(error){
+
+        console.error(
+            "Simulator error:",
+            error
+        );
+
+        consoleBox.textContent =
+            "Simulator error:\n" +
+            error.message;
+    }
+}
 
 /* ================= EXAMPLES (FIXED ALL) ================= */
 function loadExample(name){

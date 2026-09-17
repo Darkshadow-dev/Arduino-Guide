@@ -1,62 +1,306 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arduino Uno Simulator</title>
+
 <style>
 *{
     box-sizing:border-box;
 }
+
 html,body{
     width:100%;
     height:100%;
     margin:0;
     overflow:hidden;
 }
+
 body{
     background:#808080;
     font-family:monospace;
 }
+
 #backButton{
     position:fixed;
     top:10px;
     left:10px;
-    z-index:10;
+    z-index:100;
     background:#444;
     color:white;
     border:1px solid #222;
     padding:7px 12px;
     cursor:pointer;
 }
+
 #workspace{
     position:absolute;
     width:90vw;
     height:90vh;
     left:5vw;
     top:5vh;
-    background:white;
+    background:#e8e8e8;
     border:1px solid #333;
     overflow:hidden;
 }
+
 #simulator{
     position:absolute;
     inset:0;
 }
+
+/* ============================================================
+   ARDUINO UNO
+   ============================================================ */
+
+#arduinoUno{
+    position:absolute;
+    width:420px;
+    height:270px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:#008c8c;
+    border:3px solid #222;
+    border-radius:18px;
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+}
+
+/* ============================================================
+   USB
+   ============================================================ */
+
+#usb{
+    position:absolute;
+    left:-34px;
+    top:35px;
+    width:38px;
+    height:65px;
+    background:#b8b8b8;
+    border:2px solid #333;
+    border-radius:4px 0 0 4px;
+}
+
+/* ============================================================
+   POWER
+   ============================================================ */
+
+#powerJack{
+    position:absolute;
+    right:-30px;
+    top:35px;
+    width:32px;
+    height:55px;
+    background:#222;
+    border:2px solid #111;
+    border-radius:0 5px 5px 0;
+}
+
+/* ============================================================
+   BOARD LABEL
+   ============================================================ */
+
+#boardLabel{
+    position:absolute;
+    left:25px;
+    top:20px;
+    color:white;
+    font-family:Arial,sans-serif;
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* ============================================================
+   BUILT-IN LED
+   ============================================================ */
+
+#builtinLed{
+    position:absolute;
+    right:30px;
+    top:22px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:#555;
+    border:2px solid #222;
+}
+
+#builtinLed.on{
+    background:#ff3030;
+    box-shadow:
+        0 0 8px #ff3030,
+        0 0 18px #ff3030;
+}
+
+/* ============================================================
+   DIGITAL PINS
+   ============================================================ */
+
+#digitalPins{
+    position:absolute;
+    left:25px;
+    right:25px;
+    bottom:45px;
+    height:45px;
+    display:flex;
+    gap:5px;
+}
+
+.digitalPin{
+    flex:1;
+    min-width:0;
+    height:45px;
+    background:#222;
+    border:1px solid #111;
+    border-radius:3px;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    cursor:default;
+}
+
+.digitalPin.high{
+    background:#d33;
+    box-shadow:0 0 7px rgba(255,0,0,.7);
+}
+
+/* ============================================================
+   ANALOG PINS
+   ============================================================ */
+
+#analogPins{
+    position:absolute;
+    left:25px;
+    right:25px;
+    bottom:0;
+    height:30px;
+    display:flex;
+    gap:5px;
+}
+
+.analogPin{
+    flex:1;
+    background:#333;
+    color:white;
+    border:1px solid #111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10px;
+}
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+#simulatorStatus{
+    position:absolute;
+    left:15px;
+    top:15px;
+    min-width:180px;
+    padding:8px 10px;
+    background:rgba(0,0,0,.75);
+    color:#fff;
+    border:1px solid #333;
+    font-size:12px;
+    z-index:20;
+}
+
+#simulatorStatus.error{
+    color:#ff7070;
+}
+
+#simulatorStatus.ready{
+    color:#70ff70;
+}
+
+/* ============================================================
+   SERIAL / DEBUG
+   ============================================================ */
+
+#simulatorConsole{
+    position:absolute;
+    right:15px;
+    bottom:15px;
+    width:240px;
+    height:110px;
+    padding:8px;
+    overflow:auto;
+    background:#111;
+    color:#0f0;
+    border:1px solid #333;
+    font-size:11px;
+    white-space:pre-wrap;
+    z-index:20;
+}
 </style>
 </head>
+
 <body>
 
 <button id="backButton" onclick="history.back()">← Back</button>
 
 <div id="workspace">
-    <div id="simulator"></div>
+
+    <div id="simulator">
+
+        <div id="simulatorStatus">
+            Loading simulator...
+        </div>
+
+        <div id="simulatorConsole"></div>
+
+        <div id="arduinoUno">
+
+            <div id="usb"></div>
+            <div id="powerJack"></div>
+
+            <div id="boardLabel">
+                Arduino UNO
+            </div>
+
+            <div id="builtinLed"></div>
+
+            <div id="digitalPins">
+
+                <div class="digitalPin" data-pin="0">0</div>
+                <div class="digitalPin" data-pin="1">1</div>
+                <div class="digitalPin" data-pin="2">2</div>
+                <div class="digitalPin" data-pin="3">3</div>
+                <div class="digitalPin" data-pin="4">4</div>
+                <div class="digitalPin" data-pin="5">5</div>
+                <div class="digitalPin" data-pin="6">6</div>
+                <div class="digitalPin" data-pin="7">7</div>
+                <div class="digitalPin" data-pin="8">8</div>
+                <div class="digitalPin" data-pin="9">9</div>
+                <div class="digitalPin" data-pin="10">10</div>
+                <div class="digitalPin" data-pin="11">11</div>
+                <div class="digitalPin" data-pin="12">12</div>
+                <div class="digitalPin" data-pin="13">13</div>
+
+            </div>
+
+            <div id="analogPins">
+
+                <div class="analogPin">A0</div>
+                <div class="analogPin">A1</div>
+                <div class="analogPin">A2</div>
+                <div class="analogPin">A3</div>
+                <div class="analogPin">A4</div>
+                <div class="analogPin">A5</div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 <script src="js/ArduinoUno.js"></script>
 
 </body>
 </html>
-```
-

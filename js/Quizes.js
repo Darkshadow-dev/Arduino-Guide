@@ -121,31 +121,31 @@ pins:[
 
 /* ---------- QUIZ 8 (Ultimate – 25 Q) ---------- */
 [
-{type:"mc",q:"A complete LED circuit requires...",a:["LED + resistor","LED only","LED + capacitor"],c:0},
-{type:"mc",q:"A potentiometer has how many pins?",a:["3","2","4"],c:0},
-{type:"mc",q:"Which component is commonly used for menu navigation?",a:["Joystick","Relay","LDR"],c:0},
-{type:"mc",q:"Which module stores files?",a:["SD Card","RTC","OLED"],c:0},
-{type:"mc",q:"Which module keeps time even when Arduino is off?",a:["RTC","Servo","Relay"],c:0},
-{type:"mc",q:"Which module measures atmospheric pressure?",a:["BMP280","HC-SR04","LDR"],c:0},
-{type:"mc",q:"Which sensor measures light?",a:["LDR","DHT11","Joystick"],c:0},
-{type:"mc",q:"Which device produces sound?",a:["Buzzer","Relay","Potentiometer"],c:0},
-{type:"mc",q:"Which output is best for controlling LED brightness?",a:["PWM","Analog input","SPI"],c:0},
-{type:"mc",q:"Which component allows variable voltage input?",a:["Potentiometer","Button","Relay"],c:0},
-{type:"fill",q:"A relay allows Arduino to switch ______ loads.",c:"high"},
-{type:"fill",q:"A joystick has __ analog axes.",c:"2"},
-{type:"fill",q:"An HC-SR04 has Trigger and ______ pins.",c:"Echo"},
-{type:"fill",q:"An OLED display usually uses the ______ protocol.",c:"I2C"},
-{type:"fill",q:"A TFT display commonly uses the ______ protocol.",c:"SPI"},
-{type:"fill",q:"A buzzer producing tones usually uses ______.",c:"PWM"},
-{type:"fill",q:"A servo receives repeated ______ pulses.",c:"PWM"},
-{type:"mcm",q:"Which devices normally need analogRead()?",a:["Potentiometer","Joystick","LDR","LED"],c:[0,1,2]},
-{type:"mcm",q:"Which modules commonly use SPI?",a:["SD Card","Ethernet Shield","TFT","RTC"],c:[0,1,2]},
-{type:"mcm",q:"Which modules commonly use I2C?",a:["OLED","RTC","BMP280","Servo"],c:[0,1,2]},
-{type:"mc",q:"Which component is safest to test first with the Blink sketch?",a:["LED","Servo","Relay"],c:0},
-{type:"mc",q:"Which sensor would you use to detect movement?",a:["PIR","LDR","Potentiometer"],c:0},
-{type:"mc",q:"Which component converts electrical energy into mechanical movement?",a:["Servo","OLED","RTC"],c:0},
-{type:"mc",q:"Which component converts rotation into an analog value?",a:["Potentiometer","Relay","Buzzer"],c:0},
-{type:"mc",q:"Which project would most likely require both an OLED and a joystick?",a:["Menu-driven device","Blink LED","Relay tester"],c:0}
+    {type:"mc",q:"A complete LED circuit requires...",a:["LED + resistor","LED only","LED + capacitor"],c:0},
+    {type:"mc",q:"A potentiometer has how many pins?",a:["3","2","4"],c:0},
+    {type:"mc",q:"Which component is commonly used for menu navigation?",a:["Joystick","Relay","LDR"],c:0},
+    {type:"mc",q:"Which module stores files?",a:["SD Card","RTC","OLED"],c:0},
+    {type:"mc",q:"Which module keeps time even when Arduino is off?",a:["RTC","Servo","Relay"],c:0},
+    {type:"mc",q:"Which module measures atmospheric pressure?",a:["BMP280","HC-SR04","LDR"],c:0},
+    {type:"mc",q:"Which sensor measures light?",a:["LDR","DHT11","Joystick"],c:0},
+    {type:"mc",q:"Which device produces sound?",a:["Buzzer","Relay","Potentiometer"],c:0},
+    {type:"mc",q:"Which output is best for controlling LED brightness?",a:["PWM","Analog input","SPI"],c:0},
+    {type:"mc",q:"Which component allows variable voltage input?",a:["Potentiometer","Button","Relay"],c:0},
+    {type:"fill",q:"A relay allows Arduino to switch ______ loads.",c:"high"},
+    {type:"fill",q:"A joystick has __ analog axes.",c:"2"},
+    {type:"fill",q:"An HC-SR04 has Trigger and ______ pins.",c:"Echo"},
+    {type:"fill",q:"An OLED display usually uses the ______ protocol.",c:"I2C"},
+    {type:"fill",q:"A TFT display commonly uses the ______ protocol.",c:"SPI"},
+    {type:"fill",q:"A buzzer producing tones usually uses ______.",c:"PWM"},
+    {type:"fill",q:"A servo receives repeated ______ pulses.",c:"PWM"},
+    {type:"mcm",q:"Which devices normally need analogRead()?",a:["Potentiometer","Joystick","LDR","LED"],c:[0,1,2]},
+    {type:"mcm",q:"Which modules commonly use SPI?",a:["SD Card","Ethernet Shield","TFT","RTC"],c:[0,1,2]},
+    {type:"mcm",q:"Which modules commonly use I2C?",a:["OLED","RTC","BMP280","Servo"],c:[0,1,2]},
+    {type:"mc",q:"Which component is safest to test first with the Blink sketch?",a:["LED","Servo","Relay"],c:0},
+    {type:"mc",q:"Which sensor would you use to detect movement?",a:["PIR","LDR","Potentiometer"],c:0},
+    {type:"mc",q:"Which component converts electrical energy into mechanical movement?",a:["Servo","OLED","RTC"],c:0},
+    {type:"mc",q:"Which component converts rotation into an analog value?",a:["Potentiometer","Relay","Buzzer"],c:0},
+    {type:"mc",q:"Which project would most likely require both an OLED and a joystick?",a:["Menu-driven device","Blink LED","Relay tester"],c:0}
 ]
 ],
 
@@ -564,4 +564,5 @@ function clearDraft(){
 const board = {
   value: "uno"
 };
+
 
