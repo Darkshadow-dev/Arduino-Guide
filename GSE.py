@@ -504,99 +504,49 @@ def parse_block(lines, index=0):
     instructions = []
 
     while index < len(lines):
-
-        line = lines[index]
+        line = lines[index].strip()
 
         if line == "}":
             return instructions, index + 1
 
-        if re.match(r"^if\s*\(", line):
+        if line.startswith("if"):
+            condition_text = line[
+                line.find("(") + 1:
+                line.rfind(")")
+            ]
 
-            match = re.match(
-                r"^if\s*\((.*)\)\s*$",
-                line
-            )
-
-            if not match:
-                raise ValueError(
-                    "Invalid if statement: " + line
-                )
-
-            condition = parse_expression(
-                match.group(1)
-            )
+            condition = parse_expression(condition_text)
 
             index += 1
 
-            if index >= len(lines) or lines[index] != "{":
-                raise ValueError(
-                    "Expected { after if"
-                )
+            if index >= len(lines) or lines[index].strip() != "{":
+                raise ValueError("Expected { after if condition.")
 
-            true_block, index = parse_block(
+            then_block, index = parse_block(
                 lines,
                 index + 1
             )
 
-            false_block = []
+            else_block = []
 
             if index < len(lines):
+                next_line = lines[index].strip()
 
-                if re.match(
-                    r"^else\s+if\s*\(",
-                    lines[index]
-                ):
-                    else_if = lines[index]
-
-                    match = re.match(
-                        r"^else\s+if\s*\((.*)\)\s*$",
-                        else_if
-                    )
-
-                    if not match:
-                        raise ValueError(
-                            "Invalid else if statement"
-                        )
-
-                    condition2 = parse_expression(
-                        match.group(1)
-                    )
-
-                    index += 1
-
-                    if (
-                        index >= len(lines)
-                        or lines[index] != "{"
-                    ):
-                        raise ValueError(
-                            "Expected { after else if"
-                        )
-
-                    nested_block, index = parse_block(
-                        lines,
-                        index + 1
-                    )
-
-                    false_block = [{
-                        "op": "IF",
-                        "condition": condition2,
-                        "then": nested_block,
-                        "else": []
-                    }]
-
-                elif lines[index] == "else":
-
-                    index += 1
-
-                    if (
-                        index >= len(lines)
-                        or lines[index] != "{"
-                    ):
-                        raise ValueError(
-                            "Expected { after else"
-                        )
-
+                if next_line.startswith("else if"):
                     false_block, index = parse_block(
+                        lines,
+                        index
+                    )
+
+                    else_block = false_block
+
+                elif next_line == "else":
+                    index += 1
+
+                    if index >= len(lines) or lines[index].strip() != "{":
+                        raise ValueError("Expected { after else.")
+
+                    else_block, index = parse_block(
                         lines,
                         index + 1
                     )
@@ -604,27 +554,15 @@ def parse_block(lines, index=0):
             instructions.append({
                 "op": "IF",
                 "condition": condition,
-                "then": true_block,
-                "else": false_block
+                "then": then_block,
+                "else": else_block
             })
 
             continue
 
-        if line in ("{", "}"):
-            index += 1
-            continue
-
-        variable = parse_variable(line)
-
-        if variable:
-            instructions.append(variable)
-            index += 1
-            continue
-
-        instruction = parse_instruction(line)
-
-        if instruction:
-            instructions.append(instruction)
+        instructions.append(
+            parse_instruction(line)
+        )
 
         index += 1
 
