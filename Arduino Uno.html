@@ -378,23 +378,30 @@ function validateGSE(){
 }
 
 function resolveGSEValue(value){
-    if(value && typeof value === "object"){
+    if(value===null || value===undefined){
+        return 0;
+    }
+
+    if(value && typeof value==="object"){
 
         if(value.type==="VALUE"){
             return resolveGSEValue(value.value);
         }
 
         if(value.type==="CALL"){
+            const args=value.args.map(
+                arg=>resolveGSEValue(arg)
+            );
 
             if(value.function==="digitalRead"){
                 return executeDigitalRead({
-                    pin:resolveGSEValue(value.args[0])
+                    pin:args[0]
                 });
             }
 
             if(value.function==="analogRead"){
                 return executeAnalogRead({
-                    pin:resolveGSEValue(value.args[0])
+                    pin:args[0]
                 });
             }
 
@@ -403,10 +410,88 @@ function resolveGSEValue(value){
                 value.function
             );
         }
+
+        if(value.type==="COMPARE"){
+            const left=resolveGSEValue(value.left);
+            const right=resolveGSEValue(value.right);
+
+            switch(value.operator){
+                case "==":
+                    return left==right;
+                case "!=":
+                    return left!=right;
+                case ">":
+                    return left>right;
+                case "<":
+                    return left<right;
+                case ">=":
+                    return left>=right;
+                case "<=":
+                    return left<=right;
+            }
+
+            return false;
+        }
+
+        if(value.type==="LOGICAL"){
+            const left=resolveGSEValue(value.left);
+
+            if(value.operator==="&&"){
+                if(!left)return false;
+
+                return Boolean(
+                    resolveGSEValue(value.right)
+                );
+            }
+
+            if(value.operator==="||"){
+                if(left)return true;
+
+                return Boolean(
+                    resolveGSEValue(value.right)
+                );
+            }
+
+            return false;
+        }
+
+        if(value.type==="NOT"){
+            return !Boolean(
+                resolveGSEValue(value.value)
+            );
+        }
+
+        if(value.type==="ARITHMETIC"){
+            const left=Number(
+                resolveGSEValue(value.left)
+            );
+
+            const right=Number(
+                resolveGSEValue(value.right)
+            );
+
+            switch(value.operator){
+                case "+":
+                    return left+right;
+                case "-":
+                    return left-right;
+                case "*":
+                    return left*right;
+                case "/":
+                    return right!==0?left/right:0;
+            }
+
+            return 0;
+        }
     }
 
-    if(typeof value==="string" &&
-       Object.prototype.hasOwnProperty.call(gseVariables,value)){
+    if(
+        typeof value==="string" &&
+        Object.prototype.hasOwnProperty.call(
+            gseVariables,
+            value
+        )
+    ){
         return gseVariables[value];
     }
 
@@ -435,21 +520,30 @@ function getPin(pin){
    ============================================================ */
 
 function executePinMode(instruction){
-    const pin=getPin(instruction.pin);
-    pin.mode=instruction.mode;
+    const pinNumber=resolveGSEValue(
+        instruction.pin
+    );
+
+    const mode=resolveGSEValue(
+        instruction.mode
+    );
+
+    const pin=getPin(pinNumber);
+
+    pin.mode=mode;
 
     const element=document.querySelector(
-        '.digitalPin[data-pin="'+instruction.pin+'"]'
+        '.digitalPin[data-pin="'+pinNumber+'"]'
     );
 
     if(element){
-        element.dataset.mode=instruction.mode;
+        element.dataset.mode=mode;
         element.title=
-            "Pin "+instruction.pin+
-            " • "+instruction.mode;
+            "Pin "+pinNumber+
+            " • "+mode;
     }
 
-    updateButtonVisual(instruction.pin);
+    updateButtonVisual(pinNumber);
 }
 
 /* ============================================================
@@ -1057,34 +1151,108 @@ function executeDelay(milliseconds){
     });
 }
 
+
+
+
+function executeAssignment(instruction){
+
+    const name=instruction.name;
+    const operator=instruction.operator;
+
+    if(operator==="++"){
+        gseVariables[name]=
+            Number(gseVariables[name]||0)+1;
+        return;
+    }
+
+    if(operator==="--"){
+        gseVariables[name]=
+            Number(gseVariables[name]||0)-1;
+        return;
+    }
+
+    const value=resolveGSEValue(
+        instruction.value
+    );
+
+    if(operator==="="){
+        gseVariables[name]=value;
+        return;
+    }
+
+    const current=Number(
+        gseVariables[name]||0
+    );
+
+    const amount=Number(value)||0;
+
+    if(operator==="+="){
+        gseVariables[name]=
+            current+amount;
+    }else if(operator==="-="){
+        gseVariables[name]=
+            current-amount;
+    }else if(operator==="*="){
+        gseVariables[name]=
+            current*amount;
+    }else if(operator==="/="){
+        gseVariables[name]=
+            amount!==0
+                ?current/amount
+                :0;
+    }
+}
 /* ============================================================
    EXECUTE INSTRUCTION
    ============================================================ */
-
 async function executeInstruction(instruction){
     if(!instruction)return;
 
     switch(instruction.op){
 
-case "DECLARE":
-    gseVariables[instruction.name]=
-        resolveGSEValue(instruction.value);
-    break;
+        case "DECLARE":
+            gseVariables[instruction.name]=
+                resolveGSEValue(
+                    instruction.value
+                );
+            break;
 
-case "ASSIGN":
-    gseVariables[instruction.name]=
-        resolveGSEValue(instruction.value);
-    break;
+        case "ASSIGN":
+            executeAssignment(instruction);
+            break;
+
+        case "IF":
+            if(
+                resolveGSEValue(
+                    instruction.condition
+                )
+            ){
+                await executeProgram(
+                    instruction.then
+                );
+            }else{
+                await executeProgram(
+                    instruction.else
+                );
+            }
+            break;
+
         case "TONE":
             startBuzzer(
-                instruction.pin,
-                instruction.frequency
+                resolveGSEValue(instruction.pin),
+                resolveGSEValue(instruction.frequency)
             );
 
             if(instruction.duration!==undefined){
-                await executeDelay(instruction.duration);
+                await executeDelay(
+                    resolveGSEValue(
+                        instruction.duration
+                    )
+                );
+
                 stopBuzzer();
             }
+
             break;
 
         case "NO_TONE":
@@ -1116,25 +1284,42 @@ case "ASSIGN":
             break;
 
         case "SERIAL_PRINT":
-            executeSerialPrint(instruction.value,false);
+            executeSerialPrint(
+                instruction.value,
+                false
+            );
             break;
 
         case "SERIAL_PRINTLN":
-            executeSerialPrint(instruction.value,true);
+            executeSerialPrint(
+                instruction.value,
+                true
+            );
             break;
 
         case "DELAY":
-            await executeDelay(instruction.ms);
+            {
+                const ms=resolveGSEValue(
+                    instruction.ms
+                );
 
-            simulatorState.time+=
-                Number(instruction.ms)||0;
+                await executeDelay(ms);
 
+                simulatorState.time+=
+                    Number(ms)||0;
+            }
             break;
 
         case "DELAY_US":
-            await executeDelay(
-                Number(instruction.us||0)/1000
-            );
+            {
+                const us=resolveGSEValue(
+                    instruction.us
+                );
+
+                await executeDelay(
+                    Number(us||0)/1000
+                );
+            }
             break;
 
         default:
@@ -1150,6 +1335,10 @@ case "ASSIGN":
    ============================================================ */
 
 async function executeSetup(){
+    for(const key of Object.keys(gseVariables)){
+        delete gseVariables[key];
+    }
+
     simulatorLog("Running setup...");
 
     await executeProgram(
