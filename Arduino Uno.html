@@ -4,905 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arduino Uno Simulator</title>
-
-<style>
-*{
-    box-sizing:border-box;
-}
-
-html,body{
-    width:100%;
-    height:100%;
-    margin:0;
-    overflow:hidden;
-}
-
-body{
-    background:#17191d;
-    font-family:Arial,Helvetica,sans-serif;
-    color:#fff;
-}
-
-#backButton{
-    position:fixed;
-    top:10px;
-    left:10px;
-    z-index:1000;
-    background:#25282d;
-    color:#ddd;
-    border:1px solid #444;
-    border-radius:5px;
-    padding:7px 13px;
-    cursor:pointer;
-}
-
-#backButton:hover{
-    background:#33373d;
-}
-
-#workspace{
-    position:absolute;
-    width:94vw;
-    height:94vh;
-    left:3vw;
-    top:3vh;
-    background:#202328;
-    border:1px solid #454950;
-    border-radius:10px;
-    box-shadow:0 15px 45px rgba(0,0,0,.55);
-    overflow:hidden;
-}
-
-#simulator{
-    position:absolute;
-    inset:0;
-    background:
-        radial-gradient(circle at 50% 45%,#292d33 0,#202328 45%,#191b1f 100%);
-}
-
-/* ============================================================
-   SERIAL MONITOR
-   ============================================================ */
-
-#simulatorStatus{
-    position:absolute;
-    left:18px;
-    top:18px;
-    width:270px;
-    min-height:34px;
-    padding:9px 12px;
-    background:#101216;
-    border:1px solid #3b4048;
-    border-radius:5px;
-    color:#bfc5ce;
-    font-family:monospace;
-    font-size:12px;
-    z-index:100;
-}
-
-#simulatorStatus.error{
-    color:#ff7777;
-    border-color:#713737;
-}
-
-#simulatorStatus.ready{
-    color:#71ed8b;
-    border-color:#315c3b;
-}
-
-#simulatorConsole{
-    position:absolute;
-    left:18px;
-    top:62px;
-    width:270px;
-    height:175px;
-    padding:10px;
-    overflow:auto;
-    background:#090b0d;
-    border:1px solid #3b4048;
-    border-radius:5px;
-    color:#55ee76;
-    font-family:monospace;
-    font-size:11px;
-    line-height:1.5;
-    white-space:pre-wrap;
-    box-shadow:inset 0 0 15px rgba(0,0,0,.7);
-    z-index:100;
-}
-
-/* ============================================================
-   WORKBENCH LABELS
-   ============================================================ */
-
-.workbenchTitle{
-    position:absolute;
-    top:15px;
-    right:22px;
-    color:#858b94;
-    font-size:12px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-}
-
-/* ============================================================
-   ARDUINO UNO
-   ============================================================ */
-
-#arduinoUno{
-    position:absolute;
-    width:500px;
-    height:390px;
-    left:31%;
-    top:53%;
-    transform:translate(-50%,-50%);
-    background:#008b8b;
-    border:3px solid #075d5d;
-    border-radius:15px;
-    box-shadow:
-        0 12px 30px rgba(0,0,0,.55),
-        inset 0 0 25px rgba(255,255,255,.06);
-}
-
-/* ============================================================
-   BOARD TOP
-   ============================================================ */
-
-#boardLabel{
-    position:absolute;
-    left:24px;
-    top:20px;
-    color:#e9ffff;
-    font-size:25px;
-    font-weight:bold;
-    letter-spacing:1px;
-}
-
-#boardSubLabel{
-    position:absolute;
-    left:26px;
-    top:51px;
-    color:#a5dcdc;
-    font-size:10px;
-    letter-spacing:2px;
-}
-
-/* ============================================================
-   BOARD CHIP
-   ============================================================ */
-
-#cpuChip{
-    position:absolute;
-    left:50%;
-    top:120px;
-    transform:translateX(-50%);
-    width:150px;
-    height:82px;
-    background:#18191b;
-    border:2px solid #303338;
-    border-radius:3px;
-    box-shadow:0 4px 8px rgba(0,0,0,.45);
-}
-
-#cpuChip::before,
-#cpuChip::after{
-    content:"";
-    position:absolute;
-    left:-7px;
-    right:-7px;
-    height:3px;
-    background:repeating-linear-gradient(
-        to right,
-        #b5b5b5 0,
-        #b5b5b5 5px,
-        transparent 5px,
-        transparent 12px
-    );
-}
-
-#cpuChip::before{
-    top:13px;
-}
-
-#cpuChip::after{
-    bottom:13px;
-}
-
-#cpuText{
-    position:absolute;
-    width:100%;
-    text-align:center;
-    top:28px;
-    color:#aaa;
-    font:10px monospace;
-}
-
-/* ============================================================
-   CRYSTAL
-   ============================================================ */
-
-#crystal{
-    position:absolute;
-    left:50%;
-    top:220px;
-    transform:translateX(-50%);
-    width:58px;
-    height:18px;
-    background:#c7c7c7;
-    border:2px solid #777;
-    border-radius:3px;
-    box-shadow:0 2px 4px rgba(0,0,0,.4);
-}
-
-#crystal::after{
-    content:"16 MHz";
-    position:absolute;
-    left:100%;
-    top:3px;
-    margin-left:7px;
-    color:#b9dada;
-    font:8px monospace;
-}
-
-/* ============================================================
-   BOARD STATUS LEDS
-   ============================================================ */
-
-#boardLeds{
-    position:absolute;
-    right:25px;
-    top:21px;
-    display:flex;
-    gap:12px;
-}
-
-.boardLedUnit{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-}
-
-.boardLed{
-    width:12px;
-    height:12px;
-    border-radius:50%;
-    background:#333;
-    border:1px solid #222;
-    box-shadow:inset 0 0 4px #000;
-}
-
-.boardLed.power{
-    background:#d52b2b;
-    box-shadow:0 0 7px rgba(255,40,40,.7);
-}
-
-.boardLed.active{
-    background:#4ee878;
-    box-shadow:0 0 9px rgba(60,255,100,.9);
-}
-
-.boardLedUnit span{
-    font:7px monospace;
-    color:#b8dcdc;
-}
-
-/* ============================================================
-   BUILT-IN LED
-   ============================================================ */
-
-#builtinLed{
-    position:absolute;
-    left:75%;
-    top:238px;
-    width:17px;
-    height:17px;
-    border-radius:50%;
-    background:#444;
-    border:2px solid #222;
-    box-shadow:inset 0 0 4px #111;
-}
-
-#builtinLed.on{
-    background:#ff3030;
-    box-shadow:
-        0 0 8px #ff3030,
-        0 0 20px #ff3030;
-}
-
-/* ============================================================
-   DIGITAL PIN HEADER
-   ============================================================ */
-
-#digitalHeader{
-    position:absolute;
-    left:18px;
-    right:18px;
-    bottom:62px;
-    height:65px;
-    background:#006f70;
-    border:1px solid #075959;
-    border-radius:5px;
-    padding:7px;
-}
-
-.pinHeaderTitle{
-    position:absolute;
-    top:-14px;
-    left:2px;
-    color:#b6dada;
-    font:8px monospace;
-}
-
-#digitalPins{
-    width:100%;
-    height:100%;
-    display:flex;
-    gap:4px;
-}
-
-.digitalPin{
-    flex:1;
-    min-width:0;
-    height:100%;
-    background:#25282b;
-    border:1px solid #111;
-    border-radius:3px;
-    color:#aaa;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-    font:10px monospace;
-    transition:.12s;
-}
-
-.digitalPin::before{
-    content:"";
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#111;
-    border:1px solid #444;
-}
-
-.digitalPin.high{
-    color:#fff;
-    background:#702929;
-    border-color:#a84444;
-    box-shadow:0 0 8px rgba(255,60,60,.45);
-}
-
-.digitalPin.high::before{
-    background:#ff3434;
-    box-shadow:0 0 7px #ff3434;
-}
-
-/* ============================================================
-   ANALOG HEADER
-   ============================================================ */
-
-#analogPins{
-    position:absolute;
-    left:18px;
-    right:18px;
-    bottom:10px;
-    height:38px;
-    display:flex;
-    gap:5px;
-}
-
-.analogPin{
-    flex:1;
-    background:#25282b;
-    border:1px solid #111;
-    border-radius:3px;
-    color:#999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font:9px monospace;
-}
-
-/* ============================================================
-   BREADBOARD
-   ============================================================ */
-
-#breadboard{
-    position:absolute;
-    width:440px;
-    height:390px;
-    right:7%;
-    top:53%;
-    transform:translateY(-50%);
-    background:#e4e1d6;
-    border:3px solid #aaa79d;
-    border-radius:8px;
-    box-shadow:0 12px 30px rgba(0,0,0,.55);
-    padding:20px;
-}
-
-#breadboardTitle{
-    position:absolute;
-    left:18px;
-    top:8px;
-    color:#77736a;
-    font:bold 12px monospace;
-}
-
-#breadboardRailTop,
-#breadboardRailBottom{
-    position:absolute;
-    left:18px;
-    right:18px;
-    height:9px;
-    border-radius:4px;
-    background:repeating-linear-gradient(
-        to right,
-        #bbb8af 0,
-        #bbb8af 4px,
-        transparent 4px,
-        transparent 10px
-    );
-}
-
-#breadboardRailTop{
-    top:35px;
-}
-
-#breadboardRailBottom{
-    bottom:18px;
-}
-
-#breadboardHoles{
-    position:absolute;
-    left:28px;
-    right:28px;
-    top:58px;
-    bottom:47px;
-    display:grid;
-    grid-template-columns:repeat(30,1fr);
-    grid-template-rows:repeat(10,1fr);
-    gap:5px 4px;
-}
-
-.breadHole{
-    width:7px;
-    height:7px;
-    align-self:center;
-    justify-self:center;
-    border-radius:50%;
-    background:#8d8a82;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.55);
-}
-
-/* ============================================================
-   BREADBOARD COMPONENT AREA
-   ============================================================ */
-
-#components{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-}
-
-#joystick{
-    pointer-events:auto;
-    cursor:grab;
-    user-select:none;
-}
-
-/* ============================================================
-   LED BANK
-   ============================================================ */
-
-#ledBank{
-    position:absolute;
-    left:27px;
-    bottom:57px;
-    display:grid;
-    grid-template-columns:repeat(6,26px);
-    gap:13px 12px;
-}
-
-.externalLed{
-    position:relative;
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    background:#555;
-    border:2px solid #444;
-    box-shadow:inset 0 0 5px #222;
-}
-
-.externalLed::after{
-    content:"";
-    position:absolute;
-    left:7px;
-    top:18px;
-    width:2px;
-    height:12px;
-    background:#777;
-}
-
-.externalLed.on{
-    box-shadow:0 0 12px currentColor;
-    filter:brightness(1.4);
-}
-
-.ledRed{color:#ff3030;background:#752020;}
-.ledOrange{color:#ff8c20;background:#75451b;}
-.ledYellow{color:#ffe340;background:#75691d;}
-.ledGreen{color:#35e86d;background:#1e702f;}
-.ledBlue{color:#329dff;background:#214f75;}
-.ledPurple{color:#bd63ff;background:#552276;}
-.ledPink{color:#ff55b8;background:#742451;}
-.ledCyan{color:#38eaff;background:#20717a;}
-.ledWhite{color:#fff;background:#888;}
-.ledLime{color:#b7ff3c;background:#57751d;}
-.ledTeal{color:#38d8bb;background:#21695e;}
-.ledWarm{color:#ffbf45;background:#78531d;}
-
-/* ============================================================
-   DIGITAL LED NUMBERS
-   ============================================================ */
-
-.externalLed{
-    cursor:default;
-}
-
-.externalLed span{
-    position:absolute;
-    left:50%;
-    top:24px;
-    transform:translateX(-50%);
-    color:#625f58;
-    font:7px monospace;
-    white-space:nowrap;
-}
-
-.externalLed.on span{
-    color:#222;
-    font-weight:bold;
-}
-
-/* ============================================================
-   BUTTON BANK
-   ============================================================ */
-
-#buttonBank{
-    position:absolute;
-    left:142px;
-    bottom:51px;
-    display:grid;
-    grid-template-columns:repeat(4,48px);
-    gap:10px;
-    pointer-events:auto;
-}
-
-.pinButton{
-    width:48px;
-    height:48px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:5px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:3px;
-    cursor:pointer;
-    user-select:none;
-    transition:.1s;
-}
-
-.pinButton span{
-    color:#aaa;
-    font:7px monospace;
-}
-
-.buttonCap{
-    width:25px;
-    height:25px;
-    border-radius:50%;
-    background:#a33;
-    border:2px solid #622;
-    color:#eee;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font:bold 5px monospace;
-    transition:.1s;
-}
-
-.pinButton.active{
-    border-color:#61df7b;
-    box-shadow:0 0 10px rgba(70,255,100,.4);
-}
-
-.pinButton.active .buttonCap{
-    background:#48e878;
-    border-color:#21763b;
-    color:#102015;
-    transform:scale(.88);
-}
-
-.toggleButton .buttonCap{
-    border-radius:4px;
-    background:#555;
-    border-color:#333;
-}
-
-/* ============================================================
-   POTENTIOMETER
-   ============================================================ */
-
-#potentiometer{
-    position:absolute;
-    right:28px;
-    bottom:52px;
-    width:72px;
-    height:72px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:7px;
-    pointer-events:auto;
-    user-select:none;
-}
-
-#potKnob{
-    position:absolute;
-    left:13px;
-    top:8px;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    background:#18191b;
-    border:4px solid #666;
-    cursor:grab;
-    transform:rotate(-45deg);
-}
-
-#potKnob::after{
-    content:"";
-    position:absolute;
-    left:17px;
-    top:3px;
-    width:3px;
-    height:14px;
-    background:#ddd;
-    border-radius:2px;
-}
-
-#potValue{
-    position:absolute;
-    bottom:5px;
-    width:100%;
-    text-align:center;
-    color:#aaa;
-    font:7px monospace;
-}
-/* ============================================================
-   OLED 4 PIN
-   ============================================================ */
-
-#oled4{
-    position:absolute;
-    right:24px;
-    top:43px;
-    width:105px;
-    height:70px;
-    background:#111;
-    border:3px solid #333;
-    border-radius:4px;
-    box-shadow:0 3px 8px rgba(0,0,0,.5);
-}
-
-#oled4Screen{
-    position:absolute;
-    left:8px;
-    top:7px;
-    right:8px;
-    bottom:16px;
-    background:#071515;
-    border:1px solid #153d3d;
-    color:#50ffff;
-    font:7px monospace;
-    padding:5px;
-}
-
-.oledPins{
-    position:absolute;
-    right:5px;
-    bottom:3px;
-    display:flex;
-    gap:4px;
-}
-
-.oledPin{
-    width:5px;
-    height:5px;
-    border-radius:50%;
-    background:#555;
-}
-
-/* ============================================================
-   OLED 16 PIN
-   ============================================================ */
-
-#oled16{
-    position:absolute;
-    right:145px;
-    top:43px;
-    width:125px;
-    height:90px;
-    background:#101112;
-    border:3px solid #333;
-    border-radius:4px;
-    box-shadow:0 3px 8px rgba(0,0,0,.5);
-}
-
-#oled16Screen{
-    position:absolute;
-    left:10px;
-    top:8px;
-    right:10px;
-    bottom:19px;
-    background:#061313;
-    border:1px solid #173f3f;
-    color:#49ffff;
-    font:7px monospace;
-    padding:6px;
-}
-
-.oled16Pins{
-    position:absolute;
-    left:8px;
-    right:8px;
-    bottom:5px;
-    display:flex;
-    justify-content:space-between;
-}
-
-.oled16Pin{
-    width:4px;
-    height:4px;
-    border-radius:50%;
-    background:#666;
-}
-
-/* ============================================================
-   JOYSTICK
-   ============================================================ */
-
-#joystick{
-    position:absolute;
-    left:27px;
-    top:48px;
-    width:90px;
-    height:95px;
-    background:#202124;
-    border:2px solid #555;
-    border-radius:7px;
-}
-
-#joystickBase{
-    position:absolute;
-    left:18px;
-    top:18px;
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:#111;
-    border:3px solid #444;
-}
-
-#joystickStick{
-    position:absolute;
-    left:31px;
-    top:12px;
-    width:24px;
-    height:35px;
-    border-radius:10px;
-    background:#333;
-    border:2px solid #666;
-}
-
-#joystickLabel{
-    position:absolute;
-    bottom:6px;
-    width:100%;
-    text-align:center;
-    color:#aaa;
-    font:8px monospace;
-}
-
-#joystick.active{
-    cursor:grabbing;
-    border-color:#63e879;
-    box-shadow:0 0 12px rgba(70,255,100,.35);
-}
-
-#joystickStick{
-    transition:transform .08s;
-}
-/* ============================================================
-   SENSOR BLOCKS
-   ============================================================ */
-
-.sensor{
-    position:absolute;
-    width:72px;
-    height:48px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:4px;
-    color:#aaa;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    font:8px monospace;
-}
-
-#sensor1{
-    left:135px;
-    top:155px;
-}
-
-#sensor2{
-    left:220px;
-    top:155px;
-}
-
-#sensor3{
-    left:305px;
-    top:155px;
-}
-
-/* ============================================================
-   BREADBOARD LABELS
-   ============================================================ */
-
-.componentLabel{
-    position:absolute;
-    color:#666158;
-    font:7px monospace;
-    text-align:center;
-}
-
-#ledLabel{
-    left:20px;
-    bottom:38px;
-}
-
-#componentLabel{
-    left:25px;
-    top:145px;
-}
-
-/* ============================================================
-   WORKBENCH INFO
-   ============================================================ */
-
-#pinInfo{
-    position:absolute;
-    left:18px;
-    bottom:18px;
-    color:#777d86;
-    font:9px monospace;
-}
-
-#simulatorVersion{
-    position:absolute;
-    right:20px;
-    bottom:18px;
-    color:#626871;
-    font:9px monospace;
-}
-</style>
+<link rel="stylesheet" href="css/uno.css">
 </head>
-
 <body>
 
 <button id="backButton" onclick="history.back()">← Back</button>
@@ -972,7 +75,6 @@ body{
                 </div>
 
                 <div id="digitalPins">
-
                     <div class="digitalPin" data-pin="2">2</div>
                     <div class="digitalPin" data-pin="3">3</div>
                     <div class="digitalPin" data-pin="4">4</div>
@@ -985,20 +87,17 @@ body{
                     <div class="digitalPin" data-pin="11">11</div>
                     <div class="digitalPin" data-pin="12">12</div>
                     <div class="digitalPin" data-pin="13">13</div>
-
                 </div>
 
             </div>
 
             <div id="analogPins">
-
                 <div class="analogPin">A0</div>
                 <div class="analogPin">A1</div>
                 <div class="analogPin">A2</div>
                 <div class="analogPin">A3</div>
                 <div class="analogPin">A4</div>
                 <div class="analogPin">A5</div>
-
             </div>
 
         </div>
@@ -1018,7 +117,6 @@ body{
 
             <div id="breadboardHoles">
 
-                <!-- visual breadboard holes -->
                 <script>
                     for(let i=0;i<300;i++){
                         document.write('<div class="breadHole"></div>');
@@ -1029,17 +127,22 @@ body{
 
             <div id="components">
 
+                <!-- JOYSTICK -->
+
                 <div id="joystick">
                     <div id="joystickBase"></div>
                     <div id="joystickStick"></div>
                     <div id="joystickLabel">JOYSTICK</div>
                 </div>
 
+                <!-- OLED 4 PIN -->
+
                 <div id="oled4">
                     <div id="oled4Screen">
                         OLED<br>
                         128 × 64
                     </div>
+
                     <div class="oledPins">
                         <div class="oledPin"></div>
                         <div class="oledPin"></div>
@@ -1048,11 +151,14 @@ body{
                     </div>
                 </div>
 
+                <!-- OLED 16 PIN -->
+
                 <div id="oled16">
                     <div id="oled16Screen">
                         OLED DISPLAY<br>
                         128 × 64
                     </div>
+
                     <div class="oled16Pins">
                         <div class="oled16Pin"></div>
                         <div class="oled16Pin"></div>
@@ -1064,6 +170,8 @@ body{
                         <div class="oled16Pin"></div>
                     </div>
                 </div>
+
+                <!-- SENSORS -->
 
                 <div id="sensor1" class="sensor">
                     LIGHT<br>SENSOR
@@ -1077,51 +185,96 @@ body{
                     DISTANCE<br>SENSOR
                 </div>
 
-<div id="ledBank">
-    <div class="externalLed ledRed" data-pin="2"><span>2</span></div>
-    <div class="externalLed ledOrange" data-pin="3"><span>3</span></div>
-    <div class="externalLed ledYellow" data-pin="4"><span>4</span></div>
-    <div class="externalLed ledGreen" data-pin="5"><span>5</span></div>
-    <div class="externalLed ledBlue" data-pin="6"><span>6</span></div>
-    <div class="externalLed ledPurple" data-pin="7"><span>7</span></div>
+                <!-- BUTTONS -->
 
-    <div class="externalLed ledPink" data-pin="8"><span>8</span></div>
-    <div class="externalLed ledCyan" data-pin="9"><span>9</span></div>
-    <div class="externalLed ledWhite" data-pin="10"><span>10</span></div>
-    <div class="externalLed ledLime" data-pin="11"><span>11</span></div>
-    <div class="externalLed ledTeal" data-pin="12"><span>12</span></div>
-    <div class="externalLed ledWarm" data-pin="13"><span>13</span></div>
-</div>
+                <div id="buttonBank">
 
- <div id="ledLabel" class="componentLabel">
-    DIGITAL LEDS • PIN 2–13
-</div>
+                    <div class="pinButton pushButton" data-pin="2">
+                        <div class="buttonCap">PUSH</div>
+                        <span>D2</span>
+                    </div>
 
-<div id="buttonBank">
-    <div class="pinButton pushButton" data-pin="2">
-        <div class="buttonCap">PUSH</div>
-        <span>D2</span>
-    </div>
+                    <div class="pinButton pushButton" data-pin="3">
+                        <div class="buttonCap">PUSH</div>
+                        <span>D3</span>
+                    </div>
 
-    <div class="pinButton pushButton" data-pin="3">
-        <div class="buttonCap">PUSH</div>
-        <span>D3</span>
-    </div>
+                    <div class="pinButton toggleButton" data-pin="4">
+                        <div class="buttonCap">OFF</div>
+                        <span>D4</span>
+                    </div>
 
-    <div class="pinButton toggleButton" data-pin="4">
-        <div class="buttonCap">ON</div>
-        <span>D4</span>
-    </div>
+                    <div class="pinButton toggleButton" data-pin="5">
+                        <div class="buttonCap">OFF</div>
+                        <span>D5</span>
+                    </div>
 
-    <div class="pinButton toggleButton" data-pin="5">
-        <div class="buttonCap">OFF</div>
-        <span>D5</span>
-    </div>
-</div>
-<div id="potentiometer">
-    <div id="potKnob"></div>
-    <div id="potValue">A0<br>0</div>
-</div>
+                </div>
+
+                <!-- LEDS -->
+
+                <div id="ledBank">
+
+                    <div class="externalLed ledRed" data-pin="2">
+                        <span>2</span>
+                    </div>
+
+                    <div class="externalLed ledOrange" data-pin="3">
+                        <span>3</span>
+                    </div>
+
+                    <div class="externalLed ledYellow" data-pin="4">
+                        <span>4</span>
+                    </div>
+
+                    <div class="externalLed ledGreen" data-pin="5">
+                        <span>5</span>
+                    </div>
+
+                    <div class="externalLed ledBlue" data-pin="6">
+                        <span>6</span>
+                    </div>
+
+                    <div class="externalLed ledPurple" data-pin="7">
+                        <span>7</span>
+                    </div>
+
+                    <div class="externalLed ledPink" data-pin="8">
+                        <span>8</span>
+                    </div>
+
+                    <div class="externalLed ledCyan" data-pin="9">
+                        <span>9</span>
+                    </div>
+
+                    <div class="externalLed ledWhite" data-pin="10">
+                        <span>10</span>
+                    </div>
+
+                    <div class="externalLed ledLime" data-pin="11">
+                        <span>11</span>
+                    </div>
+
+                    <div class="externalLed ledTeal" data-pin="12">
+                        <span>12</span>
+                    </div>
+
+                    <div class="externalLed ledWarm" data-pin="13">
+                        <span>13</span>
+                    </div>
+
+                </div>
+
+                <div id="ledLabel" class="componentLabel">
+                    DIGITAL LEDS • PIN 2–13
+                </div>
+
+                <!-- POTENTIOMETER -->
+
+                <div id="potentiometer">
+                    <div id="potKnob"></div>
+                    <div id="potValue">A0<br>0</div>
+                </div>
 
             </div>
 
@@ -1137,13 +290,9 @@ body{
 
     </div>
 
-</div><script>
-/*
-============================================================
-GUIDELINES ARDUINO UNO SIMULATOR
-============================================================
-*/
+</div>
 
+<script>
 const simulator=document.getElementById("simulator");
 const statusBox=document.getElementById("simulatorStatus");
 const consoleBox=document.getElementById("simulatorConsole");
@@ -1159,11 +308,9 @@ const simulatorState={
     time:0
 };
 
-/*
-============================================================
-STATUS / CONSOLE
-============================================================
-*/
+/* ============================================================
+   STATUS / CONSOLE
+   ============================================================ */
 
 function setStatus(text,type=""){
     if(!statusBox)return;
@@ -1177,19 +324,33 @@ function simulatorLog(text){
     consoleBox.scrollTop=consoleBox.scrollHeight;
 }
 
-/*
-============================================================
-LOAD GSE
-============================================================
-*/
+/* ============================================================
+   LOAD GSE
+   ============================================================ */
 
 async function loadGSE(){
     if(!token)throw new Error("No GSE token was provided.");
+
     setStatus("Loading GSE...");
-    const response=await fetch(GSE_SERVER+"/gse/"+encodeURIComponent(token));
-    if(!response.ok)throw new Error("GSE server returned HTTP "+response.status);
+
+    const response=await fetch(
+        GSE_SERVER+"/gse/"+encodeURIComponent(token)
+    );
+
+    if(!response.ok){
+        throw new Error(
+            "GSE server returned HTTP "+response.status
+        );
+    }
+
     const data=await response.json();
-    if(!data||!data.success||!data.executable)throw new Error(data.error||"Invalid GSE response.");
+
+    if(!data||!data.success||!data.executable){
+        throw new Error(
+            data.error||"Invalid GSE response."
+        );
+    }
+
     gse=data.executable;
     validateGSE();
     simulatorLog("GSE loaded.");
@@ -1198,35 +359,40 @@ async function loadGSE(){
 function validateGSE(){
     if(!gse)throw new Error("GSE executable is missing.");
     if(gse.format!=="GSE")throw new Error("Invalid GSE format.");
-    if(typeof gse.version!=="number")throw new Error("Invalid GSE version.");
-    if(!gse.program)throw new Error("GSE program is missing.");
-    if(!Array.isArray(gse.program.setup))throw new Error("GSE setup is invalid.");
-    if(!Array.isArray(gse.program.loop))throw new Error("GSE loop is invalid.");
+    if(typeof gse.version!=="number"){
+        throw new Error("Invalid GSE version.");
+    }
+    if(!gse.program){
+        throw new Error("GSE program is missing.");
+    }
+    if(!Array.isArray(gse.program.setup)){
+        throw new Error("GSE setup is invalid.");
+    }
+    if(!Array.isArray(gse.program.loop)){
+        throw new Error("GSE loop is invalid.");
+    }
 }
 
-/*
-============================================================
-PIN STATE
-============================================================
-*/
+/* ============================================================
+   PIN STATE
+   ============================================================ */
 
 function getPin(pin){
     if(!simulatorState.pins[pin]){
-simulatorState.pins[pin]={
-    mode:null,
-    value:0,
-    pwm:0,
-    input:0
-};
+        simulatorState.pins[pin]={
+            mode:null,
+            value:0,
+            pwm:0,
+            input:0
+        };
     }
+
     return simulatorState.pins[pin];
 }
 
-/*
-============================================================
-PIN MODE
-============================================================
-*/
+/* ============================================================
+   PIN MODE
+   ============================================================ */
 
 function executePinMode(instruction){
     const pin=getPin(instruction.pin);
@@ -1238,72 +404,74 @@ function executePinMode(instruction){
 
     if(element){
         element.dataset.mode=instruction.mode;
-        element.title="Pin "+instruction.pin+" • "+instruction.mode;
+        element.title=
+            "Pin "+instruction.pin+
+            " • "+instruction.mode;
     }
 
     updateButtonVisual(instruction.pin);
 }
 
-/*
-============================================================
-DIGITAL WRITE
-============================================================
-*/
+/* ============================================================
+   DIGITAL WRITE
+   ============================================================ */
 
 function executeDigitalWrite(instruction){
     const pin=getPin(instruction.pin);
+
     pin.value=instruction.value?1:0;
     pin.pwm=pin.value?255:0;
+
     updateDigitalPin(instruction.pin);
     updateExternalLED(instruction.pin);
 }
 
-/*
-============================================================
-DIGITAL READ
-============================================================
-*/
+/* ============================================================
+   DIGITAL READ
+   ============================================================ */
 
 function executeDigitalRead(instruction){
     const pin=getPin(instruction.pin);
     return pin.input?1:0;
 }
 
-/*
-============================================================
-PWM
-============================================================
-*/
+/* ============================================================
+   PWM
+   ============================================================ */
 
 function executeAnalogWrite(instruction){
     const pin=getPin(instruction.pin);
+
     let value=Number(instruction.value);
+
     if(Number.isNaN(value))value=0;
+
     value=Math.max(0,Math.min(255,value));
+
     pin.pwm=value;
     pin.value=value>0?1:0;
+
     updateDigitalPin(instruction.pin);
     updateExternalLED(instruction.pin);
 }
 
-/*
-============================================================
-DIGITAL PIN DISPLAY
-============================================================
-*/
+/* ============================================================
+   DIGITAL PIN DISPLAY
+   ============================================================ */
 
 function updateDigitalPin(pinNumber){
     const element=document.querySelector(
         '.digitalPin[data-pin="'+pinNumber+'"]'
     );
+
     if(!element)return;
 
     const pin=getPin(pinNumber);
 
-    element.classList.toggle("high",!!pin.value);
-    element.style.opacity=pin.pwm===0
-        ?"0.45"
-        :String(0.45+(pin.pwm/255)*0.55);
+    /* Pin itself stays visually unchanged. */
+
+    element.classList.remove("high");
+    element.style.opacity="1";
 
     element.title=
         "Pin "+pinNumber+
@@ -1315,14 +483,13 @@ function updateDigitalPin(pinNumber){
     }
 }
 
-/*
-============================================================
-BUILT-IN LED
-============================================================
-*/
+/* ============================================================
+   BUILT-IN LED
+   ============================================================ */
 
 function updateBuiltinLED(value){
     const led=document.getElementById("builtinLed");
+
     if(!led)return;
 
     value=Number(value)||0;
@@ -1334,48 +501,56 @@ function updateBuiltinLED(value){
     }
 
     led.classList.add("on");
-    led.style.opacity=String(.25+(value/255)*.75);
+
+    led.style.opacity=
+        String(.25+(value/255)*.75);
 }
 
-/*
-============================================================
-EXTERNAL LEDS
-============================================================
-*/
+/* ============================================================
+   EXTERNAL LEDS
+   ============================================================ */
 
 function updateExternalLED(pinNumber){
     const led=document.querySelector(
         '.externalLed[data-pin="'+pinNumber+'"]'
     );
+
     if(!led)return;
 
     const pin=getPin(pinNumber);
     const value=Number(pin.pwm)||0;
 
     led.classList.toggle("on",value>0);
+
     led.style.opacity=value>0
         ?String(.3+(value/255)*.7)
         :".45";
+
     led.title=
         "LED on pin "+pinNumber+
         " • PWM "+value+"/255";
 }
-/*
-============================================================
-BUTTONS
-============================================================
-*/
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 
 function updateButtonVisual(pinNumber){
     const button=document.querySelector(
         '.pinButton[data-pin="'+pinNumber+'"]'
     );
+
     if(!button)return;
 
     const pin=getPin(pinNumber);
-    button.classList.toggle("active",!!pin.input);
+
+    button.classList.toggle(
+        "active",
+        !!pin.input
+    );
 
     const cap=button.querySelector(".buttonCap");
+
     if(cap&&button.classList.contains("toggleButton")){
         cap.textContent=pin.input?"ON":"OFF";
     }
@@ -1389,22 +564,33 @@ function setupButtons(){
         if(toggle){
             button.addEventListener("click",()=>{
                 const pin=getPin(pinNumber);
+
                 pin.input=pin.input?0:1;
+
                 updateButtonVisual(pinNumber);
-                simulatorLog("Toggle "+pinNumber+" → "+(pin.input?"HIGH":"LOW"));
+
+                simulatorLog(
+                    "Toggle "+pinNumber+
+                    " → "+(pin.input?"HIGH":"LOW")
+                );
             });
+
             return;
         }
 
         const press=()=>{
             const pin=getPin(pinNumber);
+
             pin.input=1;
+
             updateButtonVisual(pinNumber);
         };
 
         const release=()=>{
             const pin=getPin(pinNumber);
+
             pin.input=0;
+
             updateButtonVisual(pinNumber);
         };
 
@@ -1424,11 +610,9 @@ function setupButtons(){
     });
 }
 
-/*
-============================================================
-JOYSTICK
-============================================================
-*/
+/* ============================================================
+   JOYSTICK
+   ============================================================ */
 
 const joystickState={
     x:0,
@@ -1439,25 +623,43 @@ const joystickState={
 function updateJoystick(){
     const joystick=document.getElementById("joystick");
     const stick=document.getElementById("joystickStick");
+
     if(!joystick||!stick)return;
 
     stick.style.transform=
         "translate("+joystickState.x+"px,"+
         joystickState.y+"px)";
 
-    joystick.classList.toggle("active",!!joystickState.pressed);
+    joystick.classList.toggle(
+        "active",
+        !!joystickState.pressed
+    );
 }
 
 function setupJoystick(){
     const joystick=document.getElementById("joystick");
+
     if(!joystick)return;
 
-    const move=event=>{
-        const rect=joystick.getBoundingClientRect();
-        const source=event.touches?event.touches[0]:event;
+    let dragging=false;
 
-        let x=source.clientX-rect.left-45;
-        let y=source.clientY-rect.top-45;
+    const move=event=>{
+        if(!dragging)return;
+
+        const rect=joystick.getBoundingClientRect();
+        const source=event.touches
+            ?event.touches[0]
+            :event;
+
+        let x=
+            source.clientX-
+            rect.left-
+            rect.width/2;
+
+        let y=
+            source.clientY-
+            rect.top-
+            rect.height/2;
 
         const distance=Math.sqrt(x*x+y*y);
         const max=25;
@@ -1470,46 +672,170 @@ function setupJoystick(){
         joystickState.x=x;
         joystickState.y=y;
         joystickState.pressed=1;
+
         updateJoystick();
     };
 
     const release=()=>{
+        dragging=false;
+
         joystickState.x=0;
         joystickState.y=0;
         joystickState.pressed=0;
+
         updateJoystick();
     };
 
     joystick.addEventListener("mousedown",event=>{
+        dragging=true;
         move(event);
-        document.addEventListener("mousemove",move);
-        document.addEventListener("mouseup",()=>{
-            document.removeEventListener("mousemove",move);
+
+        document.addEventListener(
+            "mousemove",
+            move
+        );
+    });
+
+    document.addEventListener(
+        "mouseup",
+        ()=>{
+            if(dragging){
+                document.removeEventListener(
+                    "mousemove",
+                    move
+                );
+                release();
+            }
+        }
+    );
+
+    joystick.addEventListener(
+        "touchstart",
+        event=>{
+            event.preventDefault();
+            dragging=true;
+            move(event);
+        }
+    );
+
+    joystick.addEventListener(
+        "touchmove",
+        event=>{
+            event.preventDefault();
+            move(event);
+        }
+    );
+
+    joystick.addEventListener(
+        "touchend",
+        event=>{
+            event.preventDefault();
             release();
-        },{once:true});
-    });
-
-    joystick.addEventListener("touchstart",event=>{
-        event.preventDefault();
-        move(event);
-    });
-
-    joystick.addEventListener("touchmove",event=>{
-        event.preventDefault();
-        move(event);
-    });
-
-    joystick.addEventListener("touchend",event=>{
-        event.preventDefault();
-        release();
-    });
+        }
+    );
 }
 
-/*
-============================================================
-DELAY
-============================================================
-*/
+/* ============================================================
+   POTENTIOMETER
+   ============================================================ */
+
+const potentiometerState={
+    value:0,
+    dragging:false
+};
+
+function updatePotentiometer(){
+    const knob=document.getElementById("potKnob");
+    const value=document.getElementById("potValue");
+
+    if(!knob||!value)return;
+
+    const angle=-45+
+        potentiometerState.value/1023*270;
+
+    knob.style.transform=
+        "rotate("+angle+"deg)";
+
+    value.innerHTML=
+        "A0<br>"+potentiometerState.value;
+}
+
+function setupPotentiometer(){
+    const pot=document.getElementById("potentiometer");
+
+    if(!pot)return;
+
+    const update=event=>{
+        if(!potentiometerState.dragging)return;
+
+        const rect=pot.getBoundingClientRect();
+        const source=event.touches
+            ?event.touches[0]
+            :event;
+
+        const cx=rect.left+rect.width/2;
+        const cy=rect.top+rect.height/2;
+
+        let angle=
+            Math.atan2(
+                source.clientY-cy,
+                source.clientX-cx
+            )*180/Math.PI;
+
+        angle+=90;
+
+        if(angle<0)angle+=360;
+
+        angle=Math.max(0,Math.min(270,angle));
+
+        potentiometerState.value=
+            Math.round(angle/270*1023);
+
+        updatePotentiometer();
+    };
+
+    const release=()=>{
+        potentiometerState.dragging=false;
+    };
+
+    pot.addEventListener("mousedown",event=>{
+        potentiometerState.dragging=true;
+        update(event);
+    });
+
+    pot.addEventListener("touchstart",event=>{
+        event.preventDefault();
+        potentiometerState.dragging=true;
+        update(event);
+    });
+
+    document.addEventListener("mousemove",update);
+
+    document.addEventListener(
+        "mouseup",
+        release
+    );
+
+    document.addEventListener(
+        "touchmove",
+        event=>{
+            if(potentiometerState.dragging){
+                event.preventDefault();
+                update(event);
+            }
+        },
+        {passive:false}
+    );
+
+    document.addEventListener(
+        "touchend",
+        release
+    );
+}
+
+/* ============================================================
+   DELAY
+   ============================================================ */
 
 function executeDelay(milliseconds){
     return new Promise(resolve=>{
@@ -1520,16 +846,15 @@ function executeDelay(milliseconds){
     });
 }
 
-/*
-============================================================
-EXECUTE INSTRUCTION
-============================================================
-*/
+/* ============================================================
+   EXECUTE INSTRUCTION
+   ============================================================ */
 
 async function executeInstruction(instruction){
     if(!instruction)return;
 
     switch(instruction.op){
+
         case "PIN_MODE":
             executePinMode(instruction);
             break;
@@ -1548,7 +873,10 @@ async function executeInstruction(instruction){
 
         case "DELAY":
             await executeDelay(instruction.ms);
-            simulatorState.time+=Number(instruction.ms)||0;
+
+            simulatorState.time+=
+                Number(instruction.ms)||0;
+
             break;
 
         default:
@@ -1559,11 +887,9 @@ async function executeInstruction(instruction){
     }
 }
 
-/*
-============================================================
-PROGRAM
-============================================================
-*/
+/* ============================================================
+   PROGRAM
+   ============================================================ */
 
 async function executeProgram(instructions){
     for(const instruction of instructions){
@@ -1573,52 +899,80 @@ async function executeProgram(instructions){
 
 async function executeSetup(){
     simulatorLog("Running setup...");
-    await executeProgram(gse.program.setup);
+
+    await executeProgram(
+        gse.program.setup
+    );
+
     simulatorLog("Setup complete.");
 }
 
 async function executeLoop(){
     while(true){
-        await executeProgram(gse.program.loop);
+        await executeProgram(
+            gse.program.loop
+        );
     }
 }
 
-/*
-============================================================
-START
-============================================================
-*/
+/* ============================================================
+   START
+   ============================================================ */
 
 async function startSimulator(){
     try{
+
         if(!token){
-            setStatus("No GSE token.","error");
+            setStatus(
+                "No GSE token.",
+                "error"
+            );
             return;
         }
 
-       setupButtons();
-setupJoystick();
-await loadGSE();
+        setupButtons();
+        setupJoystick();
+        setupPotentiometer();
+        updatePotentiometer();
 
-        setStatus("GSE loaded. Starting...","ready");
+        await loadGSE();
+
+        setStatus(
+            "GSE loaded. Starting...",
+            "ready"
+        );
 
         await executeSetup();
 
-        setStatus("Simulator running.","ready");
+        setStatus(
+            "Simulator running.",
+            "ready"
+        );
 
         await executeLoop();
-    }
-    catch(error){
-        console.error("Simulator error:",error);
+
+    }catch(error){
+
+        console.error(
+            "Simulator error:",
+            error
+        );
+
         setStatus(
-            "Simulator error: "+error.message,
+            "Simulator error: "+
+            error.message,
             "error"
         );
-        simulatorLog("ERROR: "+error.message);
+
+        simulatorLog(
+            "ERROR: "+
+            error.message
+        );
     }
 }
 
 startSimulator();
 </script>
+
 </body>
 </html>
