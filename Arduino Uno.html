@@ -266,6 +266,26 @@
 
                 </div>
 
+<div class="simButton" data-pin="7">
+    <div class="buttonCap"></div>
+    <span>BUTTON<br>D7</span>
+</div>
+
+<div class="simButton" data-pin="8">
+    <div class="buttonCap"></div>
+    <span>BUTTON<br>D8</span>
+</div>
+
+<div class="simButton" data-pin="12">
+    <div class="buttonCap"></div>
+    <span>BUTTON<br>D12</span>
+</div>
+
+<div class="simButton" data-pin="13">
+    <div class="buttonCap"></div>
+    <span>BUTTON<br>D13</span>
+</div>
+
                 <div id="ledLabel" class="componentLabel">
                     DIGITAL LEDS • PIN 2–13
                 </div>
@@ -435,8 +455,13 @@ function executeDigitalWrite(instruction){
    ============================================================ */
 
 function executeDigitalRead(instruction){
-    const pin=getPin(instruction.pin);
-    return pin.input?1:0;
+    const pin = String(instruction.pin);
+
+    if(buttonState[pin] !== undefined){
+        return buttonState[pin] ? 1 : 0;
+    }
+
+    return Number(simulatorState.digitalPins[pin] || 0);
 }
 
 /* ============================================================
@@ -933,6 +958,46 @@ function executeSerialPrint(value,newLine=false){
 
     consoleBox.textContent+=text;
     consoleBox.scrollTop=consoleBox.scrollHeight;
+}
+
+
+function setupButtons(){
+    const buttons = document.querySelectorAll(".simButton");
+
+    buttons.forEach(button => {
+        const pin = String(button.dataset.pin);
+
+        button.addEventListener("mousedown", () => {
+            buttonState[pin] = true;
+            button.classList.add("pressed");
+            simulatorLog("Button D" + pin + " PRESSED");
+        });
+
+        button.addEventListener("mouseup", () => {
+            buttonState[pin] = false;
+            button.classList.remove("pressed");
+            simulatorLog("Button D" + pin + " RELEASED");
+        });
+
+        button.addEventListener("mouseleave", () => {
+            buttonState[pin] = false;
+            button.classList.remove("pressed");
+        });
+
+        button.addEventListener("touchstart", event => {
+            event.preventDefault();
+            buttonState[pin] = true;
+            button.classList.add("pressed");
+            simulatorLog("Button D" + pin + " PRESSED");
+        }, {passive:false});
+
+        button.addEventListener("touchend", event => {
+            event.preventDefault();
+            buttonState[pin] = false;
+            button.classList.remove("pressed");
+            simulatorLog("Button D" + pin + " RELEASED");
+        }, {passive:false});
+    });
 }
 
 /* ============================================================
