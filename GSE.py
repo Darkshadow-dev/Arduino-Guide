@@ -3,7 +3,12 @@ import re
 
 GSE_VERSION = 3
 
-
+SUPPORTED_LIBRARIES = {
+    "Wire.h",
+    "Adafruit_GFX.h",
+    "Adafruit_SSD1306.h",
+    "LiquidCrystal.h"
+}
 def clean_line(line):
     line = line.strip()
 
@@ -108,6 +113,73 @@ def split_operator(text, operator):
 
     return parts
 
+def parse_include(line):
+    line = line.strip()
+
+    if not line.startswith("#include"):
+        return None
+
+    if "<" in line and ">" in line:
+        library = line[
+            line.find("<") + 1:
+            line.rfind(">")
+        ]
+
+    elif '"' in line:
+        library = line.split('"')[1]
+
+    else:
+        raise ValueError(
+            "Invalid include statement: " + line
+        )
+
+    if library not in SUPPORTED_LIBRARIES:
+        raise ValueError(
+            "Unsupported library: " + library
+        )
+
+    return {
+        "op": "INCLUDE",
+        "library": library
+    }
+
+def parse_library_declaration(line):
+    line = line.strip().rstrip(";").strip()
+
+    match = re.match(
+        r"^Adafruit_SSD1306\s+(\w+)\s*\((.*)\)$",
+        line
+    )
+
+    if match:
+        return {
+            "op": "LIBRARY_OBJECT",
+            "library": "Adafruit_SSD1306",
+            "object": match.group(1),
+            "args": [
+                parse_expression(arg)
+                for arg in split_arguments(match.group(2))
+            ]
+        }
+
+    match = re.match(
+        r"^LiquidCrystal\s+(\w+)\s*\((.*)\)$",
+        line
+    )
+
+    if match:
+        return {
+            "op": "LIBRARY_OBJECT",
+            "library": "LiquidCrystal",
+            "object": match.group(1),
+            "args": [
+                parse_expression(arg)
+                for arg in split_arguments(match.group(2))
+            ]
+        }
+
+    return None
+
 
 def parse_value(value):
     value = value.strip()
@@ -144,6 +216,9 @@ def parse_value(value):
 
     if value == "false":
         return 0
+
+    if value == "&Wire":
+        return "Wire"
 
     if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
         return value[1:-1]
@@ -572,6 +647,65 @@ def parse_instruction(line):
             "color": parse_expression(args[4])
         }
 
+    if function == "lcd.begin":
+        if len(args) != 2:
+            raise ValueError(
+                "lcd.begin requires 2 arguments"
+            )
+
+        return {
+            "op": "LCD_BEGIN",
+            "cols": parse_expression(args[0]),
+            "rows": parse_expression(args[1])
+        }
+
+    if function == "lcd.clear":
+        return {
+            "op": "LCD_CLEAR"
+        }
+
+    if function == "lcd.setCursor":
+        if len(args) != 2:
+            raise ValueError(
+                "lcd.setCursor requires 2 arguments"
+            )
+
+        return {
+            "op": "LCD_CURSOR",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1])
+        }
+
+    if function == "lcd.print":
+        return {
+            "op": "LCD_PRINT",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
+            }
+        }
+
+    if function == "lcd.println":
+        return {
+            "op": "LCD_PRINTLN",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
+            }
+        }
+
+    if function == "lcd.write":
+        return {
+            "op": "LCD_WRITE",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
+            }
+        }
+
     raise ValueError(
         "Unsupported Arduino function: " + function
     )
@@ -673,6 +807,20 @@ def parse_block(lines, index=0):
             instructions.extend(parsed)
             continue
 
+        include = parse_include(line)
+
+        if include is not None:
+            instructions.append(include)
+            index += 1
+            continue
+
+        library_object = parse_library_declaration(line)
+
+        if library_object is not None:
+            instructions.append(library_object)
+            index += 1
+            continue
+
         variable = parse_variable(line)
 
         if variable is not None:
@@ -727,10 +875,12 @@ def extract_function(code, name):
     )
 
 
-def compile_function(code):
+def compile_function(code, objects=None):
     lines = tokenize_lines(code)
 
-    instructions, index = parse_block(lines)
+    instructions, index = parse_block(
+        lines
+    )
 
     if index < len(lines):
         raise ValueError(
@@ -740,11 +890,75 @@ def compile_function(code):
 
     return instructions
 
+def parse_global_code(source):
+    source = re.sub(
+        r"//.*$",
+        "",
+        source,
+        flags=re.MULTILINE
+    )
+
+    libraries = []
+    objects = []
+
+    for match in re.finditer(
+        r"#include\s*[<\"]([^>\"]+)[>\"]",
+        source
+    ):
+        library = match.group(1)
+
+        if library not in SUPPORTED_LIBRARIES:
+            raise ValueError(
+                "Unsupported library: " + library
+            )
+
+        if library not in libraries:
+            libraries.append(library)
+
+    for match in re.finditer(
+        r"Adafruit_SSD1306\s+(\w+)\s*\((.*?)\)\s*;",
+        source,
+        re.DOTALL
+    ):
+        objects.append({
+            "op": "LIBRARY_OBJECT",
+            "library": "Adafruit_SSD1306",
+            "object": match.group(1),
+            "args": [
+                parse_expression(arg)
+                for arg in split_arguments(
+                    match.group(2)
+                )
+            ]
+        })
+
+    for match in re.finditer(
+        r"LiquidCrystal\s+(\w+)\s*\((.*?)\)\s*;",
+        source,
+        re.DOTALL
+    ):
+        objects.append({
+            "op": "LIBRARY_OBJECT",
+            "library": "LiquidCrystal",
+            "object": match.group(1),
+            "args": [
+                parse_expression(arg)
+                for arg in split_arguments(
+                    match.group(2)
+                )
+            ]
+        })
+
+    return libraries, objects
 
 def compile_gse(
     source,
     board="arduino:avr:uno"
 ):
+    libraries, objects = parse_global_code(
+        source
+    )
+
     setup_code = extract_function(
         source,
         "setup"
@@ -755,13 +969,20 @@ def compile_gse(
         "loop"
     )
 
-    setup = compile_function(setup_code)
-    loop = compile_function(loop_code)
+    setup = compile_function(
+        setup_code
+    )
+
+    loop = compile_function(
+        loop_code
+    )
 
     return {
         "format": "GSE",
         "version": GSE_VERSION,
         "board": board,
+        "libraries": libraries,
+        "objects": objects,
         "program": {
             "setup": setup,
             "loop": loop
