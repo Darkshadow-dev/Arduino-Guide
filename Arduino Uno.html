@@ -136,21 +136,18 @@
                     <div id="joystickLabel">JOYSTICK</div>
                 </div>
 
-                <!-- OLED 4 PIN -->
+ <div id="oled4">
+    <div class="oledScreen">
+        <canvas id="oled4Canvas" width="128" height="64"></canvas>
+    </div>
 
-                <div id="oled4">
-                    <div id="oled4Screen">
-                        OLED<br>
-                        128 × 64
-                    </div>
-
-                    <div class="oledPins">
-                        <div class="oledPin"></div>
-                        <div class="oledPin"></div>
-                        <div class="oledPin"></div>
-                        <div class="oledPin"></div>
-                    </div>
-                </div>
+    <div class="oledPins">
+        <span>GND</span>
+        <span>VCC</span>
+        <span>SCL</span>
+        <span>SDA</span>
+    </div>
+</div>
 
                 <!-- OLED 16 PIN -->
 
@@ -310,6 +307,23 @@ const simulatorState={
     analogPins:{},
     serial:[],
     time:0
+};
+
+const joystickState={
+    x:512,
+    y:512,
+    button:0
+};
+
+const oledState={
+    initialized:false,
+    address:0x3C,
+    cursorX:0,
+    cursorY:0,
+    textSize:1,
+    textColor:1,
+    buffer:[],
+    displayOn:true
 };
 
 /* ============================================================
@@ -623,26 +637,32 @@ function updateDigitalPin(pinNumber){
 }
 
 function executeAnalogRead(instruction){
-    const pin=String(instruction.pin);
+    const pin=resolveGSEValue(
+        instruction.pin
+    );
 
-    if(pin==="A0"){
-        return potentiometerState.value;
-    }
+    const pinName=String(pin);
 
-    if(pin==="A1"){
-        return Math.round(
-            ((joystickState.x+25)/50)*1023
+    if(pinName==="A0"){
+        return Number(
+            potentiometerState.value||0
         );
     }
 
-    if(pin==="A2"){
-        return Math.round(
-            ((joystickState.y+25)/50)*1023
+    if(pinName==="A1"){
+        return Number(
+            simulatorState.analogPins.A1||512
+        );
+    }
+
+    if(pinName==="A2"){
+        return Number(
+            simulatorState.analogPins.A2||512
         );
     }
 
     return Number(
-        simulatorState.analogPins[pin]||0
+        simulatorState.analogPins[pinName]||0
     );
 }
 /* ============================================================
@@ -1218,6 +1238,237 @@ function executeSerialPrint(value,newLine=false){
 }
 
 /* ============================================================
+   4-PIN I2C OLED
+   ============================================================ */
+
+function getOLEDCanvas(){
+    return document.getElementById(
+        "oled4Canvas"
+    );
+}
+
+function getOLEDContext(){
+    const canvas=getOLEDCanvas();
+
+    if(!canvas){
+        return null;
+    }
+
+    return canvas.getContext("2d");
+}
+
+function clearOLEDCanvas(){
+    const context=getOLEDContext();
+
+    if(!context){
+        return;
+    }
+
+    context.fillStyle="#050505";
+    context.fillRect(
+        0,
+        0,
+        128,
+        64
+    );
+}
+
+function initializeOLED(){
+    oledState.initialized=true;
+    oledState.address=0x3C;
+    oledState.cursorX=0;
+    oledState.cursorY=0;
+    oledState.textSize=1;
+    oledState.textColor=1;
+    oledState.buffer=[];
+
+    clearOLEDCanvas();
+
+    simulatorLog(
+        "OLED initialized at I2C address 0x3C"
+    );
+}
+
+function oledClearDisplay(){
+    oledState.buffer=[];
+
+    clearOLEDCanvas();
+
+    oledState.cursorX=0;
+    oledState.cursorY=0;
+}
+
+function oledSetCursor(x,y){
+    oledState.cursorX=Number(x)||0;
+    oledState.cursorY=Number(y)||0;
+}
+
+function oledSetTextSize(size){
+    oledState.textSize=
+        Math.max(
+            1,
+            Math.min(
+                4,
+                Number(size)||1
+            )
+        );
+}
+
+function oledSetTextColor(color){
+    oledState.textColor=
+        Number(color)?1:0;
+}
+
+function oledDrawText(text,newLine=false){
+    const context=getOLEDContext();
+
+    if(!context){
+        return;
+    }
+
+    if(!oledState.displayOn){
+        return;
+    }
+
+    const size=oledState.textSize;
+
+    context.font=
+        (8*size)+"px monospace";
+
+    context.fillStyle=
+        oledState.textColor
+            ?"white"
+            :"black";
+
+    context.textBaseline="top";
+
+    const textValue=String(text);
+
+    context.fillText(
+        textValue,
+        oledState.cursorX,
+        oledState.cursorY
+    );
+
+    if(newLine){
+        oledState.cursorY+=
+            8*size;
+
+        oledState.cursorX=0;
+    }else{
+        oledState.cursorX+=
+            context.measureText(
+                textValue
+            ).width;
+    }
+}
+
+function oledDisplay(){
+    const canvas=getOLEDCanvas();
+
+    if(!canvas){
+        return;
+    }
+
+    canvas.classList.toggle(
+        "active",
+        oledState.initialized
+    );
+}
+
+function oledPrint(value){
+    oledDrawText(
+        value,
+        false
+    );
+}
+
+function oledPrintln(value){
+    oledDrawText(
+        value,
+        true
+    );
+}
+
+function oledDrawPixel(x,y,color){
+    const context=getOLEDContext();
+
+    if(!context){
+        return;
+    }
+
+    context.fillStyle=
+        Number(color)
+            ?"white"
+            :"black";
+
+    context.fillRect(
+        Number(x)||0,
+        Number(y)||0,
+        1,
+        1
+    );
+}
+
+function oledDrawLine(
+    x1,
+    y1,
+    x2,
+    y2,
+    color
+){
+    const context=getOLEDContext();
+
+    if(!context){
+        return;
+    }
+
+    context.strokeStyle=
+        Number(color)
+            ?"white"
+            :"black";
+
+    context.beginPath();
+
+    context.moveTo(
+        Number(x1)||0,
+        Number(y1)||0
+    );
+
+    context.lineTo(
+        Number(x2)||0,
+        Number(y2)||0
+    );
+
+    context.stroke();
+}
+
+function oledFillRect(
+    x,
+    y,
+    width,
+    height,
+    color
+){
+    const context=getOLEDContext();
+
+    if(!context){
+        return;
+    }
+
+    context.fillStyle=
+        Number(color)
+            ?"white"
+            :"black";
+
+    context.fillRect(
+        Number(x)||0,
+        Number(y)||0,
+        Number(width)||0,
+        Number(height)||0
+    );
+}
+/* ============================================================
    DELAY
    ============================================================ */
 
@@ -1373,6 +1624,115 @@ async function executeInstruction(instruction){
             executeSerialPrint(
                 instruction.value,
                 true
+            );
+            break;
+
+        case "OLED_BEGIN":
+            initializeOLED();
+            break;
+
+        case "OLED_CLEAR":
+            oledClearDisplay();
+            break;
+
+        case "OLED_DISPLAY":
+            oledDisplay();
+            break;
+
+        case "OLED_TEXT_SIZE":
+            oledSetTextSize(
+                resolveGSEValue(
+                    instruction.value
+                )
+            );
+            break;
+
+        case "OLED_TEXT_COLOR":
+            oledSetTextColor(
+                resolveGSEValue(
+                    instruction.value
+                )
+            );
+            break;
+
+        case "OLED_CURSOR":
+            oledSetCursor(
+                resolveGSEValue(
+                    instruction.x
+                ),
+                resolveGSEValue(
+                    instruction.y
+                )
+            );
+            break;
+
+        case "OLED_PRINT":
+            oledPrint(
+                resolveGSEValue(
+                    instruction.value
+                )
+            );
+            break;
+
+        case "OLED_PRINTLN":
+            oledPrintln(
+                resolveGSEValue(
+                    instruction.value
+                )
+            );
+            break;
+
+        case "OLED_PIXEL":
+            oledDrawPixel(
+                resolveGSEValue(
+                    instruction.x
+                ),
+                resolveGSEValue(
+                    instruction.y
+                ),
+                resolveGSEValue(
+                    instruction.color
+                )
+            );
+            break;
+
+        case "OLED_LINE":
+            oledDrawLine(
+                resolveGSEValue(
+                    instruction.x1
+                ),
+                resolveGSEValue(
+                    instruction.y1
+                ),
+                resolveGSEValue(
+                    instruction.x2
+                ),
+                resolveGSEValue(
+                    instruction.y2
+                ),
+                resolveGSEValue(
+                    instruction.color
+                )
+            );
+            break;
+
+        case "OLED_RECT":
+            oledFillRect(
+                resolveGSEValue(
+                    instruction.x
+                ),
+                resolveGSEValue(
+                    instruction.y
+                ),
+                resolveGSEValue(
+                    instruction.width
+                ),
+                resolveGSEValue(
+                    instruction.height
+                ),
+                resolveGSEValue(
+                    instruction.color
+                )
             );
             break;
 

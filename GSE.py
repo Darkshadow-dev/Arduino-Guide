@@ -130,6 +130,15 @@ def parse_value(value):
     if value == "LED_BUILTIN":
         return 13
 
+    if value == "SSD1306_SWITCHCAPVCC":
+        return 2
+
+    if value == "SSD1306_WHITE":
+        return 1
+
+    if value == "SSD1306_BLACK":
+        return 0
+
     if value == "true":
         return 1
 
@@ -475,6 +484,92 @@ def parse_instruction(line):
                 "type": "VALUE",
                 "value": ""
             }
+        }
+
+    if function == "display.begin":
+        return {
+            "op": "OLED_BEGIN",
+            "args": [
+                parse_expression(arg)
+                for arg in args
+            ]
+        }
+
+    if function == "display.clearDisplay":
+        return {
+            "op": "OLED_CLEAR"
+        }
+
+    if function == "display.display":
+        return {
+            "op": "OLED_DISPLAY"
+        }
+
+    if function == "display.setTextSize":
+        return {
+            "op": "OLED_TEXT_SIZE",
+            "value": parse_expression(args[0])
+        }
+
+    if function == "display.setTextColor":
+        return {
+            "op": "OLED_TEXT_COLOR",
+            "value": parse_expression(args[0])
+        }
+
+    if function == "display.setCursor":
+        return {
+            "op": "OLED_CURSOR",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1])
+        }
+
+    if function == "display.print":
+        return {
+            "op": "OLED_PRINT",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
+            }
+        }
+
+    if function == "display.println":
+        return {
+            "op": "OLED_PRINTLN",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
+            }
+        }
+
+    if function == "display.drawPixel":
+        return {
+            "op": "OLED_PIXEL",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1]),
+            "color": parse_expression(args[2])
+        }
+
+    if function == "display.drawLine":
+        return {
+            "op": "OLED_LINE",
+            "x1": parse_expression(args[0]),
+            "y1": parse_expression(args[1]),
+            "x2": parse_expression(args[2]),
+            "y2": parse_expression(args[3]),
+            "color": parse_expression(args[4])
+        }
+
+    if function == "display.fillRect":
+        return {
+            "op": "OLED_RECT",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1]),
+            "width": parse_expression(args[2]),
+            "height": parse_expression(args[3]),
+            "color": parse_expression(args[4])
         }
 
     raise ValueError(
