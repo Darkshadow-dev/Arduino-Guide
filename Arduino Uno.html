@@ -856,6 +856,51 @@ function updateJoystick(){
         "active",
         !!joystickState.pressed
     );
+
+    /*
+        Convert physical joystick movement
+        from -25..25 into Arduino analog
+        values from 0..1023.
+    */
+
+    simulatorState.analogPins.A1=
+        Math.round(
+            512+
+            (joystickState.x/25)*512
+        );
+
+    simulatorState.analogPins.A2=
+        Math.round(
+            512+
+            (joystickState.y/25)*512
+        );
+
+    simulatorState.analogPins.A1=Math.max(
+        0,
+        Math.min(
+            1023,
+            simulatorState.analogPins.A1
+        )
+    );
+
+    simulatorState.analogPins.A2=Math.max(
+        0,
+        Math.min(
+            1023,
+            simulatorState.analogPins.A2
+        )
+    );
+
+    /*
+        Joystick push switch is digital pin 7.
+    */
+
+    const buttonPin=getPin(7);
+
+    buttonPin.input=
+        joystickState.pressed?1:0;
+
+    updateButtonVisual(7);
 }
 
 function setupJoystick(){
@@ -869,6 +914,7 @@ function setupJoystick(){
         if(!dragging)return;
 
         const rect=joystick.getBoundingClientRect();
+
         const source=event.touches
             ?event.touches[0]
             :event;
@@ -883,7 +929,10 @@ function setupJoystick(){
             rect.top-
             rect.height/2;
 
-        const distance=Math.sqrt(x*x+y*y);
+        const distance=Math.sqrt(
+            x*x+y*y
+        );
+
         const max=25;
 
         if(distance>max){
@@ -896,6 +945,13 @@ function setupJoystick(){
         joystickState.pressed=1;
 
         updateJoystick();
+
+        simulatorLog(
+            "Joystick X="+
+            simulatorState.analogPins.A1+
+            " Y="+
+            simulatorState.analogPins.A2
+        );
     };
 
     const release=()=>{
@@ -908,26 +964,32 @@ function setupJoystick(){
         updateJoystick();
     };
 
-    joystick.addEventListener("mousedown",event=>{
-        dragging=true;
-        move(event);
+    joystick.addEventListener(
+        "mousedown",
+        event=>{
+            event.preventDefault();
 
-        document.addEventListener(
-            "mousemove",
-            move
-        );
-    });
+            dragging=true;
+            move(event);
+
+            document.addEventListener(
+                "mousemove",
+                move
+            );
+        }
+    );
 
     document.addEventListener(
         "mouseup",
         ()=>{
-            if(dragging){
-                document.removeEventListener(
-                    "mousemove",
-                    move
-                );
-                release();
-            }
+            if(!dragging)return;
+
+            document.removeEventListener(
+                "mousemove",
+                move
+            );
+
+            release();
         }
     );
 
@@ -935,28 +997,45 @@ function setupJoystick(){
         "touchstart",
         event=>{
             event.preventDefault();
+
             dragging=true;
             move(event);
-        }
+        },
+        {passive:false}
     );
 
     joystick.addEventListener(
         "touchmove",
         event=>{
             event.preventDefault();
+
             move(event);
-        }
+        },
+        {passive:false}
     );
 
     joystick.addEventListener(
         "touchend",
         event=>{
             event.preventDefault();
-            release();
-        }
-    );
-}
 
+            release();
+        },
+        {passive:false}
+    );
+
+    joystick.addEventListener(
+        "touchcancel",
+        event=>{
+            event.preventDefault();
+
+            release();
+        },
+        {passive:false}
+    );
+
+    updateJoystick();
+}
 /* ============================================================
    POTENTIOMETER
    ============================================================ */
