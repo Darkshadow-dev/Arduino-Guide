@@ -17,5 +17,14 @@ $CLI core update-index
 echo "Installing AVR..."
 $CLI core install arduino:avr
 
+echo "Installing Adafruit GFX..."
+$CLI lib install "Adafruit GFX Library"
+
+echo "Installing Adafruit SSD1306..."
+$CLI lib install "Adafruit SSD1306"
+
 echo "Installed cores:"
 $CLI core list
+
+echo "Installed libraries:"
+$CLI lib list
