@@ -685,7 +685,7 @@ body{
     box-shadow:0 3px 8px rgba(0,0,0,.5);
 }
 
-#oled4Screen{
+#oled4{
     position:absolute;
     left:8px;
     top:7px;
@@ -713,18 +713,6 @@ body{
     background:#555;
 }
 
-#oled4{
-    position:absolute;
-    left:520px;
-    top:210px;
-    width:170px;
-    padding:12px;
-    background:#202225;
-    border:2px solid #45484d;
-    border-radius:8px;
-    box-shadow:0 5px 15px rgba(0,0,0,.4);
-}
-
 #oled4 .oledScreen{
     width:128px;
     height:64px;
@@ -746,14 +734,6 @@ body{
 #oled4Canvas.active{
     box-shadow:
         0 0 8px rgba(255,255,255,.15);
-}
-
-#oled4 .oledPins{
-    display:flex;
-    justify-content:space-between;
-    margin-top:10px;
-    color:#aaa;
-    font:9px monospace;
 }
 
 /* ============================================================

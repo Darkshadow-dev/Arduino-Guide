@@ -9,6 +9,8 @@ SUPPORTED_LIBRARIES = {
     "Adafruit_SSD1306.h",
     "LiquidCrystal.h"
 }
+
+
 def clean_line(line):
     line = line.strip()
 
@@ -113,6 +115,7 @@ def split_operator(text, operator):
 
     return parts
 
+
 def parse_include(line):
     line = line.strip()
 
@@ -142,6 +145,7 @@ def parse_include(line):
         "op": "INCLUDE",
         "library": library
     }
+
 
 def parse_library_declaration(line):
     line = line.strip().rstrip(";").strip()
@@ -220,11 +224,12 @@ def parse_value(value):
     if value == "&Wire":
         return "Wire"
 
-    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
-        return value[1:-1]
+    if len(value) >= 2:
+        if value[0] == '"' and value[-1] == '"':
+            return value[1:-1]
 
-    if len(value) >= 2 and value[0] == "'" and value[-1] == "'":
-        return value[1:-1]
+        if value[0] == "'" and value[-1] == "'":
+            return value[1:-1]
 
     if re.fullmatch(r"-?\d+", value):
         return int(value)
@@ -398,7 +403,7 @@ def parse_variable(line):
     return None
 
 
-def parse_instruction(line):
+def parse_instruction(line, objects=None):
     line = clean_line(line)
 
     if not line:
@@ -561,150 +566,163 @@ def parse_instruction(line):
             }
         }
 
-    if function == "display.begin":
-        return {
-            "op": "OLED_BEGIN",
-            "args": [
-                parse_expression(arg)
-                for arg in args
-            ]
-        }
+    object_libraries = {}
 
-    if function == "display.clearDisplay":
-        return {
-            "op": "OLED_CLEAR"
-        }
+    if objects:
+        for obj in objects:
+            object_libraries[obj["object"]] = obj["library"]
 
-    if function == "display.display":
-        return {
-            "op": "OLED_DISPLAY"
-        }
+    object_name = None
+    method = function
 
-    if function == "display.setTextSize":
-        return {
-            "op": "OLED_TEXT_SIZE",
-            "value": parse_expression(args[0])
-        }
+    if "." in function:
+        object_name, method = function.split(".", 1)
 
-    if function == "display.setTextColor":
-        return {
-            "op": "OLED_TEXT_COLOR",
-            "value": parse_expression(args[0])
-        }
+    library = object_libraries.get(object_name)
 
-    if function == "display.setCursor":
-        return {
-            "op": "OLED_CURSOR",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1])
-        }
+    if library == "Adafruit_SSD1306":
 
-    if function == "display.print":
-        return {
-            "op": "OLED_PRINT",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
+        if method == "begin":
+            if len(args) < 1:
+                raise ValueError(
+                    "OLED begin requires arguments"
+                )
+
+            return {
+                "op": "OLED_BEGIN",
+                "args": [
+                    parse_expression(arg)
+                    for arg in args
+                ]
             }
-        }
 
-    if function == "display.println":
-        return {
-            "op": "OLED_PRINTLN",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
+        if method == "clearDisplay":
+            if args:
+                raise ValueError(
+                    "OLED clearDisplay requires no arguments"
+                )
+
+            return {
+                "op": "OLED_CLEAR"
             }
-        }
 
-    if function == "display.drawPixel":
-        return {
-            "op": "OLED_PIXEL",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1]),
-            "color": parse_expression(args[2])
-        }
+        if method == "display":
+            if args:
+                raise ValueError(
+                    "OLED display requires no arguments"
+                )
 
-    if function == "display.drawLine":
-        return {
-            "op": "OLED_LINE",
-            "x1": parse_expression(args[0]),
-            "y1": parse_expression(args[1]),
-            "x2": parse_expression(args[2]),
-            "y2": parse_expression(args[3]),
-            "color": parse_expression(args[4])
-        }
-
-    if function == "display.fillRect":
-        return {
-            "op": "OLED_RECT",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1]),
-            "width": parse_expression(args[2]),
-            "height": parse_expression(args[3]),
-            "color": parse_expression(args[4])
-        }
-
-    if function == "lcd.begin":
-        if len(args) != 2:
-            raise ValueError(
-                "lcd.begin requires 2 arguments"
-            )
-
-        return {
-            "op": "LCD_BEGIN",
-            "cols": parse_expression(args[0]),
-            "rows": parse_expression(args[1])
-        }
-
-    if function == "lcd.clear":
-        return {
-            "op": "LCD_CLEAR"
-        }
-
-    if function == "lcd.setCursor":
-        if len(args) != 2:
-            raise ValueError(
-                "lcd.setCursor requires 2 arguments"
-            )
-
-        return {
-            "op": "LCD_CURSOR",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1])
-        }
-
-    if function == "lcd.print":
-        return {
-            "op": "LCD_PRINT",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
+            return {
+                "op": "OLED_DISPLAY"
             }
-        }
 
-    if function == "lcd.println":
-        return {
-            "op": "LCD_PRINTLN",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
-            }
-        }
+        if method == "setTextSize":
+            if len(args) != 1:
+                raise ValueError(
+                    "OLED setTextSize requires 1 argument"
+                )
 
-    if function == "lcd.write":
-        return {
-            "op": "LCD_WRITE",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
+            return {
+                "op": "OLED_TEXT_SIZE",
+                "value": parse_expression(args[0])
             }
-        }
+
+        if method == "setTextColor":
+            if len(args) != 1:
+                raise ValueError(
+                    "OLED setTextColor requires 1 argument"
+                )
+
+            return {
+                "op": "OLED_TEXT_COLOR",
+                "value": parse_expression(args[0])
+            }
+
+        if method == "setCursor":
+            if len(args) != 2:
+                raise ValueError(
+                    "OLED setCursor requires 2 arguments"
+                )
+
+            return {
+                "op": "OLED_CURSOR",
+                "x": parse_expression(args[0]),
+                "y": parse_expression(args[1])
+            }
+
+        if method == "print":
+            return {
+                "op": "OLED_PRINT",
+                "value": parse_expression(args[0])
+                if args else {
+                    "type": "VALUE",
+                    "value": ""
+                }
+            }
+
+        if method == "println":
+            return {
+                "op": "OLED_PRINTLN",
+                "value": parse_expression(args[0])
+                if args else {
+                    "type": "VALUE",
+                    "value": ""
+                }
+            }
+
+        if method == "drawPixel":
+            if len(args) != 3:
+                raise ValueError(
+                    "OLED drawPixel requires 3 arguments"
+                )
+
+            return {
+                "op": "OLED_PIXEL",
+                "x": parse_expression(args[0]),
+                "y": parse_expression(args[1]),
+                "color": parse_expression(args[2])
+            }
+
+        if method == "drawLine":
+            if len(args) != 5:
+                raise ValueError(
+                    "OLED drawLine requires 5 arguments"
+                )
+
+            return {
+                "op": "OLED_LINE",
+                "x1": parse_expression(args[0]),
+                "y1": parse_expression(args[1]),
+                "x2": parse_expression(args[2]),
+                "y2": parse_expression(args[3]),
+                "color": parse_expression(args[4])
+            }
+
+        if method == "fillRect":
+            if len(args) != 5:
+                raise ValueError(
+                    "OLED fillRect requires 5 arguments"
+                )
+
+            return {
+                "op": "OLED_RECT",
+                "x": parse_expression(args[0]),
+                "y": parse_expression(args[1]),
+                "width": parse_expression(args[2]),
+                "height": parse_expression(args[3]),
+                "color": parse_expression(args[4])
+            }
+
+        raise ValueError(
+            "Unsupported Adafruit_SSD1306 function: "
+            + function
+        )
+
+    if library == "LiquidCrystal":
+        raise ValueError(
+            "LiquidCrystal runtime support is not enabled yet: "
+            + function
+        )
 
     raise ValueError(
         "Unsupported Arduino function: " + function
@@ -729,19 +747,13 @@ def tokenize_lines(code):
     ]
 
 
-def parse_if(lines, index):
+def parse_if(lines, index, objects=None):
     line = lines[index].strip()
 
-    if line.startswith("else if"):
-        condition_text = line[
-            line.find("(") + 1:
-            line.rfind(")")
-        ]
-    else:
-        condition_text = line[
-            line.find("(") + 1:
-            line.rfind(")")
-        ]
+    condition_text = line[
+        line.find("(") + 1:
+        line.rfind(")")
+    ]
 
     condition = parse_expression(condition_text)
 
@@ -754,7 +766,8 @@ def parse_if(lines, index):
 
     then_block, index = parse_block(
         lines,
-        index + 1
+        index + 1,
+        objects
     )
 
     else_block = []
@@ -765,7 +778,8 @@ def parse_if(lines, index):
         if next_line.startswith("else if"):
             else_block, index = parse_if(
                 lines,
-                index
+                index,
+                objects
             )
 
         elif next_line == "else":
@@ -778,7 +792,8 @@ def parse_if(lines, index):
 
             else_block, index = parse_block(
                 lines,
-                index + 1
+                index + 1,
+                objects
             )
 
     return [{
@@ -789,7 +804,7 @@ def parse_if(lines, index):
     }], index
 
 
-def parse_block(lines, index=0):
+def parse_block(lines, index=0, objects=None):
     instructions = []
 
     while index < len(lines):
@@ -801,7 +816,8 @@ def parse_block(lines, index=0):
         if line.startswith("if"):
             parsed, index = parse_if(
                 lines,
-                index
+                index,
+                objects
             )
 
             instructions.extend(parsed)
@@ -828,7 +844,10 @@ def parse_block(lines, index=0):
             index += 1
             continue
 
-        instruction = parse_instruction(line)
+        instruction = parse_instruction(
+            line,
+            objects
+        )
 
         if instruction is not None:
             instructions.append(instruction)
@@ -879,7 +898,8 @@ def compile_function(code, objects=None):
     lines = tokenize_lines(code)
 
     instructions, index = parse_block(
-        lines
+        lines,
+        objects=objects
     )
 
     if index < len(lines):
@@ -889,6 +909,7 @@ def compile_function(code, objects=None):
         )
 
     return instructions
+
 
 def parse_global_code(source):
     source = re.sub(
@@ -951,6 +972,7 @@ def parse_global_code(source):
 
     return libraries, objects
 
+
 def compile_gse(
     source,
     board="arduino:avr:uno"
@@ -970,11 +992,13 @@ def compile_gse(
     )
 
     setup = compile_function(
-        setup_code
+        setup_code,
+        objects
     )
 
     loop = compile_function(
-        loop_code
+        loop_code,
+        objects
     )
 
     return {

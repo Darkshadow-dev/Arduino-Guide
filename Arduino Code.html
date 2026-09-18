@@ -594,15 +594,205 @@ void loop(){
   delay(1000);
 }`,
 
-    timer:`unsigned long t=0;
-void setup(){
-  pinMode(13,OUTPUT);
+    timer:`/*
+    GSE FULL TEST PROGRAM
+
+    Tests:
+    - Built-in LED
+    - Digital output pins
+    - PWM output
+    - Buzzer
+    - Serial output
+    - Working repeated loop
+*/
+
+void setup() {
+    Serial.begin(9600);
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    pinMode(2, OUTPUT);
+    pinMode(3, OUTPUT);
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+    pinMode(9, OUTPUT);
+    pinMode(10, OUTPUT);
+    pinMode(11, OUTPUT);
+
+    Serial.println("================================");
+    Serial.println("GSE SIMULATOR TEST STARTED");
+    Serial.println("================================");
+
+    Serial.println("Testing digital pins...");
+    digitalWrite(2, HIGH);
+    digitalWrite(3, LOW);
+    digitalWrite(5, HIGH);
+    digitalWrite(6, LOW);
+
+    delay(500);
+
+    Serial.println("Testing PWM pin 9...");
+    analogWrite(9, 80);
+
+    Serial.println("Testing PWM pin 10...");
+    analogWrite(10, 160);
+
+    Serial.println("Testing PWM pin 11...");
+    analogWrite(11, 255);
+
+    delay(1000);
+
+    Serial.println("Starting buzzer test...");
+    tone(6, 440, 300);
+    delay(400);
+
+    tone(6, 660, 300);
+    delay(400);
+
+    tone(6, 880, 300);
+    delay(400);
+
+    noTone(6);
+
+    Serial.println("Setup test completed.");
+    Serial.println("Entering loop...");
 }
-void loop(){
-  if(millis()-t>1000){
-    t=millis();
-    digitalWrite(13,!digitalRead(13));
-  }
+
+void loop() {
+    Serial.println("--------------------------------");
+    Serial.println("LOOP 1");
+    Serial.println("LED ON");
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+
+    Serial.println("LED OFF");
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
+
+    Serial.println("Digital pin 2 ON");
+    digitalWrite(2, HIGH);
+    delay(250);
+
+    Serial.println("Digital pin 2 OFF");
+    digitalWrite(2, LOW);
+    delay(250);
+
+    Serial.println("Digital pin 3 ON");
+    digitalWrite(3, HIGH);
+    delay(250);
+
+    Serial.println("Digital pin 3 OFF");
+    digitalWrite(3, LOW);
+    delay(250);
+
+    Serial.println("PWM 9 low");
+    analogWrite(9, 40);
+    delay(300);
+
+    Serial.println("PWM 9 medium");
+    analogWrite(9, 128);
+    delay(300);
+
+    Serial.println("PWM 9 high");
+    analogWrite(9, 255);
+    delay(300);
+
+    Serial.println("Buzzer low tone");
+    tone(6, 330, 250);
+    delay(350);
+
+    Serial.println("Buzzer medium tone");
+    tone(6, 550, 250);
+    delay(350);
+
+    Serial.println("Buzzer high tone");
+    tone(6, 880, 250);
+    delay(350);
+
+    noTone(6);
+
+    Serial.println("Loop 1 completed.");
+    delay(500);
+
+    Serial.println("--------------------------------");
+    Serial.println("LOOP 2");
+    Serial.println("Running second loop cycle...");
+
+    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(2, HIGH);
+    digitalWrite(3, HIGH);
+    digitalWrite(5, HIGH);
+
+    delay(500);
+
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(2, LOW);
+    digitalWrite(3, LOW);
+    digitalWrite(5, LOW);
+
+    delay(500);
+
+    Serial.println("Second digital pattern completed.");
+
+    analogWrite(9, 20);
+    analogWrite(10, 100);
+    analogWrite(11, 200);
+
+    delay(500);
+
+    analogWrite(9, 200);
+    analogWrite(10, 100);
+    analogWrite(11, 20);
+
+    delay(500);
+
+    Serial.println("Second PWM pattern completed.");
+
+    tone(6, 440);
+    delay(300);
+
+    tone(6, 660);
+    delay(300);
+
+    tone(6, 880);
+    delay(300);
+
+    noTone(6);
+
+    Serial.println("Loop 2 completed.");
+    delay(500);
+
+    Serial.println("--------------------------------");
+    Serial.println("LOOP 3");
+    Serial.println("Repeating complete test...");
+
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
+
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(200);
+
+    tone(6, 1000, 200);
+    delay(300);
+
+    tone(6, 700, 200);
+    delay(300);
+
+    tone(6, 400, 200);
+    delay(300);
+
+    noTone(6);
+
+    Serial.println("Loop 3 completed.");
+    Serial.println("The loop will now restart.");
+    delay(1000);
+}
 }`
   };
 
