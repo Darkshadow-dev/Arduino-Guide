@@ -1,30 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-echo "Installing Arduino CLI..."
+set -e
 
-curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+mkdir -p /opt/render/project/src/bin
 
-CLI="/opt/render/project/src/bin/arduino-cli"
+curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh -s 1.5.1
 
-echo "Setting Arduino data dir..."
+export PATH="/opt/render/project/src/bin:$PATH"
 
-export ARDUINO_DATA_DIR=/opt/render/project/src/.arduino
-mkdir -p $ARDUINO_DATA_DIR
+arduino-cli config init --overwrite
 
-echo "Updating index..."
-$CLI core update-index
+arduino-cli core update-index
 
-echo "Installing AVR..."
-$CLI core install arduino:avr
+arduino-cli core install arduino:avr
 
-echo "Installing Adafruit GFX..."
-$CLI lib install "Adafruit GFX Library"
+arduino-cli lib update-index
 
-echo "Installing Adafruit SSD1306..."
-$CLI lib install "Adafruit SSD1306"
-
-echo "Installed cores:"
-$CLI core list
+arduino-cli lib install "Adafruit BusIO"
+arduino-cli lib install "Adafruit GFX Library"
+arduino-cli lib install "Adafruit SSD1306"
 
 echo "Installed libraries:"
-$CLI lib list
+arduino-cli lib list
