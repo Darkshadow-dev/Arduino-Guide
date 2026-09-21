@@ -5,13 +5,18 @@ import os
 import json
 import secrets
 import GSE
+
+
 app = Flask(__name__)
 CORS(app)
+
 
 # -------------------------
 # Arduino setup
 # -------------------------
-os.environ["ARDUINO_DIRECTORIES_DATA"] = "/opt/render/project/src/.arduino"
+ARDUINO_DATA = "/opt/render/project/src/.arduino"
+
+os.environ["ARDUINO_DIRECTORIES_DATA"] = ARDUINO_DATA
 
 BASE = os.path.abspath("sketches")
 os.makedirs(BASE, exist_ok=True)
@@ -33,7 +38,8 @@ CLI = "/opt/render/project/src/bin/arduino-cli"
 def run_cmd(cmd):
     try:
         env = os.environ.copy()
-        os.environ["ARDUINO_DIRECTORIES_DATA"] = "/opt/render/project/src/.arduino"
+
+        env["ARDUINO_DIRECTORIES_DATA"] = ARDUINO_DATA
 
         result = subprocess.run(
             cmd,
@@ -53,8 +59,10 @@ def run_cmd(cmd):
             "output": str(e)
         }
 
+
 # ============================================================
 # COMPILE
+# Real Arduino CLI compilation
 # ============================================================
 
 @app.route("/compile", methods=["POST"])
@@ -111,13 +119,16 @@ def compile_code():
     for root, _, files in os.walk(
         project_path
     ):
-        for f in files:
-            if f.endswith(".hex"):
+        for filename in files:
+            if filename.endswith(".hex"):
                 hex_path = os.path.join(
                     root,
-                    f
+                    filename
                 )
                 break
+
+        if hex_path:
+            break
 
     return jsonify({
         "success": result["success"],
@@ -125,13 +136,18 @@ def compile_code():
         "hex_path": hex_path
     })
 
+
 # ============================================================
 # CREATE GSE
+# Simulator compiler
+#
+# IMPORTANT:
+# This does NOT call Arduino CLI.
+# Libraries do not need to exist on Render.
 # ============================================================
 
 @app.route("/create", methods=["POST"])
 def create_gse():
-
     data = request.json or {}
 
     code = data.get("code", "")
@@ -154,7 +170,6 @@ def create_gse():
         }), 400
 
     try:
-
         executable = GSE.compile_gse(
             code,
             board
@@ -189,11 +204,11 @@ def create_gse():
         })
 
     except Exception as error:
-
         return jsonify({
             "success": False,
             "error": str(error)
         }), 400
+
 
 # ============================================================
 # PORTS
@@ -327,7 +342,14 @@ def download_hex():
 @app.route("/download-exe")
 def download_exe():
     return jsonify({
-        "url": "https://github.com/Darkshadow-dev/Arduino-Guide/releases/download/Arduino/uploader.zip"
+        "url": (
+            "https://github.com/"
+            "Darkshadow-dev/"
+            "Arduino-Guide/"
+            "releases/download/"
+            "Arduino/"
+            "uploader.zip"
+        )
     })
 
 
@@ -342,9 +364,12 @@ def session():
     })
 
 
+# ============================================================
+# GET GSE
+# ============================================================
+
 @app.route("/gse/<token>", methods=["GET"])
 def get_gse(token):
-
     if not token or "/" in token or "\\" in token:
         return jsonify({
             "success": False,
@@ -363,7 +388,6 @@ def get_gse(token):
         }), 404
 
     try:
-
         with open(
             path,
             "r",
@@ -377,11 +401,11 @@ def get_gse(token):
         })
 
     except Exception as e:
-
         return jsonify({
             "success": False,
             "error": str(e)
         }), 500
+
 
 # ============================================================
 # RUN
@@ -400,4 +424,3 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
-

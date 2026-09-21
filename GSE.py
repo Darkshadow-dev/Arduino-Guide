@@ -1,7 +1,7 @@
 import re
 
 
-GSE_VERSION = 3
+GSE_VERSION = 4
 
 SUPPORTED_LIBRARIES = {
     "Wire.h",
@@ -977,6 +977,11 @@ def compile_gse(
     source,
     board="arduino:avr:uno"
 ):
+    if not source.strip():
+        raise ValueError(
+            "No Arduino source code provided."
+        )
+
     libraries, objects = parse_global_code(
         source
     )
