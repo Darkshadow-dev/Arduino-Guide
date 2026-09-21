@@ -165,7 +165,24 @@ def compile_code():
     # --------------------------------------------------------
     # Compile with explicit Arduino data/library directory.
     # --------------------------------------------------------
+    library_directory = os.path.join(
+        ARDUINO_DATA_DIR,
+        "libraries"
+    )
 
+    print("=== ARDUINO LIBRARY DIRECTORY ===")
+    print(library_directory)
+
+    if os.path.isdir(library_directory):
+
+        for item in os.listdir(library_directory):
+            print("LIBRARY:", item)
+
+    else:
+
+        print("LIBRARY DIRECTORY DOES NOT EXIST")
+
+    print("=== END LIBRARY DIRECTORY ===")
     result = run_cmd([
 
         CLI,
