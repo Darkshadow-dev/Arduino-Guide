@@ -10,6 +10,10 @@ SUPPORTED_LIBRARIES = {
     "LiquidCrystal.h"
 }
 
+VIRTUAL_LIBRARIES = {
+    "Adafruit_GFX.h": "OLED4",
+    "Adafruit_SSD1306.h": "OLED4"
+}
 
 def clean_line(line):
     line = line.strip()
@@ -115,7 +119,6 @@ def split_operator(text, operator):
 
     return parts
 
-
 def parse_include(line):
     line = line.strip()
 
@@ -143,9 +146,9 @@ def parse_include(line):
 
     return {
         "op": "INCLUDE",
-        "library": library
+        "library": library,
+        "system": VIRTUAL_LIBRARIES.get(library)
     }
-
 
 def parse_library_declaration(line):
     line = line.strip().rstrip(";").strip()
@@ -159,6 +162,7 @@ def parse_library_declaration(line):
         return {
             "op": "LIBRARY_OBJECT",
             "library": "Adafruit_SSD1306",
+            "system": "OLED4",
             "object": match.group(1),
             "args": [
                 parse_expression(arg)
@@ -579,144 +583,142 @@ def parse_instruction(line, objects=None):
         object_name, method = function.split(".", 1)
 
     library = object_libraries.get(object_name)
+if library == "Adafruit_SSD1306":
 
-    if library == "Adafruit_SSD1306":
+    if method == "begin":
+        if len(args) < 1:
+            raise ValueError(
+                "OLED4 begin requires arguments"
+            )
 
-        if method == "begin":
-            if len(args) < 1:
-                raise ValueError(
-                    "OLED begin requires arguments"
-                )
+        return {
+            "op": "OLED_BEGIN",
+            "args": [
+                parse_expression(arg)
+                for arg in args
+            ]
+        }
 
-            return {
-                "op": "OLED_BEGIN",
-                "args": [
-                    parse_expression(arg)
-                    for arg in args
-                ]
+    if method == "clearDisplay":
+        if args:
+            raise ValueError(
+                "OLED4 clearDisplay requires no arguments"
+            )
+
+        return {
+            "op": "OLED_CLEAR"
+        }
+
+    if method == "display":
+        if args:
+            raise ValueError(
+                "OLED4 display requires no arguments"
+            )
+
+        return {
+            "op": "OLED_DISPLAY"
+        }
+
+    if method == "setTextSize":
+        if len(args) != 1:
+            raise ValueError(
+                "OLED4 setTextSize requires 1 argument"
+            )
+
+        return {
+            "op": "OLED_TEXT_SIZE",
+            "value": parse_expression(args[0])
+        }
+
+    if method == "setTextColor":
+        if len(args) != 1:
+            raise ValueError(
+                "OLED4 setTextColor requires 1 argument"
+            )
+
+        return {
+            "op": "OLED_TEXT_COLOR",
+            "value": parse_expression(args[0])
+        }
+
+    if method == "setCursor":
+        if len(args) != 2:
+            raise ValueError(
+                "OLED4 setCursor requires 2 arguments"
+            )
+
+        return {
+            "op": "OLED_CURSOR",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1])
+        }
+
+    if method == "print":
+        return {
+            "op": "OLED_PRINT",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
             }
+        }
 
-        if method == "clearDisplay":
-            if args:
-                raise ValueError(
-                    "OLED clearDisplay requires no arguments"
-                )
-
-            return {
-                "op": "OLED_CLEAR"
+    if method == "println":
+        return {
+            "op": "OLED_PRINTLN",
+            "value": parse_expression(args[0])
+            if args else {
+                "type": "VALUE",
+                "value": ""
             }
+        }
 
-        if method == "display":
-            if args:
-                raise ValueError(
-                    "OLED display requires no arguments"
-                )
+    if method == "drawPixel":
+        if len(args) != 3:
+            raise ValueError(
+                "OLED4 drawPixel requires 3 arguments"
+            )
 
-            return {
-                "op": "OLED_DISPLAY"
-            }
+        return {
+            "op": "OLED_PIXEL",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1]),
+            "color": parse_expression(args[2])
+        }
 
-        if method == "setTextSize":
-            if len(args) != 1:
-                raise ValueError(
-                    "OLED setTextSize requires 1 argument"
-                )
+    if method == "drawLine":
+        if len(args) != 5:
+            raise ValueError(
+                "OLED4 drawLine requires 5 arguments"
+            )
 
-            return {
-                "op": "OLED_TEXT_SIZE",
-                "value": parse_expression(args[0])
-            }
+        return {
+            "op": "OLED_LINE",
+            "x1": parse_expression(args[0]),
+            "y1": parse_expression(args[1]),
+            "x2": parse_expression(args[2]),
+            "y2": parse_expression(args[3]),
+            "color": parse_expression(args[4])
+        }
 
-        if method == "setTextColor":
-            if len(args) != 1:
-                raise ValueError(
-                    "OLED setTextColor requires 1 argument"
-                )
+    if method == "fillRect":
+        if len(args) != 5:
+            raise ValueError(
+                "OLED4 fillRect requires 5 arguments"
+            )
 
-            return {
-                "op": "OLED_TEXT_COLOR",
-                "value": parse_expression(args[0])
-            }
+        return {
+            "op": "OLED_RECT",
+            "x": parse_expression(args[0]),
+            "y": parse_expression(args[1]),
+            "width": parse_expression(args[2]),
+            "height": parse_expression(args[3]),
+            "color": parse_expression(args[4])
+        }
 
-        if method == "setCursor":
-            if len(args) != 2:
-                raise ValueError(
-                    "OLED setCursor requires 2 arguments"
-                )
-
-            return {
-                "op": "OLED_CURSOR",
-                "x": parse_expression(args[0]),
-                "y": parse_expression(args[1])
-            }
-
-        if method == "print":
-            return {
-                "op": "OLED_PRINT",
-                "value": parse_expression(args[0])
-                if args else {
-                    "type": "VALUE",
-                    "value": ""
-                }
-            }
-
-        if method == "println":
-            return {
-                "op": "OLED_PRINTLN",
-                "value": parse_expression(args[0])
-                if args else {
-                    "type": "VALUE",
-                    "value": ""
-                }
-            }
-
-        if method == "drawPixel":
-            if len(args) != 3:
-                raise ValueError(
-                    "OLED drawPixel requires 3 arguments"
-                )
-
-            return {
-                "op": "OLED_PIXEL",
-                "x": parse_expression(args[0]),
-                "y": parse_expression(args[1]),
-                "color": parse_expression(args[2])
-            }
-
-        if method == "drawLine":
-            if len(args) != 5:
-                raise ValueError(
-                    "OLED drawLine requires 5 arguments"
-                )
-
-            return {
-                "op": "OLED_LINE",
-                "x1": parse_expression(args[0]),
-                "y1": parse_expression(args[1]),
-                "x2": parse_expression(args[2]),
-                "y2": parse_expression(args[3]),
-                "color": parse_expression(args[4])
-            }
-
-        if method == "fillRect":
-            if len(args) != 5:
-                raise ValueError(
-                    "OLED fillRect requires 5 arguments"
-                )
-
-            return {
-                "op": "OLED_RECT",
-                "x": parse_expression(args[0]),
-                "y": parse_expression(args[1]),
-                "width": parse_expression(args[2]),
-                "height": parse_expression(args[3]),
-                "color": parse_expression(args[4])
-            }
-
-        raise ValueError(
-            "Unsupported Adafruit_SSD1306 function: "
-            + function
-        )
+    raise ValueError(
+        "Unsupported OLED4 function: " + function
+    )
 
     if library == "LiquidCrystal":
         raise ValueError(
@@ -944,6 +946,7 @@ def parse_global_code(source):
         objects.append({
             "op": "LIBRARY_OBJECT",
             "library": "Adafruit_SSD1306",
+            "system": "OLED4",
             "object": match.group(1),
             "args": [
                 parse_expression(arg)

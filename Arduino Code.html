@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 <head>
 <meta charset="UTF-8">
@@ -27,7 +26,8 @@ body{
 
 button,
 select,
-input{
+input,
+textarea{
   font-family:inherit;
 }
 
@@ -146,6 +146,23 @@ header::-webkit-scrollbar{
   user-select:none;
 }
 
+#lineNums .error-line{
+  color:#ff5f67;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#lineNums .warning-line{
+  color:#f5b942;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#lineNums .active-error{
+  background:#51232a;
+  border-radius:3px;
+}
+
 #editorBox{
   position:relative;
   flex:1;
@@ -207,6 +224,114 @@ header::-webkit-scrollbar{
   background:#0b111d;
 }
 
+/* =========================
+   AUTOCOMPLETE
+========================= */
+
+#autocomplete{
+  position:absolute;
+  z-index:20;
+  display:none;
+  width:260px;
+  max-height:230px;
+  overflow:auto;
+  background:#111827;
+  border:1px solid #344563;
+  border-radius:6px;
+  box-shadow:0 8px 25px rgba(0,0,0,.45);
+  font-size:13px;
+}
+
+#autocomplete.visible{
+  display:block;
+}
+
+.autocomplete-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:6px 9px;
+  cursor:pointer;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected{
+  background:#1d3150;
+}
+
+.autocomplete-name{
+  color:#dce8f8;
+}
+
+.autocomplete-type{
+  color:#7185a3;
+  font-size:11px;
+}
+
+.autocomplete-help{
+  padding:7px 9px;
+  border-top:1px solid #293650;
+  color:#647994;
+  font-size:10px;
+}
+
+/* =========================
+   ERROR HELP
+========================= */
+
+#errorPanel{
+  display:none;
+  background:#24151a;
+  border-top:1px solid #69313b;
+  max-height:105px;
+  overflow:auto;
+}
+
+#errorPanel.visible{
+  display:block;
+}
+
+.error-card{
+  padding:7px 10px;
+  border-bottom:1px solid #43232a;
+  cursor:pointer;
+}
+
+.error-card:hover{
+  background:#321a20;
+}
+
+.error-card-title{
+  color:#ff6872;
+  font-weight:bold;
+}
+
+.error-card-help{
+  color:#c5a8ad;
+  margin-top:2px;
+}
+
+.warning-card{
+  padding:7px 10px;
+  border-bottom:1px solid #4b3a20;
+  cursor:pointer;
+}
+
+.warning-card-title{
+  color:#f5c451;
+  font-weight:bold;
+}
+
+.warning-card-help{
+  color:#c8bfa5;
+  margin-top:2px;
+}
+
+/* =========================
+   BOTTOM
+========================= */
+
 #bottomBar{
   height:120px;
   display:flex;
@@ -217,6 +342,7 @@ header::-webkit-scrollbar{
 
 #consoleHeader{
   height:34px;
+  flex-shrink:0;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -297,7 +423,16 @@ header::-webkit-scrollbar{
   margin-left:5px;
 }
 
+.output-error{
+  color:#ff7a83;
+}
+
+.output-success{
+  color:#5ee68c;
+}
+
 @media(max-width:900px){
+
   #brand{
     display:none;
   }
@@ -312,6 +447,7 @@ header::-webkit-scrollbar{
 }
 
 @media(max-width:650px){
+
   header{
     height:52px;
   }
@@ -337,9 +473,12 @@ header::-webkit-scrollbar{
   #highlight{
     font-size:13px;
   }
+
+  #autocomplete{
+    width:220px;
+  }
 }
 </style>
-
 </head>
 
 <body>
@@ -348,11 +487,14 @@ header::-webkit-scrollbar{
 
   <div id="brand">Arduino IDE Web</div>
 
-<button onclick="newProject()">New</button> <button onclick="document.getElementById('fileInput').click()">Open</button> <button onclick="saveFile()">Save</button>
+  <button onclick="newProject()">New</button>
+  <button onclick="document.getElementById('fileInput').click()">Open</button>
+  <button onclick="saveFile()">Save</button>
 
   <div class="nav-separator"></div>
 
-<button class="primary" onclick="compileCode()">Compile</button> <button class="success" onclick="runSimulator()">Run Simulator</button>
+  <button class="primary" onclick="compileCode()">Compile</button>
+  <button class="success" onclick="runSimulator()">Run Simulator</button>
 
   <select id="examples" onchange="loadExample(this.value)">
     <option value="">Examples</option>
@@ -372,7 +514,11 @@ header::-webkit-scrollbar{
 
   <div class="nav-separator"></div>
 
-<button onclick="go('Arduino Guide.html#home')">Home</button> <button onclick="go('Examples.html#examples')">Examples</button> <button onclick="go('Arduino Quiz.html')">Quizzes</button> <button onclick="go('Arduino Tutorial.html#home')">Tutorials</button> <button onclick="go('https://darkshadow-dev.github.io/community/Arduino%20Community.html')">Community</button>
+  <button onclick="go('Arduino Guide.html#home')">Home</button>
+  <button onclick="go('Examples.html#examples')">Examples</button>
+  <button onclick="go('Arduino Quiz.html')">Quizzes</button>
+  <button onclick="go('Arduino Tutorial.html#home')">Tutorials</button>
+  <button onclick="go('https://darkshadow-dev.github.io/community/Arduino%20Community.html')">Community</button>
 
   <div id="liveCounter">
     <span class="live-dot"></span>
@@ -383,11 +529,10 @@ header::-webkit-scrollbar{
 </header>
 
 <input
-type="file"
-id="fileInput"
-style="display:none"
-accept=".ino,.txt,.cpp,.h,.c"
-
+  type="file"
+  id="fileInput"
+  style="display:none"
+  accept=".ino,.txt,.cpp,.h,.c"
 >
 
 <div id="editorWrap">
@@ -395,8 +540,27 @@ accept=".ino,.txt,.cpp,.h,.c"
   <div id="lineNums"></div>
 
   <div id="editorBox">
+
     <pre id="highlight"></pre>
-    <textarea id="editor" spellcheck="false"></textarea>
+
+    <textarea
+      id="editor"
+      spellcheck="false"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+    ></textarea>
+
+    <div id="autocomplete">
+
+      <div id="autocompleteItems"></div>
+
+      <div class="autocomplete-help">
+        Tab / Enter = accept &nbsp; • &nbsp; Esc = close
+      </div>
+
+    </div>
+
   </div>
 
 </div>
@@ -405,21 +569,33 @@ accept=".ino,.txt,.cpp,.h,.c"
 
   <div id="consoleHeader">
 
-```
-<div id="consoleTitle">
-  <span id="statusDot"></span>
-  <span>Output</span>
-  <span id="compileInfo"></span>
-</div>
+    <div id="consoleTitle">
 
-<div id="consoleButtons">
-  <button onclick="clearConsole()">Clear</button>
-  <button id="downloadHexButton" onclick="downloadHex()" disabled>
-    Download HEX
-  </button>
-</div>
+      <span id="statusDot"></span>
+
+      <span>Output</span>
+
+      <span id="compileInfo"></span>
+
+    </div>
+
+    <div id="consoleButtons">
+
+      <button onclick="clearConsole()">Clear</button>
+
+      <button
+        id="downloadHexButton"
+        onclick="downloadHex()"
+        disabled
+      >
+        Download HEX
+      </button>
+
+    </div>
 
   </div>
+
+  <div id="errorPanel"></div>
 
   <pre id="console"></pre>
 
@@ -427,7 +603,8 @@ accept=".ino,.txt,.cpp,.h,.c"
 
 <script>
 
-const API = "https://arduino-guide-6.onrender.com";
+const API =
+  "https://arduino-guide-6.onrender.com";
 
 let editor;
 let highlight;
@@ -438,8 +615,488 @@ let filename;
 let statusDot;
 let compileInfo;
 let downloadHexButton;
+let autocomplete;
+let autocompleteItems;
+let errorPanel;
 
 let lastHexUrl = null;
+
+let autocompleteResults = [];
+let autocompleteIndex = 0;
+
+
+/* =========================
+   AUTOCOMPLETE DATABASE
+========================= */
+
+const autocompleteWords = [
+
+  /* =========================
+     Arduino
+  ========================= */
+
+  ["pinMode","Arduino","()"],
+  ["digitalWrite","Arduino","()"],
+  ["digitalRead","Arduino","()"],
+  ["analogRead","Arduino","()"],
+  ["analogWrite","Arduino","()"],
+  ["delay","Arduino","()"],
+  ["delayMicroseconds","Arduino","()"],
+  ["millis","Arduino","()"],
+  ["micros","Arduino","()"],
+  ["tone","Arduino","()"],
+  ["noTone","Arduino","()"],
+  ["pulseIn","Arduino","()"],
+  ["pulseInLong","Arduino","()"],
+  ["attachInterrupt","Arduino","()"],
+  ["detachInterrupt","Arduino","()"],
+  ["interrupts","Arduino","()"],
+  ["noInterrupts","Arduino","()"],
+  ["shiftIn","Arduino","()"],
+  ["shiftOut","Arduino","()"],
+  ["digitalPinToInterrupt","Arduino","()"],
+  ["analogReference","Arduino","()"],
+  ["analogReadResolution","Arduino","()"],
+  ["analogWriteResolution","Arduino","()"],
+
+  /* =========================
+     Serial
+  ========================= */
+
+  ["Serial","Object"],
+  ["Serial1","Object"],
+  ["Serial2","Object"],
+  ["Serial3","Object"],
+
+  ["begin","Method","()"],
+  ["end","Method","()"],
+  ["available","Method","()"],
+  ["read","Method","()"],
+  ["peek","Method","()"],
+  ["write","Method","()"],
+  ["print","Method","()"],
+  ["println","Method","()"],
+  ["printf","Method","()"],
+  ["flush","Method","()"],
+
+  /* =========================
+     Arduino constants
+  ========================= */
+
+  ["HIGH","Constant"],
+  ["LOW","Constant"],
+  ["INPUT","Constant"],
+  ["OUTPUT","Constant"],
+  ["INPUT_PULLUP","Constant"],
+  ["LED_BUILTIN","Constant"],
+
+  ["DEFAULT","Constant"],
+  ["INTERNAL","Constant"],
+  ["INTERNAL1V1","Constant"],
+  ["INTERNAL2V56","Constant"],
+  ["EXTERNAL","Constant"],
+
+  /* =========================
+     Pins
+  ========================= */
+
+  ["A0","Pin"],
+  ["A1","Pin"],
+  ["A2","Pin"],
+  ["A3","Pin"],
+  ["A4","Pin"],
+  ["A5","Pin"],
+
+  ["SDA","Pin"],
+  ["SCL","Pin"],
+  ["MOSI","Pin"],
+  ["MISO","Pin"],
+  ["SCK","Pin"],
+  ["SS","Pin"],
+  ["RX","Pin"],
+  ["TX","Pin"],
+  ["AREF","Pin"],
+  ["RESET","Pin"],
+
+  /* =========================
+     Types
+  ========================= */
+
+  ["void","Type"],
+  ["bool","Type"],
+  ["boolean","Type"],
+  ["char","Type"],
+  ["byte","Type"],
+  ["short","Type"],
+  ["int","Type"],
+  ["long","Type"],
+  ["unsigned","Type"],
+  ["signed","Type"],
+  ["float","Type"],
+  ["double","Type"],
+  ["String","Type"],
+  ["string","Type"],
+  ["size_t","Type"],
+
+  ["uint8_t","Type"],
+  ["uint16_t","Type"],
+  ["uint32_t","Type"],
+  ["uint64_t","Type"],
+  ["int8_t","Type"],
+  ["int16_t","Type"],
+  ["int32_t","Type"],
+  ["int64_t","Type"],
+
+  /* =========================
+     C / C++ keywords
+  ========================= */
+
+  ["if","Keyword"," ()"],
+  ["else","Keyword"],
+  ["for","Keyword"," ()"],
+  ["while","Keyword"," ()"],
+  ["do","Keyword"],
+  ["switch","Keyword"," ()"],
+  ["case","Keyword"],
+  ["default","Keyword"],
+  ["break","Keyword"],
+  ["continue","Keyword"],
+  ["return","Keyword"],
+  ["goto","Keyword"],
+
+  ["const","Keyword"],
+  ["static","Keyword"],
+  ["volatile","Keyword"],
+  ["extern","Keyword"],
+  ["register","Keyword"],
+  ["inline","Keyword"],
+
+  ["struct","Keyword"],
+  ["class","Keyword"],
+  ["public","Keyword"],
+  ["private","Keyword"],
+  ["protected","Keyword"],
+
+  ["namespace","Keyword"],
+  ["using","Keyword"],
+  ["template","Keyword"],
+  ["typename","Keyword"],
+
+  ["new","Keyword"],
+  ["delete","Keyword"],
+
+  ["try","Keyword"],
+  ["catch","Keyword"],
+  ["throw","Keyword"],
+
+  ["true","Keyword"],
+  ["false","Keyword"],
+  ["nullptr","Keyword"],
+
+  /* =========================
+     Math
+  ========================= */
+
+  ["abs","Math","()"],
+  ["min","Math","()"],
+  ["max","Math","()"],
+  ["constrain","Math","()"],
+  ["map","Math","()"],
+  ["pow","Math","()"],
+  ["sqrt","Math","()"],
+  ["sq","Math","()"],
+
+  ["sin","Math","()"],
+  ["cos","Math","()"],
+  ["tan","Math","()"],
+  ["asin","Math","()"],
+  ["acos","Math","()"],
+  ["atan","Math","()"],
+  ["atan2","Math","()"],
+
+  ["log","Math","()"],
+  ["log10","Math","()"],
+  ["exp","Math","()"],
+
+  ["random","Math","()"],
+  ["randomSeed","Math","()"],
+
+  ["round","Math","()"],
+  ["ceil","Math","()"],
+  ["floor","Math","()"],
+
+  /* =========================
+     C / C++
+  ========================= */
+
+  ["sizeof","C/C++","()"],
+  ["memcpy","C/C++","()"],
+  ["memmove","C/C++","()"],
+  ["memset","C/C++","()"],
+  ["memcmp","C/C++","()"],
+
+  ["strcmp","C/C++","()"],
+  ["strncmp","C/C++","()"],
+  ["strlen","C/C++","()"],
+  ["strcpy","C/C++","()"],
+  ["strncpy","C/C++","()"],
+  ["strcat","C/C++","()"],
+  ["strchr","C/C++","()"],
+
+  ["atoi","C/C++","()"],
+  ["atof","C/C++","()"],
+  ["itoa","C/C++","()"],
+
+  /* =========================
+     String
+  ========================= */
+
+  ["String","Type"],
+
+  ["length","String Method","()"],
+  ["charAt","String Method","()"],
+  ["substring","String Method","()"],
+  ["indexOf","String Method","()"],
+  ["lastIndexOf","String Method","()"],
+  ["startsWith","String Method","()"],
+  ["endsWith","String Method","()"],
+  ["equals","String Method","()"],
+  ["equalsIgnoreCase","String Method","()"],
+  ["toUpperCase","String Method","()"],
+  ["toLowerCase","String Method","()"],
+  ["trim","String Method","()"],
+  ["replace","String Method","()"],
+  ["remove","String Method","()"],
+  ["reserve","String Method","()"],
+  ["setCharAt","String Method","()"],
+  ["concat","String Method","()"],
+  ["c_str","String Method","()"],
+
+  /* =========================
+     Arrays
+  ========================= */
+
+  ["array","Array"],
+  ["begin","Array Function","()"],
+  ["end","Array Function","()"],
+
+  /* =========================
+     Wire
+  ========================= */
+
+  ["Wire","Library"],
+
+  ["begin","Wire Method","()"],
+  ["end","Wire Method","()"],
+  ["requestFrom","Wire Method","()"],
+  ["beginTransmission","Wire Method","()"],
+  ["endTransmission","Wire Method","()"],
+  ["available","Wire Method","()"],
+  ["read","Wire Method","()"],
+  ["write","Wire Method","()"],
+  ["onReceive","Wire Method","()"],
+  ["onRequest","Wire Method","()"],
+
+  /* =========================
+     SPI
+  ========================= */
+
+  ["SPI","Library"],
+  ["SPISettings","SPI Class","()"],
+
+  ["begin","SPI Method","()"],
+  ["end","SPI Method","()"],
+  ["beginTransaction","SPI Method","()"],
+  ["endTransaction","SPI Method","()"],
+  ["transfer","SPI Method","()"],
+  ["transfer16","SPI Method","()"],
+  ["usingInterrupt","SPI Method","()"],
+  ["notUsingInterrupt","SPI Method","()"],
+
+  /* =========================
+     EEPROM
+  ========================= */
+
+  ["EEPROM","Library"],
+
+  ["get","EEPROM Method","()"],
+  ["put","EEPROM Method","()"],
+  ["read","EEPROM Method","()"],
+  ["write","EEPROM Method","()"],
+  ["update","EEPROM Method","()"],
+
+  /* =========================
+     Servo
+  ========================= */
+
+  ["Servo","Library","()"],
+
+  ["attach","Servo Method","()"],
+  ["detach","Servo Method","()"],
+  ["write","Servo Method","()"],
+  ["writeMicroseconds","Servo Method","()"],
+  ["read","Servo Method","()"],
+  ["attached","Servo Method","()"],
+
+  /* =========================
+     Adafruit GFX
+  ========================= */
+
+  ["Adafruit_GFX","Library"],
+  ["Adafruit_SSD1306","Library"],
+
+  ["display","Object"],
+
+  ["begin","Display Method","()"],
+  ["clearDisplay","Display Method","()"],
+  ["display","Display Method","()"],
+  ["setTextSize","Display Method","()"],
+  ["setTextColor","Display Method","()"],
+  ["setCursor","Display Method","()"],
+  ["println","Display Method","()"],
+  ["print","Display Method","()"],
+
+  ["drawPixel","GFX Method","()"],
+  ["drawLine","GFX Method","()"],
+  ["drawRect","GFX Method","()"],
+  ["fillRect","GFX Method","()"],
+  ["drawCircle","GFX Method","()"],
+  ["fillCircle","GFX Method","()"],
+  ["drawTriangle","GFX Method","()"],
+  ["fillTriangle","GFX Method","()"],
+  ["drawRoundRect","GFX Method","()"],
+  ["fillRoundRect","GFX Method","()"],
+  ["drawBitmap","GFX Method","()"],
+
+  ["SSD1306_WHITE","Display Constant"],
+  ["SSD1306_BLACK","Display Constant"],
+  ["SSD1306_INVERSE","Display Constant"],
+
+  /* =========================
+     LiquidCrystal
+  ========================= */
+
+  ["LiquidCrystal","Library","()"],
+  ["lcd","Object"],
+
+  ["begin","LCD Method","()"],
+  ["clear","LCD Method","()"],
+  ["home","LCD Method","()"],
+  ["setCursor","LCD Method","()"],
+  ["print","LCD Method","()"],
+  ["println","LCD Method","()"],
+  ["display","LCD Method","()"],
+  ["noDisplay","LCD Method","()"],
+  ["cursor","LCD Method","()"],
+  ["noCursor","LCD Method","()"],
+  ["blink","LCD Method","()"],
+  ["noBlink","LCD Method","()"],
+  ["scrollDisplayLeft","LCD Method","()"],
+  ["scrollDisplayRight","LCD Method","()"],
+
+  /* =========================
+     Other Libraries
+  ========================= */
+
+  ["SoftwareSerial","Library","()"],
+  ["DHT","Library","()"],
+  ["OneWire","Library","()"],
+  ["DallasTemperature","Library","()"],
+  ["SD","Library"],
+  ["WiFi","Library"],
+  ["Ethernet","Library"],
+  ["Stepper","Library","()"],
+
+  /* =========================
+     Common objects
+  ========================= */
+
+  ["display","Object"],
+  ["lcd","Object"],
+  ["servo","Object"],
+  ["sensor","Object"],
+  ["oled","Object"],
+  ["screen","Object"],
+  ["button","Object"],
+  ["led","Object"],
+  ["buzzer","Object"],
+
+  /* =========================
+     Common Arduino functions
+  ========================= */
+
+  ["setup","Function","()"],
+  ["loop","Function","()"],
+
+  /* =========================
+     Preprocessor
+  ========================= */
+
+  ["#include","Preprocessor"],
+  ["#define","Preprocessor"],
+  ["#ifdef","Preprocessor"],
+  ["#ifndef","Preprocessor"],
+  ["#if","Preprocessor"],
+  ["#else","Preprocessor"],
+  ["#elif","Preprocessor"],
+  ["#endif","Preprocessor"],
+  ["#pragma","Preprocessor"],
+  ["#undef","Preprocessor"],
+  ["#warning","Preprocessor"],
+  ["#error","Preprocessor"],
+
+  /* =========================
+     Common C++ classes
+  ========================= */
+
+  ["Serial","Object"],
+  ["String","Type"],
+  ["Print","Class"],
+  ["Stream","Class"],
+  ["HardwareSerial","Class"],
+  ["File","Class"],
+  ["IPAddress","Class"],
+
+  /* =========================
+     Operators / useful tokens
+  ========================= */
+
+  ["++","Operator"],
+  ["--","Operator"],
+  ["==","Operator"],
+  ["!=","Operator"],
+  [">=","Operator"],
+  ["<=","Operator"],
+  ["&&","Operator"],
+  ["||","Operator"],
+  ["!","Operator"],
+  ["+=","Operator"],
+  ["-=","Operator"],
+  ["*=","Operator"],
+  ["/=","Operator"],
+  ["%=","Operator"],
+
+  /* =========================
+     Common values
+  ========================= */
+
+  ["PI","Constant"],
+  ["HALF_PI","Constant"],
+  ["TWO_PI","Constant"],
+  ["DEG_TO_RAD","Constant"],
+  ["RAD_TO_DEG","Constant"],
+
+  /* =========================
+     Debugging
+  ========================= */
+
+  ["Serial.println","Serial","()"],
+  ["Serial.print","Serial","()"],
+  ["Serial.write","Serial","()"],
+  ["Serial.read","Serial","()"],
+  ["Serial.available","Serial","()"]
+
+];
 
 
 /* =========================
@@ -448,42 +1105,145 @@ let lastHexUrl = null;
 
 window.onload = () => {
 
-  editor = document.getElementById("editor");
-  highlight = document.getElementById("highlight");
-  lines = document.getElementById("lineNums");
-  consoleBox = document.getElementById("console");
-  fileInput = document.getElementById("fileInput");
-  filename = document.getElementById("filename");
-  statusDot = document.getElementById("statusDot");
-  compileInfo = document.getElementById("compileInfo");
-  downloadHexButton = document.getElementById("downloadHexButton");
+  editor =
+    document.getElementById("editor");
 
-  fileInput.addEventListener("change", openFile);
+  highlight =
+    document.getElementById("highlight");
 
-  const savedCode = localStorage.getItem("arduino_code");
-  const savedName = localStorage.getItem("arduino_name");
+  lines =
+    document.getElementById("lineNums");
+
+  consoleBox =
+    document.getElementById("console");
+
+  fileInput =
+    document.getElementById("fileInput");
+
+  filename =
+    document.getElementById("filename");
+
+  statusDot =
+    document.getElementById("statusDot");
+
+  compileInfo =
+    document.getElementById("compileInfo");
+
+  downloadHexButton =
+    document.getElementById(
+      "downloadHexButton"
+    );
+
+  autocomplete =
+    document.getElementById(
+      "autocomplete"
+    );
+
+  autocompleteItems =
+    document.getElementById(
+      "autocompleteItems"
+    );
+
+  errorPanel =
+    document.getElementById(
+      "errorPanel"
+    );
+
+  fileInput.addEventListener(
+    "change",
+    openFile
+  );
+
+
+  const savedCode =
+    localStorage.getItem(
+      "arduino_code"
+    );
+
+  const savedName =
+    localStorage.getItem(
+      "arduino_name"
+    );
+
 
   if(savedCode){
-    editor.value = savedCode;
-    filename.value = savedName || "project";
+
+    editor.value =
+      savedCode;
+
+    filename.value =
+      savedName ||
+      "project";
+
   }else{
-    editor.value = defaultSketch();
+
+    editor.value =
+      defaultSketch();
+
   }
+
 
   updateAll();
 
-  editor.addEventListener("input", () => {
-    updateAll();
-    saveLocal();
 
-    setStatus("idle");
-  });
+  editor.addEventListener(
+    "input",
+    () => {
 
-  editor.addEventListener("scroll", syncScroll);
+      updateAll();
+      saveLocal();
 
-  editor.addEventListener("keydown", handleEditorKeys);
+      setStatus("idle");
+
+      clearErrorPanel();
+
+      updateAutocomplete();
+
+    }
+  );
+
+
+  editor.addEventListener(
+    "scroll",
+    syncScroll
+  );
+
+
+  editor.addEventListener(
+    "keydown",
+    handleEditorKeys
+  );
+
+
+  editor.addEventListener(
+    "click",
+    () => {
+
+      updateAutocomplete();
+
+    }
+  );
+
+
+  document.addEventListener(
+    "click",
+    e => {
+
+      if(
+        !autocomplete.contains(e.target) &&
+        e.target !== editor
+      ){
+
+        hideAutocomplete();
+
+      }
+
+    }
+  );
+
 
   setStatus("idle");
+
 };
 
 
@@ -492,15 +1252,19 @@ window.onload = () => {
 ========================= */
 
 function go(url){
-  window.location.href = url;
+
+  window.location.href =
+    url;
+
 }
 
 
 /* =========================
-   DEFAULT SKETCH
+   DEFAULT
 ========================= */
 
 function defaultSketch(){
+
   return `void setup(){
   pinMode(LED_BUILTIN, OUTPUT);
 }
@@ -511,6 +1275,7 @@ void loop(){
   digitalWrite(LED_BUILTIN, LOW);
   delay(1000);
 }`;
+
 }
 
 
@@ -519,49 +1284,607 @@ void loop(){
 ========================= */
 
 function updateAll(){
+
   updateLines();
+
   highlightCode();
+
 }
+
 
 function updateLines(){
 
-  const count = Math.max(
-    1,
-    editor.value.split("\n").length
-  );
+  const count =
+    Math.max(
+      1,
+      editor.value
+        .split("\n")
+        .length
+    );
 
-  lines.innerHTML = Array
-    .from({length:count}, (_, i) => i + 1)
-    .join("<br>");
+
+  const errorLines =
+    getCurrentErrorLines();
+
+
+  let html = "";
+
+
+  for(
+    let i = 1;
+    i <= count;
+    i++
+  ){
+
+    const error =
+      errorLines.errors.includes(i);
+
+    const warning =
+      errorLines.warnings.includes(i);
+
+
+    if(error){
+
+      html +=
+        `<div class="error-line" onclick="jumpToLine(${i})">${i} ←</div>`;
+
+    }else if(warning){
+
+      html +=
+        `<div class="warning-line" onclick="jumpToLine(${i})">${i} !</div>`;
+
+    }else{
+
+      html +=
+        `<div>${i}</div>`;
+
+    }
+
+  }
+
+
+  lines.innerHTML =
+    html;
+
 }
+
 
 function syncScroll(){
 
-  highlight.scrollTop = editor.scrollTop;
-  highlight.scrollLeft = editor.scrollLeft;
-  lines.scrollTop = editor.scrollTop;
+  highlight.scrollTop =
+    editor.scrollTop;
+
+  highlight.scrollLeft =
+    editor.scrollLeft;
+
+  lines.scrollTop =
+    editor.scrollTop;
+
 }
 
+
+/* =========================
+   KEYBOARD
+========================= */
+
 function handleEditorKeys(e){
+
+  /* Autocomplete */
+
+  if(
+    autocomplete.classList.contains(
+      "visible"
+    )
+  ){
+
+    if(e.key === "ArrowDown"){
+
+      e.preventDefault();
+
+      autocompleteIndex++;
+
+      if(
+        autocompleteIndex >=
+        autocompleteResults.length
+      ){
+
+        autocompleteIndex = 0;
+
+      }
+
+      renderAutocomplete();
+
+      return;
+
+    }
+
+
+    if(e.key === "ArrowUp"){
+
+      e.preventDefault();
+
+      autocompleteIndex--;
+
+      if(
+        autocompleteIndex < 0
+      ){
+
+        autocompleteIndex =
+          autocompleteResults.length - 1;
+
+      }
+
+      renderAutocomplete();
+
+      return;
+
+    }
+
+
+    if(
+      e.key === "Tab" ||
+      e.key === "Enter"
+    ){
+
+      if(
+        autocompleteResults.length
+      ){
+
+        e.preventDefault();
+
+        acceptAutocomplete();
+
+        return;
+
+      }
+
+    }
+
+
+    if(e.key === "Escape"){
+
+      e.preventDefault();
+
+      hideAutocomplete();
+
+      return;
+
+    }
+
+  }
+
+
+  /* Ctrl + Space */
+
+  if(
+    e.ctrlKey &&
+    e.code === "Space"
+  ){
+
+    e.preventDefault();
+
+    showAutocomplete(true);
+
+    return;
+
+  }
+
+
+  /* Normal Tab */
 
   if(e.key === "Tab"){
 
     e.preventDefault();
 
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
+    const start =
+      editor.selectionStart;
+
+    const end =
+      editor.selectionEnd;
+
 
     editor.value =
-      editor.value.substring(0, start) +
-      "  " +
-      editor.value.substring(end);
+      editor.value.substring(
+        0,
+        start
+      )
+      + "  "
+      + editor.value.substring(
+        end
+      );
 
-    editor.selectionStart = start + 2;
-    editor.selectionEnd = start + 2;
+
+    editor.selectionStart =
+      start + 2;
+
+    editor.selectionEnd =
+      start + 2;
+
 
     updateAll();
     saveLocal();
+
+    return;
+
   }
+
+
+  /* Auto close braces */
+
+  if(e.key === "{"){
+
+    const start =
+      editor.selectionStart;
+
+    const end =
+      editor.selectionEnd;
+
+    const selected =
+      editor.value.substring(
+        start,
+        end
+      );
+
+
+    if(!selected){
+
+      e.preventDefault();
+
+      editor.value =
+        editor.value.substring(
+          0,
+          start
+        )
+        + "{}"
+        + editor.value.substring(
+          end
+        );
+
+      editor.selectionStart =
+        start + 1;
+
+      editor.selectionEnd =
+        start + 1;
+
+      updateAll();
+      saveLocal();
+
+      return;
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   AUTOCOMPLETE
+========================= */
+
+function getCurrentWord(){
+
+  const pos =
+    editor.selectionStart;
+
+  const before =
+    editor.value.substring(
+      0,
+      pos
+    );
+
+
+  const match =
+    before.match(
+      /[A-Za-z_][A-Za-z0-9_]*$/
+    );
+
+
+  return match
+    ? match[0]
+    : "";
+
+}
+
+
+function updateAutocomplete(){
+
+  const word =
+    getCurrentWord();
+
+
+  if(!word){
+
+    hideAutocomplete();
+
+    return;
+
+  }
+
+
+  if(word.length < 1){
+
+    hideAutocomplete();
+
+    return;
+
+  }
+
+
+  showAutocomplete(false);
+
+}
+
+
+function showAutocomplete(force){
+
+  const word =
+    getCurrentWord();
+
+
+  if(
+    !word &&
+    !force
+  ){
+
+    hideAutocomplete();
+
+    return;
+
+  }
+
+
+  const lower =
+    word.toLowerCase();
+
+
+  autocompleteResults =
+    autocompleteWords
+      .filter(item => {
+
+        if(!word){
+
+          return true;
+
+        }
+
+        return item[0]
+          .toLowerCase()
+          .startsWith(lower);
+
+      })
+      .slice(0, 12);
+
+
+  if(
+    !autocompleteResults.length
+  ){
+
+    hideAutocomplete();
+
+    return;
+
+  }
+
+
+  autocompleteIndex = 0;
+
+  positionAutocomplete();
+
+  renderAutocomplete();
+
+  autocomplete.classList.add(
+    "visible"
+  );
+
+}
+
+
+function renderAutocomplete(){
+
+  autocompleteItems.innerHTML = "";
+
+
+  autocompleteResults.forEach(
+    (item, index) => {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "autocomplete-item";
+
+
+      if(
+        index === autocompleteIndex
+      ){
+
+        div.classList.add(
+          "selected"
+        );
+
+      }
+
+
+      div.innerHTML =
+        `<span class="autocomplete-name">${escapeHtml(item[0])}</span>
+         <span class="autocomplete-type">${escapeHtml(item[1])}</span>`;
+
+
+      div.addEventListener(
+        "mousedown",
+        e => {
+
+          e.preventDefault();
+
+          autocompleteIndex =
+            index;
+
+          acceptAutocomplete();
+
+        }
+      );
+
+
+      autocompleteItems.appendChild(
+        div
+      );
+
+    }
+  );
+
+}
+
+
+function positionAutocomplete(){
+
+  const lineHeight =
+    parseFloat(
+      getComputedStyle(editor).lineHeight
+    );
+
+
+  const paddingTop =
+    10;
+
+
+  const textBefore =
+    editor.value.substring(
+      0,
+      editor.selectionStart
+    );
+
+
+  const line =
+    textBefore.split("\n").length - 1;
+
+
+  const column =
+    textBefore.length -
+    textBefore.lastIndexOf("\n") -
+    1;
+
+
+  const left =
+    12 +
+    column * 8.4 -
+    editor.scrollLeft;
+
+
+  const top =
+    paddingTop +
+    (line + 1) *
+    lineHeight -
+    editor.scrollTop;
+
+
+  autocomplete.style.left =
+    Math.max(
+      5,
+      Math.min(
+        left,
+        editor.clientWidth - 270
+      )
+    ) + "px";
+
+
+  autocomplete.style.top =
+    Math.max(
+      5,
+      Math.min(
+        top,
+        editor.clientHeight - 240
+      )
+    ) + "px";
+
+}
+
+function acceptAutocomplete(){
+
+  if(!autocompleteResults.length){
+    return;
+  }
+
+  const item =
+    autocompleteResults[
+      autocompleteIndex
+    ];
+
+  const selected =
+    item[0];
+
+  const extra =
+    item[2] || "";
+
+  const pos =
+    editor.selectionStart;
+
+  const word =
+    getCurrentWord();
+
+  const start =
+    pos - word.length;
+
+  let insertText =
+    selected + extra;
+
+  let cursorOffset =
+    insertText.length;
+
+  /*
+     () means:
+     insert function()
+     and put cursor between the brackets
+  */
+
+  if(extra === "()"){
+
+    insertText =
+      selected + "()";
+
+    cursorOffset =
+      selected.length + 1;
+
+  }
+
+  /*
+     Templates can also be used later.
+     Example:
+     ["if","Keyword"," () {\n  \n}"]
+  */
+
+  editor.value =
+    editor.value.substring(
+      0,
+      start
+    ) +
+    insertText +
+    editor.value.substring(
+      pos
+    );
+
+  editor.selectionStart =
+    start + cursorOffset;
+
+  editor.selectionEnd =
+    start + cursorOffset;
+
+  hideAutocomplete();
+
+  updateAll();
+
+  saveLocal();
+
+}
+
+function hideAutocomplete(){
+
+  autocomplete.classList.remove(
+    "visible"
+  );
+
 }
 
 
@@ -571,162 +1894,213 @@ function handleEditorKeys(e){
 
 function highlightCode(){
 
-  let code = editor.value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  let code =
+    editor.value
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      );
+
 
   const tokens = [];
 
+
   const save = html => {
 
-    const id = `___TOKEN_${tokens.length}___`;
+    const id =
+      `___TOKEN_${tokens.length}___`;
 
     tokens.push(html);
 
     return id;
+
   };
 
 
   /* Comments */
 
-  code = code.replace(
-    /(\/\/.*)$/gm,
-    m => save(`<span style="color:#22c55e">${m}</span>`)
-  );
+  code =
+    code.replace(
+      /(\/\/.*)$/gm,
+      m =>
+        save(
+          `<span style="color:#22c55e">${m}</span>`
+        )
+    );
 
-  code = code.replace(
-    /(\/\*[\s\S]*?\*\/)/g,
-    m => save(`<span style="color:#22c55e">${m}</span>`)
-  );
+
+  code =
+    code.replace(
+      /(\/\*[\s\S]*?\*\/)/g,
+      m =>
+        save(
+          `<span style="color:#22c55e">${m}</span>`
+        )
+    );
 
 
   /* Strings */
 
-  code = code.replace(
-    /("(?:\\.|[^"\\])*")/g,
-    m => save(`<span style="color:#f59e0b">${m}</span>`)
-  );
+  code =
+    code.replace(
+      /("(?:\\.|[^"\\])*")/g,
+      m =>
+        save(
+          `<span style="color:#f59e0b">${m}</span>`
+        )
+    );
 
-  code = code.replace(
-    /('(?:\\.|[^'\\])*')/g,
-    m => save(`<span style="color:#f59e0b">${m}</span>`)
-  );
+
+  code =
+    code.replace(
+      /('(?:\\.|[^'\\])*')/g,
+      m =>
+        save(
+          `<span style="color:#f59e0b">${m}</span>`
+        )
+    );
 
 
   /* Preprocessor */
 
-  code = code.replace(
-    /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning)\b[^\n]*)/g,
-    m => save(`<span style="color:#f472b6">${m}</span>`)
-  );
+  code =
+    code.replace(
+      /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning)\b[^\n]*)/g,
+      m =>
+        save(
+          `<span style="color:#f472b6">${m}</span>`
+        )
+    );
 
 
   /* Arduino functions */
 
-  code = code.replace(
-    /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros)\b/g,
-    '<span style="color:#38bdf8">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros)\b/g,
+      '<span style="color:#38bdf8">$1</span>'
+    );
 
 
   /* Serial */
 
-  code = code.replace(
-    /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush)\b/g,
-    '<span style="color:#38bdf8">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush)\b/g,
+      '<span style="color:#38bdf8">$1</span>'
+    );
 
 
-  /* Special functions */
+  /* Special */
 
-  code = code.replace(
-    /\b(attachInterrupt|detachInterrupt|interrupts|noInterrupts|tone|noTone|pulseIn|pulseInLong|shiftIn|shiftOut)\b/g,
-    '<span style="color:#38bdf8">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(attachInterrupt|detachInterrupt|interrupts|noInterrupts|tone|noTone|pulseIn|pulseInLong|shiftIn|shiftOut)\b/g,
+      '<span style="color:#38bdf8">$1</span>'
+    );
 
 
   /* Constants */
 
-  code = code.replace(
-    /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56)\b/g,
-    '<span style="color:#fbbf24">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56)\b/g,
+      '<span style="color:#fbbf24">$1</span>'
+    );
 
 
   /* Hardware */
 
-  code = code.replace(
-    /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET)\b/g,
-    '<span style="color:#60a5fa">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET)\b/g,
+      '<span style="color:#60a5fa">$1</span>'
+    );
 
 
   /* Types */
 
-  code = code.replace(
-    /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t)\b/g,
-    '<span style="color:#c084fc">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t)\b/g,
+      '<span style="color:#c084fc">$1</span>'
+    );
 
 
   /* Keywords */
 
-  code = code.replace(
-    /\b(if|else|for|while|do|switch|case|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|new|delete|true|false|nullptr)\b/g,
-    '<span style="color:#fb7185">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(if|else|for|while|do|switch|case|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|new|delete|true|false|nullptr)\b/g,
+      '<span style="color:#fb7185">$1</span>'
+    );
 
 
   /* Libraries */
 
-  code = code.replace(
-    /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper)\b/g,
-    '<span style="color:#60a5fa">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper)\b/g,
+      '<span style="color:#60a5fa">$1</span>'
+    );
 
 
   /* Objects */
 
-  code = code.replace(
-    /\b(display|Serial|Wire|lcd|servo|sensor|oled|screen)\b/g,
-    '<span style="color:#e879f9">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(display|Serial|Wire|lcd|servo|sensor|oled|screen)\b/g,
+      '<span style="color:#e879f9">$1</span>'
+    );
 
 
   /* Math */
 
-  code = code.replace(
-    /\b(abs|min|max|constrain|map|pow|sqrt|sin|cos|tan|random|randomSeed)\b/g,
-    '<span style="color:#2dd4bf">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(abs|min|max|constrain|map|pow|sqrt|sin|cos|tan|random|randomSeed)\b/g,
+      '<span style="color:#2dd4bf">$1</span>'
+    );
 
 
-  /* C/C++ functions */
+  /* C/C++ */
 
-  code = code.replace(
-    /\b(sizeof|memcpy|memset|strcmp|strlen|strcpy|atoi|atof)\b/g,
-    '<span style="color:#2dd4bf">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(sizeof|memcpy|memset|strcmp|strlen|strcpy|atoi|atof)\b/g,
+      '<span style="color:#2dd4bf">$1</span>'
+    );
 
 
   /* Numbers */
 
-  code = code.replace(
-    /\b(0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?[fFlLuU]*)\b/g,
-    '<span style="color:#a78bfa">$1</span>'
-  );
+  code =
+    code.replace(
+      /\b(0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?[fFlLuU]*)\b/g,
+      '<span style="color:#a78bfa">$1</span>'
+    );
 
 
-  /* Restore protected */
+  /* Restore */
 
-  code = code.replace(
-    /___TOKEN_(\d+)___/g,
-    (_, i) => tokens[i]
-  );
+  code =
+    code.replace(
+      /___TOKEN_(\d+)___/g,
+      (_, i) => tokens[i]
+    );
 
 
-  highlight.innerHTML = code;
+  highlight.innerHTML =
+    code;
+
 }
 
 
@@ -745,77 +2119,124 @@ function saveLocal(){
     "arduino_name",
     filename.value
   );
+
 }
 
 
 /* =========================
-   NEW PROJECT
+   NEW
 ========================= */
 
 function newProject(){
 
-  editor.value = defaultSketch();
+  editor.value =
+    defaultSketch();
 
-  filename.value = "project";
+  filename.value =
+    "project";
 
-  localStorage.removeItem("arduino_compiled");
-  localStorage.removeItem("arduino_compiled_code");
-  localStorage.removeItem("arduino_compiled_name");
-  localStorage.removeItem("arduino_compile_success");
+
+  localStorage.removeItem(
+    "arduino_compiled"
+  );
+
+  localStorage.removeItem(
+    "arduino_compiled_code"
+  );
+
+  localStorage.removeItem(
+    "arduino_compiled_name"
+  );
+
+  localStorage.removeItem(
+    "arduino_compile_success"
+  );
+
 
   lastHexUrl = null;
 
-  downloadHexButton.disabled = true;
+  downloadHexButton.disabled =
+    true;
+
+
+  clearErrorPanel();
 
   updateAll();
+
   saveLocal();
+
 
   consoleBox.textContent =
     "New project created.\n\nReady.";
-  
+
+
   setStatus("idle");
+
 }
 
 
 /* =========================
-   SAVE FILE
+   SAVE
 ========================= */
 
 function saveFile(){
 
   saveLocal();
 
+
   const name =
-    sanitizeName(filename.value) || "project";
+    sanitizeName(
+      filename.value
+    ) ||
+    "project";
+
 
   const blob =
     new Blob(
       [editor.value],
-      {type:"text/plain"}
+      {
+        type:"text/plain"
+      }
     );
 
+
   const url =
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
+
 
   const a =
-    document.createElement("a");
+    document.createElement(
+      "a"
+    );
 
-  a.href = url;
-  a.download = name + ".ino";
+
+  a.href =
+    url;
+
+  a.download =
+    name + ".ino";
+
 
   document.body.appendChild(a);
+
   a.click();
+
   a.remove();
 
+
   setTimeout(
-    () => URL.revokeObjectURL(url),
+    () =>
+      URL.revokeObjectURL(url),
     1000
   );
+
 }
 
 
 /* =========================
-   OPEN FILE
+   OPEN
 ========================= */
 
 function openFile(e){
@@ -823,33 +2244,52 @@ function openFile(e){
   const file =
     e.target.files[0];
 
+
   if(!file){
+
     return;
+
   }
+
 
   const reader =
     new FileReader();
+
 
   reader.onload = () => {
 
     editor.value =
       reader.result;
 
+
     filename.value =
-      file.name.replace(/\..+$/, "");
+      file.name.replace(
+        /\..+$/,
+        ""
+      );
+
 
     updateAll();
+
     saveLocal();
 
+    clearErrorPanel();
+
+
     consoleBox.textContent =
-      "Loaded: " + file.name;
+      "Loaded: " +
+      file.name;
+
 
     setStatus("idle");
+
   };
+
 
   reader.readAsText(file);
 
   fileInput.value = "";
+
 }
 
 
@@ -859,7 +2299,9 @@ function openFile(e){
 
 async function compileCode(){
 
-  const code = editor.value;
+  const code =
+    editor.value;
+
 
   if(!code.trim()){
 
@@ -869,23 +2311,38 @@ async function compileCode(){
     setStatus("error");
 
     return;
+
   }
 
 
   const name =
-    sanitizeName(filename.value) || "project";
+    sanitizeName(
+      filename.value
+    ) ||
+    "project";
+
+
+  hideAutocomplete();
+
+  clearErrorPanel();
 
 
   consoleBox.textContent =
-    "Compiling " + name + "...\n\n" +
+    "Compiling " +
+    name +
+    "...\n\n" +
     "Connecting to Arduino Guide build server...";
+
 
   compileInfo.textContent =
     "Compiling";
 
+
   setStatus("running");
 
-  downloadHexButton.disabled = true;
+
+  downloadHexButton.disabled =
+    true;
 
   lastHexUrl = null;
 
@@ -899,13 +2356,15 @@ async function compileCode(){
           method:"POST",
 
           headers:{
-            "Content-Type":"application/json"
+            "Content-Type":
+              "application/json"
           },
 
           body:JSON.stringify({
             code:code,
             name:name,
-            board:"arduino:avr:uno"
+            board:
+              "arduino:avr:uno"
           })
         }
       );
@@ -915,41 +2374,54 @@ async function compileCode(){
       await res.json();
 
 
+    const rawOutput =
+      data.output ||
+      data.error ||
+      "";
+
+
     if(data.success){
 
       let output =
         "=== COMPILE SUCCESS ===\n\n";
 
+
       output +=
-        data.output ||
+        rawOutput ||
         "Compilation completed successfully.";
 
 
       if(data.hex_url){
 
         output +=
-          "\n\n=== HEX ===\n" +
+          "\n\n=== HEX FILE ===\n" +
           data.hex_url;
+
 
         lastHexUrl =
           data.hex_url;
 
-        downloadHexButton.disabled = false;
+
+        downloadHexButton.disabled =
+          false;
+
       }
 
 
       consoleBox.textContent =
         output;
 
+
       compileInfo.textContent =
         "Success";
+
 
       setStatus("success");
 
 
       localStorage.setItem(
         "arduino_compiled",
-        data.output || ""
+        rawOutput
       );
 
       localStorage.setItem(
@@ -967,50 +2439,714 @@ async function compileCode(){
         "true"
       );
 
-    }else{
 
-      const output =
-        data.output ||
-        data.error ||
-        "Compilation failed.";
+      clearErrorPanel();
+
+
+    }else{
 
       consoleBox.textContent =
         "=== COMPILE FAILED ===\n\n" +
-        output;
+        rawOutput;
+
 
       compileInfo.textContent =
         "Failed";
 
+
       setStatus("error");
+
 
       localStorage.setItem(
         "arduino_compile_success",
         "false"
       );
+
+
+      analyzeCompilerOutput(
+        rawOutput
+      );
+
     }
+
 
   }catch(error){
 
     consoleBox.textContent =
       "=== SERVER ERROR ===\n\n" +
       error.message +
-      "\n\nCheck that the Render server is online.";
+      "\n\n" +
+      "Check that the Render server is online.";
+
 
     compileInfo.textContent =
       "Server error";
 
+
     setStatus("error");
+
 
     localStorage.setItem(
       "arduino_compile_success",
       "false"
     );
+
   }
+
 }
 
 
 /* =========================
-   DOWNLOAD HEX
+   COMPILER ERROR ANALYSIS
+========================= */
+
+function analyzeCompilerOutput(output){
+
+  const errors = [];
+  const warnings = [];
+
+
+  const linesFound =
+    output.split("\n");
+
+
+  linesFound.forEach(
+    line => {
+
+      /*
+        GCC / Arduino CLI:
+
+        file.ino:12:5:
+        error: something
+      */
+
+      const match =
+        line.match(
+          /:(\d+)(?::\d+)?:\s*(?:fatal error|error|warning):\s*(.*)/i
+        );
+
+
+      if(!match){
+
+        return;
+
+      }
+
+
+      const lineNumber =
+        parseInt(
+          match[1],
+          10
+        );
+
+
+      const message =
+        match[2].trim();
+
+
+      const lower =
+        message.toLowerCase();
+
+
+      let type =
+        "error";
+
+
+      if(
+        line.toLowerCase()
+          .includes("warning")
+      ){
+
+        type =
+          "warning";
+
+      }
+
+
+      let help =
+        getErrorHelp(
+          lower,
+          message
+        );
+
+
+      const item = {
+        line:lineNumber,
+        message:message,
+        help:help,
+        type:type
+      };
+
+
+      if(type === "warning"){
+
+        warnings.push(item);
+
+      }else{
+
+        errors.push(item);
+
+      }
+
+    }
+  );
+
+
+  /*
+    Library errors sometimes have no normal
+    Arduino source line format.
+  */
+
+  if(
+    errors.length === 0 &&
+    /No such file or directory/i.test(
+      output
+    )
+  ){
+
+    const includeMatch =
+      output.match(
+        /fatal error:\s*([^:]+):\s*No such file or directory/i
+      );
+
+
+    if(includeMatch){
+
+      errors.push({
+        line:0,
+        message:
+          "Missing library/header: " +
+          includeMatch[1],
+        help:
+          getErrorHelp(
+            "no such file or directory",
+            includeMatch[1]
+          ),
+        type:"error"
+      });
+
+    }
+
+  }
+
+
+  renderErrorPanel(
+    errors,
+    warnings
+  );
+
+
+  updateAll();
+
+
+  if(
+    errors.length ||
+    warnings.length
+  ){
+
+    consoleBox.textContent +=
+      "\n\n=== QUICK HELP ===\n" +
+      "See the error help above the output.\n" +
+      "Click an error to jump to its line.";
+
+  }
+
+}
+
+
+/* =========================
+   ERROR HELP
+========================= */
+
+function getErrorHelp(
+  lower,
+  original
+){
+
+  if(
+    lower.includes(
+      "no such file or directory"
+    )
+  ){
+
+    return (
+      "This usually means the library is not installed " +
+      "or the #include name is incorrect. " +
+      "Check the library name and make sure it is supported " +
+      "by Arduino Guide."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected ';'"
+    ) ||
+    lower.includes(
+      "expected ';' before"
+    )
+  ){
+
+    return (
+      "A semicolon (;) is probably missing at the end " +
+      "of the previous statement."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "was not declared in this scope"
+    )
+  ){
+
+    return (
+      "Arduino/C++ cannot find this name. " +
+      "Check spelling, capitalization, variable declarations, " +
+      "and whether the required library is included."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected '}'"
+    ) ||
+    lower.includes(
+      "expected '}' at end of input"
+    )
+  ){
+
+    return (
+      "A closing } is missing. Check that every { has a matching }."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected ')' "
+    ) ||
+    lower.includes(
+      "expected ')'"
+    )
+  ){
+
+    return (
+      "A closing ) is missing. Check your function calls, if(), " +
+      "for(), while(), and other expressions."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "too few arguments"
+    )
+  ){
+
+    return (
+      "This function needs more arguments. " +
+      "Check the function's expected parameters."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "too many arguments"
+    )
+  ){
+
+    return (
+      "This function received more arguments than expected. " +
+      "Check the function call."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "was not declared"
+    )
+  ){
+
+    return (
+      "This name is unknown to the compiler. " +
+      "Check its spelling and declaration."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "invalid conversion"
+    )
+  ){
+
+    return (
+      "A value is being used with an incompatible type. " +
+      "Check the variable types and function parameters."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected primary-expression"
+    )
+  ){
+
+    return (
+      "There is probably an incomplete expression, missing value, " +
+      "operator, or bracket near this line."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "stray"
+    )
+  ){
+
+    return (
+      "The compiler found an unexpected character. " +
+      "Check quotation marks, brackets, and special characters."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "redefinition"
+    )
+  ){
+
+    return (
+      "Something has been declared more than once. " +
+      "Check for duplicate variables, functions, or objects."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "multiple definition"
+    )
+  ){
+
+    return (
+      "The same function or variable appears more than once."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "undefined reference"
+    )
+  ){
+
+    return (
+      "The code refers to something that has no implementation. " +
+      "Check the required library or function."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected unqualified-id"
+    )
+  ){
+
+    return (
+      "There may be a syntax error near this line, such as an " +
+      "extra bracket, missing type, or malformed declaration."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "missing terminating"
+    )
+  ){
+
+    return (
+      "A string or character quote was opened but not closed."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "invalid preprocessing directive"
+    )
+  ){
+
+    return (
+      "The # preprocessor command is not recognized. " +
+      "Check #include, #define, and other directives."
+    );
+
+  }
+
+
+  return (
+    "Check this line and the few lines immediately above it. " +
+    "The compiler message gives the exact reason."
+  );
+
+}
+
+
+/* =========================
+   ERROR PANEL
+========================= */
+
+function renderErrorPanel(
+  errors,
+  warnings
+){
+
+  errorPanel.innerHTML = "";
+
+
+  errors.forEach(
+    error => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "error-card";
+
+
+      card.innerHTML =
+        `<div class="error-card-title">
+          ${error.line
+            ? "Line " + error.line + ": "
+            : ""}
+          ${escapeHtml(error.message)}
+        </div>
+        <div class="error-card-help">
+          ${escapeHtml(error.help)}
+        </div>`;
+
+
+      if(error.line){
+
+        card.onclick =
+          () =>
+            jumpToLine(
+              error.line
+            );
+
+      }
+
+
+      errorPanel.appendChild(
+        card
+      );
+
+    }
+  );
+
+
+  warnings.forEach(
+    warning => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "warning-card";
+
+
+      card.innerHTML =
+        `<div class="warning-card-title">
+          Line ${warning.line}: ${escapeHtml(warning.message)}
+        </div>
+        <div class="warning-card-help">
+          ${escapeHtml(warning.help)}
+        </div>`;
+
+
+      card.onclick =
+        () =>
+          jumpToLine(
+            warning.line
+          );
+
+
+      errorPanel.appendChild(
+        card
+      );
+
+    }
+  );
+
+
+  if(
+    errors.length ||
+    warnings.length
+  ){
+
+    errorPanel.classList.add(
+      "visible"
+    );
+
+  }else{
+
+    errorPanel.classList.remove(
+      "visible"
+    );
+
+  }
+
+}
+
+
+function clearErrorPanel(){
+
+  errorPanel.innerHTML = "";
+
+  errorPanel.classList.remove(
+    "visible"
+  );
+
+}
+
+
+/* =========================
+   ERROR LINE DATA
+========================= */
+
+let compilerErrors = [];
+let compilerWarnings = [];
+
+
+function getCurrentErrorLines(){
+
+  return {
+    errors:
+      compilerErrors.map(
+        x => x.line
+      ),
+
+    warnings:
+      compilerWarnings.map(
+        x => x.line
+      )
+  };
+
+}
+
+
+/* =========================
+   JUMP TO LINE
+========================= */
+
+function jumpToLine(lineNumber){
+
+  if(
+    !lineNumber ||
+    lineNumber < 1
+  ){
+
+    return;
+
+  }
+
+
+  const allLines =
+    editor.value.split(
+      "\n"
+    );
+
+
+  let position = 0;
+
+
+  for(
+    let i = 0;
+    i < lineNumber - 1 &&
+    i < allLines.length;
+    i++
+  ){
+
+    position +=
+      allLines[i].length + 1;
+
+  }
+
+
+  editor.focus();
+
+  editor.selectionStart =
+    position;
+
+  editor.selectionEnd =
+    Math.min(
+      position +
+      (
+        allLines[
+          lineNumber - 1
+        ] || ""
+      ).length,
+      editor.value.length
+    );
+
+
+  const lineHeight =
+    parseFloat(
+      getComputedStyle(
+        editor
+      ).lineHeight
+    );
+
+
+  editor.scrollTop =
+    Math.max(
+      0,
+      (
+        lineNumber - 3
+      ) *
+      lineHeight
+    );
+
+
+  syncScroll();
+
+}
+
+
+/* =========================
+   HEX
 ========================= */
 
 function downloadHex(){
@@ -1021,23 +3157,27 @@ function downloadHex(){
       "\n\nNo HEX file is available.";
 
     return;
+
   }
+
 
   window.open(
     lastHexUrl,
     "_blank"
   );
+
 }
 
 
 /* =========================
-   RUN SIMULATOR
+   SIMULATOR
 ========================= */
 
 async function runSimulator(){
 
   const code =
     editor.value;
+
 
   if(!code.trim()){
 
@@ -1047,15 +3187,23 @@ async function runSimulator(){
     setStatus("error");
 
     return;
+
   }
+
+
+  hideAutocomplete();
+
+  clearErrorPanel();
 
 
   consoleBox.textContent =
     "Creating GSE simulator...\n\n" +
     "Parsing Arduino source...";
 
+
   compileInfo.textContent =
     "Simulator";
+
 
   setStatus("running");
 
@@ -1069,13 +3217,16 @@ async function runSimulator(){
           method:"POST",
 
           headers:{
-            "Content-Type":"application/json"
+            "Content-Type":
+              "application/json"
           },
 
           body:JSON.stringify({
             code:code,
-            name:filename.value,
-            board:"arduino:avr:uno"
+            name:
+              filename.value,
+            board:
+              "arduino:avr:uno"
           })
         }
       );
@@ -1085,13 +3236,17 @@ async function runSimulator(){
       await res.json();
 
 
-    if(!res.ok || !data.success){
+    if(
+      !res.ok ||
+      !data.success
+    ){
 
       throw new Error(
         data.error ||
         data.output ||
         "Failed to create simulator."
       );
+
     }
 
 
@@ -1109,6 +3264,7 @@ async function runSimulator(){
       throw new Error(
         "Server did not return a simulator URL."
       );
+
     }
 
 
@@ -1122,15 +3278,20 @@ async function runSimulator(){
       error
     );
 
+
     consoleBox.textContent =
       "=== SIMULATOR ERROR ===\n\n" +
       error.message;
 
+
     compileInfo.textContent =
       "Failed";
 
+
     setStatus("error");
+
   }
+
 }
 
 
@@ -1452,17 +3613,20 @@ void loop(){
 
   delay(1000);
 }`
+
   };
 
 
   if(!ex[name]){
 
     consoleBox.textContent =
-      "Example not found: " + name;
+      "Example not found: " +
+      name;
 
     setStatus("error");
 
     return;
+
   }
 
 
@@ -1472,13 +3636,21 @@ void loop(){
   filename.value =
     name;
 
+
+  clearErrorPanel();
+
   updateAll();
+
   saveLocal();
 
+
   consoleBox.textContent =
-    "Loaded example: " + name;
+    "Loaded example: " +
+    name;
+
 
   setStatus("idle");
+
 }
 
 
@@ -1488,44 +3660,114 @@ void loop(){
 
 function sanitizeName(name){
 
-  return String(name || "")
-    .replace(/[^a-zA-Z0-9_-]/g, "")
+  return String(
+    name || ""
+  )
+    .replace(
+      /[^a-zA-Z0-9_-]/g,
+      ""
+    )
     .trim();
+
 }
+
+
+function escapeHtml(value){
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
 
 function setStatus(type){
 
   statusDot.className = "";
 
+
   if(type === "success"){
-    statusDot.classList.add("success");
+
+    statusDot.classList.add(
+      "success"
+    );
+
   }
+
 
   if(type === "error"){
-    statusDot.classList.add("error");
+
+    statusDot.classList.add(
+      "error"
+    );
+
   }
+
 
   if(type === "running"){
-    statusDot.classList.add("running");
+
+    statusDot.classList.add(
+      "running"
+    );
+
   }
 
+
   if(type === "idle"){
-    compileInfo.textContent = "";
+
+    compileInfo.textContent =
+      "";
+
   }
+
 }
+
 
 function clearConsole(){
 
-  consoleBox.textContent = "";
+  consoleBox.textContent =
+    "";
 
-  compileInfo.textContent = "";
+  compileInfo.textContent =
+    "";
+
+  clearErrorPanel();
+
+  compilerErrors = [];
+  compilerWarnings = [];
+
+  updateLines();
 
   setStatus("idle");
+
 }
 
 </script>
 
-<script type="module" src="js/Live.js"></script>
+<script
+  type="module"
+  src="js/Live.js"
+></script>
 
 </body>
 </html>
