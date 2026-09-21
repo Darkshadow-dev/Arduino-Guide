@@ -1,7 +1,8 @@
 import re
 
 
-GSE_VERSION = 4
+GSE_VERSION = 5
+
 
 SUPPORTED_LIBRARIES = {
     "Wire.h",
@@ -10,10 +11,26 @@ SUPPORTED_LIBRARIES = {
     "LiquidCrystal.h"
 }
 
+
 VIRTUAL_LIBRARIES = {
     "Adafruit_GFX.h": "OLED4",
     "Adafruit_SSD1306.h": "OLED4"
 }
+
+
+BUILTIN_VALUES = {
+    "HIGH": 1,
+    "LOW": 0,
+    "OUTPUT": "OUTPUT",
+    "INPUT": "INPUT",
+    "INPUT_PULLUP": "INPUT_PULLUP",
+    "LED_BUILTIN": 13,
+
+    "SSD1306_SWITCHCAPVCC": 2,
+    "SSD1306_WHITE": 1,
+    "SSD1306_BLACK": 0
+}
+
 
 def clean_line(line):
     line = line.strip()
@@ -24,7 +41,11 @@ def clean_line(line):
     if line.startswith("//"):
         return ""
 
-    line = re.sub(r"//.*$", "", line).strip()
+    line = re.sub(
+        r"//.*$",
+        "",
+        line
+    ).strip()
 
     return line
 
@@ -106,7 +127,10 @@ def split_operator(text, operator):
             i += 1
             continue
 
-        if depth == 0 and text.startswith(operator, i):
+        if depth == 0 and text.startswith(
+            operator,
+            i
+        ):
             parts.append(current.strip())
             current = ""
             i += len(operator)
@@ -118,6 +142,7 @@ def split_operator(text, operator):
     parts.append(current.strip())
 
     return parts
+
 
 def parse_include(line):
     line = line.strip()
@@ -150,12 +175,38 @@ def parse_include(line):
         "system": VIRTUAL_LIBRARIES.get(library)
     }
 
-def parse_library_declaration(line):
+
+def parse_define(line):
+    line = line.strip()
+
+    match = re.match(
+        r"^#define\s+(\w+)\s+(.+)$",
+        line
+    )
+
+    if not match:
+        return None
+
+    name = match.group(1)
+    value = match.group(2).strip()
+
+    return {
+        "op": "DEFINE",
+        "name": name,
+        "value": parse_value(value)
+    }
+
+
+def parse_library_declaration(
+    line,
+    constants=None
+):
     line = line.strip().rstrip(";").strip()
 
     match = re.match(
         r"^Adafruit_SSD1306\s+(\w+)\s*\((.*)\)$",
-        line
+        line,
+        re.DOTALL
     )
 
     if match:
@@ -165,59 +216,56 @@ def parse_library_declaration(line):
             "system": "OLED4",
             "object": match.group(1),
             "args": [
-                parse_expression(arg)
-                for arg in split_arguments(match.group(2))
+                parse_expression(
+                    arg,
+                    constants
+                )
+                for arg in split_arguments(
+                    match.group(2)
+                )
             ]
         }
 
     match = re.match(
         r"^LiquidCrystal\s+(\w+)\s*\((.*)\)$",
-        line
+        line,
+        re.DOTALL
     )
 
     if match:
         return {
             "op": "LIBRARY_OBJECT",
             "library": "LiquidCrystal",
+            "system": None,
             "object": match.group(1),
             "args": [
-                parse_expression(arg)
-                for arg in split_arguments(match.group(2))
+                parse_expression(
+                    arg,
+                    constants
+                )
+                for arg in split_arguments(
+                    match.group(2)
+                )
             ]
         }
 
     return None
 
 
-def parse_value(value):
+def parse_value(
+    value,
+    constants=None
+):
     value = value.strip()
 
-    if value == "HIGH":
-        return 1
+    if constants is None:
+        constants = {}
 
-    if value == "LOW":
-        return 0
+    if value in constants:
+        return constants[value]
 
-    if value == "OUTPUT":
-        return "OUTPUT"
-
-    if value == "INPUT":
-        return "INPUT"
-
-    if value == "INPUT_PULLUP":
-        return "INPUT_PULLUP"
-
-    if value == "LED_BUILTIN":
-        return 13
-
-    if value == "SSD1306_SWITCHCAPVCC":
-        return 2
-
-    if value == "SSD1306_WHITE":
-        return 1
-
-    if value == "SSD1306_BLACK":
-        return 0
+    if value in BUILTIN_VALUES:
+        return BUILTIN_VALUES[value]
 
     if value == "true":
         return 1
@@ -228,23 +276,50 @@ def parse_value(value):
     if value == "&Wire":
         return "Wire"
 
+    if value == "Wire":
+        return "Wire"
+
     if len(value) >= 2:
-        if value[0] == '"' and value[-1] == '"':
+        if (
+            value[0] == '"'
+            and value[-1] == '"'
+        ):
             return value[1:-1]
 
-        if value[0] == "'" and value[-1] == "'":
+        if (
+            value[0] == "'"
+            and value[-1] == "'"
+        ):
             return value[1:-1]
 
-    if re.fullmatch(r"-?\d+", value):
+    if re.fullmatch(
+        r"-?\d+",
+        value
+    ):
         return int(value)
 
-    if re.fullmatch(r"-?\d+\.\d+", value):
+    if re.fullmatch(
+        r"-?\d+\.\d+",
+        value
+    ):
         return float(value)
+
+    if re.fullmatch(
+        r"0[xX][0-9a-fA-F]+",
+        value
+    ):
+        return int(value, 16)
 
     return value
 
 
-def parse_expression(value):
+def parse_expression(
+    value,
+    constants=None
+):
+    if constants is None:
+        constants = {}
+
     value = value.strip()
 
     if not value:
@@ -267,82 +342,134 @@ def parse_expression(value):
             elif char == ")":
                 depth -= 1
 
-                if depth == 0 and i != len(value) - 1:
+                if (
+                    depth == 0
+                    and i != len(value) - 1
+                ):
                     valid = False
                     break
 
         if valid:
             value = value[1:-1].strip()
+
         else:
             break
 
     if value.startswith("!"):
         return {
             "type": "NOT",
-            "value": parse_expression(value[1:])
+            "value": parse_expression(
+                value[1:],
+                constants
+            )
         }
 
     for operator in ["||"]:
-        parts = split_operator(value, operator)
+        parts = split_operator(
+            value,
+            operator
+        )
 
         if len(parts) > 1:
-            result = parse_expression(parts[0])
+            result = parse_expression(
+                parts[0],
+                constants
+            )
 
             for part in parts[1:]:
                 result = {
                     "type": "LOGICAL",
                     "operator": operator,
                     "left": result,
-                    "right": parse_expression(part)
+                    "right": parse_expression(
+                        part,
+                        constants
+                    )
                 }
 
             return result
 
     for operator in ["&&"]:
-        parts = split_operator(value, operator)
+        parts = split_operator(
+            value,
+            operator
+        )
 
         if len(parts) > 1:
-            result = parse_expression(parts[0])
+            result = parse_expression(
+                parts[0],
+                constants
+            )
 
             for part in parts[1:]:
                 result = {
                     "type": "LOGICAL",
                     "operator": operator,
                     "left": result,
-                    "right": parse_expression(part)
+                    "right": parse_expression(
+                        part,
+                        constants
+                    )
                 }
 
             return result
 
-    for operator in ["==", "!=", ">=", "<=", ">", "<"]:
-        parts = split_operator(value, operator)
+    for operator in [
+        "==",
+        "!=",
+        ">=",
+        "<=",
+        ">",
+        "<"
+    ]:
+        parts = split_operator(
+            value,
+            operator
+        )
 
         if len(parts) > 1:
             return {
                 "type": "COMPARE",
                 "operator": operator,
-                "left": parse_expression(parts[0]),
+                "left": parse_expression(
+                    parts[0],
+                    constants
+                ),
                 "right": parse_expression(
-                    operator.join(parts[1:])
+                    operator.join(parts[1:]),
+                    constants
                 )
             }
 
-    for operator in ["+", "-", "*", "/"]:
-        parts = split_operator(value, operator)
+    for operator in [
+        "+",
+        "-",
+        "*",
+        "/"
+    ]:
+        parts = split_operator(
+            value,
+            operator
+        )
 
         if len(parts) > 1:
             return {
                 "type": "ARITHMETIC",
                 "operator": operator,
-                "left": parse_expression(parts[0]),
+                "left": parse_expression(
+                    parts[0],
+                    constants
+                ),
                 "right": parse_expression(
-                    operator.join(parts[1:])
+                    operator.join(parts[1:]),
+                    constants
                 )
             }
 
     call_match = re.fullmatch(
         r"(\w+(?:\.\w+)?)\s*\((.*)\)",
-        value
+        value,
+        re.DOTALL
     )
 
     if call_match:
@@ -350,7 +477,10 @@ def parse_expression(value):
             "type": "CALL",
             "function": call_match.group(1),
             "args": [
-                parse_expression(arg)
+                parse_expression(
+                    arg,
+                    constants
+                )
                 for arg in split_arguments(
                     call_match.group(2)
                 )
@@ -359,11 +489,17 @@ def parse_expression(value):
 
     return {
         "type": "VALUE",
-        "value": parse_value(value)
+        "value": parse_value(
+            value,
+            constants
+        )
     }
 
 
-def parse_variable(line):
+def parse_variable(
+    line,
+    constants=None
+):
     line = clean_line(line)
     line = line.rstrip(";").strip()
 
@@ -381,7 +517,10 @@ def parse_variable(line):
             "op": "DECLARE",
             "type": variable_type,
             "name": name,
-            "value": parse_expression(value)
+            "value": parse_expression(
+                value,
+                constants
+            )
             if value is not None
             else {
                 "type": "VALUE",
@@ -399,7 +538,10 @@ def parse_variable(line):
             "op": "ASSIGN",
             "name": match.group(1),
             "operator": match.group(2),
-            "value": parse_expression(match.group(3))
+            "value": parse_expression(
+                match.group(3),
+                constants
+            )
             if match.group(3)
             else None
         }
@@ -407,7 +549,11 @@ def parse_variable(line):
     return None
 
 
-def parse_instruction(line, objects=None):
+def parse_instruction(
+    line,
+    objects=None,
+    constants=None
+):
     line = clean_line(line)
 
     if not line:
@@ -416,9 +562,18 @@ def parse_instruction(line, objects=None):
     if line in ("{", "}"):
         return None
 
+    if re.fullmatch(
+        r"while\s*\(\s*true\s*\)",
+        line
+    ):
+        return {
+            "op": "SIMULATOR_HALT"
+        }
+
     match = re.match(
         r"((?:\w+\.)?\w+)\s*\((.*)\)\s*;?$",
-        line
+        line,
+        re.DOTALL
     )
 
     if not match:
@@ -427,7 +582,9 @@ def parse_instruction(line, objects=None):
         )
 
     function = match.group(1)
-    args = split_arguments(match.group(2))
+    args = split_arguments(
+        match.group(2)
+    )
 
     if function == "pinMode":
         if len(args) != 2:
@@ -437,8 +594,14 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "PIN_MODE",
-            "pin": parse_expression(args[0]),
-            "mode": parse_expression(args[1])
+            "pin": parse_expression(
+                args[0],
+                constants
+            ),
+            "mode": parse_expression(
+                args[1],
+                constants
+            )
         }
 
     if function == "digitalWrite":
@@ -449,8 +612,14 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "DIGITAL_WRITE",
-            "pin": parse_expression(args[0]),
-            "value": parse_expression(args[1])
+            "pin": parse_expression(
+                args[0],
+                constants
+            ),
+            "value": parse_expression(
+                args[1],
+                constants
+            )
         }
 
     if function == "digitalRead":
@@ -461,7 +630,10 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "DIGITAL_READ",
-            "pin": parse_expression(args[0])
+            "pin": parse_expression(
+                args[0],
+                constants
+            )
         }
 
     if function == "analogRead":
@@ -472,7 +644,10 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "ANALOG_READ",
-            "pin": parse_expression(args[0])
+            "pin": parse_expression(
+                args[0],
+                constants
+            )
         }
 
     if function == "analogWrite":
@@ -483,8 +658,14 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "ANALOG_WRITE",
-            "pin": parse_expression(args[0]),
-            "value": parse_expression(args[1])
+            "pin": parse_expression(
+                args[0],
+                constants
+            ),
+            "value": parse_expression(
+                args[1],
+                constants
+            )
         }
 
     if function == "delay":
@@ -495,7 +676,10 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "DELAY",
-            "ms": parse_expression(args[0])
+            "ms": parse_expression(
+                args[0],
+                constants
+            )
         }
 
     if function == "delayMicroseconds":
@@ -506,7 +690,10 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "DELAY_US",
-            "us": parse_expression(args[0])
+            "us": parse_expression(
+                args[0],
+                constants
+            )
         }
 
     if function == "tone":
@@ -517,13 +704,20 @@ def parse_instruction(line, objects=None):
 
         instruction = {
             "op": "TONE",
-            "pin": parse_expression(args[0]),
-            "frequency": parse_expression(args[1])
+            "pin": parse_expression(
+                args[0],
+                constants
+            ),
+            "frequency": parse_expression(
+                args[1],
+                constants
+            )
         }
 
         if len(args) >= 3:
             instruction["duration"] = parse_expression(
-                args[2]
+                args[2],
+                constants
             )
 
         return instruction
@@ -536,7 +730,10 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "NO_TONE",
-            "pin": parse_expression(args[0])
+            "pin": parse_expression(
+                args[0],
+                constants
+            )
         }
 
     if function == "Serial.begin":
@@ -547,14 +744,21 @@ def parse_instruction(line, objects=None):
 
         return {
             "op": "SERIAL_BEGIN",
-            "baud": parse_expression(args[0])
+            "baud": parse_expression(
+                args[0],
+                constants
+            )
         }
 
     if function == "Serial.print":
         return {
             "op": "SERIAL_PRINT",
-            "value": parse_expression(args[0])
-            if args else {
+            "value": parse_expression(
+                args[0],
+                constants
+            )
+            if args
+            else {
                 "type": "VALUE",
                 "value": ""
             }
@@ -563,8 +767,12 @@ def parse_instruction(line, objects=None):
     if function == "Serial.println":
         return {
             "op": "SERIAL_PRINTLN",
-            "value": parse_expression(args[0])
-            if args else {
+            "value": parse_expression(
+                args[0],
+                constants
+            )
+            if args
+            else {
                 "type": "VALUE",
                 "value": ""
             }
@@ -574,151 +782,222 @@ def parse_instruction(line, objects=None):
 
     if objects:
         for obj in objects:
-            object_libraries[obj["object"]] = obj["library"]
+            object_libraries[
+                obj["object"]
+            ] = obj["library"]
 
     object_name = None
     method = function
 
     if "." in function:
-        object_name, method = function.split(".", 1)
+        object_name, method = function.split(
+            ".",
+            1
+        )
 
-    library = object_libraries.get(object_name)
-if library == "Adafruit_SSD1306":
-
-    if method == "begin":
-        if len(args) < 1:
-            raise ValueError(
-                "OLED4 begin requires arguments"
-            )
-
-        return {
-            "op": "OLED_BEGIN",
-            "args": [
-                parse_expression(arg)
-                for arg in args
-            ]
-        }
-
-    if method == "clearDisplay":
-        if args:
-            raise ValueError(
-                "OLED4 clearDisplay requires no arguments"
-            )
-
-        return {
-            "op": "OLED_CLEAR"
-        }
-
-    if method == "display":
-        if args:
-            raise ValueError(
-                "OLED4 display requires no arguments"
-            )
-
-        return {
-            "op": "OLED_DISPLAY"
-        }
-
-    if method == "setTextSize":
-        if len(args) != 1:
-            raise ValueError(
-                "OLED4 setTextSize requires 1 argument"
-            )
-
-        return {
-            "op": "OLED_TEXT_SIZE",
-            "value": parse_expression(args[0])
-        }
-
-    if method == "setTextColor":
-        if len(args) != 1:
-            raise ValueError(
-                "OLED4 setTextColor requires 1 argument"
-            )
-
-        return {
-            "op": "OLED_TEXT_COLOR",
-            "value": parse_expression(args[0])
-        }
-
-    if method == "setCursor":
-        if len(args) != 2:
-            raise ValueError(
-                "OLED4 setCursor requires 2 arguments"
-            )
-
-        return {
-            "op": "OLED_CURSOR",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1])
-        }
-
-    if method == "print":
-        return {
-            "op": "OLED_PRINT",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
-            }
-        }
-
-    if method == "println":
-        return {
-            "op": "OLED_PRINTLN",
-            "value": parse_expression(args[0])
-            if args else {
-                "type": "VALUE",
-                "value": ""
-            }
-        }
-
-    if method == "drawPixel":
-        if len(args) != 3:
-            raise ValueError(
-                "OLED4 drawPixel requires 3 arguments"
-            )
-
-        return {
-            "op": "OLED_PIXEL",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1]),
-            "color": parse_expression(args[2])
-        }
-
-    if method == "drawLine":
-        if len(args) != 5:
-            raise ValueError(
-                "OLED4 drawLine requires 5 arguments"
-            )
-
-        return {
-            "op": "OLED_LINE",
-            "x1": parse_expression(args[0]),
-            "y1": parse_expression(args[1]),
-            "x2": parse_expression(args[2]),
-            "y2": parse_expression(args[3]),
-            "color": parse_expression(args[4])
-        }
-
-    if method == "fillRect":
-        if len(args) != 5:
-            raise ValueError(
-                "OLED4 fillRect requires 5 arguments"
-            )
-
-        return {
-            "op": "OLED_RECT",
-            "x": parse_expression(args[0]),
-            "y": parse_expression(args[1]),
-            "width": parse_expression(args[2]),
-            "height": parse_expression(args[3]),
-            "color": parse_expression(args[4])
-        }
-
-    raise ValueError(
-        "Unsupported OLED4 function: " + function
+    library = object_libraries.get(
+        object_name
     )
+
+    if library == "Adafruit_SSD1306":
+
+        if method == "begin":
+            if len(args) < 1:
+                raise ValueError(
+                    "OLED4 begin requires arguments"
+                )
+
+            return {
+                "op": "OLED_BEGIN",
+                "args": [
+                    parse_expression(
+                        arg,
+                        constants
+                    )
+                    for arg in args
+                ]
+            }
+
+        if method == "clearDisplay":
+            if args:
+                raise ValueError(
+                    "OLED4 clearDisplay requires no arguments"
+                )
+
+            return {
+                "op": "OLED_CLEAR"
+            }
+
+        if method == "display":
+            if args:
+                raise ValueError(
+                    "OLED4 display requires no arguments"
+                )
+
+            return {
+                "op": "OLED_DISPLAY"
+            }
+
+        if method == "setTextSize":
+            if len(args) != 1:
+                raise ValueError(
+                    "OLED4 setTextSize requires 1 argument"
+                )
+
+            return {
+                "op": "OLED_TEXT_SIZE",
+                "value": parse_expression(
+                    args[0],
+                    constants
+                )
+            }
+
+        if method == "setTextColor":
+            if len(args) != 1:
+                raise ValueError(
+                    "OLED4 setTextColor requires 1 argument"
+                )
+
+            return {
+                "op": "OLED_TEXT_COLOR",
+                "value": parse_expression(
+                    args[0],
+                    constants
+                )
+            }
+
+        if method == "setCursor":
+            if len(args) != 2:
+                raise ValueError(
+                    "OLED4 setCursor requires 2 arguments"
+                )
+
+            return {
+                "op": "OLED_CURSOR",
+                "x": parse_expression(
+                    args[0],
+                    constants
+                ),
+                "y": parse_expression(
+                    args[1],
+                    constants
+                )
+            }
+
+        if method == "print":
+            return {
+                "op": "OLED_PRINT",
+                "value": parse_expression(
+                    args[0],
+                    constants
+                )
+                if args
+                else {
+                    "type": "VALUE",
+                    "value": ""
+                }
+            }
+
+        if method == "println":
+            return {
+                "op": "OLED_PRINTLN",
+                "value": parse_expression(
+                    args[0],
+                    constants
+                )
+                if args
+                else {
+                    "type": "VALUE",
+                    "value": ""
+                }
+            }
+
+        if method == "drawPixel":
+            if len(args) != 3:
+                raise ValueError(
+                    "OLED4 drawPixel requires 3 arguments"
+                )
+
+            return {
+                "op": "OLED_PIXEL",
+                "x": parse_expression(
+                    args[0],
+                    constants
+                ),
+                "y": parse_expression(
+                    args[1],
+                    constants
+                ),
+                "color": parse_expression(
+                    args[2],
+                    constants
+                )
+            }
+
+        if method == "drawLine":
+            if len(args) != 5:
+                raise ValueError(
+                    "OLED4 drawLine requires 5 arguments"
+                )
+
+            return {
+                "op": "OLED_LINE",
+                "x1": parse_expression(
+                    args[0],
+                    constants
+                ),
+                "y1": parse_expression(
+                    args[1],
+                    constants
+                ),
+                "x2": parse_expression(
+                    args[2],
+                    constants
+                ),
+                "y2": parse_expression(
+                    args[3],
+                    constants
+                ),
+                "color": parse_expression(
+                    args[4],
+                    constants
+                )
+            }
+
+        if method == "fillRect":
+            if len(args) != 5:
+                raise ValueError(
+                    "OLED4 fillRect requires 5 arguments"
+                )
+
+            return {
+                "op": "OLED_RECT",
+                "x": parse_expression(
+                    args[0],
+                    constants
+                ),
+                "y": parse_expression(
+                    args[1],
+                    constants
+                ),
+                "width": parse_expression(
+                    args[2],
+                    constants
+                ),
+                "height": parse_expression(
+                    args[3],
+                    constants
+                ),
+                "color": parse_expression(
+                    args[4],
+                    constants
+                )
+            }
+
+        raise ValueError(
+            "Unsupported OLED4 function: "
+            + function
+        )
 
     if library == "LiquidCrystal":
         raise ValueError(
@@ -727,7 +1006,8 @@ if library == "Adafruit_SSD1306":
         )
 
     raise ValueError(
-        "Unsupported Arduino function: " + function
+        "Unsupported Arduino function: "
+        + function
     )
 
 
@@ -739,8 +1019,15 @@ def tokenize_lines(code):
         flags=re.MULTILINE
     )
 
-    code = code.replace("{", "\n{\n")
-    code = code.replace("}", "\n}\n")
+    code = code.replace(
+        "{",
+        "\n{\n"
+    )
+
+    code = code.replace(
+        "}",
+        "\n}\n"
+    )
 
     return [
         line.strip()
@@ -749,7 +1036,12 @@ def tokenize_lines(code):
     ]
 
 
-def parse_if(lines, index, objects=None):
+def parse_if(
+    lines,
+    index,
+    objects=None,
+    constants=None
+):
     line = lines[index].strip()
 
     condition_text = line[
@@ -757,11 +1049,17 @@ def parse_if(lines, index, objects=None):
         line.rfind(")")
     ]
 
-    condition = parse_expression(condition_text)
+    condition = parse_expression(
+        condition_text,
+        constants
+    )
 
     index += 1
 
-    if index >= len(lines) or lines[index].strip() != "{":
+    if (
+        index >= len(lines)
+        or lines[index].strip() != "{"
+    ):
         raise ValueError(
             "Expected { after if condition."
         )
@@ -769,7 +1067,8 @@ def parse_if(lines, index, objects=None):
     then_block, index = parse_block(
         lines,
         index + 1,
-        objects
+        objects,
+        constants
     )
 
     else_block = []
@@ -777,17 +1076,23 @@ def parse_if(lines, index, objects=None):
     if index < len(lines):
         next_line = lines[index].strip()
 
-        if next_line.startswith("else if"):
+        if next_line.startswith(
+            "else if"
+        ):
             else_block, index = parse_if(
                 lines,
                 index,
-                objects
+                objects,
+                constants
             )
 
         elif next_line == "else":
             index += 1
 
-            if index >= len(lines) or lines[index].strip() != "{":
+            if (
+                index >= len(lines)
+                or lines[index].strip() != "{"
+            ):
                 raise ValueError(
                     "Expected { after else."
                 )
@@ -795,7 +1100,8 @@ def parse_if(lines, index, objects=None):
             else_block, index = parse_block(
                 lines,
                 index + 1,
-                objects
+                objects,
+                constants
             )
 
     return [{
@@ -806,7 +1112,12 @@ def parse_if(lines, index, objects=None):
     }], index
 
 
-def parse_block(lines, index=0, objects=None):
+def parse_block(
+    lines,
+    index=0,
+    objects=None,
+    constants=None
+):
     instructions = []
 
     while index < len(lines):
@@ -815,14 +1126,41 @@ def parse_block(lines, index=0, objects=None):
         if line == "}":
             return instructions, index + 1
 
-        if line.startswith("if"):
+        if re.match(
+            r"^if\s*\(",
+            line
+        ):
             parsed, index = parse_if(
                 lines,
                 index,
-                objects
+                objects,
+                constants
             )
 
             instructions.extend(parsed)
+            continue
+
+        if re.fullmatch(
+            r"while\s*\(\s*true\s*\)",
+            line
+        ):
+            instructions.append({
+                "op": "SIMULATOR_HALT"
+            })
+
+            index += 1
+
+            if (
+                index + 1 < len(lines)
+                and lines[index].strip() == "{"
+            ):
+                _, index = parse_block(
+                    lines,
+                    index + 1,
+                    objects,
+                    constants
+                )
+
             continue
 
         include = parse_include(line)
@@ -832,14 +1170,34 @@ def parse_block(lines, index=0, objects=None):
             index += 1
             continue
 
-        library_object = parse_library_declaration(line)
+        define = parse_define(line)
 
-        if library_object is not None:
-            instructions.append(library_object)
+        if define is not None:
+            constants[
+                define["name"]
+            ] = define["value"]
+
+            instructions.append(define)
             index += 1
             continue
 
-        variable = parse_variable(line)
+        library_object = parse_library_declaration(
+            line,
+            constants
+        )
+
+        if library_object is not None:
+            instructions.append(
+                library_object
+            )
+
+            index += 1
+            continue
+
+        variable = parse_variable(
+            line,
+            constants
+        )
 
         if variable is not None:
             instructions.append(variable)
@@ -848,21 +1206,28 @@ def parse_block(lines, index=0, objects=None):
 
         instruction = parse_instruction(
             line,
-            objects
+            objects,
+            constants
         )
 
         if instruction is not None:
-            instructions.append(instruction)
+            instructions.append(
+                instruction
+            )
 
         index += 1
 
     return instructions, index
 
 
-def extract_function(code, name):
+def extract_function(
+    code,
+    name
+):
     pattern = re.compile(
-        r"\b" + re.escape(name) +
-        r"\s*\(\s*\)\s*\{",
+        r"\b"
+        + re.escape(name)
+        + r"\s*\(\s*\)\s*\{",
         re.MULTILINE
     )
 
@@ -870,7 +1235,9 @@ def extract_function(code, name):
 
     if not match:
         raise ValueError(
-            "Missing " + name + "()"
+            "Missing "
+            + name
+            + "()"
         )
 
     start = match.end()
@@ -887,27 +1254,36 @@ def extract_function(code, name):
             depth -= 1
 
             if depth == 0:
-                return code[start:position]
+                return code[
+                    start:position
+                ]
 
         position += 1
 
     raise ValueError(
-        "Unclosed " + name + "()"
+        "Unclosed "
+        + name
+        + "()"
     )
 
 
-def compile_function(code, objects=None):
+def compile_function(
+    code,
+    objects=None,
+    constants=None
+):
     lines = tokenize_lines(code)
 
     instructions, index = parse_block(
         lines,
-        objects=objects
+        objects=objects,
+        constants=constants
     )
 
     if index < len(lines):
         raise ValueError(
-            "Unexpected code near: " +
-            lines[index]
+            "Unexpected code near: "
+            + lines[index]
         )
 
     return instructions
@@ -923,6 +1299,20 @@ def parse_global_code(source):
 
     libraries = []
     objects = []
+    constants = {}
+
+    for match in re.finditer(
+        r"^\s*#define\s+(\w+)\s+(.+)$",
+        source,
+        re.MULTILINE
+    ):
+        name = match.group(1)
+        value = match.group(2).strip()
+
+        constants[name] = parse_value(
+            value,
+            constants
+        )
 
     for match in re.finditer(
         r"#include\s*[<\"]([^>\"]+)[>\"]",
@@ -932,7 +1322,8 @@ def parse_global_code(source):
 
         if library not in SUPPORTED_LIBRARIES:
             raise ValueError(
-                "Unsupported library: " + library
+                "Unsupported library: "
+                + library
             )
 
         if library not in libraries:
@@ -949,7 +1340,10 @@ def parse_global_code(source):
             "system": "OLED4",
             "object": match.group(1),
             "args": [
-                parse_expression(arg)
+                parse_expression(
+                    arg,
+                    constants
+                )
                 for arg in split_arguments(
                     match.group(2)
                 )
@@ -964,16 +1358,24 @@ def parse_global_code(source):
         objects.append({
             "op": "LIBRARY_OBJECT",
             "library": "LiquidCrystal",
+            "system": None,
             "object": match.group(1),
             "args": [
-                parse_expression(arg)
+                parse_expression(
+                    arg,
+                    constants
+                )
                 for arg in split_arguments(
                     match.group(2)
                 )
             ]
         })
 
-    return libraries, objects
+    return (
+        libraries,
+        objects,
+        constants
+    )
 
 
 def compile_gse(
@@ -985,7 +1387,11 @@ def compile_gse(
             "No Arduino source code provided."
         )
 
-    libraries, objects = parse_global_code(
+    (
+        libraries,
+        objects,
+        constants
+    ) = parse_global_code(
         source
     )
 
@@ -1001,20 +1407,33 @@ def compile_gse(
 
     setup = compile_function(
         setup_code,
-        objects
+        objects,
+        constants.copy()
     )
 
     loop = compile_function(
         loop_code,
-        objects
+        objects,
+        constants.copy()
     )
 
     return {
         "format": "GSE",
         "version": GSE_VERSION,
         "board": board,
+
         "libraries": libraries,
+
+        "virtual_libraries": {
+            library: VIRTUAL_LIBRARIES[library]
+            for library in libraries
+            if library in VIRTUAL_LIBRARIES
+        },
+
+        "constants": constants,
+
         "objects": objects,
+
         "program": {
             "setup": setup,
             "loop": loop
