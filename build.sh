@@ -16,6 +16,7 @@ arduino-cli version
 arduino-cli config init --overwrite
 
 arduino-cli config set directories.data "$ARDUINO_DATA_DIR"
+arduino-cli config set directories.user "$ARDUINO_DATA_DIR"
 
 echo "Updating core index..."
 arduino-cli core update-index
@@ -34,6 +35,15 @@ arduino-cli core list
 
 echo "=== LIBRARIES ==="
 arduino-cli lib list
+
+echo "=== LIBRARY DIRECTORY ==="
+ls -la "$ARDUINO_DATA_DIR/libraries"
+
+echo "=== GFX HEADER ==="
+find "$ARDUINO_DATA_DIR/libraries" -name "Adafruit_GFX.h" -print
+
+echo "=== SSD1306 HEADER ==="
+find "$ARDUINO_DATA_DIR/libraries" -name "Adafruit_SSD1306.h" -print
 
 echo "=== DATA DIRECTORY ==="
 echo "$ARDUINO_DATA_DIR"
