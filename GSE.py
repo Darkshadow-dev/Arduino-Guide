@@ -1010,7 +1010,6 @@ def parse_instruction(
         + function
     )
 
-
 def tokenize_lines(code):
     code = re.sub(
         r"//.*$",
@@ -1019,21 +1018,75 @@ def tokenize_lines(code):
         flags=re.MULTILINE
     )
 
-    code = code.replace(
-        "{",
-        "\n{\n"
-    )
+    raw_lines = code.splitlines()
 
-    code = code.replace(
-        "}",
-        "\n}\n"
-    )
+    lines = []
+    current = ""
+    paren_depth = 0
+    string_char = None
 
-    return [
-        line.strip()
-        for line in code.splitlines()
-        if line.strip()
-    ]
+    for raw_line in raw_lines:
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        current += (
+            (" " if current else "")
+            + line
+        )
+
+        i = 0
+
+        while i < len(line):
+            char = line[i]
+
+            if string_char:
+                if char == string_char:
+                    string_char = None
+
+                if char == "\\":
+                    i += 1
+
+            else:
+                if char in ('"', "'"):
+                    string_char = char
+
+                elif char == "(":
+                    paren_depth += 1
+
+                elif char == ")":
+                    paren_depth -= 1
+
+            i += 1
+
+        if paren_depth == 0:
+            lines.append(current.strip())
+            current = ""
+
+    if current.strip():
+        lines.append(current.strip())
+
+    result = []
+
+    for line in lines:
+        line = line.replace(
+            "{",
+            "\n{\n"
+        )
+
+        line = line.replace(
+            "}",
+            "\n}\n"
+        )
+
+        for part in line.splitlines():
+            part = part.strip()
+
+            if part:
+                result.append(part)
+
+    return result
 
 
 def parse_if(
