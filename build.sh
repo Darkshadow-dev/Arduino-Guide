@@ -7,6 +7,7 @@ mkdir -p /opt/render/project/src/bin
 curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh -s 1.5.1
 
 export PATH="/opt/render/project/src/bin:$PATH"
+export ARDUINO_DIRECTORIES_DATA="/opt/render/project/src/.arduino"
 
 echo "Arduino CLI:"
 arduino-cli version
