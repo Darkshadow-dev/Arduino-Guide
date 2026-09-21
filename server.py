@@ -49,16 +49,23 @@ SIMULATOR_URL = (
 # ============================================================
 # COMMAND RUNNER
 # ============================================================
-
 def run_cmd(cmd):
     try:
         env = os.environ.copy()
 
         env["ARDUINO_DATA_DIR"] = ARDUINO_DATA_DIR
+
         env["PATH"] = (
             "/opt/render/project/src/bin:"
             + env.get("PATH", "")
         )
+
+        library_path = os.path.join(
+            ARDUINO_DATA_DIR,
+            "libraries"
+        )
+
+        env["ARDUINO_LIBRARY_ENABLE_UNSAFE_INSTALL"] = "true"
 
         result = subprocess.run(
             cmd,
@@ -160,6 +167,21 @@ def compile_code():
     # --------------------------------------------------------
 
     result = run_cmd([
+library_directory = os.path.join(
+    ARDUINO_DATA_DIR,
+    "libraries"
+)
+
+print("=== ARDUINO LIBRARY DIRECTORY ===")
+print(library_directory)
+
+if os.path.isdir(library_directory):
+    for item in os.listdir(library_directory):
+        print("LIBRARY:", item)
+else:
+    print("LIBRARY DIRECTORY DOES NOT EXIST")
+
+print("=== END LIBRARY DIRECTORY ===")
         CLI,
         "compile",
         "--fqbn",
