@@ -76,6 +76,12 @@ def compile_code():
         "arduino:avr:uno"
     )
 
+    library_check = run_cmd([
+        CLI,
+        "lib",
+        "list"
+    ])
+
     name = "".join(
         c for c in name
         if c.isalnum() or c in ("_", "-")
@@ -133,6 +139,7 @@ def compile_code():
     return jsonify({
         "success": result["success"],
         "output": result["output"],
+        "libraries": library_check["output"],
         "hex_path": hex_path
     })
 
