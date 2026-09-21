@@ -14,9 +14,9 @@ CORS(app)
 # -------------------------
 # Arduino setup
 # -------------------------
-ARDUINO_DATA = "/opt/render/project/src/.arduino"
+ARDUINO_DATA_DIR = "/opt/render/project/src/.arduino"
 
-os.environ["ARDUINO_DIRECTORIES_DATA"] = ARDUINO_DATA
+os.environ["ARDUINO_DATA_DIR"] = ARDUINO_DATA_DIR
 
 BASE = os.path.abspath("sketches")
 os.makedirs(BASE, exist_ok=True)
@@ -39,7 +39,11 @@ def run_cmd(cmd):
     try:
         env = os.environ.copy()
 
-        env["ARDUINO_DIRECTORIES_DATA"] = ARDUINO_DATA
+        env["ARDUINO_DATA_DIR"] = ARDUINO_DATA_DIR
+        env["PATH"] = (
+            "/opt/render/project/src/bin:" +
+            env.get("PATH", "")
+        )
 
         result = subprocess.run(
             cmd,
@@ -58,7 +62,6 @@ def run_cmd(cmd):
             "success": False,
             "output": str(e)
         }
-
 
 # ============================================================
 # COMPILE
