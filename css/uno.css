@@ -674,7 +674,7 @@ body{
 
 #oled4{
     position:absolute;
-    left:8px;
+    left:180px;
     top:43px;
     width:105px;
     height:90px;
@@ -731,7 +731,7 @@ body{
 
 #oled16{
     position:absolute;
-    left:125px;
+    left:297px;
     top:43px;
     width:125px;
     height:90px;
