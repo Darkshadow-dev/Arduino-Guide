@@ -440,6 +440,50 @@ function resolveGSEValue(value){
                 });
             }
 
+            /* =================================================
+               MAP
+               ================================================= */
+
+            if(
+                value.function==="map"
+            ){
+
+                if(args.length!==5){
+                    throw new Error(
+                        "map requires 5 arguments"
+                    );
+                }
+
+                const input=Number(args[0]);
+                const fromLow=Number(args[1]);
+                const fromHigh=Number(args[2]);
+                const toLow=Number(args[3]);
+                const toHigh=Number(args[4]);
+
+                if(
+                    !Number.isFinite(input) ||
+                    !Number.isFinite(fromLow) ||
+                    !Number.isFinite(fromHigh) ||
+                    !Number.isFinite(toLow) ||
+                    !Number.isFinite(toHigh)
+                ){
+                    return 0;
+                }
+
+                if(fromHigh===fromLow){
+                    return 0;
+                }
+
+                return Math.trunc(
+                    (
+                        (input-fromLow)*
+                        (toHigh-toLow)
+                    )/
+                    (fromHigh-fromLow)+
+                    toLow
+                );
+            }
+
 
             /* =================================================
                OLED BEGIN
