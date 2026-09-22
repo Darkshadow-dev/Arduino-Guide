@@ -373,6 +373,18 @@ function validateGSE(){
     if(!Array.isArray(gse.program.loop)){
         throw new Error("GSE loop is invalid.");
     }
+if(gse.functions===undefined){
+    gse.functions={};
+}
+
+if(
+    typeof gse.functions!=="object" ||
+    Array.isArray(gse.functions)
+){
+    throw new Error(
+        "GSE functions are invalid."
+    );
+}
 }
 
 async function resolveGSEValue(value){
@@ -2264,6 +2276,18 @@ async function executeAssignment(instruction){
     }
 }
 
+async function resolveFunctionArguments(args){
+    if(!Array.isArray(args)){
+        return [];
+    }
+
+    return await Promise.all(
+        args.map(
+            arg=>resolveGSEValue(arg)
+        )
+    );
+}
+
 async function executeUserFunction(
     functionName,
     args=[]
@@ -2806,11 +2830,7 @@ async function executeSetup(){
         "Setup complete."
     );
 }
-
-async function executeProgram(
-    instructions,
-    allowReturn=false
-){
+async function executeProgram(instructions){
 
     for(
         let i=0;
@@ -2825,26 +2845,15 @@ async function executeProgram(
 
         if(
             result &&
-            result.returned
+            (
+                result.returned ||
+                result.halted
+            )
         ){
-
-            if(allowReturn){
-                return result;
-            }
-
-            return result;
-        }
-
-        if(
-            result &&
-            result.halted
-        ){
-
             return result;
         }
 
         if(i%25===0){
-
             await new Promise(
                 resolve=>setTimeout(
                     resolve,
