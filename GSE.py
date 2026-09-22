@@ -1,7 +1,7 @@
 import re
 
 
-GSE_VERSION = 6
+GSE_VERSION = 7
 
 
 SUPPORTED_LIBRARIES = {
@@ -51,8 +51,12 @@ CONTROL_FUNCTIONS = {
 }
 
 
+# ============================================================
+# BASIC TEXT HELPERS
+# ============================================================
+
 def clean_line(line):
-    line=line.strip()
+    line = line.strip()
 
     if not line:
         return ""
@@ -60,7 +64,7 @@ def clean_line(line):
     if line.startswith("//"):
         return ""
 
-    line=re.sub(
+    line = re.sub(
         r"//.*$",
         "",
         line
@@ -70,49 +74,47 @@ def clean_line(line):
 
 
 def split_arguments(text):
-    args=[]
-    current=""
-    depth=0
-    string_char=None
-    escaped=False
+    args = []
+    current = ""
+    depth = 0
+    string_char = None
+    escaped = False
 
     for char in text:
-
         if string_char:
-
-            current+=char
+            current += char
 
             if escaped:
-                escaped=False
+                escaped = False
                 continue
 
-            if char=="\\":
-                escaped=True
+            if char == "\\":
+                escaped = True
                 continue
 
-            if char==string_char:
-                string_char=None
+            if char == string_char:
+                string_char = None
 
             continue
 
         if char in ('"', "'"):
-            string_char=char
-            current+=char
+            string_char = char
+            current += char
 
-        elif char=="(":
-            depth+=1
-            current+=char
+        elif char == "(":
+            depth += 1
+            current += char
 
-        elif char==")":
-            depth-=1
-            current+=char
+        elif char == ")":
+            depth -= 1
+            current += char
 
-        elif char=="," and depth==0:
+        elif char == "," and depth == 0:
             args.append(current.strip())
-            current=""
+            current = ""
 
         else:
-            current+=char
+            current += char
 
     if current.strip():
         args.append(current.strip())
@@ -121,74 +123,67 @@ def split_arguments(text):
 
 
 def split_operator(text, operator):
-    parts=[]
-    current=""
-    depth=0
-    string_char=None
-    escaped=False
-    i=0
+    parts = []
+    current = ""
+    depth = 0
+    string_char = None
+    escaped = False
+    i = 0
 
-    while i<len(text):
-
-        char=text[i]
+    while i < len(text):
+        char = text[i]
 
         if string_char:
-
-            current+=char
+            current += char
 
             if escaped:
-                escaped=False
-                i+=1
+                escaped = False
+                i += 1
                 continue
 
-            if char=="\\":
-                escaped=True
-                i+=1
+            if char == "\\":
+                escaped = True
+                i += 1
                 continue
 
-            if char==string_char:
-                string_char=None
+            if char == string_char:
+                string_char = None
 
-            i+=1
+            i += 1
             continue
 
         if char in ('"', "'"):
-            string_char=char
-            current+=char
-            i+=1
+            string_char = char
+            current += char
+            i += 1
             continue
 
-        if char=="(":
-            depth+=1
-            current+=char
-            i+=1
+        if char == "(":
+            depth += 1
+            current += char
+            i += 1
             continue
 
-        if char==")":
-            depth-=1
-            current+=char
-            i+=1
+        if char == ")":
+            depth -= 1
+            current += char
+            i += 1
             continue
 
         if (
-            depth==0
-            and text.startswith(
-                operator,
-                i
-            )
+            depth == 0
+            and text.startswith(operator, i)
         ):
             parts.append(
                 current.strip()
             )
 
-            current=""
-
-            i+=len(operator)
-
+            current = ""
+            i += len(operator)
             continue
 
-        current+=char
-        i+=1
+        current += char
+        i += 1
 
     parts.append(
         current.strip()
@@ -197,35 +192,37 @@ def split_operator(text, operator):
     return parts
 
 
+# ============================================================
+# LIBRARIES / DEFINES
+# ============================================================
+
 def parse_include(line):
-    line=line.strip()
+    line = line.strip()
 
     if not line.startswith("#include"):
         return None
 
-    if "<" in line and ">" in line:
+    library = None
 
-        library=line[
-            line.find("<")+1:
+    if "<" in line and ">" in line:
+        library = line[
+            line.find("<") + 1:
             line.rfind(">")
         ]
 
     elif '"' in line:
+        library = line.split('"')[1]
 
-        library=line.split('"')[1]
-
-    else:
-
+    if not library:
         raise ValueError(
             "Invalid include statement: "
-            +line
+            + line
         )
 
     if library not in SUPPORTED_LIBRARIES:
-
         raise ValueError(
             "Unsupported library: "
-            +library
+            + library
         )
 
     return {
@@ -238,9 +235,9 @@ def parse_include(line):
 
 
 def parse_define(line):
-    line=line.strip()
+    line = line.strip()
 
-    match=re.match(
+    match = re.match(
         r"^#define\s+(\w+)\s+(.+)$",
         line
     )
@@ -248,8 +245,8 @@ def parse_define(line):
     if not match:
         return None
 
-    name=match.group(1)
-    value=match.group(2).strip()
+    name = match.group(1)
+    value = match.group(2).strip()
 
     return {
         "op": "DEFINE",
@@ -260,14 +257,18 @@ def parse_define(line):
     }
 
 
+# ============================================================
+# VALUES / EXPRESSIONS
+# ============================================================
+
 def parse_value(
     value,
     constants=None
 ):
-    value=value.strip()
+    value = value.strip()
 
     if constants is None:
-        constants={}
+        constants = {}
 
     if value in constants:
         return constants[value]
@@ -275,29 +276,28 @@ def parse_value(
     if value in BUILTIN_VALUES:
         return BUILTIN_VALUES[value]
 
-    if value=="true":
+    if value == "true":
         return 1
 
-    if value=="false":
+    if value == "false":
         return 0
 
-    if value=="&Wire":
+    if value == "&Wire":
         return "Wire"
 
-    if value=="Wire":
+    if value == "Wire":
         return "Wire"
 
-    if len(value)>=2:
-
+    if len(value) >= 2:
         if (
-            value[0]=='"'
-            and value[-1]=='"'
+            value[0] == '"'
+            and value[-1] == '"'
         ):
             return value[1:-1]
 
         if (
-            value[0]=="'"
-            and value[-1]=="'"
+            value[0] == "'"
+            and value[-1] == "'"
         ):
             return value[1:-1]
 
@@ -317,7 +317,7 @@ def parse_value(
         r"0[xX][0-9a-fA-F]+",
         value
     ):
-        return int(value,16)
+        return int(value, 16)
 
     return value
 
@@ -327,7 +327,7 @@ def parse_expression(
     constants=None
 ):
     if constants is None:
-        constants={}
+        constants = {}
 
     if value is None:
         return {
@@ -335,7 +335,7 @@ def parse_expression(
             "value": 0
         }
 
-    value=value.strip()
+    value = value.strip()
 
     if not value:
         return {
@@ -343,35 +343,51 @@ def parse_expression(
             "value": 0
         }
 
+    # Remove balanced outer parentheses.
     while (
         value.startswith("(")
         and value.endswith(")")
     ):
-        depth=0
-        valid=True
+        depth = 0
+        valid = True
 
-        for i,char in enumerate(value):
+        string_char = None
+        escaped = False
 
-            if char=="(":
-                depth+=1
+        for i, char in enumerate(value):
+            if string_char:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == string_char:
+                    string_char = None
 
-            elif char==")":
-                depth-=1
+                continue
+
+            if char in ('"', "'"):
+                string_char = char
+
+            elif char == "(":
+                depth += 1
+
+            elif char == ")":
+                depth -= 1
 
                 if (
-                    depth==0
-                    and i!=len(value)-1
+                    depth == 0
+                    and i != len(value) - 1
                 ):
-                    valid=False
+                    valid = False
                     break
 
-        if valid:
-            value=value[1:-1].strip()
+        if valid and depth == 0:
+            value = value[1:-1].strip()
         else:
             break
 
+    # Logical NOT.
     if value.startswith("!"):
-
         return {
             "type": "NOT",
             "value": parse_expression(
@@ -380,21 +396,20 @@ def parse_expression(
             )
         }
 
-    parts=split_operator(
+    # OR.
+    parts = split_operator(
         value,
         "||"
     )
 
-    if len(parts)>1:
-
-        result=parse_expression(
+    if len(parts) > 1:
+        result = parse_expression(
             parts[0],
             constants
         )
 
         for part in parts[1:]:
-
-            result={
+            result = {
                 "type": "LOGICAL",
                 "operator": "||",
                 "left": result,
@@ -406,21 +421,20 @@ def parse_expression(
 
         return result
 
-    parts=split_operator(
+    # AND.
+    parts = split_operator(
         value,
         "&&"
     )
 
-    if len(parts)>1:
-
-        result=parse_expression(
+    if len(parts) > 1:
+        result = parse_expression(
             parts[0],
             constants
         )
 
         for part in parts[1:]:
-
-            result={
+            result = {
                 "type": "LOGICAL",
                 "operator": "&&",
                 "left": result,
@@ -432,21 +446,24 @@ def parse_expression(
 
         return result
 
-    for operator in [
+    # Comparisons.
+    for operator in (
         "==",
         "!=",
         ">=",
         "<=",
         ">",
         "<"
-    ]:
-
-        parts=split_operator(
+    ):
+        parts = split_operator(
             value,
             operator
         )
 
-        if len(parts)>1:
+        if len(parts) > 1:
+            right_text = operator.join(
+                parts[1:]
+            )
 
             return {
                 "type": "COMPARE",
@@ -456,30 +473,33 @@ def parse_expression(
                     constants
                 ),
                 "right": parse_expression(
-                    operator.join(parts[1:]),
+                    right_text,
                     constants
                 )
             }
 
-    for operator in [
+    # Arithmetic.
+    for operator in (
         "+",
         "-",
         "*",
         "/"
-    ]:
-
+    ):
         if (
-            operator=="-"
+            operator == "-"
             and value.startswith("-")
         ):
             continue
 
-        parts=split_operator(
+        parts = split_operator(
             value,
             operator
         )
 
-        if len(parts)>1:
+        if len(parts) > 1:
+            right_text = operator.join(
+                parts[1:]
+            )
 
             return {
                 "type": "ARITHMETIC",
@@ -489,25 +509,25 @@ def parse_expression(
                     constants
                 ),
                 "right": parse_expression(
-                    operator.join(parts[1:]),
+                    right_text,
                     constants
                 )
             }
 
-    call_match=re.fullmatch(
-        r"([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)?)\s*\((.*)\)",
+    # Function call.
+    call_match = re.fullmatch(
+        r"([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)?)"
+        r"\s*\((.*)\)",
         value,
         re.DOTALL
     )
 
     if call_match:
-
-        function_name=call_match.group(1)
-        argument_text=call_match.group(2).strip()
+        function_name = call_match.group(1)
+        argument_text = call_match.group(2).strip()
 
         if argument_text:
-
-            arguments=[
+            arguments = [
                 parse_expression(
                     arg,
                     constants
@@ -516,10 +536,8 @@ def parse_expression(
                     argument_text
                 )
             ]
-
         else:
-
-            arguments=[]
+            arguments = []
 
         return {
             "type": "CALL",
@@ -536,28 +554,36 @@ def parse_expression(
     }
 
 
+# ============================================================
+# VARIABLES
+# ============================================================
+
+VARIABLE_TYPES = (
+    r"int|long|float|double|bool|boolean|byte|String|"
+    r"unsigned\s+long"
+)
+
+
 def parse_variable(
     line,
     constants=None
 ):
-    line=clean_line(line)
-    line=line.rstrip(";").strip()
+    line = clean_line(line)
+    line = line.rstrip(";").strip()
 
-    match=re.match(
-        r"^(?:const\s+)?"
-        r"(int|long|float|double|bool|boolean|byte|String|"
-        r"unsigned(?:\s+long)?)"
-        r"\s+"
+    match = re.match(
+        r"^(?:const\s+)?("
+        + VARIABLE_TYPES +
+        r")\s+"
         r"([A-Za-z_]\w*)"
         r"(?:\s*=\s*(.*))?$",
         line
     )
 
     if match:
-
-        variable_type=match.group(1)
-        name=match.group(2)
-        value=match.group(3)
+        variable_type = match.group(1)
+        name = match.group(2)
+        value = match.group(3)
 
         return {
             "op": "DECLARE",
@@ -574,7 +600,7 @@ def parse_variable(
             }
         }
 
-    match=re.match(
+    match = re.match(
         r"^([A-Za-z_]\w*)"
         r"\s*"
         r"(\+=|-=|\*=|/=|=|\+\+|--)"
@@ -583,7 +609,6 @@ def parse_variable(
     )
 
     if match:
-
         return {
             "op": "ASSIGN",
             "name": match.group(1),
@@ -599,66 +624,25 @@ def parse_variable(
     return None
 
 
-def parse_function_call(
-    line,
-    constants=None
-):
-    line=clean_line(line)
-
-    match=re.fullmatch(
-        r"([A-Za-z_]\w*)\s*\((.*)\)\s*;?",
-        line,
-        re.DOTALL
-    )
-
-    if not match:
-        return None
-
-    function=match.group(1)
-
-    if function in BUILTIN_FUNCTIONS:
-        return None
-
-    argument_text=match.group(2).strip()
-
-    if argument_text:
-
-        args=[
-            parse_expression(
-                arg,
-                constants
-            )
-            for arg in split_arguments(
-                argument_text
-            )
-        ]
-
-    else:
-
-        args=[]
-
-    return {
-        "op": "FUNCTION_CALL",
-        "function": function,
-        "args": args
-    }
-
+# ============================================================
+# LIBRARY OBJECTS
+# ============================================================
 
 def parse_library_declaration(
     line,
     constants=None
 ):
-    line=line.strip().rstrip(";").strip()
+    line = line.strip()
+    line = line.rstrip(";").strip()
 
-    match=re.match(
+    match = re.match(
         r"^Adafruit_SSD1306\s+"
-        r"(\w+)\s*\((.*)\)$",
+        r"([A-Za-z_]\w*)\s*\((.*)\)$",
         line,
         re.DOTALL
     )
 
     if match:
-
         return {
             "op": "LIBRARY_OBJECT",
             "library": "Adafruit_SSD1306",
@@ -675,15 +659,14 @@ def parse_library_declaration(
             ]
         }
 
-    match=re.match(
+    match = re.match(
         r"^LiquidCrystal\s+"
-        r"(\w+)\s*\((.*)\)$",
+        r"([A-Za-z_]\w*)\s*\((.*)\)$",
         line,
         re.DOTALL
     )
 
     if match:
-
         return {
             "op": "LIBRARY_OBJECT",
             "library": "LiquidCrystal",
@@ -703,19 +686,25 @@ def parse_library_declaration(
     return None
 
 
+# ============================================================
+# INSTRUCTIONS
+# ============================================================
+
 def parse_instruction(
     line,
     objects=None,
     constants=None
 ):
-    line=clean_line(line)
+    line = clean_line(line)
 
     if not line:
         return None
 
-    if line in ("{","}"):
+    if line in ("{", "}"):
         return None
 
+    # The simulator treats an infinite Arduino loop as
+    # the end of one execution cycle.
     if re.fullmatch(
         r"while\s*\(\s*true\s*\)",
         line
@@ -724,13 +713,16 @@ def parse_instruction(
             "op": "SIMULATOR_HALT"
         }
 
-    if line.startswith("return"):
-
-        value=line[
+    # Return.
+    if re.match(
+        r"^return(?:\s|;|$)",
+        line
+    ):
+        value = line[
             len("return"):
         ].strip()
 
-        value=value.rstrip(";").strip()
+        value = value.rstrip(";").strip()
 
         return {
             "op": "RETURN",
@@ -740,7 +732,8 @@ def parse_instruction(
             )
         }
 
-    match=re.fullmatch(
+    # Generic function/method call.
+    match = re.fullmatch(
         r"((?:[A-Za-z_]\w*\.)?[A-Za-z_]\w*)"
         r"\s*\((.*)\)\s*;?",
         line,
@@ -748,21 +741,23 @@ def parse_instruction(
     )
 
     if not match:
-
         raise ValueError(
             "Unsupported GSE instruction: "
-            +line
+            + line
         )
 
-    function=match.group(1)
+    function = match.group(1)
 
-    args=split_arguments(
+    args = split_arguments(
         match.group(2)
     )
 
-    if function=="pinMode":
+    # --------------------------------------------------------
+    # Arduino GPIO
+    # --------------------------------------------------------
 
-        if len(args)!=2:
+    if function == "pinMode":
+        if len(args) != 2:
             raise ValueError(
                 "pinMode requires 2 arguments"
             )
@@ -779,9 +774,8 @@ def parse_instruction(
             )
         }
 
-    if function=="digitalWrite":
-
-        if len(args)!=2:
+    if function == "digitalWrite":
+        if len(args) != 2:
             raise ValueError(
                 "digitalWrite requires 2 arguments"
             )
@@ -798,9 +792,8 @@ def parse_instruction(
             )
         }
 
-    if function=="digitalRead":
-
-        if len(args)!=1:
+    if function == "digitalRead":
+        if len(args) != 1:
             raise ValueError(
                 "digitalRead requires 1 argument"
             )
@@ -813,9 +806,8 @@ def parse_instruction(
             )
         }
 
-    if function=="analogRead":
-
-        if len(args)!=1:
+    if function == "analogRead":
+        if len(args) != 1:
             raise ValueError(
                 "analogRead requires 1 argument"
             )
@@ -828,9 +820,8 @@ def parse_instruction(
             )
         }
 
-    if function=="analogWrite":
-
-        if len(args)!=2:
+    if function == "analogWrite":
+        if len(args) != 2:
             raise ValueError(
                 "analogWrite requires 2 arguments"
             )
@@ -847,9 +838,12 @@ def parse_instruction(
             )
         }
 
-    if function=="delay":
+    # --------------------------------------------------------
+    # Timing
+    # --------------------------------------------------------
 
-        if len(args)!=1:
+    if function == "delay":
+        if len(args) != 1:
             raise ValueError(
                 "delay requires 1 argument"
             )
@@ -862,9 +856,8 @@ def parse_instruction(
             )
         }
 
-    if function=="delayMicroseconds":
-
-        if len(args)!=1:
+    if function == "delayMicroseconds":
+        if len(args) != 1:
             raise ValueError(
                 "delayMicroseconds requires 1 argument"
             )
@@ -877,14 +870,17 @@ def parse_instruction(
             )
         }
 
-    if function=="tone":
+    # --------------------------------------------------------
+    # Tone
+    # --------------------------------------------------------
 
-        if len(args)<2:
+    if function == "tone":
+        if len(args) < 2:
             raise ValueError(
                 "tone requires at least 2 arguments"
             )
 
-        instruction={
+        instruction = {
             "op": "TONE",
             "pin": parse_expression(
                 args[0],
@@ -896,7 +892,7 @@ def parse_instruction(
             )
         }
 
-        if len(args)>=3:
+        if len(args) >= 3:
             instruction["duration"] = parse_expression(
                 args[2],
                 constants
@@ -904,9 +900,8 @@ def parse_instruction(
 
         return instruction
 
-    if function=="noTone":
-
-        if len(args)!=1:
+    if function == "noTone":
+        if len(args) != 1:
             raise ValueError(
                 "noTone requires 1 argument"
             )
@@ -919,9 +914,12 @@ def parse_instruction(
             )
         }
 
-    if function=="Serial.begin":
+    # --------------------------------------------------------
+    # Serial
+    # --------------------------------------------------------
 
-        if len(args)!=1:
+    if function == "Serial.begin":
+        if len(args) != 1:
             raise ValueError(
                 "Serial.begin requires 1 argument"
             )
@@ -934,11 +932,10 @@ def parse_instruction(
             )
         }
 
-    if function=="Serial.print":
-
+    if function == "Serial.print":
         return {
             "op": "SERIAL_PRINT",
-            "value":
+            "value": (
                 parse_expression(
                     args[0],
                     constants
@@ -948,13 +945,13 @@ def parse_instruction(
                     "type": "VALUE",
                     "value": ""
                 }
+            )
         }
 
-    if function=="Serial.println":
-
+    if function == "Serial.println":
         return {
             "op": "SERIAL_PRINTLN",
-            "value":
+            "value": (
                 parse_expression(
                     args[0],
                     constants
@@ -964,39 +961,42 @@ def parse_instruction(
                     "type": "VALUE",
                     "value": ""
                 }
+            )
         }
 
-    object_libraries={}
+    # --------------------------------------------------------
+    # Library object lookup
+    # --------------------------------------------------------
+
+    object_libraries = {}
 
     if objects:
-
         for obj in objects:
-
             object_libraries[
                 obj["object"]
-            ]=obj["library"]
+            ] = obj["library"]
 
-    object_name=None
-    method=function
+    object_name = None
+    method = function
 
     if "." in function:
-
-        object_name,method=
-            function.split(
-                ".",
-                1
-            )
-
-    library=
-        object_libraries.get(
-            object_name
+        object_name, method = function.split(
+            ".",
+            1
         )
 
-    if library=="Adafruit_SSD1306":
+    library = object_libraries.get(
+        object_name
+    )
 
-        if method=="begin":
+    # --------------------------------------------------------
+    # OLED
+    # --------------------------------------------------------
 
-            if len(args)<1:
+    if library == "Adafruit_SSD1306":
+
+        if method == "begin":
+            if len(args) < 1:
                 raise ValueError(
                     "OLED4 begin requires arguments"
                 )
@@ -1012,8 +1012,7 @@ def parse_instruction(
                 ]
             }
 
-        if method=="clearDisplay":
-
+        if method == "clearDisplay":
             if args:
                 raise ValueError(
                     "OLED4 clearDisplay requires no arguments"
@@ -1023,8 +1022,7 @@ def parse_instruction(
                 "op": "OLED_CLEAR"
             }
 
-        if method=="display":
-
+        if method == "display":
             if args:
                 raise ValueError(
                     "OLED4 display requires no arguments"
@@ -1034,9 +1032,8 @@ def parse_instruction(
                 "op": "OLED_DISPLAY"
             }
 
-        if method=="setTextSize":
-
-            if len(args)!=1:
+        if method == "setTextSize":
+            if len(args) != 1:
                 raise ValueError(
                     "OLED4 setTextSize requires 1 argument"
                 )
@@ -1049,9 +1046,8 @@ def parse_instruction(
                 )
             }
 
-        if method=="setTextColor":
-
-            if len(args)!=1:
+        if method == "setTextColor":
+            if len(args) != 1:
                 raise ValueError(
                     "OLED4 setTextColor requires 1 argument"
                 )
@@ -1064,9 +1060,8 @@ def parse_instruction(
                 )
             }
 
-        if method=="setCursor":
-
-            if len(args)!=2:
+        if method == "setCursor":
+            if len(args) != 2:
                 raise ValueError(
                     "OLED4 setCursor requires 2 arguments"
                 )
@@ -1083,11 +1078,10 @@ def parse_instruction(
                 )
             }
 
-        if method=="print":
-
+        if method == "print":
             return {
                 "op": "OLED_PRINT",
-                "value":
+                "value": (
                     parse_expression(
                         args[0],
                         constants
@@ -1097,13 +1091,13 @@ def parse_instruction(
                         "type": "VALUE",
                         "value": ""
                     }
+                )
             }
 
-        if method=="println":
-
+        if method == "println":
             return {
                 "op": "OLED_PRINTLN",
-                "value":
+                "value": (
                     parse_expression(
                         args[0],
                         constants
@@ -1113,11 +1107,11 @@ def parse_instruction(
                         "type": "VALUE",
                         "value": ""
                     }
+                )
             }
 
-        if method=="drawPixel":
-
-            if len(args)!=3:
+        if method == "drawPixel":
+            if len(args) != 3:
                 raise ValueError(
                     "OLED4 drawPixel requires 3 arguments"
                 )
@@ -1138,9 +1132,8 @@ def parse_instruction(
                 )
             }
 
-        if method=="drawLine":
-
-            if len(args)!=5:
+        if method == "drawLine":
+            if len(args) != 5:
                 raise ValueError(
                     "OLED4 drawLine requires 5 arguments"
                 )
@@ -1169,9 +1162,8 @@ def parse_instruction(
                 )
             }
 
-        if method=="fillRect":
-
-            if len(args)!=5:
+        if method == "fillRect":
+            if len(args) != 5:
                 raise ValueError(
                     "OLED4 fillRect requires 5 arguments"
                 )
@@ -1202,15 +1194,22 @@ def parse_instruction(
 
         raise ValueError(
             "Unsupported OLED4 function: "
-            +function
+            + function
         )
 
-    if library=="LiquidCrystal":
+    # --------------------------------------------------------
+    # LiquidCrystal
+    # --------------------------------------------------------
 
+    if library == "LiquidCrystal":
         raise ValueError(
             "LiquidCrystal runtime support is not enabled yet: "
-            +function
+            + function
         )
+
+    # --------------------------------------------------------
+    # USER FUNCTION
+    # --------------------------------------------------------
 
     return {
         "op": "FUNCTION_CALL",
@@ -1225,15 +1224,17 @@ def parse_instruction(
     }
 
 
+# ============================================================
+# TOKENIZER
+# ============================================================
+
 def tokenize_lines(code):
+    raw_lines = code.splitlines()
 
-    raw_lines=code.splitlines()
-
-    cleaned=[]
+    cleaned = []
 
     for raw_line in raw_lines:
-
-        line=raw_line.strip()
+        line = raw_line.strip()
 
         if not line:
             continue
@@ -1241,7 +1242,7 @@ def tokenize_lines(code):
         if line.startswith("//"):
             continue
 
-        line=re.sub(
+        line = re.sub(
             r"//.*$",
             "",
             line
@@ -1250,79 +1251,62 @@ def tokenize_lines(code):
         if line:
             cleaned.append(line)
 
-    lines=[]
-    current=""
-    paren_depth=0
-    string_char=None
-    escaped=False
+    # Join lines belonging to a parenthesized expression/call.
+    lines = []
+    current = ""
+    paren_depth = 0
+    string_char = None
+    escaped = False
 
     for line in cleaned:
-
-        current+=(
+        current += (
             (" " if current else "")
-            +line
+            + line
         )
 
-        i=0
-
-        while i<len(line):
-
-            char=line[i]
-
+        for char in line:
             if string_char:
-
                 if escaped:
-                    escaped=False
-
-                elif char=="\\":
-                    escaped=True
-
-                elif char==string_char:
-                    string_char=None
-
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == string_char:
+                    string_char = None
             else:
-
                 if char in ('"', "'"):
-                    string_char=char
+                    string_char = char
+                elif char == "(":
+                    paren_depth += 1
+                elif char == ")":
+                    paren_depth -= 1
 
-                elif char=="(":
-                    paren_depth+=1
-
-                elif char==")":
-                    paren_depth-=1
-
-            i+=1
-
-        if paren_depth==0:
-
+        if paren_depth == 0:
             lines.append(
                 current.strip()
             )
-
-            current=""
+            current = ""
 
     if current.strip():
         lines.append(
             current.strip()
         )
 
-    result=[]
+    # Separate braces.
+    result = []
 
     for line in lines:
-
-        line=line.replace(
+        line = line.replace(
             "{",
             "\n{\n"
         )
 
-        line=line.replace(
+        line = line.replace(
             "}",
             "\n}\n"
         )
 
         for part in line.splitlines():
-
-            part=part.strip()
+            part = part.strip()
 
             if part:
                 result.append(part)
@@ -1330,81 +1314,96 @@ def tokenize_lines(code):
     return result
 
 
+# ============================================================
+# IF / BLOCKS
+# ============================================================
+
 def parse_if(
     lines,
     index,
     objects=None,
     constants=None
 ):
-    line=lines[index].strip()
+    line = lines[index].strip()
 
-    condition_text=line[
-        line.find("(")+1:
-        line.rfind(")")
+    condition_start = line.find("(")
+    condition_end = line.rfind(")")
+
+    if (
+        condition_start == -1
+        or condition_end == -1
+    ):
+        raise ValueError(
+            "Invalid if condition: "
+            + line
+        )
+
+    condition_text = line[
+        condition_start + 1:
+        condition_end
     ]
 
-    condition=parse_expression(
+    condition = parse_expression(
         condition_text,
         constants
     )
 
-    index+=1
+    index += 1
 
     if (
-        index>=len(lines)
-        or lines[index].strip()!="{"
+        index >= len(lines)
+        or lines[index].strip() != "{"
     ):
         raise ValueError(
             "Expected { after if condition."
         )
 
-    then_block,index=parse_block(
+    then_block, index = parse_block(
         lines,
-        index+1,
+        index + 1,
         objects,
         constants
     )
 
-    else_block=[]
+    else_block = []
 
-    if index<len(lines):
-
-        next_line=lines[index].strip()
+    if index < len(lines):
+        next_line = lines[index].strip()
 
         if next_line.startswith("else if"):
-
-            else_block,index=parse_if(
+            else_block, index = parse_if(
                 lines,
                 index,
                 objects,
                 constants
             )
 
-        elif next_line=="else":
-
-            index+=1
+        elif next_line == "else":
+            index += 1
 
             if (
-                index>=len(lines)
-                or lines[index].strip()!="{"
+                index >= len(lines)
+                or lines[index].strip() != "{"
             ):
                 raise ValueError(
                     "Expected { after else."
                 )
 
-            else_block,index=parse_block(
+            else_block, index = parse_block(
                 lines,
-                index+1,
+                index + 1,
                 objects,
                 constants
             )
 
-    return [{
-        "op": "IF",
-        "condition": condition,
-        "then": then_block,
-        "else": else_block
-    }],index
+    return [
+        {
+            "op": "IF",
+            "condition": condition,
+            "then": then_block,
+            "else": else_block
+        }
+    ], index
 
 
 def parse_block(
@@ -1414,23 +1413,21 @@ def parse_block(
     constants=None
 ):
     if constants is None:
-        constants={}
+        constants = {}
 
-    instructions=[]
+    instructions = []
 
-    while index<len(lines):
+    while index < len(lines):
+        line = lines[index].strip()
 
-        line=lines[index].strip()
-
-        if line=="}":
-            return instructions,index+1
+        if line == "}":
+            return instructions, index + 1
 
         if re.match(
             r"^if\s*\(",
             line
         ):
-
-            parsed,index=parse_if(
+            parsed, index = parse_if(
                 lines,
                 index,
                 objects,
@@ -1438,333 +1435,420 @@ def parse_block(
             )
 
             instructions.extend(parsed)
-
             continue
 
         if re.fullmatch(
             r"while\s*\(\s*true\s*\)",
             line
         ):
-
             instructions.append({
                 "op": "SIMULATOR_HALT"
             })
 
-            index+=1
+            index += 1
 
             if (
-                index<len(lines)
-                and lines[index].strip()=="{"
+                index < len(lines)
+                and lines[index].strip() == "{"
             ):
-
-                _,index=parse_block(
+                _, index = parse_block(
                     lines,
-                    index+1,
+                    index + 1,
                     objects,
                     constants
                 )
 
             continue
 
-        include=parse_include(line)
+        include = parse_include(line)
 
         if include is not None:
-
             instructions.append(
                 include
             )
-
-            index+=1
-
+            index += 1
             continue
 
-        define=parse_define(line)
+        define = parse_define(line)
 
         if define is not None:
-
             constants[
                 define["name"]
-            ]=define["value"]
+            ] = define["value"]
 
             instructions.append(
                 define
             )
 
-            index+=1
-
+            index += 1
             continue
 
-        library_object=
-            parse_library_declaration(
-                line,
-                constants
-            )
+        library_object = parse_library_declaration(
+            line,
+            constants
+        )
 
         if library_object is not None:
-
             instructions.append(
                 library_object
             )
 
-            index+=1
-
+            index += 1
             continue
 
-        variable=parse_variable(
+        variable = parse_variable(
             line,
             constants
         )
 
         if variable is not None:
-
             instructions.append(
                 variable
             )
 
-            index+=1
-
+            index += 1
             continue
 
-        instruction=parse_instruction(
+        instruction = parse_instruction(
             line,
             objects,
             constants
         )
 
         if instruction is not None:
-
             instructions.append(
                 instruction
             )
 
-        index+=1
+        index += 1
 
-    return instructions,index
+    return instructions, index
+
+
+# ============================================================
+# FUNCTION EXTRACTION
+# ============================================================
+
+FUNCTION_RETURN_TYPES = (
+    r"void|int|long|float|double|"
+    r"bool|boolean|byte|"
+    r"unsigned\s+long"
+)
+
+
+def find_matching_brace(
+    source,
+    opening_position
+):
+    depth = 1
+    position = opening_position
+
+    string_char = None
+    escaped = False
+
+    while position < len(source):
+        char = source[position]
+
+        if string_char:
+            if escaped:
+                escaped = False
+
+            elif char == "\\":
+                escaped = True
+
+            elif char == string_char:
+                string_char = None
+
+        else:
+            if char in ('"', "'"):
+                string_char = char
+
+            elif char == "{":
+                depth += 1
+
+            elif char == "}":
+                depth -= 1
+
+                if depth == 0:
+                    return position
+
+        position += 1
+
+    return -1
+
+
+def parse_function_parameters(
+    parameters,
+    function_name
+):
+    parameter_list = []
+
+    if not parameters.strip():
+        return parameter_list
+
+    for parameter in split_arguments(
+        parameters
+    ):
+        parameter = parameter.strip()
+
+        # Remove default value.
+        parameter = re.sub(
+            r"\s*=\s*.*$",
+            "",
+            parameter
+        ).strip()
+
+        # Remove const/reference/pointer markers.
+        parameter = parameter.replace(
+            "const ",
+            ""
+        )
+
+        parameter = parameter.replace(
+            "&",
+            " "
+        )
+
+        parameter = parameter.replace(
+            "*",
+            " "
+        )
+
+        parameter = re.sub(
+            r"\s+",
+            " ",
+            parameter
+        ).strip()
+
+        match = re.match(
+            r"^(.+?)\s+"
+            r"([A-Za-z_]\w*)$",
+            parameter
+        )
+
+        if not match:
+            raise ValueError(
+                "Invalid parameter in "
+                + function_name
+                + ": "
+                + parameter
+            )
+
+        parameter_list.append({
+            "type": match.group(1).strip(),
+            "name": match.group(2)
+        })
+
+    return parameter_list
 
 
 def find_functions(source):
-
-    pattern=re.compile(
-        r"\b"
-        r"(void|int|long|float|double|bool|boolean|byte)"
-        r"\s+"
+    pattern = re.compile(
+        r"\b("
+        + FUNCTION_RETURN_TYPES +
+        r")\s+"
         r"([A-Za-z_]\w*)"
         r"\s*\((.*?)\)\s*\{",
         re.DOTALL
     )
 
-    functions={}
+    functions = {}
 
     for match in pattern.finditer(source):
+        return_type = match.group(1)
+        name = match.group(2)
+        parameters = match.group(3)
 
-        return_type=match.group(1)
-        name=match.group(2)
-        parameters=match.group(3).strip()
+        body_start = match.end()
 
-        start=match.end()
+        body_end = find_matching_brace(
+            source,
+            body_start
+        )
 
-        depth=1
-        position=start
-        string_char=None
-        escaped=False
-
-        while position<len(source):
-
-            char=source[position]
-
-            if string_char:
-
-                if escaped:
-                    escaped=False
-
-                elif char=="\\":
-                    escaped=True
-
-                elif char==string_char:
-                    string_char=None
-
-            else:
-
-                if char in ('"', "'"):
-                    string_char=char
-
-                elif char=="{":
-                    depth+=1
-
-                elif char=="}":
-
-                    depth-=1
-
-                    if depth==0:
-                        break
-
-            position+=1
-
-        if depth!=0:
-
+        if body_end == -1:
             raise ValueError(
                 "Unclosed function: "
-                +name
+                + name
             )
 
-        parameter_list=[]
+        if name in functions:
+            raise ValueError(
+                "Duplicate function: "
+                + name
+            )
 
-        if parameters:
+        parameter_list = parse_function_parameters(
+            parameters,
+            name
+        )
 
-            for parameter in split_arguments(
-                parameters
-            ):
-
-                parameter=parameter.strip()
-
-                parameter=re.sub(
-                    r"\s*=\s*.*$",
-                    "",
-                    parameter
-                ).strip()
-
-                parameter=parameter.replace(
-                    "&",
-                    " "
-                )
-
-                parameter=parameter.replace(
-                    "*",
-                    " "
-                )
-
-                parameter_match=re.match(
-                    r"^(.*?)\s+"
-                    r"([A-Za-z_]\w*)$",
-                    parameter
-                )
-
-                if not parameter_match:
-
-                    raise ValueError(
-                        "Invalid parameter in "
-                        +name
-                        +": "
-                        +parameter
-                    )
-
-                parameter_list.append({
-                    "type":
-                        parameter_match.group(1).strip(),
-                    "name":
-                        parameter_match.group(2)
-                })
-
-        functions[name]={
+        functions[name] = {
             "name": name,
             "return_type": return_type,
             "parameters": parameter_list,
             "code": source[
-                start:position
-            ]
+                body_start:
+                body_end
+            ],
+            "start": match.start(),
+            "end": body_end + 1
         }
 
     return functions
 
 
-def parse_global_code(source):
-    source=re.sub(
-        r"//.*$",
-        "",
-        source,
-        flags=re.MULTILINE
+# ============================================================
+# GLOBAL CODE
+# ============================================================
+
+def remove_function_bodies(
+    source,
+    functions
+):
+    if not functions:
+        return source
+
+    ranges = sorted(
+        (
+            function["start"],
+            function["end"]
+        )
+        for function in functions.values()
     )
 
-    libraries=[]
-    objects=[]
-    constants={}
+    result = []
+    position = 0
 
-    /*
-        #define
-    */
-    for match in re.finditer(
-        r"^\s*#define\s+(\w+)\s+(.+)$",
-        source,
-        re.MULTILINE
-    ):
-
-        name=match.group(1)
-        value=match.group(2).strip()
-
-        constants[name]=parse_value(
-            value,
-            constants
+    for start, end in ranges:
+        result.append(
+            source[position:start]
         )
+
+        result.append("\n")
+
+        position = end
+
+    result.append(
+        source[position:]
+    )
+
+    return "".join(result)
+
+
+def parse_global_code(
+    source,
+    functions
+):
+    source_without_functions = remove_function_bodies(
+        source,
+        functions
+    )
+
+    libraries = []
+    objects = []
+    constants = {}
+    global_variables = []
+
+    # --------------------------------------------------------
+    # Includes
+    # --------------------------------------------------------
 
     for match in re.finditer(
         r"#include\s*[<\"]([^>\"]+)[>\"]",
-        source
+        source_without_functions
     ):
-
-        library=match.group(1)
+        library = match.group(1)
 
         if library not in SUPPORTED_LIBRARIES:
-
             raise ValueError(
                 "Unsupported library: "
-                +library
+                + library
             )
 
         if library not in libraries:
             libraries.append(library)
 
-    for match in re.finditer(
-        r"Adafruit_SSD1306\s+"
-        r"(\w+)\s*\((.*?)\)\s*;",
-        source,
-        re.DOTALL
-    ):
-
-        objects.append({
-            "op": "LIBRARY_OBJECT",
-            "library": "Adafruit_SSD1306",
-            "system": "OLED4",
-            "object": match.group(1),
-            "args": [
-                parse_expression(
-                    arg,
-                    constants
-                )
-                for arg in split_arguments(
-                    match.group(2)
-                )
-            ]
-        })
+    # --------------------------------------------------------
+    # Defines
+    # --------------------------------------------------------
 
     for match in re.finditer(
-        r"LiquidCrystal\s+"
-        r"(\w+)\s*\((.*?)\)\s*;",
-        source,
-        re.DOTALL
+        r"^\s*#define\s+(\w+)\s+(.+)$",
+        source_without_functions,
+        re.MULTILINE
     ):
+        name = match.group(1)
+        value = match.group(2).strip()
 
-        objects.append({
-            "op": "LIBRARY_OBJECT",
-            "library": "LiquidCrystal",
-            "system": None,
-            "object": match.group(1),
-            "args": [
-                parse_expression(
-                    arg,
-                    constants
-                )
-                for arg in split_arguments(
-                    match.group(2)
-                )
-            ]
-        })
+        constants[name] = parse_value(
+            value,
+            constants
+        )
+
+    # --------------------------------------------------------
+    # Tokenize remaining global code.
+    # --------------------------------------------------------
+
+    lines = tokenize_lines(
+        source_without_functions
+    )
+
+    for line in lines:
+        line = line.strip()
+
+        if not line:
+            continue
+
+        if line in ("{", "}"):
+            continue
+
+        if line.startswith("#include"):
+            continue
+
+        if line.startswith("#define"):
+            continue
+
+        library_object = parse_library_declaration(
+            line,
+            constants
+        )
+
+        if library_object is not None:
+            objects.append(
+                library_object
+            )
+            continue
+
+        variable = parse_variable(
+            line,
+            constants
+        )
+
+        if variable is not None:
+            global_variables.append(
+                variable
+            )
+            continue
+
+        # Ignore anything that is not a supported
+        # global declaration.
+        #
+        # This prevents function declarations or random
+        # unsupported global syntax from accidentally
+        # entering setup.
 
     return (
         libraries,
         objects,
-        constants
+        constants,
+        global_variables
     )
 
+
+# ============================================================
+# FUNCTION COMPILATION
+# ============================================================
 
 def compile_function(
     code,
@@ -1772,103 +1856,142 @@ def compile_function(
     constants=None
 ):
     if constants is None:
-        constants={}
+        constants = {}
 
-    lines=tokenize_lines(
+    lines = tokenize_lines(
         code
     )
 
-    instructions,index=parse_block(
+    instructions, index = parse_block(
         lines,
         0,
         objects,
         constants
     )
 
-    if index<len(lines):
-
+    if index < len(lines):
         raise ValueError(
             "Unexpected code near: "
-            +lines[index]
+            + lines[index]
         )
 
     return instructions
 
 
+# ============================================================
+# MAIN COMPILER
+# ============================================================
+
 def compile_gse(
     source,
     board="arduino:avr:uno"
 ):
-    if not source.strip():
-
+    if not source or not source.strip():
         raise ValueError(
             "No Arduino source code provided."
         )
 
-    (
-        libraries,
-        objects,
-        constants
-    )=parse_global_code(
-        source
-    )
+    # --------------------------------------------------------
+    # Find every user function first.
+    # --------------------------------------------------------
 
-    functions=find_functions(
+    functions = find_functions(
         source
     )
 
     if "setup" not in functions:
-
         raise ValueError(
             "Missing setup()"
         )
 
     if "loop" not in functions:
-
         raise ValueError(
             "Missing loop()"
         )
 
-    setup_function=functions["setup"]
-    loop_function=functions["loop"]
+    # --------------------------------------------------------
+    # Global declarations / libraries / constants.
+    # --------------------------------------------------------
 
-    setup=compile_function(
-        setup_function["code"],
+    (
+        libraries,
+        objects,
+        constants,
+        global_variables
+    ) = parse_global_code(
+        source,
+        functions
+    )
+
+    # --------------------------------------------------------
+    # Compile setup.
+    #
+    # Global declarations are placed before setup so the
+    # existing JavaScript runtime can initialize them through
+    # normal DECLARE instructions before setup starts.
+    # --------------------------------------------------------
+
+    setup_body = compile_function(
+        functions["setup"]["code"],
         objects,
         constants.copy()
     )
 
-    loop=compile_function(
-        loop_function["code"],
+    setup = []
+
+    for variable in global_variables:
+        setup.append(
+            variable
+        )
+
+    setup.extend(
+        setup_body
+    )
+
+    # --------------------------------------------------------
+    # Compile loop.
+    # --------------------------------------------------------
+
+    loop = compile_function(
+        functions["loop"]["code"],
         objects,
         constants.copy()
     )
 
-    compiled_functions={}
+    # --------------------------------------------------------
+    # Compile user functions.
+    # --------------------------------------------------------
 
-    for name,function in functions.items():
+    compiled_functions = {}
 
+    for name, function in functions.items():
         if name in CONTROL_FUNCTIONS:
             continue
 
-        compiled_functions[name]={
+        compiled_functions[name] = {
             "name": name,
-            "return_type":
-                function["return_type"],
-            "parameters":
-                function["parameters"],
-            "program":
-                compile_function(
-                    function["code"],
-                    objects,
-                    constants.copy()
-                )
+            "return_type": function[
+                "return_type"
+            ],
+            "parameters": function[
+                "parameters"
+            ],
+            "program": compile_function(
+                function["code"],
+                objects,
+                constants.copy()
+            )
         }
+
+    # --------------------------------------------------------
+    # Final GSE.
+    # --------------------------------------------------------
 
     return {
         "format": "GSE",
         "version": GSE_VERSION,
         "board": board,
+
         "libraries": libraries,
 
         "virtual_libraries": {
@@ -1882,8 +2005,16 @@ def compile_gse(
 
         "objects": objects,
 
-        "functions":
-            compiled_functions,
+        "globals": [
+            {
+                "name": variable["name"],
+                "type": variable["type"],
+                "value": variable["value"]
+            }
+            for variable in global_variables
+        ],
+
+        "functions": compiled_functions,
 
         "program": {
             "setup": setup,
