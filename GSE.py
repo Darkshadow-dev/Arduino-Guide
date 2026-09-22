@@ -312,7 +312,6 @@ def parse_value(
 
     return value
 
-
 def parse_expression(
     value,
     constants=None
@@ -336,6 +335,7 @@ def parse_expression(
         valid = True
 
         for i, char in enumerate(value):
+
             if char == "(":
                 depth += 1
 
@@ -355,28 +355,49 @@ def parse_expression(
         else:
             break
 
+
+    /*
+        Logical NOT.
+
+        This is important for:
+
+            !display.begin(...)
+
+        because display.begin() must first be parsed
+        as a CALL expression.
+    */
+
     if value.startswith("!"):
+
         return {
             "type": "NOT",
             "value": parse_expression(
-                value[1:],
+                value[1:].strip(),
                 constants
             )
         }
 
+
+    /*
+        Logical OR
+    */
+
     for operator in ["||"]:
+
         parts = split_operator(
             value,
             operator
         )
 
         if len(parts) > 1:
+
             result = parse_expression(
                 parts[0],
                 constants
             )
 
             for part in parts[1:]:
+
                 result = {
                     "type": "LOGICAL",
                     "operator": operator,
@@ -388,20 +409,28 @@ def parse_expression(
                 }
 
             return result
+
+
+    /*
+        Logical AND
+    */
 
     for operator in ["&&"]:
+
         parts = split_operator(
             value,
             operator
         )
 
         if len(parts) > 1:
+
             result = parse_expression(
                 parts[0],
                 constants
             )
 
             for part in parts[1:]:
+
                 result = {
                     "type": "LOGICAL",
                     "operator": operator,
@@ -413,6 +442,11 @@ def parse_expression(
                 }
 
             return result
+
+
+    /*
+        Comparisons
+    */
 
     for operator in [
         "==",
@@ -422,12 +456,14 @@ def parse_expression(
         ">",
         "<"
     ]:
+
         parts = split_operator(
             value,
             operator
         )
 
         if len(parts) > 1:
+
             return {
                 "type": "COMPARE",
                 "operator": operator,
@@ -441,18 +477,38 @@ def parse_expression(
                 )
             }
 
+
+    /*
+        Arithmetic
+
+        Do not treat a leading "-" as subtraction.
+
+        This allows values such as:
+
+            -1
+            -5
+    */
+
     for operator in [
         "+",
         "-",
         "*",
         "/"
     ]:
+
+        if (
+            operator == "-"
+            and value.startswith("-")
+        ):
+            continue
+
         parts = split_operator(
             value,
             operator
         )
 
         if len(parts) > 1:
+
             return {
                 "type": "ARITHMETIC",
                 "operator": operator,
@@ -466,26 +522,60 @@ def parse_expression(
                 )
             }
 
+
+    /*
+        Function / method call.
+
+        Supports:
+
+            digitalRead(2)
+            analogRead(A0)
+            display.begin(...)
+            display.print(...)
+            display.println(...)
+
+        The name may contain one dot.
+    */
+
     call_match = re.fullmatch(
-        r"(\w+(?:\.\w+)?)\s*\((.*)\)",
+        r"([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)?)\s*\((.*)\)",
         value,
         re.DOTALL
     )
 
     if call_match:
-        return {
-            "type": "CALL",
-            "function": call_match.group(1),
-            "args": [
+
+        function_name = call_match.group(1)
+
+        argument_text = call_match.group(2).strip()
+
+        if argument_text:
+
+            arguments = [
                 parse_expression(
                     arg,
                     constants
                 )
                 for arg in split_arguments(
-                    call_match.group(2)
+                    argument_text
                 )
             ]
+
+        else:
+
+            arguments = []
+
+
+        return {
+            "type": "CALL",
+            "function": function_name,
+            "args": arguments
         }
+
+
+    /*
+        Normal value / constant / variable.
+    */
 
     return {
         "type": "VALUE",
