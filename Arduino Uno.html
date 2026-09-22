@@ -2,4157 +2,2962 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/png" href="Images/Website-Guide.png">
-<title>Arduino IDE Web</title>
-
-<style>
-*{
-  box-sizing:border-box;
-}
-
-html,
-body{
-  width:100%;
-  height:100%;
-  margin:0;
-}
-
-body{
-  font-family:monospace;
-  background:#0b0f1a;
-  color:#fff;
-  overflow:hidden;
-}
-
-button,
-select,
-input,
-textarea{
-  font-family:inherit;
-}
-
-button{
-  border:1px solid #263653;
-  background:#172238;
-  color:#fff;
-  padding:7px 12px;
-  border-radius:5px;
-  cursor:pointer;
-  transition:.15s;
-}
-
-button:hover{
-  background:#243657;
-  border-color:#3b5685;
-}
-
-button:active{
-  transform:translateY(1px);
-}
-
-button.primary{
-  background:#087f83;
-  border-color:#0aaeb3;
-}
-
-button.primary:hover{
-  background:#099da2;
-}
-
-button.success{
-  background:#116b42;
-  border-color:#18a865;
-}
-
-button.success:hover{
-  background:#168653;
-}
-
-button.danger{
-  background:#652c35;
-  border-color:#98404c;
-}
-
-button.danger:hover{
-  background:#7b3540;
-}
-
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
-
-header{
-  height:58px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:8px 10px;
-  background:#111827;
-  border-bottom:1px solid #263044;
-  white-space:nowrap;
-  overflow-x:auto;
-}
-
-header::-webkit-scrollbar{
-  height:0;
-}
-
-#brand{
-  font-weight:bold;
-  color:#00d8c9;
-  padding:0 8px;
-  margin-right:4px;
-}
-
-#filename{
-  width:125px;
-  padding:7px 9px;
-  border:1px solid #263653;
-  border-radius:5px;
-  background:#0b1220;
-  color:#fff;
-  outline:none;
-}
-
-#filename:focus{
-  border-color:#00aeb3;
-}
-
-.nav-separator{
-  width:1px;
-  height:26px;
-  background:#2a354b;
-  margin:0 3px;
-}
-
-#editorWrap{
-  display:flex;
-  height:calc(100vh - 178px);
-  min-height:180px;
-}
-
-#lineNums{
-  width:52px;
-  flex-shrink:0;
-  background:#0d1422;
-  border-right:1px solid #202b3f;
-  padding:10px 7px;
-  color:#58657a;
-  text-align:right;
-  font-size:14px;
-  line-height:1.4;
-  overflow:hidden;
-  user-select:none;
-}
-
-#lineNums .error-line{
-  color:#ff5f67;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-#lineNums .warning-line{
-  color:#f5b942;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-#lineNums .active-error{
-  background:#51232a;
-  border-radius:3px;
-}
-
-#editorBox{
-  position:relative;
-  flex:1;
-  min-width:0;
-  overflow:hidden;
-}
-
-#editor,
-#highlight{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:10px 12px;
-  border:0;
-  outline:none;
-  font-family:monospace;
-  font-size:14px;
-  line-height:1.4;
-  white-space:pre;
-  overflow:auto;
-  tab-size:2;
-}
-
-#highlight{
-  z-index:1;
-  pointer-events:none;
-  color:#d7e2f2;
-}
-
-#editor{
-  z-index:2;
-  resize:none;
-  background:transparent;
-  color:transparent;
-  caret-color:#00ff99;
-  overflow:auto;
-}
-
-#editor::selection{
-  background:rgba(0,180,255,.25);
-}
-
-#highlight::-webkit-scrollbar,
-#editor::-webkit-scrollbar{
-  width:8px;
-  height:8px;
-}
-
-#highlight::-webkit-scrollbar-thumb,
-#editor::-webkit-scrollbar-thumb{
-  background:#26344d;
-  border-radius:4px;
-}
-
-#highlight::-webkit-scrollbar-track,
-#editor::-webkit-scrollbar-track{
-  background:#0b111d;
-}
-
-#errorMarkers{
-  position:absolute;
-  inset:0;
-  z-index:3;
-  pointer-events:none;
-  overflow:hidden;
-}
-
-.error-marker{
-  position:absolute;
-  left:12px;
-  right:12px;
-  height:20px;
-  border-bottom:2px solid #ff4d5a;
-  background:rgba(255,70,80,.06);
-}
-
-#errorTooltip{
-  position:absolute;
-  z-index:30;
-  display:none;
-  max-width:420px;
-  padding:6px 9px;
-  border:1px solid #7d3942;
-  border-radius:5px;
-  background:#24151a;
-  color:#ffd7da;
-  box-shadow:0 5px 18px rgba(0,0,0,.45);
-  font-size:12px;
-  line-height:1.35;
-  pointer-events:none;
-  white-space:normal;
-}
-/* =========================
-   AUTOCOMPLETE
-========================= */
-
-#autocomplete{
-  position:absolute;
-  z-index:20;
-  display:none;
-  width:260px;
-  max-height:230px;
-  overflow:auto;
-  background:#111827;
-  border:1px solid #344563;
-  border-radius:6px;
-  box-shadow:0 8px 25px rgba(0,0,0,.45);
-  font-size:13px;
-}
-
-#autocomplete.visible{
-  display:block;
-}
-
-.autocomplete-item{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:6px 9px;
-  cursor:pointer;
-}
-
-.autocomplete-item:hover,
-.autocomplete-item.selected{
-  background:#1d3150;
-}
-
-.autocomplete-name{
-  color:#dce8f8;
-}
-
-.autocomplete-type{
-  color:#7185a3;
-  font-size:11px;
-}
-
-.autocomplete-help{
-  padding:7px 9px;
-  border-top:1px solid #293650;
-  color:#647994;
-  font-size:10px;
-}
-
-/* =========================
-   BOTTOM
-========================= */
-
-#bottomBar{
-  height:130px;
-  display:grid;
-  grid-template-columns:1fr;
-  grid-template-rows:37px minmax(0,1fr);
-  background:#0d1420;
-  border-top:1px solid #263044;
-}
-
-#consoleHeader{
-  grid-column:1 / -1;
-  grid-row:1;
-  height:38px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 10px;
-  background:#111827;
-  border-bottom:1px solid #263044;
-  color:#aab7ca;
-  font-size:13px;
-}
-
-#consoleTitle{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-#statusDot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#64748b;
-}
-
-#statusDot.success{
-  background:#22c55e;
-}
-
-#statusDot.error{
-  background:#ef4444;
-}
-
-#statusDot.running{
-  background:#f59e0b;
-}
-
-#consoleButtons{
-  display:flex;
-  gap:5px;
-}
-
-#consoleButtons button{
-  padding:3px 8px;
-  font-size:12px;
-}
-
-#console{
-  grid-column:1;
-  grid-row:2;
-  min-width:0;
-  min-height:0;
-  margin:0;
-  padding:8px 10px;
-  overflow:auto;
-  color:#b8ffcc;
-  background:#080d15;
-  font-size:13px;
-  line-height:1.4;
-  white-space:pre-wrap;
-}
-
-#errorPanel{
-  grid-column:2;
-  grid-row:2;
-}
-
-#liveCounter{
-  margin-left:auto;
-  color:#8ea0b9;
-  font-size:12px;
-  display:flex;
-  align-items:center;
-  gap:5px;
-}
-
-.live-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:#22c55e;
-  box-shadow:0 0 7px rgba(34,197,94,.7);
-}
-
-#compileInfo{
-  color:#7890ad;
-  font-size:12px;
-  margin-left:5px;
-}
-
-.output-error{
-  color:#ff7a83;
-}
-
-.output-success{
-  color:#5ee68c;
-}
-
-@media(max-width:900px){
-
-  #brand{
-    display:none;
-  }
-
-  header{
-    gap:5px;
-  }
-
-  #filename{
-    width:105px;
-  }
-}
-
-@media(max-width:650px){
-
-  header{
-    height:52px;
-  }
-
-  #editorWrap{
-    height:calc(100vh - 172px);
-  }
-
-  #bottomBar{
-    height:120px;
-  }
-
-  header button{
-    padding:6px 8px;
-  }
-
-  #lineNums{
-    width:42px;
-    font-size:12px;
-  }
-
-  #editor,
-  #highlight{
-    font-size:13px;
-  }
-
-  #autocomplete{
-    width:220px;
-  }
-}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Arduino Uno Simulator</title>
+<link rel="stylesheet" href="css/uno.css">
 </head>
-
 <body>
 
-<header>
+<button id="backButton" onclick="history.back()">← Back</button>
 
-  <div id="brand">Arduino IDE Web</div>
+<div id="workspace">
 
-  <button onclick="newProject()">New</button>
-  <button onclick="document.getElementById('fileInput').click()">Open</button>
-  <button onclick="saveFile()">Save</button>
+    <div id="simulator">
 
-  <div class="nav-separator"></div>
-
-  <button class="primary" onclick="compileCode()">Compile</button>
-  <button class="success" onclick="runSimulator()">Run Simulator</button>
-
-  <select id="examples" onchange="loadExample(this.value)">
-    <option value="">Examples</option>
-    <option value="blink">Blink</option>
-    <option value="button">Button</option>
-    <option value="button-led">Button LED</option>
-    <option value="pwm">PWM</option>
-    <option value="multi-led">Multi LED</option>
-    <option value="buzzer">Buzzer</option>
-    <option value="analog">Analog</option>
-    <option value="joystick">Joystick</option>
-    <option value="serial">Serial</option>
-    <option value="timer">GSE Full Test</option>
-  </select>
-
-  <input id="filename" value="project">
-
-  <div class="nav-separator"></div>
-
-  <button onclick="go('Arduino Guide.html#home')">Home</button>
-  <button onclick="go('Examples.html#examples')">Examples</button>
-  <button onclick="go('Arduino Quiz.html')">Quizzes</button>
-  <button onclick="go('Arduino Tutorial.html#home')">Tutorials</button>
-  <button onclick="go('https://darkshadow-dev.github.io/community/Arduino%20Community.html')">Community</button>
-  <button onclick="go('Arduino Extended.html#home')">Registry text</button>
+        <div class="workbenchTitle">
+            GUIDELINES ARDUINO SIMULATOR
+        </div>
 
 
-  <div id="liveCounter">
-    <span class="live-dot"></span>
-    Online:
-    <span id="onlineCount">0</span>
-  </div>
+        <div id="simulatorStatus">
+            Loading simulator...
+        </div>
 
-</header>
+        <div id="simulatorConsole"></div>
 
-<input
-  type="file"
-  id="fileInput"
-  style="display:none"
-  accept=".ino,.txt,.cpp,.h,.c"
->
+        <!-- ====================================================
+             ARDUINO UNO
+             ==================================================== -->
 
-<div id="editorWrap">
+        <div id="arduinoUno">
 
-  <div id="lineNums"></div>
+            <div id="boardLabel">
+                Arduino UNO
+            </div>
 
-  <div id="editorBox">
-  <div id="errorMarkers"></div>
-  <div id="errorTooltip"></div>
-    <pre id="highlight"></pre>
+            <div id="boardSubLabel">
+                ATmega328P • DIGITAL / ANALOG I/O
+            </div>
 
-    <textarea
-      id="editor"
-      spellcheck="false"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
-    ></textarea>
+            <div id="boardLeds">
 
-    <div id="autocomplete">
+                <div class="boardLedUnit">
+                    <div class="boardLed power"></div>
+                    <span>PWR</span>
+                </div>
 
-      <div id="autocompleteItems"></div>
+                <div class="boardLedUnit">
+                    <div class="boardLed"></div>
+                    <span>RX</span>
+                </div>
 
-      <div class="autocomplete-help">
-        Tab / Enter = accept &nbsp; • &nbsp; Esc = close
-      </div>
+                <div class="boardLedUnit">
+                    <div class="boardLed"></div>
+                    <span>TX</span>
+                </div>
 
+            </div>
+
+            <div id="cpuChip">
+                <div id="cpuText">
+                    ATMEGA328P<br>
+                    MICROCONTROLLER
+                </div>
+            </div>
+
+            <div id="crystal"></div>
+
+            <div id="builtinLed"></div>
+
+            <div id="digitalHeader">
+
+                <div class="pinHeaderTitle">
+                    DIGITAL PINS • 2–13
+                </div>
+
+                <div id="digitalPins">
+                    <div class="digitalPin" data-pin="2">2</div>
+                    <div class="digitalPin" data-pin="3">3</div>
+                    <div class="digitalPin" data-pin="4">4</div>
+                    <div class="digitalPin" data-pin="5">5</div>
+                    <div class="digitalPin" data-pin="6">6</div>
+                    <div class="digitalPin" data-pin="7">7</div>
+                    <div class="digitalPin" data-pin="8">8</div>
+                    <div class="digitalPin" data-pin="9">9</div>
+                    <div class="digitalPin" data-pin="10">10</div>
+                    <div class="digitalPin" data-pin="11">11</div>
+                    <div class="digitalPin" data-pin="12">12</div>
+                    <div class="digitalPin" data-pin="13">13</div>
+                </div>
+
+            </div>
+
+            <div id="analogPins">
+                <div class="analogPin">A0</div>
+                <div class="analogPin">A1</div>
+                <div class="analogPin">A2</div>
+                <div class="analogPin">A3</div>
+                <div class="analogPin">A4</div>
+                <div class="analogPin">A5</div>
+            </div>
+
+        </div>
+
+        <!-- ====================================================
+             BREADBOARD
+             ==================================================== -->
+
+        <div id="breadboard">
+
+            <div id="breadboardTitle">
+                SIMULATED COMPONENT BOARD
+            </div>
+
+            <div id="breadboardRailTop"></div>
+            <div id="breadboardRailBottom"></div>
+
+            <div id="breadboardHoles">
+
+                <script>
+                    for(let i=0;i<300;i++){
+                        document.write('<div class="breadHole"></div>');
+                    }
+                </script>
+
+            </div>
+
+            <div id="components">
+
+                <!-- JOYSTICK -->
+
+                <div id="joystick">
+                    <div id="joystickBase"></div>
+                    <div id="joystickStick"></div>
+                    <div id="joystickLabel">JOYSTICK</div>
+                </div>
+
+ <div id="oled4">
+    <div class="oledScreen">
+        <canvas id="oled4Canvas" width="128" height="64"></canvas>
     </div>
 
-  </div>
-
+    <div class="oledPins">
+        <span>GND</span>
+        <span>VCC</span>
+        <span>SCL</span>
+        <span>SDA</span>
+    </div>
 </div>
 
+                <!-- OLED 16 PIN -->
 
-<div id="bottomBar">
+                <div id="oled16">
+                    <div id="oled16Screen">
+                        OLED DISPLAY<br>
+                        128 × 64
+                    </div>
 
-  <div id="consoleHeader">
+                    <div class="oled16Pins">
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                        <div class="oled16Pin"></div>
+                    </div>
+                </div>
 
-    <div id="consoleTitle">
+                <!-- SENSORS -->
 
-      <span id="statusDot"></span>
+                <div id="sensor1" class="sensor">
+                    LIGHT<br>SENSOR
+                </div>
 
-      <span>Output</span>
+                <div id="sensor2" class="sensor">
+                    TEMP<br>SENSOR
+                </div>
 
-      <span id="compileInfo"></span>
+                <div id="sensor3" class="sensor">
+                    DISTANCE<br>SENSOR
+                </div>
+
+                <!-- BUTTONS -->
+
+                <div id="buttonBank">
+
+                    <div class="pinButton pushButton" data-pin="2">
+                        <div class="buttonCap">PUSH</div>
+                        <span>D2</span>
+                    </div>
+
+                    <div class="pinButton pushButton" data-pin="3">
+                        <div class="buttonCap">PUSH</div>
+                        <span>D3</span>
+                    </div>
+
+                    <div class="pinButton toggleButton" data-pin="4">
+                        <div class="buttonCap">OFF</div>
+                        <span>D4</span>
+                    </div>
+
+                    <div class="pinButton toggleButton" data-pin="5">
+                        <div class="buttonCap">OFF</div>
+                        <span>D5</span>
+                    </div>
+
+                </div>
+
+                <!-- LEDS -->
+
+                <div id="ledBank">
+
+                    <div class="externalLed ledRed" data-pin="2">
+                        <span>2</span>
+                    </div>
+
+                    <div class="externalLed ledOrange" data-pin="3">
+                        <span>3</span>
+                    </div>
+
+                    <div class="externalLed ledYellow" data-pin="4">
+                        <span>4</span>
+                    </div>
+
+                    <div class="externalLed ledGreen" data-pin="5">
+                        <span>5</span>
+                    </div>
+
+                    <div class="externalLed ledBlue" data-pin="6">
+                        <span>6</span>
+                    </div>
+
+                    <div class="externalLed ledPurple" data-pin="7">
+                        <span>7</span>
+                    </div>
+
+                    <div class="externalLed ledPink" data-pin="8">
+                        <span>8</span>
+                    </div>
+
+                    <div class="externalLed ledCyan" data-pin="9">
+                        <span>9</span>
+                    </div>
+
+                    <div class="externalLed ledWhite" data-pin="10">
+                        <span>10</span>
+                    </div>
+
+                    <div class="externalLed ledLime" data-pin="11">
+                        <span>11</span>
+                    </div>
+
+                    <div class="externalLed ledTeal" data-pin="12">
+                        <span>12</span>
+                    </div>
+
+                    <div class="externalLed ledWarm" data-pin="13">
+                        <span>13</span>
+                    </div>
+
+                </div>
+
+                <div id="ledLabel" class="componentLabel">
+                    DIGITAL LEDS • PIN 2–13
+                </div>
+
+                <!-- POTENTIOMETER -->
+
+                <div id="potentiometer">
+                    <div id="potKnob"></div>
+                    <div id="potValue">A0<br>0</div>
+                </div>
+<div id="buzzer">
+    <div id="buzzerTop"></div>
+    <span>BUZZER<br>D6</span>
+</div>
+            </div>
+
+        </div>
+
+        <div id="pinInfo">
+            DIGITAL 2–13 • ANALOG A0–A5 • COMPONENTS PREWIRED
+        </div>
+
+        <div id="simulatorVersion">
+            GSE SIMULATOR • UNO
+        </div>
 
     </div>
-
-    <div id="consoleButtons">
-
-      <button onclick="clearConsole()">Clear</button>
-
-      <button
-        id="downloadHexButton"
-        onclick="downloadHex()"
-        disabled
-      >
-        Download HEX
-      </button>
-
-    </div>
-
-  </div>
-
-  <pre id="console"></pre>
 
 </div>
 
 <script>
-
-const API =
-  "https://arduino-guide-6.onrender.com";
-
-let editor;
-let highlight;
-let lines;
-let consoleBox;
-let fileInput;
-let filename;
-let statusDot;
-let compileInfo;
-let downloadHexButton;
-let autocomplete;
-let autocompleteItems;
-let errorPanel;
-let errorMarkers;
-let errorTooltip;
-let lastHexUrl = null;
-
-let autocompleteResults = [];
-let autocompleteIndex = 0;
-
-
-/* =========================
-   AUTOCOMPLETE DATABASE
-========================= */
-
-const autocompleteWords = [
-
-  /* =========================
-     Arduino
-  ========================= */
-
-  ["pinMode","Arduino","()"],
-  ["digitalWrite","Arduino","()"],
-  ["digitalRead","Arduino","()"],
-  ["analogRead","Arduino","()"],
-  ["analogWrite","Arduino","()"],
-  ["delay","Arduino","()"],
-  ["delayMicroseconds","Arduino","()"],
-  ["millis","Arduino","()"],
-  ["micros","Arduino","()"],
-  ["tone","Arduino","()"],
-  ["noTone","Arduino","()"],
-  ["pulseIn","Arduino","()"],
-  ["pulseInLong","Arduino","()"],
-  ["attachInterrupt","Arduino","()"],
-  ["detachInterrupt","Arduino","()"],
-  ["interrupts","Arduino","()"],
-  ["noInterrupts","Arduino","()"],
-  ["shiftIn","Arduino","()"],
-  ["shiftOut","Arduino","()"],
-  ["digitalPinToInterrupt","Arduino","()"],
-  ["analogReference","Arduino","()"],
-  ["analogReadResolution","Arduino","()"],
-  ["analogWriteResolution","Arduino","()"],
-
-  /* =========================
-     Serial
-  ========================= */
-
-  ["Serial","Object"],
-  ["Serial1","Object"],
-  ["Serial2","Object"],
-  ["Serial3","Object"],
-
-  ["begin","Method","()"],
-  ["end","Method","()"],
-  ["available","Method","()"],
-  ["read","Method","()"],
-  ["peek","Method","()"],
-  ["write","Method","()"],
-  ["print","Method","()"],
-  ["println","Method","()"],
-  ["printf","Method","()"],
-  ["flush","Method","()"],
-
-  /* =========================
-     Arduino constants
-  ========================= */
-
-  ["HIGH","Constant"],
-  ["LOW","Constant"],
-  ["INPUT","Constant"],
-  ["OUTPUT","Constant"],
-  ["INPUT_PULLUP","Constant"],
-  ["LED_BUILTIN","Constant"],
-
-  ["DEFAULT","Constant"],
-  ["INTERNAL","Constant"],
-  ["INTERNAL1V1","Constant"],
-  ["INTERNAL2V56","Constant"],
-  ["EXTERNAL","Constant"],
-
-  /* =========================
-     Pins
-  ========================= */
-
-  ["A0","Pin"],
-  ["A1","Pin"],
-  ["A2","Pin"],
-  ["A3","Pin"],
-  ["A4","Pin"],
-  ["A5","Pin"],
-
-  ["SDA","Pin"],
-  ["SCL","Pin"],
-  ["MOSI","Pin"],
-  ["MISO","Pin"],
-  ["SCK","Pin"],
-  ["SS","Pin"],
-  ["RX","Pin"],
-  ["TX","Pin"],
-  ["AREF","Pin"],
-  ["RESET","Pin"],
-
-  /* =========================
-     Types
-  ========================= */
-
-  ["void","Type"],
-  ["bool","Type"],
-  ["boolean","Type"],
-  ["char","Type"],
-  ["byte","Type"],
-  ["short","Type"],
-  ["int","Type"],
-  ["long","Type"],
-  ["unsigned","Type"],
-  ["signed","Type"],
-  ["float","Type"],
-  ["double","Type"],
-  ["String","Type"],
-  ["string","Type"],
-  ["size_t","Type"],
-
-  ["uint8_t","Type"],
-  ["uint16_t","Type"],
-  ["uint32_t","Type"],
-  ["uint64_t","Type"],
-  ["int8_t","Type"],
-  ["int16_t","Type"],
-  ["int32_t","Type"],
-  ["int64_t","Type"],
-
-  /* =========================
-     C / C++ keywords
-  ========================= */
-
-  ["if","Keyword"," ()"],
-  ["else","Keyword"],
-  ["for","Keyword"," ()"],
-  ["while","Keyword"," ()"],
-  ["do","Keyword"],
-  ["switch","Keyword"," ()"],
-  ["case","Keyword"],
-  ["default","Keyword"],
-  ["break","Keyword"],
-  ["continue","Keyword"],
-  ["return","Keyword"],
-  ["goto","Keyword"],
-
-  ["const","Keyword"],
-  ["static","Keyword"],
-  ["volatile","Keyword"],
-  ["extern","Keyword"],
-  ["register","Keyword"],
-  ["inline","Keyword"],
-
-  ["struct","Keyword"],
-  ["class","Keyword"],
-  ["public","Keyword"],
-  ["private","Keyword"],
-  ["protected","Keyword"],
-
-  ["namespace","Keyword"],
-  ["using","Keyword"],
-  ["template","Keyword"],
-  ["typename","Keyword"],
-
-  ["new","Keyword"],
-  ["delete","Keyword"],
-
-  ["try","Keyword"],
-  ["catch","Keyword"],
-  ["throw","Keyword"],
-
-  ["true","Keyword"],
-  ["false","Keyword"],
-  ["nullptr","Keyword"],
-
-  /* =========================
-     Math
-  ========================= */
-
-  ["abs","Math","()"],
-  ["min","Math","()"],
-  ["max","Math","()"],
-  ["constrain","Math","()"],
-  ["map","Math","()"],
-  ["pow","Math","()"],
-  ["sqrt","Math","()"],
-  ["sq","Math","()"],
-
-  ["sin","Math","()"],
-  ["cos","Math","()"],
-  ["tan","Math","()"],
-  ["asin","Math","()"],
-  ["acos","Math","()"],
-  ["atan","Math","()"],
-  ["atan2","Math","()"],
-
-  ["log","Math","()"],
-  ["log10","Math","()"],
-  ["exp","Math","()"],
-
-  ["random","Math","()"],
-  ["randomSeed","Math","()"],
-
-  ["round","Math","()"],
-  ["ceil","Math","()"],
-  ["floor","Math","()"],
-
-  /* =========================
-     C / C++
-  ========================= */
-
-  ["sizeof","C/C++","()"],
-  ["memcpy","C/C++","()"],
-  ["memmove","C/C++","()"],
-  ["memset","C/C++","()"],
-  ["memcmp","C/C++","()"],
-
-  ["strcmp","C/C++","()"],
-  ["strncmp","C/C++","()"],
-  ["strlen","C/C++","()"],
-  ["strcpy","C/C++","()"],
-  ["strncpy","C/C++","()"],
-  ["strcat","C/C++","()"],
-  ["strchr","C/C++","()"],
-
-  ["atoi","C/C++","()"],
-  ["atof","C/C++","()"],
-  ["itoa","C/C++","()"],
-
-  /* =========================
-     String
-  ========================= */
-
-  ["String","Type"],
-
-  ["length","String Method","()"],
-  ["charAt","String Method","()"],
-  ["substring","String Method","()"],
-  ["indexOf","String Method","()"],
-  ["lastIndexOf","String Method","()"],
-  ["startsWith","String Method","()"],
-  ["endsWith","String Method","()"],
-  ["equals","String Method","()"],
-  ["equalsIgnoreCase","String Method","()"],
-  ["toUpperCase","String Method","()"],
-  ["toLowerCase","String Method","()"],
-  ["trim","String Method","()"],
-  ["replace","String Method","()"],
-  ["remove","String Method","()"],
-  ["reserve","String Method","()"],
-  ["setCharAt","String Method","()"],
-  ["concat","String Method","()"],
-  ["c_str","String Method","()"],
-
-  /* =========================
-     Arrays
-  ========================= */
-
-  ["array","Array"],
-  ["begin","Array Function","()"],
-  ["end","Array Function","()"],
-
-  /* =========================
-     Wire
-  ========================= */
-
-  ["Wire","Library"],
-
-  ["begin","Wire Method","()"],
-  ["end","Wire Method","()"],
-  ["requestFrom","Wire Method","()"],
-  ["beginTransmission","Wire Method","()"],
-  ["endTransmission","Wire Method","()"],
-  ["available","Wire Method","()"],
-  ["read","Wire Method","()"],
-  ["write","Wire Method","()"],
-  ["onReceive","Wire Method","()"],
-  ["onRequest","Wire Method","()"],
-
-  /* =========================
-     SPI
-  ========================= */
-
-  ["SPI","Library"],
-  ["SPISettings","SPI Class","()"],
-
-  ["begin","SPI Method","()"],
-  ["end","SPI Method","()"],
-  ["beginTransaction","SPI Method","()"],
-  ["endTransaction","SPI Method","()"],
-  ["transfer","SPI Method","()"],
-  ["transfer16","SPI Method","()"],
-  ["usingInterrupt","SPI Method","()"],
-  ["notUsingInterrupt","SPI Method","()"],
-
-  /* =========================
-     EEPROM
-  ========================= */
-
-  ["EEPROM","Library"],
-
-  ["get","EEPROM Method","()"],
-  ["put","EEPROM Method","()"],
-  ["read","EEPROM Method","()"],
-  ["write","EEPROM Method","()"],
-  ["update","EEPROM Method","()"],
-
-  /* =========================
-     Servo
-  ========================= */
-
-  ["Servo","Library","()"],
-
-  ["attach","Servo Method","()"],
-  ["detach","Servo Method","()"],
-  ["write","Servo Method","()"],
-  ["writeMicroseconds","Servo Method","()"],
-  ["read","Servo Method","()"],
-  ["attached","Servo Method","()"],
-
-  /* =========================
-     Adafruit GFX
-  ========================= */
-
-  ["Adafruit_GFX","Library"],
-  ["Adafruit_SSD1306","Library"],
-
-  ["display","Object"],
-
-  ["begin","Display Method","()"],
-  ["clearDisplay","Display Method","()"],
-  ["display","Display Method","()"],
-  ["setTextSize","Display Method","()"],
-  ["setTextColor","Display Method","()"],
-  ["setCursor","Display Method","()"],
-  ["println","Display Method","()"],
-  ["print","Display Method","()"],
-
-  ["drawPixel","GFX Method","()"],
-  ["drawLine","GFX Method","()"],
-  ["drawRect","GFX Method","()"],
-  ["fillRect","GFX Method","()"],
-  ["drawCircle","GFX Method","()"],
-  ["fillCircle","GFX Method","()"],
-  ["drawTriangle","GFX Method","()"],
-  ["fillTriangle","GFX Method","()"],
-  ["drawRoundRect","GFX Method","()"],
-  ["fillRoundRect","GFX Method","()"],
-  ["drawBitmap","GFX Method","()"],
-
-  ["SSD1306_WHITE","Display Constant"],
-  ["SSD1306_BLACK","Display Constant"],
-  ["SSD1306_INVERSE","Display Constant"],
-
-  /* =========================
-     LiquidCrystal
-  ========================= */
-
-  ["LiquidCrystal","Library","()"],
-  ["lcd","Object"],
-
-  ["begin","LCD Method","()"],
-  ["clear","LCD Method","()"],
-  ["home","LCD Method","()"],
-  ["setCursor","LCD Method","()"],
-  ["print","LCD Method","()"],
-  ["println","LCD Method","()"],
-  ["display","LCD Method","()"],
-  ["noDisplay","LCD Method","()"],
-  ["cursor","LCD Method","()"],
-  ["noCursor","LCD Method","()"],
-  ["blink","LCD Method","()"],
-  ["noBlink","LCD Method","()"],
-  ["scrollDisplayLeft","LCD Method","()"],
-  ["scrollDisplayRight","LCD Method","()"],
-
-  /* =========================
-     Other Libraries
-  ========================= */
-
-  ["SoftwareSerial","Library","()"],
-  ["DHT","Library","()"],
-  ["OneWire","Library","()"],
-  ["DallasTemperature","Library","()"],
-  ["SD","Library"],
-  ["WiFi","Library"],
-  ["Ethernet","Library"],
-  ["Stepper","Library","()"],
-
-  /* =========================
-     Common objects
-  ========================= */
-
-  ["display","Object"],
-  ["lcd","Object"],
-  ["servo","Object"],
-  ["sensor","Object"],
-  ["oled","Object"],
-  ["screen","Object"],
-  ["button","Object"],
-  ["led","Object"],
-  ["buzzer","Object"],
-
-  /* =========================
-     Common Arduino functions
-  ========================= */
-
-  ["setup","Function","()"],
-  ["loop","Function","()"],
-
-  /* =========================
-     Preprocessor
-  ========================= */
-
-  ["#include","Preprocessor"],
-  ["#define","Preprocessor"],
-  ["#ifdef","Preprocessor"],
-  ["#ifndef","Preprocessor"],
-  ["#if","Preprocessor"],
-  ["#else","Preprocessor"],
-  ["#elif","Preprocessor"],
-  ["#endif","Preprocessor"],
-  ["#pragma","Preprocessor"],
-  ["#undef","Preprocessor"],
-  ["#warning","Preprocessor"],
-  ["#error","Preprocessor"],
-
-  /* =========================
-     Common C++ classes
-  ========================= */
-
-  ["Serial","Object"],
-  ["String","Type"],
-  ["Print","Class"],
-  ["Stream","Class"],
-  ["HardwareSerial","Class"],
-  ["File","Class"],
-  ["IPAddress","Class"],
-
-  /* =========================
-     Operators / useful tokens
-  ========================= */
-
-  ["++","Operator"],
-  ["--","Operator"],
-  ["==","Operator"],
-  ["!=","Operator"],
-  [">=","Operator"],
-  ["<=","Operator"],
-  ["&&","Operator"],
-  ["||","Operator"],
-  ["!","Operator"],
-  ["+=","Operator"],
-  ["-=","Operator"],
-  ["*=","Operator"],
-  ["/=","Operator"],
-  ["%=","Operator"],
-
-  /* =========================
-     Common values
-  ========================= */
-
-  ["PI","Constant"],
-  ["HALF_PI","Constant"],
-  ["TWO_PI","Constant"],
-  ["DEG_TO_RAD","Constant"],
-  ["RAD_TO_DEG","Constant"],
-
-  /* =========================
-     Debugging
-  ========================= */
-
-  ["Serial.println","Serial","()"],
-  ["Serial.print","Serial","()"],
-  ["Serial.write","Serial","()"],
-  ["Serial.read","Serial","()"],
-  ["Serial.available","Serial","()"]
-
-];
-
-
-/* =========================
-   INIT
-========================= */
-
-window.onload = () => {
-
-  editor =
-    document.getElementById("editor");
-
-  highlight =
-    document.getElementById("highlight");
-
-  lines =
-    document.getElementById("lineNums");
-
-  consoleBox =
-    document.getElementById("console");
-
-  fileInput =
-    document.getElementById("fileInput");
-
-  filename =
-    document.getElementById("filename");
-
-  statusDot =
-    document.getElementById("statusDot");
-
-  compileInfo =
-    document.getElementById("compileInfo");
-
-  downloadHexButton =
-    document.getElementById("downloadHexButton");
-
-  autocomplete =
-    document.getElementById("autocomplete");
-
-  autocompleteItems =
-    document.getElementById("autocompleteItems");
-
-  editorBox =
-    document.getElementById("editorBox");
-
-  errorMarkers =
-    document.getElementById("errorMarkers");
-
-  errorTooltip =
-    document.getElementById("errorTooltip");
-
-
-  /* File input */
-
-  fileInput.addEventListener(
-    "change",
-    openFile
-  );
-
-
-  /* Error tooltip */
-
-  editor.addEventListener(
-    "mousemove",
-    event => {
-
-      const line =
-        getEditorLineFromMouse(event);
-
-      showErrorTooltip(
-        line,
-        event.clientX,
-        event.clientY
-      );
-
-    }
-  );
-
-
-  editor.addEventListener(
-    "mouseleave",
-    () => {
-
-      if(errorTooltip){
-
-        errorTooltip.style.display =
-          "none";
-
-      }
-
-    }
-  );
-
-
-  /* Load saved project */
-
-  const savedCode =
-    localStorage.getItem(
-      "arduino_code"
+const simulator=document.getElementById("simulator");
+const statusBox=document.getElementById("simulatorStatus");
+const consoleBox=document.getElementById("simulatorConsole");
+const gseVariables = {};
+const gseFunctionScopes = [];
+const GSE_SERVER="https://arduino-guide-6.onrender.com";
+let gse=null;
+const token=new URLSearchParams(window.location.search).get("gse");
+
+const simulatorState={
+    pins:{},
+    analogPins:{},
+    serial:[],
+    time:0
+};
+
+/* ============================================================
+   STATUS / CONSOLE
+   ============================================================ */
+
+function setStatus(text,type=""){
+    if(!statusBox)return;
+    statusBox.textContent=text;
+    statusBox.className=type;
+}
+
+function simulatorLog(text){
+    if(!consoleBox)return;
+    consoleBox.textContent+=text+"\n";
+    consoleBox.scrollTop=consoleBox.scrollHeight;
+}
+
+/* ============================================================
+   LOAD GSE
+   ============================================================ */
+
+async function loadGSE(){
+    if(!token)throw new Error("No GSE token was provided.");
+
+    setStatus("Loading GSE...");
+
+    const response=await fetch(
+        GSE_SERVER+"/gse/"+encodeURIComponent(token)
     );
 
-  const savedName =
-    localStorage.getItem(
-      "arduino_name"
+    if(!response.ok){
+        throw new Error(
+            "GSE server returned HTTP "+response.status
+        );
+    }
+
+    const data=await response.json();
+
+    if(!data||!data.success||!data.executable){
+        throw new Error(
+            data.error||"Invalid GSE response."
+        );
+    }
+
+    gse=data.executable;
+    validateGSE();
+    simulatorLog("GSE loaded.");
+}
+
+function validateGSE(){
+    if(!gse)throw new Error("GSE executable is missing.");
+    if(gse.format!=="GSE")throw new Error("Invalid GSE format.");
+    if(typeof gse.version!=="number"){
+        throw new Error("Invalid GSE version.");
+    }
+    if(!gse.program){
+        throw new Error("GSE program is missing.");
+    }
+    if(!Array.isArray(gse.program.setup)){
+        throw new Error("GSE setup is invalid.");
+    }
+    if(!Array.isArray(gse.program.loop)){
+        throw new Error("GSE loop is invalid.");
+    }
+if(gse.functions===undefined){
+    gse.functions={};
+}
+
+if(
+    typeof gse.functions!=="object" ||
+    Array.isArray(gse.functions)
+){
+    throw new Error(
+        "GSE functions are invalid."
+    );
+}
+}
+
+async function resolveGSEValue(value){
+
+    if(
+        value===null ||
+        value===undefined
+    ){
+        return 0;
+    }
+
+    if(
+        value &&
+        typeof value==="object"
+    ){
+
+        if(value.type==="VALUE"){
+
+            return await resolveGSEValue(
+                value.value
+            );
+        }
+
+        if(value.type==="CALL"){
+
+            const args=[];
+
+            for(const arg of value.args||[]){
+
+                args.push(
+                    await resolveGSEValue(arg)
+                );
+            }
+
+            if(
+                value.function==="digitalRead"
+            ){
+
+                return executeDigitalRead({
+                    pin:args[0]
+                });
+            }
+
+            if(
+                value.function==="analogRead"
+            ){
+
+                return executeAnalogRead({
+                    pin:args[0]
+                });
+            }
+
+            if(
+                value.function==="map"
+            ){
+
+                if(args.length!==5){
+                    throw new Error(
+                        "map requires 5 arguments"
+                    );
+                }
+
+                const input=Number(args[0]);
+                const fromLow=Number(args[1]);
+                const fromHigh=Number(args[2]);
+                const toLow=Number(args[3]);
+                const toHigh=Number(args[4]);
+
+                if(
+                    !Number.isFinite(input) ||
+                    !Number.isFinite(fromLow) ||
+                    !Number.isFinite(fromHigh) ||
+                    !Number.isFinite(toLow) ||
+                    !Number.isFinite(toHigh)
+                ){
+                    return 0;
+                }
+
+                if(fromHigh===fromLow){
+                    return 0;
+                }
+
+                return Math.trunc(
+                    (
+                        (input-fromLow)*
+                        (toHigh-toLow)
+                    )/
+                    (fromHigh-fromLow)+
+                    toLow
+                );
+            }
+
+            if(
+                value.function==="display.begin"
+            ){
+
+                initializeOLED();
+
+                return true;
+            }
+
+            /*
+                USER FUNCTION
+            */
+
+            if(
+                gse &&
+                gse.functions &&
+                gse.functions[value.function]
+            ){
+
+                return await executeUserFunction(
+                    value.function,
+                    args
+                );
+            }
+
+            throw new Error(
+                "Unsupported expression function: "+
+                value.function
+            );
+        }
+
+        if(value.type==="COMPARE"){
+
+            const left=
+                await resolveGSEValue(
+                    value.left
+                );
+
+            const right=
+                await resolveGSEValue(
+                    value.right
+                );
+
+            switch(value.operator){
+
+                case "==":
+                    return left==right;
+
+                case "!=":
+                    return left!=right;
+
+                case ">":
+                    return left>right;
+
+                case "<":
+                    return left<right;
+
+                case ">=":
+                    return left>=right;
+
+                case "<=":
+                    return left<=right;
+            }
+
+            return false;
+        }
+
+        if(value.type==="LOGICAL"){
+
+            const left=
+                await resolveGSEValue(
+                    value.left
+                );
+
+            if(value.operator==="&&"){
+
+                if(!left){
+                    return false;
+                }
+
+                return Boolean(
+                    await resolveGSEValue(
+                        value.right
+                    )
+                );
+            }
+
+            if(value.operator==="||"){
+
+                if(left){
+                    return true;
+                }
+
+                return Boolean(
+                    await resolveGSEValue(
+                        value.right
+                    )
+                );
+            }
+
+            return false;
+        }
+
+        if(value.type==="NOT"){
+
+            return !Boolean(
+                await resolveGSEValue(
+                    value.value
+                )
+            );
+        }
+
+        if(value.type==="ARITHMETIC"){
+
+            const left=
+                Number(
+                    await resolveGSEValue(
+                        value.left
+                    )
+                );
+
+            const right=
+                Number(
+                    await resolveGSEValue(
+                        value.right
+                    )
+                );
+
+            switch(value.operator){
+
+                case "+":
+                    return left+right;
+
+                case "-":
+                    return left-right;
+
+                case "*":
+                    return left*right;
+
+                case "/":
+                    return right!==0
+                        ?left/right
+                        :0;
+            }
+
+            return 0;
+        }
+    }
+
+    /*
+        FUNCTION LOCAL VARIABLES
+    */
+
+    for(
+        let i=gseFunctionScopes.length-1;
+        i>=0;
+        i--
+    ){
+
+        const scope=
+            gseFunctionScopes[i];
+
+        if(
+            Object.prototype.hasOwnProperty.call(
+                scope,
+                value
+            )
+        ){
+
+            return scope[value];
+        }
+    }
+
+    /*
+        GLOBAL VARIABLES
+    */
+
+    if(
+        typeof value==="string" &&
+        Object.prototype.hasOwnProperty.call(
+            gseVariables,
+            value
+        )
+    ){
+
+        return gseVariables[value];
+    }
+
+    return value;
+}
+
+/* ============================================================
+   PIN STATE
+   ============================================================ */
+
+function getPin(pin){
+    if(!simulatorState.pins[pin]){
+        simulatorState.pins[pin]={
+            mode:null,
+            value:0,
+            pwm:0,
+            input:0
+        };
+    }
+
+    return simulatorState.pins[pin];
+}
+
+/* ============================================================
+   PIN MODE
+   ============================================================ */
+
+function executePinMode(instruction){
+    const pinNumber=instruction.pin;
+    const mode=instruction.mode;
+
+    const pin=getPin(pinNumber);
+
+    pin.mode=mode;
+
+    const element=document.querySelector(
+        '.digitalPin[data-pin="'+pinNumber+'"]'
     );
 
-
-  if(savedCode){
-
-    editor.value =
-      savedCode;
-
-    filename.value =
-      savedName ||
-      "project";
-
-  }else{
-
-    editor.value =
-      defaultSketch();
-
-  }
-
-
-  updateAll();
-
-
-  /* Editor input */
-
-  editor.addEventListener(
-    "input",
-    () => {
-
-      updateAll();
-
-      saveLocal();
-
-      setStatus("idle");
-
-      clearErrorPanel();
-
-      updateAutocomplete();
-
+    if(element){
+        element.dataset.mode=mode;
+        element.title=
+            "Pin "+pinNumber+
+            " • "+mode;
     }
-  );
 
+    updateButtonVisual(pinNumber);
+}
 
-  /* Scroll */
+/* ============================================================
+   DIGITAL WRITE
+   ============================================================ */
 
-  editor.addEventListener(
-    "scroll",
-    syncScroll
-  );
+function executeDigitalWrite(instruction){
+    const pinNumber=instruction.pin;
+    const value=instruction.value;
 
+    const pin=getPin(pinNumber);
 
-  /* Keyboard */
+    pin.value=value?1:0;
+    pin.pwm=pin.value?255:0;
 
-  editor.addEventListener(
-    "keydown",
-    handleEditorKeys
-  );
+    updateDigitalPin(pinNumber);
+    updateExternalLED(pinNumber);
+}
 
+/* ============================================================
+   DIGITAL READ
+   ============================================================ */
 
-  /* Autocomplete click */
+function executeDigitalRead(instruction){
+    const pinNumber=instruction.pin;
+    const pin=getPin(pinNumber);
 
-  editor.addEventListener(
-    "click",
-    () => {
+    return pin.input?1:0;
+}
 
-      updateAutocomplete();
+/* ============================================================
+   PWM
+   ============================================================ */
 
+function executeAnalogRead(instruction){
+    const pin=instruction.pin;
+    const pinName=String(pin);
+
+    if(pinName==="A0"){
+        return Number(
+            potentiometerState.value||0
+        );
     }
-  );
 
-
-  /* Close autocomplete */
-
-  document.addEventListener(
-    "click",
-    e => {
-
-      if(
-        !autocomplete.contains(e.target) &&
-        e.target !== editor
-      ){
-
-        hideAutocomplete();
-
-      }
-
+    if(pinName==="A1"){
+        return Number(
+            simulatorState.analogPins.A1||512
+        );
     }
-  );
+
+    if(pinName==="A2"){
+        return Number(
+            simulatorState.analogPins.A2||512
+        );
+    }
+
+    return Number(
+        simulatorState.analogPins[pinName]||0
+    );
+}
+/* ============================================================
+   DIGITAL PIN DISPLAY
+   ============================================================ */
+
+function updateDigitalPin(pinNumber){
+    const element=document.querySelector(
+        '.digitalPin[data-pin="'+pinNumber+'"]'
+    );
+
+    if(!element)return;
+
+    const pin=getPin(pinNumber);
+
+    /* Pin itself stays visually unchanged. */
+
+    element.classList.remove("high");
+    element.style.opacity="1";
+
+    element.title=
+        "Pin "+pinNumber+
+        " • "+(pin.mode||"UNSET")+
+        " • "+(pin.value?"HIGH":"LOW");
+
+    if(Number(pinNumber)===13){
+        updateBuiltinLED(pin.pwm);
+    }
+}
+function executeAnalogWrite(instruction){
+    const pinNumber=instruction.pin;
+
+    const pin=getPin(pinNumber);
+
+    let value=Number(
+        instruction.value
+    );
+
+    if(Number.isNaN(value)){
+        value=0;
+    }
+
+    value=Math.max(
+        0,
+        Math.min(
+            255,
+            value
+        )
+    );
+
+    pin.pwm=value;
+    pin.value=value>0?1:0;
+
+    updateDigitalPin(pinNumber);
+    updateExternalLED(pinNumber);
+}
+/* ============================================================
+   BUILT-IN LED
+   ============================================================ */
+
+function updateBuiltinLED(value){
+    const led=document.getElementById("builtinLed");
+
+    if(!led)return;
+
+    value=Number(value)||0;
+
+    if(value<=0){
+        led.classList.remove("on");
+        led.style.opacity=".35";
+        return;
+    }
+
+    led.classList.add("on");
+
+    led.style.opacity=
+        String(.25+(value/255)*.75);
+}
+
+/* ============================================================
+   EXTERNAL LEDS
+   ============================================================ */
+
+function updateExternalLED(pinNumber){
+    const led=document.querySelector(
+        '.externalLed[data-pin="'+pinNumber+'"]'
+    );
+
+    if(!led)return;
+
+    const pin=getPin(pinNumber);
+    const value=Number(pin.pwm)||0;
+
+    led.classList.toggle("on",value>0);
+
+    led.style.opacity=value>0
+        ?String(.3+(value/255)*.7)
+        :".45";
+
+    led.title=
+        "LED on pin "+pinNumber+
+        " • PWM "+value+"/255";
+}
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+function updateButtonVisual(pinNumber){
+    const button=document.querySelector(
+        '.pinButton[data-pin="'+pinNumber+'"]'
+    );
+
+    if(!button)return;
+
+    const pin=getPin(pinNumber);
+    const active=pin.input===1;
+
+    button.classList.toggle("active",active);
+
+    const cap=button.querySelector(".buttonCap");
+
+    if(cap){
+        if(button.classList.contains("toggleButton")){
+            cap.textContent=active?"ON":"OFF";
+        }
+    }
+}
+
+function setButtonState(pinNumber,state){
+    const pin=getPin(pinNumber);
+
+    pin.input=state?1:0;
+
+    updateButtonVisual(pinNumber);
+
+    simulatorLog(
+        "D"+pinNumber+
+        " → "+
+        (pin.input?"HIGH":"LOW")
+    );
+}
+
+function setupButtons(){
+
+    document.querySelectorAll(".pinButton").forEach(button=>{
+
+        const pinNumber=Number(button.dataset.pin);
+
+        if(!Number.isFinite(pinNumber)){
+            return;
+        }
+
+        const isToggle=
+            button.classList.contains("toggleButton");
+
+        /*
+            PUSH BUTTON
+            Press = HIGH
+            Release = LOW
+        */
+
+        if(!isToggle){
+
+            const press=event=>{
+                if(event){
+                    event.preventDefault();
+                }
+
+                setButtonState(
+                    pinNumber,
+                    true
+                );
+            };
+
+            const release=event=>{
+                if(event){
+                    event.preventDefault();
+                }
+
+                setButtonState(
+                    pinNumber,
+                    false
+                );
+            };
+
+            button.addEventListener(
+                "mousedown",
+                press
+            );
+
+            button.addEventListener(
+                "mouseup",
+                release
+            );
+
+            button.addEventListener(
+                "mouseleave",
+                release
+            );
+
+            button.addEventListener(
+                "touchstart",
+                press,
+                {passive:false}
+            );
+
+            button.addEventListener(
+                "touchend",
+                release,
+                {passive:false}
+            );
+
+            button.addEventListener(
+                "touchcancel",
+                release,
+                {passive:false}
+            );
+
+            return;
+        }
+
+        /*
+            TOGGLE BUTTON
+            Click = switch HIGH/LOW
+        */
+
+        button.addEventListener(
+            "click",
+            event=>{
+                event.preventDefault();
+
+                const pin=getPin(pinNumber);
+
+                setButtonState(
+                    pinNumber,
+                    !pin.input
+                );
+            }
+        );
+
+    });
+}
+
+/* ============================================================
+   JOYSTICK
+   ============================================================ */
+
+const joystickState={
+    x:0,
+    y:0,
+    pressed:0
+};
+
+function updateJoystick(){
+    const joystick=document.getElementById("joystick");
+    const stick=document.getElementById("joystickStick");
+
+    if(!joystick||!stick)return;
+
+    stick.style.transform=
+        "translate("+joystickState.x+"px,"+
+        joystickState.y+"px)";
+
+    joystick.classList.toggle(
+        "active",
+        !!joystickState.pressed
+    );
+
+    /*
+        Convert physical joystick movement
+        from -25..25 into Arduino analog
+        values from 0..1023.
+    */
+
+    simulatorState.analogPins.A1=
+        Math.round(
+            512+
+            (joystickState.x/25)*512
+        );
+
+    simulatorState.analogPins.A2=
+        Math.round(
+            512+
+            (joystickState.y/25)*512
+        );
+
+    simulatorState.analogPins.A1=Math.max(
+        0,
+        Math.min(
+            1023,
+            simulatorState.analogPins.A1
+        )
+    );
+
+    simulatorState.analogPins.A2=Math.max(
+        0,
+        Math.min(
+            1023,
+            simulatorState.analogPins.A2
+        )
+    );
+
+    /*
+        Joystick push switch is digital pin 7.
+    */
+
+    const buttonPin=getPin(7);
+
+    buttonPin.input=
+        joystickState.pressed?1:0;
+
+    updateButtonVisual(7);
+}
+
+function setupJoystick(){
+    const joystick=document.getElementById("joystick");
+
+    if(!joystick)return;
+
+    let dragging=false;
+
+    const move=event=>{
+        if(!dragging)return;
+
+        const rect=joystick.getBoundingClientRect();
+
+        const source=event.touches
+            ?event.touches[0]
+            :event;
+
+        let x=
+            source.clientX-
+            rect.left-
+            rect.width/2;
+
+        let y=
+            source.clientY-
+            rect.top-
+            rect.height/2;
+
+        const distance=Math.sqrt(
+            x*x+y*y
+        );
+
+        const max=25;
+
+        if(distance>max){
+            x=x/distance*max;
+            y=y/distance*max;
+        }
+
+        joystickState.x=x;
+        joystickState.y=y;
+        joystickState.pressed=1;
+
+        updateJoystick();
+
+        simulatorLog(
+            "Joystick X="+
+            simulatorState.analogPins.A1+
+            " Y="+
+            simulatorState.analogPins.A2
+        );
+    };
+
+    const release=()=>{
+        dragging=false;
+
+        joystickState.x=0;
+        joystickState.y=0;
+        joystickState.pressed=0;
+
+        updateJoystick();
+    };
+
+    joystick.addEventListener(
+        "mousedown",
+        event=>{
+            event.preventDefault();
+
+            dragging=true;
+            move(event);
+
+            document.addEventListener(
+                "mousemove",
+                move
+            );
+        }
+    );
+
+    document.addEventListener(
+        "mouseup",
+        ()=>{
+            if(!dragging)return;
+
+            document.removeEventListener(
+                "mousemove",
+                move
+            );
+
+            release();
+        }
+    );
+
+    joystick.addEventListener(
+        "touchstart",
+        event=>{
+            event.preventDefault();
+
+            dragging=true;
+            move(event);
+        },
+        {passive:false}
+    );
+
+    joystick.addEventListener(
+        "touchmove",
+        event=>{
+            event.preventDefault();
+
+            move(event);
+        },
+        {passive:false}
+    );
+
+    joystick.addEventListener(
+        "touchend",
+        event=>{
+            event.preventDefault();
+
+            release();
+        },
+        {passive:false}
+    );
+
+    joystick.addEventListener(
+        "touchcancel",
+        event=>{
+            event.preventDefault();
+
+            release();
+        },
+        {passive:false}
+    );
+
+    updateJoystick();
+}
+/* ============================================================
+   POTENTIOMETER
+   ============================================================ */
+
+const potentiometerState={
+    value:0,
+    dragging:false
+};
+
+function updatePotentiometer(){
+    const knob=document.getElementById("potKnob");
+    const value=document.getElementById("potValue");
+
+    if(!knob||!value)return;
+
+    const angle=-45+
+        potentiometerState.value/1023*270;
+
+    knob.style.transform=
+        "rotate("+angle+"deg)";
+
+    value.innerHTML=
+        "A0<br>"+potentiometerState.value;
+}
+
+function setupPotentiometer(){
+    const pot=document.getElementById("potentiometer");
+
+    if(!pot)return;
+
+    const update=event=>{
+        if(!potentiometerState.dragging)return;
+
+        const rect=pot.getBoundingClientRect();
+        const source=event.touches
+            ?event.touches[0]
+            :event;
+
+        const cx=rect.left+rect.width/2;
+        const cy=rect.top+rect.height/2;
+
+        let angle=
+            Math.atan2(
+                source.clientY-cy,
+                source.clientX-cx
+            )*180/Math.PI;
+
+        angle+=90;
+
+        if(angle<0)angle+=360;
+
+        angle=Math.max(0,Math.min(270,angle));
+
+        potentiometerState.value=
+            Math.round(angle/270*1023);
+
+        updatePotentiometer();
+    };
+
+    const release=()=>{
+        potentiometerState.dragging=false;
+    };
+
+    pot.addEventListener("mousedown",event=>{
+        potentiometerState.dragging=true;
+        update(event);
+    });
+
+    pot.addEventListener("touchstart",event=>{
+        event.preventDefault();
+        potentiometerState.dragging=true;
+        update(event);
+    });
+
+    document.addEventListener("mousemove",update);
+
+    document.addEventListener(
+        "mouseup",
+        release
+    );
+
+    document.addEventListener(
+        "touchmove",
+        event=>{
+            if(potentiometerState.dragging){
+                event.preventDefault();
+                update(event);
+            }
+        },
+        {passive:false}
+    );
+
+    document.addEventListener(
+        "touchend",
+        release
+    );
+}
+
+let audioContext=null;
+let buzzerOscillator=null;
+let buzzerGain=null;
+
+function startBuzzer(pinNumber,frequency){
+    const buzzer=document.getElementById("buzzer");
+    if(!buzzer)return;
+
+    if(!audioContext){
+        audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    }
+
+    if(audioContext.state==="suspended"){
+        audioContext.resume();
+    }
+
+    stopBuzzer(false);
+
+    buzzerOscillator=audioContext.createOscillator();
+    buzzerGain=audioContext.createGain();
+
+    buzzerOscillator.type="square";
+    buzzerOscillator.frequency.value=Number(frequency)||440;
+    buzzerGain.gain.value=.08;
+
+    buzzerOscillator.connect(buzzerGain);
+    buzzerGain.connect(audioContext.destination);
+
+    buzzerOscillator.start();
+    buzzer.classList.add("active");
+
+    simulatorLog("Tone D"+pinNumber+" • "+frequency+" Hz");
+}
 
 
-  setStatus("idle");
+function stopBuzzer(log=true){
+    const buzzer=document.getElementById("buzzer");
 
+    if(buzzerOscillator){
+        try{
+            buzzerOscillator.stop();
+        }catch(error){}
+        buzzerOscillator.disconnect();
+        buzzerOscillator=null;
+    }
+
+    if(buzzerGain){
+        buzzerGain.disconnect();
+        buzzerGain=null;
+    }
+
+    if(buzzer)buzzer.classList.remove("active");
+
+    if(log)simulatorLog("Buzzer stopped.");
+}
+
+function executeSerialBegin(baud){
+    simulatorState.serialBaud=
+        Number(baud)||9600;
+
+    simulatorLog(
+        "Serial started at "+
+        simulatorState.serialBaud+
+        " baud."
+    );
+}
+
+function executeSerialPrint(
+    value,
+    newLine=false
+){
+    const text=String(value);
+
+    if(newLine){
+        simulatorLog(text);
+        return;
+    }
+
+    if(!consoleBox)return;
+
+    consoleBox.textContent+=text;
+    consoleBox.scrollTop=
+        consoleBox.scrollHeight;
+}
+
+/* ============================================================
+   4-PIN I2C OLED
+   ============================================================ */
+
+const OLED_WIDTH = 128;
+const OLED_HEIGHT = 64;
+
+/*
+    Visual rendering scale.
+
+    The actual simulated OLED remains 128×64.
+    This only makes the browser rendering smoother.
+*/
+const OLED_RENDER_SCALE = 4;
+
+const oledState = {
+    initialized:false,
+    address:0x3C,
+
+    cursorX:0,
+    cursorY:0,
+
+    textSize:1,
+    textColor:1,
+
+    displayOn:true,
+
+    /*
+        Real logical SSD1306 framebuffer.
+        128 × 64 pixels.
+    */
+    buffer:null
 };
 
 
-/* =========================
-   NAVIGATION
-========================= */
+/* ============================================================
+   CANVAS
+   ============================================================ */
 
-function go(url){
+function getOLEDCanvas(){
 
-  window.location.href =
-    url;
-
-}
-
-
-/* =========================
-   DEFAULT
-========================= */
-
-function defaultSketch(){
-
-  return `void setup(){
-  pinMode(LED_BUILTIN, OUTPUT);
-}
-
-void loop(){
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(1000);
-}`;
-
-}
-
-
-/* =========================
-   EDITOR
-========================= */
-
-function updateAll(){
-
-  updateLines();
-
-  highlightCode();
-
-}
-
-
-/* =========================
-   LINE NUMBERS
-========================= */
-
-function updateLines(){
-
-  const count =
-    Math.max(
-      1,
-      editor.value
-        .split("\n")
-        .length
+    return document.getElementById(
+        "oled4Canvas"
     );
-
-
-  const errorLines =
-    getCurrentErrorLines();
-
-
-  let html = "";
-
-
-  for(
-    let i = 1;
-    i <= count;
-    i++
-  ){
-
-    const error =
-      errorLines.errors.includes(i);
-
-    const warning =
-      errorLines.warnings.includes(i);
-
-
-    if(error){
-
-      html +=
-        `<div class="error-line" onclick="jumpToLine(${i})">${i} ←</div>`;
-
-    }else if(warning){
-
-      html +=
-        `<div class="warning-line" onclick="jumpToLine(${i})">${i} !</div>`;
-
-    }else{
-
-      html +=
-        `<div>${i}</div>`;
-
-    }
-
-  }
-
-
-  lines.innerHTML =
-    html;
-
 }
 
 
-/* =========================
-   SCROLL SYNC
-========================= */
+/* ============================================================
+   FRAMEBUFFER
+   ============================================================ */
 
-function syncScroll(){
+function createOLEDFramebuffer(){
 
-  highlight.scrollTop =
-    editor.scrollTop;
+    oledState.buffer=[];
 
-  highlight.scrollLeft =
-    editor.scrollLeft;
+    for(let y=0;y<OLED_HEIGHT;y++){
 
-  lines.scrollTop =
-    editor.scrollTop;
+        const row=[];
 
+        for(let x=0;x<OLED_WIDTH;x++){
+            row.push(0);
+        }
 
-  /*
-    Error markers move with the editor.
-    Their position is calculated from the
-    current scroll position.
-  */
-
-  updateErrorMarkers();
-
+        oledState.buffer.push(row);
+    }
 }
 
 
-/* =========================
-   KEYBOARD
-========================= */
+function clearOLEDFramebuffer(){
 
-function handleEditorKeys(e){
+    if(!oledState.buffer){
+        createOLEDFramebuffer();
+        return;
+    }
 
-  /* Autocomplete */
+    for(let y=0;y<OLED_HEIGHT;y++){
 
-  if(
-    autocomplete.classList.contains(
-      "visible"
-    )
-  ){
-
-    if(e.key === "ArrowDown"){
-
-      e.preventDefault();
-
-      autocompleteIndex++;
+        for(let x=0;x<OLED_WIDTH;x++){
+            oledState.buffer[y][x]=0;
+        }
+    }
+}
 
 
-      if(
-        autocompleteIndex >=
-        autocompleteResults.length
-      ){
+/* ============================================================
+   HIGH QUALITY OLED RENDERER
+   ============================================================ */
 
-        autocompleteIndex = 0;
+function renderOLED(){
 
-      }
+    const canvas=getOLEDCanvas();
+
+    if(!canvas){
+        return;
+    }
+
+    /*
+        Keep the physical/canvas size controlled by CSS,
+        but use a much higher internal canvas resolution.
+    */
+
+    const renderWidth=
+        OLED_WIDTH*
+        OLED_RENDER_SCALE;
+
+    const renderHeight=
+        OLED_HEIGHT*
+        OLED_RENDER_SCALE;
 
 
-      renderAutocomplete();
+    canvas.width=renderWidth;
+    canvas.height=renderHeight;
 
-      return;
 
+    const context=
+        canvas.getContext("2d");
+
+
+    if(!context){
+        return;
     }
 
 
-    if(e.key === "ArrowUp"){
+    /*
+        Disable browser smoothing here.
 
-      e.preventDefault();
+        We want to explicitly control how each OLED
+        pixel is rendered.
+    */
 
-      autocompleteIndex--;
-
-
-      if(
-        autocompleteIndex < 0
-      ){
-
-        autocompleteIndex =
-          autocompleteResults.length - 1;
-
-      }
+    context.imageSmoothingEnabled=false;
 
 
-      renderAutocomplete();
+    /*
+        Completely black OLED surface.
+    */
 
-      return;
+    context.fillStyle="#061313";
 
-    }
+    context.fillRect(
+        0,
+        0,
+        renderWidth,
+        renderHeight
+    );
 
 
     if(
-      e.key === "Tab" ||
-      e.key === "Enter"
+        !oledState.initialized ||
+        !oledState.buffer
+    ){
+        return;
+    }
+
+
+    /*
+        Each real OLED pixel gets a small cyan
+        illuminated area.
+
+        This creates a much more realistic OLED
+        appearance than a raw white bitmap.
+    */
+
+    for(let y=0;y<OLED_HEIGHT;y++){
+
+        for(let x=0;x<OLED_WIDTH;x++){
+
+            if(!oledState.buffer[y][x]){
+                continue;
+            }
+
+
+            const px=
+                x*
+                OLED_RENDER_SCALE;
+
+            const py=
+                y*
+                OLED_RENDER_SCALE;
+
+
+            /*
+                Outer subtle glow.
+            */
+
+            context.fillStyle=
+                "rgba(73,255,255,.12)";
+
+            context.fillRect(
+                px-1,
+                py-1,
+                OLED_RENDER_SCALE+2,
+                OLED_RENDER_SCALE+2
+            );
+
+
+            /*
+                Main illuminated pixel.
+
+                Slightly smaller than the complete
+                4×4 area so adjacent pixels have a
+                tiny visual separation.
+            */
+
+            context.fillStyle=
+                "#49ffff";
+
+            context.fillRect(
+                px,
+                py,
+                OLED_RENDER_SCALE,
+                OLED_RENDER_SCALE
+            );
+        }
+    }
+
+
+    /*
+        Very subtle screen glow.
+    */
+
+    const gradient=
+        context.createRadialGradient(
+            renderWidth/2,
+            renderHeight/2,
+            0,
+            renderWidth/2,
+            renderHeight/2,
+            renderWidth*.7
+        );
+
+    gradient.addColorStop(
+        0,
+        "rgba(73,255,255,.025)"
+    );
+
+    gradient.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+    context.fillStyle=gradient;
+
+    context.fillRect(
+        0,
+        0,
+        renderWidth,
+        renderHeight
+    );
+
+
+    canvas.classList.toggle(
+        "active",
+        oledState.initialized
+    );
+}
+
+
+/* ============================================================
+   OLED BEGIN
+   ============================================================ */
+
+function initializeOLED(){
+
+    oledState.initialized=true;
+
+    oledState.address=0x3C;
+
+    oledState.cursorX=0;
+    oledState.cursorY=0;
+
+    oledState.textSize=1;
+    oledState.textColor=1;
+
+    oledState.displayOn=true;
+
+
+    createOLEDFramebuffer();
+
+    clearOLEDFramebuffer();
+
+    renderOLED();
+
+
+    simulatorLog(
+        "OLED initialized at I2C address 0x3C"
+    );
+}
+
+
+/* ============================================================
+   CLEAR DISPLAY
+   ============================================================ */
+
+function oledClearDisplay(){
+
+    if(!oledState.initialized){
+        return;
+    }
+
+
+    clearOLEDFramebuffer();
+
+
+    oledState.cursorX=0;
+    oledState.cursorY=0;
+
+
+    /*
+        Like the real SSD1306:
+
+            clearDisplay()
+
+        changes the framebuffer.
+
+        The visible OLED changes when:
+
+            display.display()
+    */
+}
+
+
+/* ============================================================
+   CURSOR
+   ============================================================ */
+
+function oledSetCursor(x,y){
+
+    oledState.cursorX=
+        Number(x)||0;
+
+    oledState.cursorY=
+        Number(y)||0;
+}
+
+
+/* ============================================================
+   TEXT SIZE
+   ============================================================ */
+
+function oledSetTextSize(size){
+
+    oledState.textSize=
+        Math.max(
+            1,
+            Math.min(
+                4,
+                Number(size)||1
+            )
+        );
+}
+
+
+/* ============================================================
+   TEXT COLOR
+   ============================================================ */
+
+function oledSetTextColor(color){
+
+    oledState.textColor=
+        Number(color)?1:0;
+}
+
+
+/* ============================================================
+   DRAW PIXEL
+   ============================================================ */
+
+function oledDrawPixel(x,y,color){
+
+    if(!oledState.buffer){
+        return;
+    }
+
+
+    x=Math.round(
+        Number(x)||0
+    );
+
+    y=Math.round(
+        Number(y)||0
+    );
+
+
+    if(
+        x<0 ||
+        x>=OLED_WIDTH ||
+        y<0 ||
+        y>=OLED_HEIGHT
+    ){
+        return;
+    }
+
+
+    oledState.buffer[y][x]=
+        Number(color)?1:0;
+}
+
+
+/* ============================================================
+   DRAW LINE
+   ============================================================ */
+
+function oledDrawLine(
+    x1,
+    y1,
+    x2,
+    y2,
+    color
+){
+
+    x1=Math.round(
+        Number(x1)||0
+    );
+
+    y1=Math.round(
+        Number(y1)||0
+    );
+
+    x2=Math.round(
+        Number(x2)||0
+    );
+
+    y2=Math.round(
+        Number(y2)||0
+    );
+
+    color=
+        Number(color)?1:0;
+
+
+    /*
+        Bresenham line algorithm.
+    */
+
+    const dx=
+        Math.abs(x2-x1);
+
+    const sx=
+        x1<x2?1:-1;
+
+    const dy=
+        -Math.abs(y2-y1);
+
+    const sy=
+        y1<y2?1:-1;
+
+    let error=
+        dx+dy;
+
+
+    while(true){
+
+        oledDrawPixel(
+            x1,
+            y1,
+            color
+        );
+
+
+        if(
+            x1===x2 &&
+            y1===y2
+        ){
+            break;
+        }
+
+
+        const e2=
+            2*error;
+
+
+        if(e2>=dy){
+
+            error+=dy;
+            x1+=sx;
+        }
+
+
+        if(e2<=dx){
+
+            error+=dx;
+            y1+=sy;
+        }
+    }
+}
+
+
+/* ============================================================
+   FILL RECT
+   ============================================================ */
+
+function oledFillRect(
+    x,
+    y,
+    width,
+    height,
+    color
+){
+
+    x=Math.round(
+        Number(x)||0
+    );
+
+    y=Math.round(
+        Number(y)||0
+    );
+
+    width=Math.round(
+        Number(width)||0
+    );
+
+    height=Math.round(
+        Number(height)||0
+    );
+
+    color=
+        Number(color)?1:0;
+
+
+    for(
+        let py=y;
+        py<y+height;
+        py++
     ){
 
-      if(
-        autocompleteResults.length
-      ){
+        for(
+            let px=x;
+            px<x+width;
+            px++
+        ){
 
-        e.preventDefault();
+            oledDrawPixel(
+                px,
+                py,
+                color
+            );
+        }
+    }
+}
 
-        acceptAutocomplete();
 
+/* ============================================================
+   OLED TEXT
+   ============================================================ */
+
+function oledDrawText(
+    text,
+    newLine=false
+){
+
+    if(!oledState.initialized){
         return;
-
-      }
-
     }
 
 
-    if(e.key === "Escape"){
+    const value=
+        String(text);
 
-      e.preventDefault();
+    const size=
+        oledState.textSize;
 
-      hideAutocomplete();
 
-      return;
+    /*
+        High-resolution temporary text canvas.
 
+        The logical OLED is still 128×64,
+        but text is rendered at 4× resolution.
+    */
+
+    const tempCanvas=
+        document.createElement("canvas");
+
+    tempCanvas.width=
+        OLED_WIDTH*
+        OLED_RENDER_SCALE;
+
+    tempCanvas.height=
+        OLED_HEIGHT*
+        OLED_RENDER_SCALE;
+
+
+    const tempContext=
+        tempCanvas.getContext("2d");
+
+
+    if(!tempContext){
+        return;
     }
 
-  }
 
-
-  /* Ctrl + Space */
-
-  if(
-    e.ctrlKey &&
-    e.code === "Space"
-  ){
-
-    e.preventDefault();
-
-    showAutocomplete(true);
-
-    return;
-
-  }
-
-
-  /* Normal Tab */
-
-  if(e.key === "Tab"){
-
-    e.preventDefault();
-
-    const start =
-      editor.selectionStart;
-
-    const end =
-      editor.selectionEnd;
-
-
-    editor.value =
-      editor.value.substring(
+    tempContext.clearRect(
         0,
-        start
-      ) +
-      "  " +
-      editor.value.substring(
-        end
-      );
-
-
-    editor.selectionStart =
-      start + 2;
-
-    editor.selectionEnd =
-      start + 2;
-
-
-    updateAll();
-
-    saveLocal();
-
-    return;
-
-  }
-
-
-  /* Auto close braces */
-
-  if(e.key === "{"){
-
-    const start =
-      editor.selectionStart;
-
-    const end =
-      editor.selectionEnd;
-
-    const selected =
-      editor.value.substring(
-        start,
-        end
-      );
-
-
-    if(!selected){
-
-      e.preventDefault();
-
-      editor.value =
-        editor.value.substring(
-          0,
-          start
-        ) +
-        "{}" +
-        editor.value.substring(
-          end
-        );
-
-
-      editor.selectionStart =
-        start + 1;
-
-      editor.selectionEnd =
-        start + 1;
-
-
-      updateAll();
-
-      saveLocal();
-
-      return;
-
-    }
-
-  }
-
-}
-
-
-/* =========================
-   AUTOCOMPLETE
-========================= */
-
-function getCurrentWord(){
-
-  const pos =
-    editor.selectionStart;
-
-  const before =
-    editor.value.substring(
-      0,
-      pos
+        0,
+        tempCanvas.width,
+        tempCanvas.height
     );
 
 
-  const match =
-    before.match(
-      /[A-Za-z_][A-Za-z0-9_]*$/
-    );
+    tempContext.fillStyle=
+        "white";
 
 
-  return match
-    ? match[0]
-    : "";
+    tempContext.font=
+        (
+            8*
+            size*
+            OLED_RENDER_SCALE
+        )+
+        "px monospace";
 
-}
 
+    tempContext.textBaseline=
+        "top";
 
-function updateAutocomplete(){
 
-  const word =
-    getCurrentWord();
-
-
-  if(!word){
-
-    hideAutocomplete();
-
-    return;
-
-  }
-
-
-  if(word.length < 1){
-
-    hideAutocomplete();
-
-    return;
-
-  }
-
-
-  showAutocomplete(false);
-
-}
-
-
-function showAutocomplete(force){
-
-  const word =
-    getCurrentWord();
-
-
-  if(
-    !word &&
-    !force
-  ){
-
-    hideAutocomplete();
-
-    return;
-
-  }
-
-
-  const lower =
-    word.toLowerCase();
-
-
-  autocompleteResults =
-    autocompleteWords
-      .filter(item => {
-
-        if(!word){
-
-          return true;
-
-        }
-
-
-        return item[0]
-          .toLowerCase()
-          .startsWith(lower);
-
-      })
-      .slice(0, 12);
-
-
-  if(
-    !autocompleteResults.length
-  ){
-
-    hideAutocomplete();
-
-    return;
-
-  }
-
-
-  autocompleteIndex = 0;
-
-  positionAutocomplete();
-
-  renderAutocomplete();
-
-  autocomplete.classList.add(
-    "visible"
-  );
-
-}
-
-
-function renderAutocomplete(){
-
-  autocompleteItems.innerHTML = "";
-
-
-  autocompleteResults.forEach(
-    (item, index) => {
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-
-      div.className =
-        "autocomplete-item";
-
-
-      if(
-        index === autocompleteIndex
-      ){
-
-        div.classList.add(
-          "selected"
-        );
-
-      }
-
-
-      div.innerHTML =
-        `<span class="autocomplete-name">${escapeHtml(item[0])}</span>
-         <span class="autocomplete-type">${escapeHtml(item[1])}</span>`;
-
-
-      div.addEventListener(
-        "mousedown",
-        e => {
-
-          e.preventDefault();
-
-          autocompleteIndex =
-            index;
-
-          acceptAutocomplete();
-
-        }
-      );
-
-
-      autocompleteItems.appendChild(
-        div
-      );
-
-    }
-  );
-
-}
-
-
-function positionAutocomplete(){
-
-  const lineHeight =
-    parseFloat(
-      getComputedStyle(editor).lineHeight
-    );
-
-
-  const paddingTop =
-    10;
-
-
-  const textBefore =
-    editor.value.substring(
-      0,
-      editor.selectionStart
-    );
-
-
-  const line =
-    textBefore.split("\n").length - 1;
-
-
-  const column =
-    textBefore.length -
-    textBefore.lastIndexOf("\n") -
-    1;
-
-
-  const left =
-    12 +
-    column * 8.4 -
-    editor.scrollLeft;
-
-
-  const top =
-    paddingTop +
-    (line + 1) *
-    lineHeight -
-    editor.scrollTop;
-
-
-  autocomplete.style.left =
-    Math.max(
-      5,
-      Math.min(
-        left,
-        editor.clientWidth - 270
-      )
-    ) + "px";
-
-
-  autocomplete.style.top =
-    Math.max(
-      5,
-      Math.min(
-        top,
-        editor.clientHeight - 240
-      )
-    ) + "px";
-
-}
-
-
-function acceptAutocomplete(){
-
-  if(!autocompleteResults.length){
-
-    return;
-
-  }
-
-
-  const item =
-    autocompleteResults[
-      autocompleteIndex
-    ];
-
-
-  const selected =
-    item[0];
-
-
-  const extra =
-    item[2] || "";
-
-
-  const pos =
-    editor.selectionStart;
-
-
-  const word =
-    getCurrentWord();
-
-
-  const start =
-    pos - word.length;
-
-
-  let insertText =
-    selected + extra;
-
-
-  let cursorOffset =
-    insertText.length;
-
-
-  if(extra === "()"){
-
-    insertText =
-      selected + "()";
-
-    cursorOffset =
-      selected.length + 1;
-
-  }
-
-
-  editor.value =
-    editor.value.substring(
-      0,
-      start
-    ) +
-    insertText +
-    editor.value.substring(
-      pos
-    );
-
-
-  editor.selectionStart =
-    start + cursorOffset;
-
-  editor.selectionEnd =
-    start + cursorOffset;
-
-
-  hideAutocomplete();
-
-  updateAll();
-
-  saveLocal();
-
-}
-
-
-function hideAutocomplete(){
-
-  autocomplete.classList.remove(
-    "visible"
-  );
-
-}
-
-
-/* =========================
-   SYNTAX HIGHLIGHTING
-========================= */
-
-function highlightCode(){
-
-  let code =
-    editor.value
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      );
-
-
-  const tokens = [];
-
-
-  const save = html => {
-
-    const id =
-      `___TOKEN_${tokens.length}___`;
-
-    tokens.push(html);
-
-    return id;
-
-  };
-
-
-  /* Comments */
-
-  code =
-    code.replace(
-      /(\/\/.*)$/gm,
-      m =>
-        save(
-          `<span style="color:#22c55e">${m}</span>`
-        )
-    );
-
-
-  code =
-    code.replace(
-      /(\/\*[\s\S]*?\*\/)/g,
-      m =>
-        save(
-          `<span style="color:#22c55e">${m}</span>`
-        )
-    );
-
-
-  /* Strings */
-
-  code =
-    code.replace(
-      /("(?:\\.|[^"\\])*")/g,
-      m =>
-        save(
-          `<span style="color:#f59e0b">${m}</span>`
-        )
-    );
-
-
-  code =
-    code.replace(
-      /('(?:\\.|[^'\\])*')/g,
-      m =>
-        save(
-          `<span style="color:#f59e0b">${m}</span>`
-        )
-    );
-
-
-  /* Preprocessor */
-
-  code =
-    code.replace(
-      /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning)\b[^\n]*)/g,
-      m =>
-        save(
-          `<span style="color:#f472b6">${m}</span>`
-        )
-    );
-
-
-  /* Arduino functions */
-
-  code =
-    code.replace(
-      /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros)\b/g,
-      '<span style="color:#38bdf8">$1</span>'
-    );
-
-
-  /* Serial */
-
-  code =
-    code.replace(
-      /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush)\b/g,
-      '<span style="color:#38bdf8">$1</span>'
-    );
-
-
-  /* Special */
-
-  code =
-    code.replace(
-      /\b(attachInterrupt|detachInterrupt|interrupts|noInterrupts|tone|noTone|pulseIn|pulseInLong|shiftIn|shiftOut)\b/g,
-      '<span style="color:#38bdf8">$1</span>'
-    );
-
-
-  /* Constants */
-
-  code =
-    code.replace(
-      /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56)\b/g,
-      '<span style="color:#fbbf24">$1</span>'
-    );
-
-
-  /* Hardware */
-
-  code =
-    code.replace(
-      /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET)\b/g,
-      '<span style="color:#60a5fa">$1</span>'
-    );
-
-
-  /* Types */
-
-  code =
-    code.replace(
-      /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t)\b/g,
-      '<span style="color:#c084fc">$1</span>'
-    );
-
-
-  /* Keywords */
-
-  code =
-    code.replace(
-      /\b(if|else|for|while|do|switch|case|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|new|delete|true|false|nullptr)\b/g,
-      '<span style="color:#fb7185">$1</span>'
-    );
-
-
-  /* Libraries */
-
-  code =
-    code.replace(
-      /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper)\b/g,
-      '<span style="color:#60a5fa">$1</span>'
-    );
-
-
-  /* Objects */
-
-  code =
-    code.replace(
-      /\b(display|Serial|Wire|lcd|servo|sensor|oled|screen)\b/g,
-      '<span style="color:#e879f9">$1</span>'
-    );
-
-
-  /* Math */
-
-  code =
-    code.replace(
-      /\b(abs|min|max|constrain|map|pow|sqrt|sin|cos|tan|random|randomSeed)\b/g,
-      '<span style="color:#2dd4bf">$1</span>'
-    );
-
-
-  /* C/C++ */
-
-  code =
-    code.replace(
-      /\b(sizeof|memcpy|memset|strcmp|strlen|strcpy|atoi|atof)\b/g,
-      '<span style="color:#2dd4bf">$1</span>'
-    );
-
-
-  /* Numbers */
-
-  code =
-    code.replace(
-      /\b(0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?[fFlLuU]*)\b/g,
-      '<span style="color:#a78bfa">$1</span>'
-    );
-
-
-  /* Restore */
-
-  code =
-    code.replace(
-      /___TOKEN_(\d+)___/g,
-      (_, i) => tokens[i]
-    );
-
-
-  highlight.innerHTML =
-    code;
-
-}
-
-
-/* =========================
-   LOCAL STORAGE
-========================= */
-
-function saveLocal(){
-
-  localStorage.setItem(
-    "arduino_code",
-    editor.value
-  );
-
-
-  localStorage.setItem(
-    "arduino_name",
-    filename.value
-  );
-
-}
-
-
-/* =========================
-   NEW PROJECT
-========================= */
-
-function newProject(){
-
-  editor.value =
-    defaultSketch();
-
-  filename.value =
-    "project";
-
-
-  localStorage.removeItem(
-    "arduino_compiled"
-  );
-
-  localStorage.removeItem(
-    "arduino_compiled_code"
-  );
-
-  localStorage.removeItem(
-    "arduino_compiled_name"
-  );
-
-  localStorage.removeItem(
-    "arduino_compile_success"
-  );
-
-
-  lastHexUrl = null;
-
-  downloadHexButton.disabled =
-    true;
-
-
-  clearErrorPanel();
-
-  updateAll();
-
-  saveLocal();
-
-
-  consoleBox.textContent =
-    "New project created.\n\nReady.";
-
-
-  setStatus("idle");
-
-}
-
-
-/* =========================
-   SAVE FILE
-========================= */
-
-function saveFile(){
-
-  saveLocal();
-
-
-  const name =
-    sanitizeName(
-      filename.value
-    ) ||
-    "project";
-
-
-  const blob =
-    new Blob(
-      [editor.value],
-      {
-        type:"text/plain"
-      }
-    );
-
-
-  const url =
-    URL.createObjectURL(
-      blob
-    );
-
-
-  const a =
-    document.createElement(
-      "a"
-    );
-
-
-  a.href =
-    url;
-
-  a.download =
-    name + ".ino";
-
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  a.remove();
-
-
-  setTimeout(
-    () =>
-      URL.revokeObjectURL(url),
-    1000
-  );
-
-}
-
-
-/* =========================
-   OPEN FILE
-========================= */
-
-function openFile(e){
-
-  const file =
-    e.target.files[0];
-
-
-  if(!file){
-
-    return;
-
-  }
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload = () => {
-
-    editor.value =
-      reader.result;
-
-
-    filename.value =
-      file.name.replace(
-        /\..+$/,
-        ""
-      );
-
-
-    updateAll();
-
-    saveLocal();
-
-    clearErrorPanel();
-
-
-    consoleBox.textContent =
-      "Loaded: " +
-      file.name;
-
-
-    setStatus("idle");
-
-  };
-
-
-  reader.readAsText(file);
-
-  fileInput.value = "";
-
-}
-
-
-/* =========================
-   COMPILE
-========================= */
-
-async function compileCode(){
-
-  const code =
-    editor.value;
-
-
-  if(!code.trim()){
-
-    consoleBox.textContent =
-      "Nothing to compile.";
-
-    setStatus("error");
-
-    return;
-
-  }
-
-
-  const name =
-    sanitizeName(
-      filename.value
-    ) ||
-    "project";
-
-
-  hideAutocomplete();
-
-  clearErrorPanel();
-
-
-  consoleBox.textContent =
-    "Compiling " +
-    name +
-    "...\n\n" +
-    "Connecting to Arduino Guide build server...";
-
-
-  compileInfo.textContent =
-    "Compiling";
-
-
-  setStatus("running");
-
-
-  downloadHexButton.disabled =
-    true;
-
-  lastHexUrl = null;
-
-
-  try{
-
-    const res =
-      await fetch(
-        API + "/compile",
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:JSON.stringify({
-            code:code,
-            name:name,
-            board:
-              "arduino:avr:uno"
-          })
-        }
-      );
-
-
-    const data =
-      await res.json();
-
-
-    const rawOutput =
-      data.output ||
-      data.error ||
-      "";
-
-
-    /* =========================
-       SUCCESS
-    ========================= */
-
-    if(data.success){
-
-      let output =
-        "=== COMPILE SUCCESS ===\n\n";
-
-
-      output +=
-        rawOutput ||
-        "Compilation completed successfully.";
-
-
-      if(data.hex_url){
-
-        output +=
-          "\n\n=== HEX FILE ===\n" +
-          data.hex_url;
-
-
-        lastHexUrl =
-          data.hex_url;
-
-
-        downloadHexButton.disabled =
-          false;
-
-      }
-
-
-      consoleBox.textContent =
-        output;
-
-
-      compileInfo.textContent =
-        "Success";
-
-
-      setStatus("success");
-
-
-      localStorage.setItem(
-        "arduino_compiled",
-        rawOutput
-      );
-
-      localStorage.setItem(
-        "arduino_compiled_code",
-        code
-      );
-
-      localStorage.setItem(
-        "arduino_compiled_name",
-        name
-      );
-
-      localStorage.setItem(
-        "arduino_compile_success",
-        "true"
-      );
-
-
-      clearErrorPanel();
-
-
-      return;
-
-    }
-
-
-    /* =========================
-       COMPILE FAILED
-    ========================= */
-
-    consoleBox.textContent =
-      "=== COMPILE FAILED ===";
-
-
-    compileInfo.textContent =
-      "Failed";
-
-
-    setStatus("error");
-
-
-    localStorage.setItem(
-      "arduino_compile_success",
-      "false"
+    tempContext.fillText(
+        value,
+        oledState.cursorX*
+            OLED_RENDER_SCALE,
+        oledState.cursorY*
+            OLED_RENDER_SCALE
     );
 
 
     /*
-      The real compiler output is NOT
-      shown in the console.
-
-      It is only used internally to
-      find the bad line and generate
-      the tooltip.
+        Read the high-resolution text.
     */
 
-    analyzeCompilerOutput(
-      rawOutput
-    );
-
-
-  }catch(error){
-
-    consoleBox.textContent =
-      "=== SERVER ERROR ===\n\n" +
-      error.message +
-      "\n\n" +
-      "Check that the Render server is online.";
-
-
-    compileInfo.textContent =
-      "Server error";
-
-
-    setStatus("error");
-
-
-    localStorage.setItem(
-      "arduino_compile_success",
-      "false"
-    );
-
-  }
-
-}
-
-
-/* =========================
-   COMPILER ERROR ANALYSIS
-========================= */
-
-function analyzeCompilerOutput(output){
-
-  const errors = [];
-
-  const warnings = [];
-
-
-  if(!output){
-
-    renderErrorPanel(
-      errors,
-      warnings
-    );
-
-    return;
-
-  }
-
-
-  const linesFound =
-    output.split("\n");
-
-
-  linesFound.forEach(
-    line => {
-
-      /*
-        Arduino / GCC examples:
-
-        project.ino:12:5: error: expected ')'
-        project.ino:8:3: warning: ...
-      */
-
-      const match =
-        line.match(
-          /:(\d+)(?::(\d+))?:\s*(?:fatal error|error|warning):\s*(.*)/i
+    const image=
+        tempContext.getImageData(
+            0,
+            0,
+            tempCanvas.width,
+            tempCanvas.height
         );
 
 
-      if(!match){
+    /*
+        Convert the high-resolution text back
+        into the logical 128×64 framebuffer.
 
-        return;
+        Every logical OLED pixel gets 16 samples.
+    */
 
-      }
+    for(let y=0;y<OLED_HEIGHT;y++){
 
+        for(let x=0;x<OLED_WIDTH;x++){
 
-      const lineNumber =
-        parseInt(
-          match[1],
-          10
-        );
+            let total=0;
 
 
-      const columnNumber =
-        match[2]
-          ? parseInt(
-              match[2],
-              10
-            )
-          : null;
+            for(
+                let sy=0;
+                sy<OLED_RENDER_SCALE;
+                sy++
+            ){
 
+                for(
+                    let sx=0;
+                    sx<OLED_RENDER_SCALE;
+                    sx++
+                ){
 
-      const message =
-        match[3].trim();
+                    const rx=
+                        x*
+                        OLED_RENDER_SCALE+
+                        sx;
 
+                    const ry=
+                        y*
+                        OLED_RENDER_SCALE+
+                        sy;
 
-      const lower =
-        message.toLowerCase();
 
+                    const index=
+                        (
+                            ry*
+                            tempCanvas.width+
+                            rx
+                        )*
+                        4;
 
-      let type =
-        "error";
 
+                    total+=
+                        image.data[index];
+                }
+            }
 
-      if(
-        line
-          .toLowerCase()
-          .includes("warning")
-      ){
 
-        type =
-          "warning";
+            const average=
+                total/
+                (
+                    OLED_RENDER_SCALE*
+                    OLED_RENDER_SCALE
+                );
 
-      }
 
+            if(average>20){
 
-      const help =
-        getErrorHelp(
-          lower,
-          message,
-          columnNumber
-        );
-
-
-      const item = {
-        line:lineNumber,
-        column:columnNumber,
-        message:message,
-        help:help,
-        tooltip:help,
-        type:type
-      };
-
-
-      if(type === "warning"){
-
-        warnings.push(item);
-
-      }else{
-
-        errors.push(item);
-
-      }
-
-    }
-  );
-
-
-  /*
-    Some library errors don't contain
-    a normal source-line reference.
-  */
-
-  if(
-    errors.length === 0 &&
-    /No such file or directory/i.test(
-      output
-    )
-  ){
-
-    const includeMatch =
-      output.match(
-        /fatal error:\s*([^:]+):\s*No such file or directory/i
-      );
-
-
-    if(includeMatch){
-
-      errors.push({
-        line:0,
-        column:null,
-        message:
-          "Missing library/header: " +
-          includeMatch[1],
-        help:
-          getErrorHelp(
-            "no such file or directory",
-            includeMatch[1],
-            null
-          ),
-        tooltip:
-          getErrorHelp(
-            "no such file or directory",
-            includeMatch[1],
-            null
-          ),
-        type:"error"
-      });
-
-    }
-
-  }
-
-
-  renderErrorPanel(
-    errors,
-    warnings
-  );
-
-
-  updateAll();
-
-}
-
-
-/* =========================
-   ERROR HELP
-========================= */
-
-function getErrorHelp(
-  lower,
-  original,
-  column
-){
-
-  if(
-    lower.includes(
-      "no such file or directory"
-    )
-  ){
-
-    return (
-      "This usually means the library is not installed " +
-      "or the #include name is incorrect. " +
-      "Check the library name and make sure it is supported " +
-      "by Arduino Guide."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected ';'"
-    ) ||
-    lower.includes(
-      "expected ';' before"
-    )
-  ){
-
-    if(column){
-
-      return (
-        "Expected ';' — check the statement near column " +
-        column +
-        "."
-      );
-
-    }
-
-    return (
-      "A semicolon (;) is probably missing at the end " +
-      "of the statement."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected ')'"
-    )
-  ){
-
-    if(column){
-
-      return (
-        "Expected ')' — add ')' after column " +
-        column +
-        "."
-      );
-
-    }
-
-    return (
-      "Expected ')' — add the missing ')' near this line."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected '('"
-    )
-  ){
-
-    if(column){
-
-      return (
-        "Expected '(' — add '(' near column " +
-        column +
-        "."
-      );
-
-    }
-
-    return (
-      "Expected '(' — check the function or condition on this line."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected '{'"
-    )
-  ){
-
-    return (
-      "Expected '{' — add an opening { for this block."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected '}'"
-    ) ||
-    lower.includes(
-      "expected '}' at end of input"
-    )
-  ){
-
-    return (
-      "A closing } is missing. Check that every { has a matching }."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "was not declared in this scope"
-    )
-  ){
-
-    return (
-      "Arduino/C++ cannot find this name. " +
-      "Check spelling, capitalization, variable declarations, " +
-      "and whether the required library is included."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "too few arguments"
-    )
-  ){
-
-    return (
-      "This function needs more arguments. " +
-      "Check the function's expected parameters."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "too many arguments"
-    )
-  ){
-
-    return (
-      "This function received more arguments than expected. " +
-      "Check the function call."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "was not declared"
-    )
-  ){
-
-    return (
-      "This name is unknown to the compiler. " +
-      "Check its spelling and declaration."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "invalid conversion"
-    )
-  ){
-
-    return (
-      "A value is being used with an incompatible type. " +
-      "Check the variable types and function parameters."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected primary-expression"
-    )
-  ){
-
-    return (
-      "There is probably an incomplete expression, missing value, " +
-      "operator, or bracket near this line."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "stray"
-    )
-  ){
-
-    return (
-      "The compiler found an unexpected character. " +
-      "Check quotation marks, brackets, and special characters."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "redefinition"
-    )
-  ){
-
-    return (
-      "Something has been declared more than once. " +
-      "Check for duplicate variables, functions, or objects."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "multiple definition"
-    )
-  ){
-
-    return (
-      "The same function or variable appears more than once."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "undefined reference"
-    )
-  ){
-
-    return (
-      "The code refers to something that has no implementation. " +
-      "Check the required library or function."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "expected unqualified-id"
-    )
-  ){
-
-    return (
-      "There may be a syntax error near this line, such as an " +
-      "extra bracket, missing type, or malformed declaration."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "missing terminating"
-    )
-  ){
-
-    return (
-      "A string or character quote was opened but not closed."
-    );
-
-  }
-
-
-  if(
-    lower.includes(
-      "invalid preprocessing directive"
-    )
-  ){
-
-    return (
-      "The # preprocessor command is not recognized. " +
-      "Check #include, #define, and other directives."
-    );
-
-  }
-
-
-  return (
-    "Check this line and the few lines immediately above it. " +
-    "The compiler message gives the exact reason."
-  );
-
-}
-
-
-/* =========================
-   ERROR MARKERS
-========================= */
-
-function renderErrorPanel(
-  errors,
-  warnings
-){
-
-  compilerErrors =
-    errors || [];
-
-
-  compilerWarnings =
-    warnings || [];
-
-
-  updateErrorMarkers();
-
-  updateLines();
-
-}
-
-
-/* =========================
-   UPDATE ERROR MARKERS
-========================= */
-
-function updateErrorMarkers(){
-
-  if(!errorMarkers){
-
-    return;
-
-  }
-
-
-  errorMarkers.innerHTML = "";
-
-
-  if(!compilerErrors.length){
-
-    return;
-
-  }
-
-
-  const lineHeight =
-    parseFloat(
-      getComputedStyle(editor).lineHeight
-    );
-
-
-  const editorPaddingTop =
-    10;
-
-
-  compilerErrors.forEach(
-    error => {
-
-      if(
-        !error.line ||
-        error.line < 1
-      ){
-
-        return;
-
-      }
-
-
-      const marker =
-        document.createElement(
-          "div"
-        );
-
-
-      marker.className =
-        "error-marker";
-
-
-      marker.dataset.line =
-        error.line;
-
-
-      marker.dataset.message =
-        error.tooltip ||
-        error.message;
-
-
-      marker.style.top =
-        (
-          editorPaddingTop +
-          (
-            error.line - 1
-          ) *
-          lineHeight -
-          editor.scrollTop
-        ) + "px";
-
-
-      marker.style.height =
-        lineHeight + "px";
-
-
-      errorMarkers.appendChild(
-        marker
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================
-   FIND ERROR
-========================= */
-
-function getErrorAtLine(
-  lineNumber
-){
-
-  return compilerErrors.find(
-    error =>
-      error.line === lineNumber
-  ) || null;
-
-}
-
-
-/* =========================
-   ERROR TOOLTIP
-========================= */
-
-function showErrorTooltip(
-  lineNumber,
-  mouseX,
-  mouseY
-){
-
-  if(
-    !errorTooltip ||
-    !editorBox
-  ){
-
-    return;
-
-  }
-
-
-  const error =
-    getErrorAtLine(
-      lineNumber
-    );
-
-
-  if(!error){
-
-    errorTooltip.style.display =
-      "none";
-
-    return;
-
-  }
-
-
-  errorTooltip.textContent =
-    error.tooltip ||
-    error.help ||
-    error.message;
-
-
-  errorTooltip.style.display =
-    "block";
-
-
-  const rect =
-    editorBox.getBoundingClientRect();
-
-
-  let left =
-    mouseX -
-    rect.left +
-    12;
-
-
-  let top =
-    mouseY -
-    rect.top +
-    12;
-
-
-  const tooltipWidth =
-    Math.min(
-      420,
-      editorBox.clientWidth - 10
-    );
-
-
-  const maxLeft =
-    editorBox.clientWidth -
-    tooltipWidth -
-    5;
-
-
-  if(left > maxLeft){
-
-    left =
-      Math.max(
-        5,
-        maxLeft
-      );
-
-  }
-
-
-  if(left < 5){
-
-    left = 5;
-
-  }
-
-
-  if(
-    top + 60 >
-    editorBox.clientHeight
-  ){
-
-    top =
-      mouseY -
-      rect.top -
-      60;
-
-  }
-
-
-  if(top < 5){
-
-    top = 5;
-
-  }
-
-
-  errorTooltip.style.left =
-    left + "px";
-
-
-  errorTooltip.style.top =
-    top + "px";
-
-}
-
-
-/* =========================
-   GET EDITOR LINE
-========================= */
-
-function getEditorLineFromMouse(
-  event
-){
-
-  if(!editor){
-
-    return 1;
-
-  }
-
-
-  const rect =
-    editor.getBoundingClientRect();
-
-
-  const lineHeight =
-    parseFloat(
-      getComputedStyle(
-        editor
-      ).lineHeight
-    );
-
-
-  const paddingTop =
-    10;
-
-
-  const y =
-    event.clientY -
-    rect.top +
-    editor.scrollTop -
-    paddingTop;
-
-
-  return Math.max(
-    1,
-    Math.floor(
-      y / lineHeight
-    ) + 1
-  );
-
-}
-
-
-/* =========================
-   CLEAR ERRORS
-========================= */
-
-function clearErrorPanel(){
-
-  compilerErrors = [];
-
-  compilerWarnings = [];
-
-
-  if(errorMarkers){
-
-    errorMarkers.innerHTML =
-      "";
-
-  }
-
-
-  if(errorTooltip){
-
-    errorTooltip.style.display =
-      "none";
-
-  }
-
-
-  updateLines();
-
-}
-
-
-/* =========================
-   ERROR LINE DATA
-========================= */
-
-let compilerErrors = [];
-
-let compilerWarnings = [];
-
-
-function getCurrentErrorLines(){
-
-  return {
-
-    errors:
-      compilerErrors
-        .map(
-          x => x.line
-        ),
-
-    warnings:
-      compilerWarnings
-        .map(
-          x => x.line
-        )
-
-  };
-
-}
-
-
-/* =========================
-   JUMP TO LINE
-========================= */
-
-function jumpToLine(
-  lineNumber
-){
-
-  if(
-    !lineNumber ||
-    lineNumber < 1
-  ){
-
-    return;
-
-  }
-
-
-  const allLines =
-    editor.value.split(
-      "\n"
-    );
-
-
-  let position = 0;
-
-
-  for(
-    let i = 0;
-    i < lineNumber - 1 &&
-    i < allLines.length;
-    i++
-  ){
-
-    position +=
-      allLines[i].length +
-      1;
-
-  }
-
-
-  editor.focus();
-
-
-  editor.selectionStart =
-    position;
-
-
-  editor.selectionEnd =
-    Math.min(
-      position +
-      (
-        allLines[
-          lineNumber - 1
-        ] || ""
-      ).length,
-      editor.value.length
-    );
-
-
-  const lineHeight =
-    parseFloat(
-      getComputedStyle(
-        editor
-      ).lineHeight
-    );
-
-
-  editor.scrollTop =
-    Math.max(
-      0,
-      (
-        lineNumber - 3
-      ) *
-      lineHeight
-    );
-
-
-  syncScroll();
-
-}
-
-
-/* =========================
-   HEX
-========================= */
-
-function downloadHex(){
-
-  if(!lastHexUrl){
-
-    consoleBox.textContent +=
-      "\n\nNo HEX file is available.";
-
-    return;
-
-  }
-
-
-  window.open(
-    lastHexUrl,
-    "_blank"
-  );
-
-}
-
-
-/* =========================
-   SIMULATOR
-========================= */
-
-async function runSimulator(){
-
-  const code =
-    editor.value;
-
-
-  if(!code.trim()){
-
-    consoleBox.textContent =
-      "Nothing to simulate.";
-
-    setStatus("error");
-
-    return;
-
-  }
-
-
-  hideAutocomplete();
-
-  clearErrorPanel();
-
-
-  consoleBox.textContent =
-    "Creating GSE simulator...\n\n" +
-    "Parsing Arduino source...";
-
-
-  compileInfo.textContent =
-    "Simulator";
-
-
-  setStatus("running");
-
-
-  try{
-
-    const res =
-      await fetch(
-        API + "/create",
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:JSON.stringify({
-            code:code,
-            name:
-              filename.value,
-            board:
-              "arduino:avr:uno"
-          })
+                oledState.buffer[y][x]=
+                    oledState.textColor
+                        ?1
+                        :0;
+            }
         }
-      );
+    }
 
 
-    const data =
-      await res.json();
+    /*
+        Arduino Print cursor movement.
+    */
+
+    const textWidth=
+        tempContext.measureText(
+            value
+        ).width/
+        OLED_RENDER_SCALE;
 
 
-    if(
-      !res.ok ||
-      !data.success
+    if(newLine){
+
+        oledState.cursorY+=
+            8*size;
+
+        oledState.cursorX=0;
+
+    }else{
+
+        oledState.cursorX+=
+            textWidth;
+    }
+}
+
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+
+function oledPrint(value){
+
+    oledDrawText(
+        value,
+        false
+    );
+}
+
+
+/* ============================================================
+   PRINTLN
+   ============================================================ */
+
+function oledPrintln(value){
+
+    oledDrawText(
+        value,
+        true
+    );
+}
+
+
+/* ============================================================
+   DISPLAY
+   ============================================================ */
+
+function oledDisplay(){
+
+    if(!oledState.initialized){
+        return;
+    }
+
+
+    /*
+        Equivalent to:
+
+            display.display();
+
+        The framebuffer is now rendered
+        onto the visible OLED.
+    */
+
+    renderOLED();
+}
+
+/* ============================================================
+   DELAY
+   ============================================================ */
+
+function executeDelay(milliseconds){
+    return new Promise(resolve=>{
+        setTimeout(
+            resolve,
+            Math.max(0,Number(milliseconds)||0)
+        );
+    });
+}
+
+
+
+async function executeAssignment(instruction){
+
+    const name=instruction.name;
+    const operator=instruction.operator;
+
+    let targetScope=gseVariables;
+
+    for(
+        let i=gseFunctionScopes.length-1;
+        i>=0;
+        i--
     ){
 
-      throw new Error(
-        data.error ||
-        data.output ||
-        "Failed to create simulator."
-      );
+        if(
+            Object.prototype.hasOwnProperty.call(
+                gseFunctionScopes[i],
+                name
+            )
+        ){
 
+            targetScope=
+                gseFunctionScopes[i];
+
+            break;
+        }
     }
 
+    if(operator==="++"){
 
-    consoleBox.textContent =
-      "=== SIMULATOR READY ===\n\n" +
-      "GSE executable created.\n" +
-      "Opening Arduino Uno simulator...";
+        targetScope[name]=
+            Number(targetScope[name]||0)+1;
 
-
-    setStatus("success");
-
-
-    if(!data.url){
-
-      throw new Error(
-        "Server did not return a simulator URL."
-      );
-
+        return;
     }
 
+    if(operator==="--"){
 
-    window.location.href =
-      data.url;
+        targetScope[name]=
+            Number(targetScope[name]||0)-1;
 
-  }catch(error){
+        return;
+    }
 
-    console.error(
-      "Simulator error:",
-      error
+    const value=
+        await resolveGSEValue(
+            instruction.value
+        );
+
+    if(operator==="="){
+
+        targetScope[name]=value;
+
+        return;
+    }
+
+    const current=Number(
+        targetScope[name]||0
     );
 
+    const amount=Number(value)||0;
 
-    consoleBox.textContent =
-      "=== SIMULATOR ERROR ===\n\n" +
-      error.message;
+    if(operator==="+="){
 
+        targetScope[name]=
+            current+amount;
 
-    compileInfo.textContent =
-      "Failed";
+    }else if(operator==="-="){
 
+        targetScope[name]=
+            current-amount;
 
-    setStatus("error");
+    }else if(operator==="*="){
 
-  }
+        targetScope[name]=
+            current*amount;
 
+    }else if(operator==="/="){
+
+        targetScope[name]=
+            amount!==0
+                ?current/amount
+                :0;
+    }
 }
 
+async function resolveFunctionArguments(args){
+    if(!Array.isArray(args)){
+        return [];
+    }
 
-/* =========================
-   EXAMPLES
-========================= */
-
-function loadExample(name){
-
-  const ex = {
-
-    blink:`void setup(){
-  pinMode(LED_BUILTIN, OUTPUT);
+    return await Promise.all(
+        args.map(
+            arg=>resolveGSEValue(arg)
+        )
+    );
 }
 
-void loop(){
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(1000);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(1000);
-}`,
-
-    button:`void setup(){
-  pinMode(2, INPUT);
-}
-
-void loop(){
-  int v = digitalRead(2);
-}`,
-
-    "button-led":`void setup(){
-  pinMode(2, INPUT);
-  pinMode(13, OUTPUT);
-}
-
-void loop(){
-  digitalWrite(13, digitalRead(2));
-}`,
-
-    pwm:`void setup(){
-  pinMode(9, OUTPUT);
-}
-
-void loop(){
-  analogWrite(9, 128);
-}`,
-
-    "multi-led":`void setup(){
-  pinMode(11, OUTPUT);
-  pinMode(12, OUTPUT);
-  pinMode(13, OUTPUT);
-}
-
-void loop(){
-  digitalWrite(11, HIGH);
-  digitalWrite(12, LOW);
-  digitalWrite(13, HIGH);
-}`,
-
-    buzzer:`void setup(){
-  pinMode(6, OUTPUT);
-}
-
-void loop(){
-  tone(6, 1000);
-  delay(500);
-  noTone(6);
-  delay(500);
-}`,
-
-    analog:`void setup(){
-  Serial.begin(9600);
-}
-
-void loop(){
-  Serial.println(analogRead(A0));
-  delay(200);
-}`,
-
-    joystick:`void setup(){
-  Serial.begin(9600);
-}
-
-void loop(){
-  int x = analogRead(A0);
-  int y = analogRead(A1);
-  int b = digitalRead(2);
-
-  Serial.println(String(x)+" "+String(y)+" "+String(b));
-}`,
-
-    serial:`void setup(){
-  Serial.begin(9600);
-}
-
-void loop(){
-  Serial.println("Hello");
-  delay(1000);
-}`,
-
-    timer:`/*
-  GSE FULL TEST PROGRAM
-
-  Tests:
-  - Built-in LED
-  - Digital output pins
-  - PWM output
-  - Buzzer
-  - Serial output
-  - Repeated loop
-*/
-
-void setup(){
-
-  Serial.begin(9600);
-
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(9, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(11, OUTPUT);
-
-  Serial.println("================================");
-  Serial.println("GSE SIMULATOR TEST STARTED");
-  Serial.println("================================");
-
-  Serial.println("Testing digital pins...");
-
-  digitalWrite(2, HIGH);
-  digitalWrite(3, LOW);
-  digitalWrite(5, HIGH);
-  digitalWrite(6, LOW);
-
-  delay(500);
-
-  Serial.println("Testing PWM pin 9...");
-  analogWrite(9, 80);
-
-  Serial.println("Testing PWM pin 10...");
-  analogWrite(10, 160);
-
-  Serial.println("Testing PWM pin 11...");
-  analogWrite(11, 255);
-
-  delay(1000);
-
-  Serial.println("Starting buzzer test...");
-
-  tone(6, 440, 300);
-  delay(400);
-
-  tone(6, 660, 300);
-  delay(400);
-
-  tone(6, 880, 300);
-  delay(400);
-
-  noTone(6);
-
-  Serial.println("Setup test completed.");
-  Serial.println("Entering loop...");
-}
-
-void loop(){
-
-  Serial.println("--------------------------------");
-  Serial.println("LOOP 1");
-
-  Serial.println("LED ON");
-
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(500);
-
-  Serial.println("LED OFF");
-
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(500);
-
-  Serial.println("Digital pin 2 ON");
-
-  digitalWrite(2, HIGH);
-  delay(250);
-
-  Serial.println("Digital pin 2 OFF");
-
-  digitalWrite(2, LOW);
-  delay(250);
-
-  Serial.println("Digital pin 3 ON");
-
-  digitalWrite(3, HIGH);
-  delay(250);
-
-  Serial.println("Digital pin 3 OFF");
-
-  digitalWrite(3, LOW);
-  delay(250);
-
-  Serial.println("PWM 9 low");
-
-  analogWrite(9, 40);
-  delay(300);
-
-  Serial.println("PWM 9 medium");
-
-  analogWrite(9, 128);
-  delay(300);
-
-  Serial.println("PWM 9 high");
-
-  analogWrite(9, 255);
-  delay(300);
-
-  Serial.println("Buzzer low tone");
-
-  tone(6, 330, 250);
-  delay(350);
-
-  Serial.println("Buzzer medium tone");
-
-  tone(6, 550, 250);
-  delay(350);
-
-  Serial.println("Buzzer high tone");
-
-  tone(6, 880, 250);
-  delay(350);
-
-  noTone(6);
-
-  Serial.println("Loop 1 completed.");
-
-  delay(500);
-
-  Serial.println("--------------------------------");
-  Serial.println("LOOP 2");
-
-  Serial.println("Running second loop cycle...");
-
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(2, HIGH);
-  digitalWrite(3, HIGH);
-  digitalWrite(5, HIGH);
-
-  delay(500);
-
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  digitalWrite(5, LOW);
-
-  delay(500);
-
-  Serial.println("Second digital pattern completed.");
-
-  analogWrite(9, 20);
-  analogWrite(10, 100);
-  analogWrite(11, 200);
-
-  delay(500);
-
-  analogWrite(9, 200);
-  analogWrite(10, 100);
-  analogWrite(11, 20);
-
-  delay(500);
-
-  Serial.println("Second PWM pattern completed.");
-
-  tone(6, 440);
-  delay(300);
-
-  tone(6, 660);
-  delay(300);
-
-  tone(6, 880);
-  delay(300);
-
-  noTone(6);
-
-  Serial.println("Loop 2 completed.");
-
-  delay(500);
-
-  Serial.println("--------------------------------");
-  Serial.println("LOOP 3");
-
-  Serial.println("Repeating complete test...");
-
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(200);
-
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(200);
-
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(200);
-
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(200);
-
-  tone(6, 1000, 200);
-  delay(300);
-
-  tone(6, 700, 200);
-  delay(300);
-
-  tone(6, 400, 200);
-  delay(300);
-
-  noTone(6);
-
-  Serial.println("Loop 3 completed.");
-  Serial.println("The loop will now restart.");
-
-  delay(1000);
-}`
-
-  };
-
-
-  if(!ex[name]){
-
-    consoleBox.textContent =
-      "Example not found: " +
-      name;
-
-    setStatus("error");
-
-    return;
-
-  }
-
-
-  editor.value =
-    ex[name];
-
-  filename.value =
-    name;
-
-
-  clearErrorPanel();
-
-  updateAll();
-
-  saveLocal();
-
-
-  consoleBox.textContent =
-    "Loaded example: " +
-    name;
-
-
-  setStatus("idle");
-
-}
-
-
-/* =========================
-   HELPERS
-========================= */
-
-function sanitizeName(name){
-
-  return String(
-    name || ""
-  )
-    .replace(
-      /[^a-zA-Z0-9_-]/g,
-      ""
-    )
-    .trim();
-
-}
-
-
-function escapeHtml(value){
-
-  return String(
-    value || ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
+async function executeUserFunction(
+    functionName,
+    args=[]
+){
+
+    if(
+        !gse ||
+        !gse.functions ||
+        !gse.functions[functionName]
+    ){
+
+        throw new Error(
+            "Unknown user function: "+
+            functionName
+        );
+    }
+
+    const functionData=
+        gse.functions[functionName];
+
+    const parameters=
+        functionData.parameters||[];
+
+    if(args.length!==parameters.length){
+
+        throw new Error(
+            functionName+
+            "() expects "+
+            parameters.length+
+            " argument(s), got "+
+            args.length
+        );
+    }
+
+    const localScope={};
+
+    for(
+        let i=0;
+        i<parameters.length;
+        i++
+    ){
+
+        localScope[
+            parameters[i].name
+        ]=args[i];
+    }
+
+    gseFunctionScopes.push(
+        localScope
     );
 
+    let returnValue=null;
+
+    try{
+
+        returnValue=
+            await executeProgram(
+                functionData.program,
+                true
+            );
+
+    }finally{
+
+        gseFunctionScopes.pop();
+    }
+
+    if(
+        returnValue &&
+        returnValue.returned
+    ){
+
+        return returnValue.value;
+    }
+
+    return null;
+}
+/* ============================================================
+   EXECUTE INSTRUCTION
+   ============================================================ */
+async function executeInstruction(
+    instruction
+){
+
+    if(!instruction){
+        return null;
+    }
+
+    switch(instruction.op){
+
+        case "DECLARE":{
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            const scope=
+                gseFunctionScopes.length>0
+                    ?gseFunctionScopes[
+                        gseFunctionScopes.length-1
+                    ]
+                    :gseVariables;
+
+            scope[
+                instruction.name
+            ]=value;
+
+            break;
+        }
+
+        case "ASSIGN":
+
+            await executeAssignment(
+                instruction
+            );
+
+            break;
+
+        case "IF":{
+
+            const condition=
+                await resolveGSEValue(
+                    instruction.condition
+                );
+
+            if(condition){
+
+                const result=
+                    await executeProgram(
+                        instruction.then,
+                        true
+                    );
+
+                if(
+                    result &&
+                    result.returned
+                ){
+                    return result;
+                }
+
+            }else{
+
+                const result=
+                    await executeProgram(
+                        instruction.else,
+                        true
+                    );
+
+                if(
+                    result &&
+                    result.returned
+                ){
+                    return result;
+                }
+            }
+
+            break;
+        }
+
+        case "FUNCTION_CALL":{
+
+            await executeUserFunction(
+                instruction.function,
+                await resolveFunctionArguments(
+                    instruction.args||[]
+                )
+            );
+
+            break;
+        }
+
+        case "RETURN":{
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            return {
+                returned:true,
+                value:value
+            };
+        }
+
+        case "TONE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const frequency=
+                await resolveGSEValue(
+                    instruction.frequency
+                );
+
+            startBuzzer(
+                pin,
+                frequency
+            );
+
+            if(
+                instruction.duration!==undefined
+            ){
+
+                const duration=
+                    await resolveGSEValue(
+                        instruction.duration
+                    );
+
+                await executeDelay(
+                    duration
+                );
+
+                stopBuzzer();
+            }
+
+            break;
+        }
+
+        case "NO_TONE":
+
+            stopBuzzer();
+
+            break;
+
+        case "PIN_MODE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const mode=
+                await resolveGSEValue(
+                    instruction.mode
+                );
+
+            executePinMode({
+                pin:pin,
+                mode:mode
+            });
+
+            break;
+        }
+
+        case "DIGITAL_WRITE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            executeDigitalWrite({
+                pin:pin,
+                value:value
+            });
+
+            break;
+        }
+
+        case "DIGITAL_READ":
+
+            return executeDigitalRead({
+                pin:
+                    await resolveGSEValue(
+                        instruction.pin
+                    )
+            });
+
+        case "ANALOG_READ":
+
+            return executeAnalogRead({
+                pin:
+                    await resolveGSEValue(
+                        instruction.pin
+                    )
+            });
+
+        case "ANALOG_WRITE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            executeAnalogWrite({
+                pin:pin,
+                value:value
+            });
+
+            break;
+        }
+
+        case "SERIAL_BEGIN":
+
+            executeSerialBegin(
+                await resolveGSEValue(
+                    instruction.baud
+                )
+            );
+
+            break;
+
+        case "SERIAL_PRINT":
+
+            executeSerialPrint(
+                await resolveGSEValue(
+                    instruction.value
+                ),
+                false
+            );
+
+            break;
+
+        case "SERIAL_PRINTLN":
+
+            executeSerialPrint(
+                await resolveGSEValue(
+                    instruction.value
+                ),
+                true
+            );
+
+            break;
+
+        case "OLED_BEGIN":
+
+            initializeOLED();
+
+            break;
+
+        case "OLED_CLEAR":
+
+            oledClearDisplay();
+
+            break;
+
+        case "OLED_DISPLAY":
+
+            oledDisplay();
+
+            break;
+
+        case "OLED_TEXT_SIZE":
+
+            oledSetTextSize(
+                await resolveGSEValue(
+                    instruction.value
+                )
+            );
+
+            break;
+
+        case "OLED_TEXT_COLOR":
+
+            oledSetTextColor(
+                await resolveGSEValue(
+                    instruction.value
+                )
+            );
+
+            break;
+
+        case "OLED_CURSOR":
+
+            oledSetCursor(
+                await resolveGSEValue(
+                    instruction.x
+                ),
+                await resolveGSEValue(
+                    instruction.y
+                )
+            );
+
+            break;
+
+        case "OLED_PRINT":
+
+            oledPrint(
+                await resolveGSEValue(
+                    instruction.value
+                )
+            );
+
+            break;
+
+        case "OLED_PRINTLN":
+
+            oledPrintln(
+                await resolveGSEValue(
+                    instruction.value
+                )
+            );
+
+            break;
+
+        case "OLED_PIXEL":
+
+            oledDrawPixel(
+                await resolveGSEValue(
+                    instruction.x
+                ),
+                await resolveGSEValue(
+                    instruction.y
+                ),
+                await resolveGSEValue(
+                    instruction.color
+                )
+            );
+
+            break;
+
+        case "OLED_LINE":
+
+            oledDrawLine(
+                await resolveGSEValue(
+                    instruction.x1
+                ),
+                await resolveGSEValue(
+                    instruction.y1
+                ),
+                await resolveGSEValue(
+                    instruction.x2
+                ),
+                await resolveGSEValue(
+                    instruction.y2
+                ),
+                await resolveGSEValue(
+                    instruction.color
+                )
+            );
+
+            break;
+
+        case "OLED_RECT":
+
+            oledFillRect(
+                await resolveGSEValue(
+                    instruction.x
+                ),
+                await resolveGSEValue(
+                    instruction.y
+                ),
+                await resolveGSEValue(
+                    instruction.width
+                ),
+                await resolveGSEValue(
+                    instruction.height
+                ),
+                await resolveGSEValue(
+                    instruction.color
+                )
+            );
+
+            break;
+
+        case "DELAY":{
+
+            const ms=
+                await resolveGSEValue(
+                    instruction.ms
+                );
+
+            await executeDelay(ms);
+
+            simulatorState.time+=
+                Number(ms)||0;
+
+            break;
+        }
+
+        case "DELAY_US":{
+
+            const us=
+                await resolveGSEValue(
+                    instruction.us
+                );
+
+            await executeDelay(
+                Number(us||0)/1000
+            );
+
+            break;
+        }
+
+        case "SIMULATOR_HALT":
+
+            return {
+                halted:true
+            };
+
+        default:
+
+            throw new Error(
+                "Unsupported GSE operation: "+
+                instruction.op
+            );
+    }
+
+    return null;
 }
 
+/* ============================================================
+   PROGRAM
+   ============================================================ */
 
-function setStatus(type){
+async function executeSetup(){
 
-  statusDot.className = "";
+    for(
+        const key of Object.keys(
+            gseVariables
+        )
+    ){
 
+        delete gseVariables[key];
+    }
 
-  if(type === "success"){
+    gseFunctionScopes.length=0;
 
-    statusDot.classList.add(
-      "success"
+    simulatorLog(
+        "Running setup..."
     );
 
-  }
-
-
-  if(type === "error"){
-
-    statusDot.classList.add(
-      "error"
+    await executeProgram(
+        gse.program.setup
     );
 
-  }
-
-
-  if(type === "running"){
-
-    statusDot.classList.add(
-      "running"
+    simulatorLog(
+        "Setup complete."
     );
+}
+async function executeProgram(instructions){
 
-  }
+    for(
+        let i=0;
+        i<instructions.length;
+        i++
+    ){
 
+        const result=
+            await executeInstruction(
+                instructions[i]
+            );
 
-  if(type === "idle"){
+        if(
+            result &&
+            (
+                result.returned ||
+                result.halted
+            )
+        ){
+            return result;
+        }
 
-    compileInfo.textContent =
-      "";
+        if(i%25===0){
+            await new Promise(
+                resolve=>setTimeout(
+                    resolve,
+                    0
+                )
+            );
+        }
+    }
 
-  }
-
+    return null;
 }
 
+async function executeLoop(){
 
-function clearConsole(){
+    while(true){
 
-  consoleBox.textContent =
-    "";
+        const result=
+            await executeProgram(
+                gse.program.loop
+            );
 
-  compileInfo.textContent =
-    "";
+        if(
+            result &&
+            result.halted
+        ){
+            break;
+        }
 
-  clearErrorPanel();
+        simulatorState.time+=1;
 
-  compilerErrors = [];
-  compilerWarnings = [];
-
-  updateLines();
-
-  setStatus("idle");
-
+        await new Promise(
+            resolve=>setTimeout(
+                resolve,
+                1
+            )
+        );
+    }
 }
 
+/* ============================================================
+   START
+   ============================================================ */
+
+async function startSimulator(){
+    try{
+
+        if(!token){
+            setStatus(
+                "No GSE token.",
+                "error"
+            );
+            return;
+        }
+
+        setupButtons();
+        setupJoystick();
+        setupPotentiometer();
+        updatePotentiometer();
+
+        await loadGSE();
+
+        setStatus(
+            "GSE loaded. Starting...",
+            "ready"
+        );
+
+        await executeSetup();
+
+        setStatus(
+            "Simulator running.",
+            "ready"
+        );
+
+        await executeLoop();
+
+    }catch(error){
+
+        console.error(
+            "Simulator error:",
+            error
+        );
+
+        setStatus(
+            "Simulator error: "+
+            error.message,
+            "error"
+        );
+
+        simulatorLog(
+            "ERROR: "+
+            error.message
+        );
+    }
+}
+
+startSimulator();
 </script>
-
-<script
-  type="module"
-  src="js/Live.js"
-></script>
 
 </body>
 </html>
+
 
