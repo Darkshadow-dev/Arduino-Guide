@@ -579,6 +579,52 @@ def parse_variable(
 
     return None
 
+def parse_function_call(
+    line,
+    constants=None
+):
+    line = clean_line(line)
+
+    match = re.match(
+        r"^([A-Za-z_]\w*)\s*\((.*)\)\s*;?$",
+        line,
+        re.DOTALL
+    )
+
+    if not match:
+        return None
+
+    function = match.group(1)
+
+    if function in {
+        "pinMode",
+        "digitalWrite",
+        "digitalRead",
+        "analogRead",
+        "analogWrite",
+        "delay",
+        "delayMicroseconds",
+        "tone",
+        "noTone",
+        "map"
+    }:
+        return None
+
+    args = split_arguments(
+        match.group(2)
+    )
+
+    return {
+        "op": "FUNCTION_CALL",
+        "function": function,
+        "args": [
+            parse_expression(
+                arg,
+                constants
+            )
+            for arg in args
+        ]
+    }
 
 def parse_instruction(
     line,
@@ -601,6 +647,28 @@ def parse_instruction(
             "op": "SIMULATOR_HALT"
         }
 
+    if line.startswith("return"):
+        value = line[
+            len("return"):
+        ].strip().rstrip(";").strip()
+
+        if not value:
+            return {
+                "op": "RETURN",
+                "value": {
+                    "type": "VALUE",
+                    "value": None
+                }
+            }
+
+        return {
+            "op": "RETURN",
+            "value": parse_expression(
+                value,
+                constants
+            )
+        }
+
     match = re.match(
         r"((?:\w+\.)?\w+)\s*\((.*)\)\s*;?$",
         line,
@@ -613,6 +681,7 @@ def parse_instruction(
         )
 
     function = match.group(1)
+
     args = split_arguments(
         match.group(2)
     )
@@ -1036,10 +1105,17 @@ def parse_instruction(
             + function
         )
 
-    raise ValueError(
-        "Unsupported Arduino function: "
-        + function
-    )
+    return {
+        "op": "FUNCTION_CALL",
+        "function": function,
+        "args": [
+            parse_expression(
+                arg,
+                constants
+            )
+            for arg in args
+        ]
+    }
 
 def tokenize_lines(code):
     code = re.sub(
@@ -1195,13 +1271,15 @@ def parse_if(
         "else": else_block
     }], index
 
-
 def parse_block(
     lines,
     index=0,
     objects=None,
     constants=None
 ):
+    if constants is None:
+        constants = {}
+
     instructions = []
 
     while index < len(lines):
@@ -1235,7 +1313,7 @@ def parse_block(
             index += 1
 
             if (
-                index + 1 < len(lines)
+                index < len(lines)
                 and lines[index].strip() == "{"
             ):
                 _, index = parse_block(
@@ -1302,17 +1380,17 @@ def parse_block(
         index += 1
 
     return instructions, index
-
-
 def extract_function(
     code,
     name
 ):
     pattern = re.compile(
         r"\b"
+        r"(void|int|long|float|double|bool|boolean|byte)"
+        r"\s+"
         + re.escape(name)
-        + r"\s*\(\s*\)\s*\{",
-        re.MULTILINE
+        + r"\s*\((.*?)\)\s*\{",
+        re.DOTALL
     )
 
     match = pattern.search(code)
@@ -1338,9 +1416,14 @@ def extract_function(
             depth -= 1
 
             if depth == 0:
-                return code[
-                    start:position
-                ]
+                return {
+                    "name": name,
+                    "return_type": match.group(1),
+                    "parameters": match.group(2).strip(),
+                    "code": code[
+                        start:position
+                    ]
+                }
 
         position += 1
 
@@ -1350,18 +1433,21 @@ def extract_function(
         + "()"
     )
 
-
 def compile_function(
     code,
     objects=None,
     constants=None
 ):
+    if constants is None:
+        constants = {}
+
     lines = tokenize_lines(code)
 
     instructions, index = parse_block(
         lines,
-        objects=objects,
-        constants=constants
+        0,
+        objects,
+        constants
     )
 
     if index < len(lines):
@@ -1460,7 +1546,91 @@ def parse_global_code(source):
         objects,
         constants
     )
+def find_functions(source):
+    pattern = re.compile(
+        r"\b"
+        r"(void|int|long|float|double|bool|boolean|byte)"
+        r"\s+"
+        r"([A-Za-z_]\w*)"
+        r"\s*\((.*?)\)\s*\{",
+        re.DOTALL
+    )
 
+    functions = {}
+
+    for match in pattern.finditer(source):
+
+        return_type = match.group(1)
+        name = match.group(2)
+        parameters = match.group(3).strip()
+
+        start = match.end()
+
+        depth = 1
+        position = start
+
+        while position < len(source):
+
+            if source[position] == "{":
+                depth += 1
+
+            elif source[position] == "}":
+                depth -= 1
+
+                if depth == 0:
+                    break
+
+            position += 1
+
+        if depth != 0:
+            raise ValueError(
+                "Unclosed function: "
+                + name
+            )
+
+        parameter_list = []
+
+        if parameters:
+
+            for parameter in split_arguments(
+                parameters
+            ):
+                parameter = parameter.strip()
+
+                parameter = re.sub(
+                    r"\s*=\s*.*$",
+                    "",
+                    parameter
+                ).strip()
+
+                parameter_match = re.match(
+                    r"^(.*?)\s+([A-Za-z_]\w*)$",
+                    parameter
+                )
+
+                if not parameter_match:
+                    raise ValueError(
+                        "Invalid parameter in "
+                        + name
+                        + ": "
+                        + parameter
+                    )
+
+                parameter_list.append({
+                    "type": parameter_match.group(1).strip(),
+                    "name": parameter_match.group(2)
+                })
+
+        functions[name] = {
+            "name": name,
+            "return_type": return_type,
+            "parameters": parameter_list,
+            "code": source[
+                start:position
+            ]
+        }
+
+    return functions
 
 def compile_gse(
     source,
@@ -1479,27 +1649,60 @@ def compile_gse(
         source
     )
 
-    setup_code = extract_function(
-        source,
-        "setup"
+    functions = find_functions(
+        source
     )
 
-    loop_code = extract_function(
-        source,
-        "loop"
-    )
+    if "setup" not in functions:
+        raise ValueError(
+            "Missing setup()"
+        )
+
+    if "loop" not in functions:
+        raise ValueError(
+            "Missing loop()"
+        )
+
+    setup_function = functions["setup"]
+    loop_function = functions["loop"]
 
     setup = compile_function(
-        setup_code,
+        setup_function["code"],
         objects,
         constants.copy()
     )
 
     loop = compile_function(
-        loop_code,
+        loop_function["code"],
         objects,
         constants.copy()
     )
+
+    compiled_functions = {}
+
+    for name, function in functions.items():
+
+        if name in {
+            "setup",
+            "loop"
+        }:
+            continue
+
+        compiled_functions[name] = {
+            "return_type": function[
+                "return_type"
+            ],
+
+            "parameters": function[
+                "parameters"
+            ],
+
+            "program": compile_function(
+                function["code"],
+                objects,
+                constants.copy()
+            )
+        }
 
     return {
         "format": "GSE",
@@ -1517,6 +1720,8 @@ def compile_gse(
         "constants": constants,
 
         "objects": objects,
+
+        "functions": compiled_functions,
 
         "program": {
             "setup": setup,

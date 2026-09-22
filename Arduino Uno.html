@@ -298,6 +298,7 @@ const simulator=document.getElementById("simulator");
 const statusBox=document.getElementById("simulatorStatus");
 const consoleBox=document.getElementById("simulatorConsole");
 const gseVariables = {};
+const gseFunctionScopes = [];
 const GSE_SERVER="https://arduino-guide-6.onrender.com";
 let gse=null;
 const token=new URLSearchParams(window.location.search).get("gse");
@@ -374,7 +375,7 @@ function validateGSE(){
     }
 }
 
-function resolveGSEValue(value){
+async function resolveGSEValue(value){
 
     if(
         value===null ||
@@ -383,39 +384,28 @@ function resolveGSEValue(value){
         return 0;
     }
 
-
     if(
         value &&
         typeof value==="object"
     ){
 
-        /* ====================================================
-           VALUE
-           ==================================================== */
-
         if(value.type==="VALUE"){
 
-            return resolveGSEValue(
+            return await resolveGSEValue(
                 value.value
             );
         }
 
-
-        /* ====================================================
-           FUNCTION / METHOD CALL
-           ==================================================== */
-
         if(value.type==="CALL"){
 
-            const args=
-                value.args.map(
-                    arg=>resolveGSEValue(arg)
+            const args=[];
+
+            for(const arg of value.args||[]){
+
+                args.push(
+                    await resolveGSEValue(arg)
                 );
-
-
-            /* =================================================
-               DIGITAL READ
-               ================================================= */
+            }
 
             if(
                 value.function==="digitalRead"
@@ -426,11 +416,6 @@ function resolveGSEValue(value){
                 });
             }
 
-
-            /* =================================================
-               ANALOG READ
-               ================================================= */
-
             if(
                 value.function==="analogRead"
             ){
@@ -439,10 +424,6 @@ function resolveGSEValue(value){
                     pin:args[0]
                 });
             }
-
-            /* =================================================
-               MAP
-               ================================================= */
 
             if(
                 value.function==="map"
@@ -484,24 +465,6 @@ function resolveGSEValue(value){
                 );
             }
 
-
-            /* =================================================
-               OLED BEGIN
-               =================================================
-
-               Real Arduino:
-
-                   display.begin(
-                       SSD1306_SWITCHCAPVCC,
-                       0x3C
-                   )
-
-               returns true when initialization succeeds.
-
-               The simulator's OLED is already available,
-               so this simply reports successful initialization.
-            */
-
             if(
                 value.function==="display.begin"
             ){
@@ -511,6 +474,21 @@ function resolveGSEValue(value){
                 return true;
             }
 
+            /*
+                USER FUNCTION
+            */
+
+            if(
+                gse &&
+                gse.functions &&
+                gse.functions[value.function]
+            ){
+
+                return await executeUserFunction(
+                    value.function,
+                    args
+                );
+            }
 
             throw new Error(
                 "Unsupported expression function: "+
@@ -518,23 +496,17 @@ function resolveGSEValue(value){
             );
         }
 
-
-        /* ====================================================
-           COMPARE
-           ==================================================== */
-
         if(value.type==="COMPARE"){
 
             const left=
-                resolveGSEValue(
+                await resolveGSEValue(
                     value.left
                 );
 
             const right=
-                resolveGSEValue(
+                await resolveGSEValue(
                     value.right
                 );
-
 
             switch(value.operator){
 
@@ -557,22 +529,15 @@ function resolveGSEValue(value){
                     return left<=right;
             }
 
-
             return false;
         }
-
-
-        /* ====================================================
-           LOGICAL
-           ==================================================== */
 
         if(value.type==="LOGICAL"){
 
             const left=
-                resolveGSEValue(
+                await resolveGSEValue(
                     value.left
                 );
-
 
             if(value.operator==="&&"){
 
@@ -581,12 +546,11 @@ function resolveGSEValue(value){
                 }
 
                 return Boolean(
-                    resolveGSEValue(
+                    await resolveGSEValue(
                         value.right
                     )
                 );
             }
-
 
             if(value.operator==="||"){
 
@@ -595,51 +559,39 @@ function resolveGSEValue(value){
                 }
 
                 return Boolean(
-                    resolveGSEValue(
+                    await resolveGSEValue(
                         value.right
                     )
                 );
             }
 
-
             return false;
         }
-
-
-        /* ====================================================
-           NOT
-           ==================================================== */
 
         if(value.type==="NOT"){
 
             return !Boolean(
-                resolveGSEValue(
+                await resolveGSEValue(
                     value.value
                 )
             );
         }
 
-
-        /* ====================================================
-           ARITHMETIC
-           ==================================================== */
-
         if(value.type==="ARITHMETIC"){
 
             const left=
                 Number(
-                    resolveGSEValue(
+                    await resolveGSEValue(
                         value.left
                     )
                 );
 
             const right=
                 Number(
-                    resolveGSEValue(
+                    await resolveGSEValue(
                         value.right
                     )
                 );
-
 
             switch(value.operator){
 
@@ -658,15 +610,37 @@ function resolveGSEValue(value){
                         :0;
             }
 
-
             return 0;
         }
     }
 
+    /*
+        FUNCTION LOCAL VARIABLES
+    */
 
-    /* ========================================================
-       VARIABLES
-       ======================================================== */
+    for(
+        let i=gseFunctionScopes.length-1;
+        i>=0;
+        i--
+    ){
+
+        const scope=
+            gseFunctionScopes[i];
+
+        if(
+            Object.prototype.hasOwnProperty.call(
+                scope,
+                value
+            )
+        ){
+
+            return scope[value];
+        }
+    }
+
+    /*
+        GLOBAL VARIABLES
+    */
 
     if(
         typeof value==="string" &&
@@ -678,7 +652,6 @@ function resolveGSEValue(value){
 
         return gseVariables[value];
     }
-
 
     return value;
 }
@@ -2206,290 +2179,602 @@ function executeDelay(milliseconds){
 
 
 
-
-function executeAssignment(instruction){
+async function executeAssignment(instruction){
 
     const name=instruction.name;
     const operator=instruction.operator;
 
+    let targetScope=gseVariables;
+
+    for(
+        let i=gseFunctionScopes.length-1;
+        i>=0;
+        i--
+    ){
+
+        if(
+            Object.prototype.hasOwnProperty.call(
+                gseFunctionScopes[i],
+                name
+            )
+        ){
+
+            targetScope=
+                gseFunctionScopes[i];
+
+            break;
+        }
+    }
+
     if(operator==="++"){
-        gseVariables[name]=
-            Number(gseVariables[name]||0)+1;
+
+        targetScope[name]=
+            Number(targetScope[name]||0)+1;
+
         return;
     }
 
     if(operator==="--"){
-        gseVariables[name]=
-            Number(gseVariables[name]||0)-1;
+
+        targetScope[name]=
+            Number(targetScope[name]||0)-1;
+
         return;
     }
 
-    const value=resolveGSEValue(
-        instruction.value
-    );
+    const value=
+        await resolveGSEValue(
+            instruction.value
+        );
 
     if(operator==="="){
-        gseVariables[name]=value;
+
+        targetScope[name]=value;
+
         return;
     }
 
     const current=Number(
-        gseVariables[name]||0
+        targetScope[name]||0
     );
 
     const amount=Number(value)||0;
 
     if(operator==="+="){
-        gseVariables[name]=
+
+        targetScope[name]=
             current+amount;
+
     }else if(operator==="-="){
-        gseVariables[name]=
+
+        targetScope[name]=
             current-amount;
+
     }else if(operator==="*="){
-        gseVariables[name]=
+
+        targetScope[name]=
             current*amount;
+
     }else if(operator==="/="){
-        gseVariables[name]=
+
+        targetScope[name]=
             amount!==0
                 ?current/amount
                 :0;
     }
 }
+
+async function executeUserFunction(
+    functionName,
+    args=[]
+){
+
+    if(
+        !gse ||
+        !gse.functions ||
+        !gse.functions[functionName]
+    ){
+
+        throw new Error(
+            "Unknown user function: "+
+            functionName
+        );
+    }
+
+    const functionData=
+        gse.functions[functionName];
+
+    const parameters=
+        functionData.parameters||[];
+
+    if(args.length!==parameters.length){
+
+        throw new Error(
+            functionName+
+            "() expects "+
+            parameters.length+
+            " argument(s), got "+
+            args.length
+        );
+    }
+
+    const localScope={};
+
+    for(
+        let i=0;
+        i<parameters.length;
+        i++
+    ){
+
+        localScope[
+            parameters[i].name
+        ]=args[i];
+    }
+
+    gseFunctionScopes.push(
+        localScope
+    );
+
+    let returnValue=null;
+
+    try{
+
+        returnValue=
+            await executeProgram(
+                functionData.program,
+                true
+            );
+
+    }finally{
+
+        gseFunctionScopes.pop();
+    }
+
+    if(
+        returnValue &&
+        returnValue.returned
+    ){
+
+        return returnValue.value;
+    }
+
+    return null;
+}
 /* ============================================================
    EXECUTE INSTRUCTION
    ============================================================ */
-async function executeInstruction(instruction){
-    if(!instruction)return;
+async function executeInstruction(
+    instruction
+){
+
+    if(!instruction){
+        return null;
+    }
 
     switch(instruction.op){
 
-        case "DECLARE":
-            gseVariables[instruction.name]=
-                resolveGSEValue(
+        case "DECLARE":{
+
+            const value=
+                await resolveGSEValue(
                     instruction.value
                 );
+
+            const scope=
+                gseFunctionScopes.length>0
+                    ?gseFunctionScopes[
+                        gseFunctionScopes.length-1
+                    ]
+                    :gseVariables;
+
+            scope[
+                instruction.name
+            ]=value;
+
             break;
+        }
 
         case "ASSIGN":
-            executeAssignment(instruction);
-            break;
 
-        case "IF":
-            if(
-                resolveGSEValue(
-                    instruction.condition
-                )
-            ){
-                await executeProgram(
-                    instruction.then
-                );
-            }else{
-                await executeProgram(
-                    instruction.else
-                );
-            }
-            break;
-
-        case "TONE":
-            startBuzzer(
-                resolveGSEValue(instruction.pin),
-                resolveGSEValue(instruction.frequency)
+            await executeAssignment(
+                instruction
             );
 
-            if(instruction.duration!==undefined){
-                await executeDelay(
-                    resolveGSEValue(
+            break;
+
+        case "IF":{
+
+            const condition=
+                await resolveGSEValue(
+                    instruction.condition
+                );
+
+            if(condition){
+
+                const result=
+                    await executeProgram(
+                        instruction.then,
+                        true
+                    );
+
+                if(
+                    result &&
+                    result.returned
+                ){
+                    return result;
+                }
+
+            }else{
+
+                const result=
+                    await executeProgram(
+                        instruction.else,
+                        true
+                    );
+
+                if(
+                    result &&
+                    result.returned
+                ){
+                    return result;
+                }
+            }
+
+            break;
+        }
+
+        case "FUNCTION_CALL":{
+
+            await executeUserFunction(
+                instruction.function,
+                await resolveFunctionArguments(
+                    instruction.args||[]
+                )
+            );
+
+            break;
+        }
+
+        case "RETURN":{
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            return {
+                returned:true,
+                value:value
+            };
+        }
+
+        case "TONE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const frequency=
+                await resolveGSEValue(
+                    instruction.frequency
+                );
+
+            startBuzzer(
+                pin,
+                frequency
+            );
+
+            if(
+                instruction.duration!==undefined
+            ){
+
+                const duration=
+                    await resolveGSEValue(
                         instruction.duration
-                    )
+                    );
+
+                await executeDelay(
+                    duration
                 );
 
                 stopBuzzer();
             }
 
             break;
+        }
 
         case "NO_TONE":
+
             stopBuzzer();
+
             break;
 
-        case "PIN_MODE":
-            executePinMode(instruction);
-            break;
+        case "PIN_MODE":{
 
-        case "DIGITAL_WRITE":
-            executeDigitalWrite(instruction);
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const mode=
+                await resolveGSEValue(
+                    instruction.mode
+                );
+
+            executePinMode({
+                pin:pin,
+                mode:mode
+            });
+
             break;
+        }
+
+        case "DIGITAL_WRITE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            executeDigitalWrite({
+                pin:pin,
+                value:value
+            });
+
+            break;
+        }
 
         case "DIGITAL_READ":
-            executeDigitalRead(instruction);
-            break;
+
+            return executeDigitalRead({
+                pin:
+                    await resolveGSEValue(
+                        instruction.pin
+                    )
+            });
 
         case "ANALOG_READ":
-            executeAnalogRead(instruction);
-            break;
 
-        case "ANALOG_WRITE":
-            executeAnalogWrite(instruction);
+            return executeAnalogRead({
+                pin:
+                    await resolveGSEValue(
+                        instruction.pin
+                    )
+            });
+
+        case "ANALOG_WRITE":{
+
+            const pin=
+                await resolveGSEValue(
+                    instruction.pin
+                );
+
+            const value=
+                await resolveGSEValue(
+                    instruction.value
+                );
+
+            executeAnalogWrite({
+                pin:pin,
+                value:value
+            });
+
             break;
+        }
 
         case "SERIAL_BEGIN":
-            executeSerialBegin(instruction.baud);
+
+            executeSerialBegin(
+                await resolveGSEValue(
+                    instruction.baud
+                )
+            );
+
             break;
 
         case "SERIAL_PRINT":
+
             executeSerialPrint(
-                instruction.value,
+                await resolveGSEValue(
+                    instruction.value
+                ),
                 false
             );
+
             break;
 
         case "SERIAL_PRINTLN":
+
             executeSerialPrint(
-                instruction.value,
+                await resolveGSEValue(
+                    instruction.value
+                ),
                 true
             );
+
             break;
 
         case "OLED_BEGIN":
+
             initializeOLED();
+
             break;
 
         case "OLED_CLEAR":
+
             oledClearDisplay();
+
             break;
 
         case "OLED_DISPLAY":
+
             oledDisplay();
+
             break;
 
         case "OLED_TEXT_SIZE":
+
             oledSetTextSize(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.value
                 )
             );
+
             break;
 
         case "OLED_TEXT_COLOR":
+
             oledSetTextColor(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.value
                 )
             );
+
             break;
 
         case "OLED_CURSOR":
+
             oledSetCursor(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.x
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.y
                 )
             );
+
             break;
 
         case "OLED_PRINT":
+
             oledPrint(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.value
                 )
             );
+
             break;
 
         case "OLED_PRINTLN":
+
             oledPrintln(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.value
                 )
             );
+
             break;
 
         case "OLED_PIXEL":
+
             oledDrawPixel(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.x
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.y
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.color
                 )
             );
+
             break;
 
         case "OLED_LINE":
+
             oledDrawLine(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.x1
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.y1
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.x2
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.y2
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.color
                 )
             );
+
             break;
 
         case "OLED_RECT":
+
             oledFillRect(
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.x
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.y
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.width
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.height
                 ),
-                resolveGSEValue(
+                await resolveGSEValue(
                     instruction.color
                 )
             );
+
             break;
 
-        case "DELAY":
-            {
-                const ms=resolveGSEValue(
+        case "DELAY":{
+
+            const ms=
+                await resolveGSEValue(
                     instruction.ms
                 );
 
-                await executeDelay(ms);
+            await executeDelay(ms);
 
-                simulatorState.time+=
-                    Number(ms)||0;
-            }
+            simulatorState.time+=
+                Number(ms)||0;
+
             break;
+        }
 
-        case "DELAY_US":
-            {
-                const us=resolveGSEValue(
+        case "DELAY_US":{
+
+            const us=
+                await resolveGSEValue(
                     instruction.us
                 );
 
-                await executeDelay(
-                    Number(us||0)/1000
-                );
-            }
+            await executeDelay(
+                Number(us||0)/1000
+            );
+
             break;
+        }
+
+        case "SIMULATOR_HALT":
+
+            return {
+                halted:true
+            };
 
         default:
+
             throw new Error(
                 "Unsupported GSE operation: "+
                 instruction.op
             );
     }
+
+    return null;
 }
 
 /* ============================================================
@@ -2497,36 +2782,105 @@ async function executeInstruction(instruction){
    ============================================================ */
 
 async function executeSetup(){
-    for(const key of Object.keys(gseVariables)){
+
+    for(
+        const key of Object.keys(
+            gseVariables
+        )
+    ){
+
         delete gseVariables[key];
     }
 
-    simulatorLog("Running setup...");
+    gseFunctionScopes.length=0;
+
+    simulatorLog(
+        "Running setup..."
+    );
 
     await executeProgram(
         gse.program.setup
     );
 
-    simulatorLog("Setup complete.");
+    simulatorLog(
+        "Setup complete."
+    );
 }
 
-async function executeProgram(instructions){
-    for(let i = 0; i < instructions.length; i++){
-        await executeInstruction(instructions[i]);
+async function executeProgram(
+    instructions,
+    allowReturn=false
+){
 
-        if(i % 25 === 0){
-            await new Promise(resolve => setTimeout(resolve, 0));
+    for(
+        let i=0;
+        i<instructions.length;
+        i++
+    ){
+
+        const result=
+            await executeInstruction(
+                instructions[i]
+            );
+
+        if(
+            result &&
+            result.returned
+        ){
+
+            if(allowReturn){
+                return result;
+            }
+
+            return result;
+        }
+
+        if(
+            result &&
+            result.halted
+        ){
+
+            return result;
+        }
+
+        if(i%25===0){
+
+            await new Promise(
+                resolve=>setTimeout(
+                    resolve,
+                    0
+                )
+            );
         }
     }
+
+    return null;
 }
 
 async function executeLoop(){
+
     while(true){
-        await executeProgram(gse.program.loop);
 
-        simulatorState.time += 1;
+        const result=
+            await executeProgram(
+                gse.program.loop
+            );
 
-        await new Promise(resolve => setTimeout(resolve, 1));
+        if(
+            result &&
+            result.halted
+        ){
+            break;
+        }
+
+        simulatorState.time+=1;
+
+        await new Promise(
+            resolve=>setTimeout(
+                resolve,
+                1
+            )
+        );
     }
 }
 
