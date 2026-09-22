@@ -1218,7 +1218,8 @@ function executeSerialPrint(value,newLine=false){
 
     consoleBox.textContent+=text;
     consoleBox.scrollTop=consoleBox.scrollHeight;
-}/* ============================================================
+}
+/* ============================================================
    4-PIN I2C OLED
    ============================================================ */
 
@@ -1226,25 +1227,12 @@ const OLED_WIDTH = 128;
 const OLED_HEIGHT = 64;
 
 /*
-    Internal rendering resolution.
+    Visual rendering scale.
 
-    The real simulated OLED is still 128×64.
-
-    We render internally at 4× resolution:
-        128 × 4 = 512
-        64 × 4  = 256
-
-    This allows the browser to calculate smoother
-    pixel coverage before displaying the result.
+    The actual simulated OLED remains 128×64.
+    This only makes the browser rendering smoother.
 */
 const OLED_RENDER_SCALE = 4;
-
-const OLED_RENDER_WIDTH =
-    OLED_WIDTH * OLED_RENDER_SCALE;
-
-const OLED_RENDER_HEIGHT =
-    OLED_HEIGHT * OLED_RENDER_SCALE;
-
 
 const oledState = {
     initialized:false,
@@ -1260,8 +1248,7 @@ const oledState = {
 
     /*
         Real logical SSD1306 framebuffer.
-
-        This remains exactly 128×64.
+        128 × 64 pixels.
     */
     buffer:null
 };
@@ -1276,18 +1263,6 @@ function getOLEDCanvas(){
     return document.getElementById(
         "oled4Canvas"
     );
-}
-
-
-function getOLEDContext(){
-
-    const canvas=getOLEDCanvas();
-
-    if(!canvas){
-        return null;
-    }
-
-    return canvas.getContext("2d");
 }
 
 
@@ -1329,121 +1304,169 @@ function clearOLEDFramebuffer(){
 
 
 /* ============================================================
-   HIGH RESOLUTION RENDERER
+   HIGH QUALITY OLED RENDERER
    ============================================================ */
 
-function createOLEDRenderCanvas(){
-
-    const renderCanvas=
-        document.createElement("canvas");
-
-    renderCanvas.width=
-        OLED_RENDER_WIDTH;
-
-    renderCanvas.height=
-        OLED_RENDER_HEIGHT;
-
-    return renderCanvas;
-}
-
-
-/*
-    Draw the logical 128×64 framebuffer into a
-    512×256 high-resolution canvas.
-
-    Each logical OLED pixel occupies 4×4 internal
-    samples.
-
-    The visible canvas remains the same physical size.
-*/
 function renderOLED(){
 
     const canvas=getOLEDCanvas();
-    const context=getOLEDContext();
 
-    if(!canvas || !context){
+    if(!canvas){
         return;
     }
 
     /*
-        Make the browser canvas internally high resolution
-        without changing its CSS/display size.
+        Keep the physical/canvas size controlled by CSS,
+        but use a much higher internal canvas resolution.
     */
-    canvas.width=
-        OLED_RENDER_WIDTH;
 
-    canvas.height=
-        OLED_RENDER_HEIGHT;
+    const renderWidth=
+        OLED_WIDTH*
+        OLED_RENDER_SCALE;
 
-    context.imageSmoothingEnabled=true;
+    const renderHeight=
+        OLED_HEIGHT*
+        OLED_RENDER_SCALE;
+
+
+    canvas.width=renderWidth;
+    canvas.height=renderHeight;
+
+
+    const context=
+        canvas.getContext("2d");
+
+
+    if(!context){
+        return;
+    }
+
 
     /*
-        High-resolution rendering surface.
+        Disable browser smoothing here.
+
+        We want to explicitly control how each OLED
+        pixel is rendered.
     */
-    const renderCanvas=
-        createOLEDRenderCanvas();
 
-    const renderContext=
-        renderCanvas.getContext("2d");
+    context.imageSmoothingEnabled=false;
 
-    renderContext.imageSmoothingEnabled=true;
 
-    renderContext.clearRect(
+    /*
+        Completely black OLED surface.
+    */
+
+    context.fillStyle="#061313";
+
+    context.fillRect(
         0,
         0,
-        OLED_RENDER_WIDTH,
-        OLED_RENDER_HEIGHT
+        renderWidth,
+        renderHeight
     );
 
 
+    if(
+        !oledState.initialized ||
+        !oledState.buffer
+    ){
+        return;
+    }
+
+
     /*
-        Render every logical OLED pixel as a
-        4×4 internal pixel area.
+        Each real OLED pixel gets a small cyan
+        illuminated area.
+
+        This creates a much more realistic OLED
+        appearance than a raw white bitmap.
     */
-    if(oledState.buffer){
 
-        for(let y=0;y<OLED_HEIGHT;y++){
+    for(let y=0;y<OLED_HEIGHT;y++){
 
-            for(let x=0;x<OLED_WIDTH;x++){
+        for(let x=0;x<OLED_WIDTH;x++){
 
-                if(!oledState.buffer[y][x]){
-                    continue;
-                }
-
-                renderContext.fillStyle="white";
-
-                renderContext.fillRect(
-                    x*OLED_RENDER_SCALE,
-                    y*OLED_RENDER_SCALE,
-                    OLED_RENDER_SCALE,
-                    OLED_RENDER_SCALE
-                );
+            if(!oledState.buffer[y][x]){
+                continue;
             }
+
+
+            const px=
+                x*
+                OLED_RENDER_SCALE;
+
+            const py=
+                y*
+                OLED_RENDER_SCALE;
+
+
+            /*
+                Outer subtle glow.
+            */
+
+            context.fillStyle=
+                "rgba(73,255,255,.12)";
+
+            context.fillRect(
+                px-1,
+                py-1,
+                OLED_RENDER_SCALE+2,
+                OLED_RENDER_SCALE+2
+            );
+
+
+            /*
+                Main illuminated pixel.
+
+                Slightly smaller than the complete
+                4×4 area so adjacent pixels have a
+                tiny visual separation.
+            */
+
+            context.fillStyle=
+                "#49ffff";
+
+            context.fillRect(
+                px,
+                py,
+                OLED_RENDER_SCALE,
+                OLED_RENDER_SCALE
+            );
         }
     }
 
 
     /*
-        Copy the high-resolution render onto the
-        actual canvas.
-
-        imageSmoothingEnabled allows the browser to
-        calculate intermediate coverage when reducing
-        the 4× image.
+        Very subtle screen glow.
     */
-    context.clearRect(
+
+    const gradient=
+        context.createRadialGradient(
+            renderWidth/2,
+            renderHeight/2,
+            0,
+            renderWidth/2,
+            renderHeight/2,
+            renderWidth*.7
+        );
+
+    gradient.addColorStop(
         0,
-        0,
-        OLED_RENDER_WIDTH,
-        OLED_RENDER_HEIGHT
+        "rgba(73,255,255,.025)"
     );
 
-    context.drawImage(
-        renderCanvas,
+    gradient.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+    context.fillStyle=gradient;
+
+    context.fillRect(
         0,
         0,
-        OLED_RENDER_WIDTH,
-        OLED_RENDER_HEIGHT
+        renderWidth,
+        renderHeight
     );
 
 
@@ -1472,11 +1495,13 @@ function initializeOLED(){
 
     oledState.displayOn=true;
 
+
     createOLEDFramebuffer();
 
     clearOLEDFramebuffer();
 
     renderOLED();
+
 
     simulatorLog(
         "OLED initialized at I2C address 0x3C"
@@ -1494,21 +1519,24 @@ function oledClearDisplay(){
         return;
     }
 
+
     clearOLEDFramebuffer();
+
 
     oledState.cursorX=0;
     oledState.cursorY=0;
 
+
     /*
-        Real SSD1306 behaviour:
+        Like the real SSD1306:
 
-        clearDisplay()
-        ↓
-        framebuffer is cleared
+            clearDisplay()
 
-        display.display()
-        ↓
-        physical display is updated
+        changes the framebuffer.
+
+        The visible OLED changes when:
+
+            display.display()
     */
 }
 
@@ -1565,6 +1593,7 @@ function oledDrawPixel(x,y,color){
         return;
     }
 
+
     x=Math.round(
         Number(x)||0
     );
@@ -1572,6 +1601,7 @@ function oledDrawPixel(x,y,color){
     y=Math.round(
         Number(y)||0
     );
+
 
     if(
         x<0 ||
@@ -1581,6 +1611,7 @@ function oledDrawPixel(x,y,color){
     ){
         return;
     }
+
 
     oledState.buffer[y][x]=
         Number(color)?1:0;
@@ -1621,9 +1652,6 @@ function oledDrawLine(
 
     /*
         Bresenham line algorithm.
-
-        Arduino coordinates remain exactly
-        128×64.
     */
 
     const dx=
@@ -1650,6 +1678,7 @@ function oledDrawLine(
             color
         );
 
+
         if(
             x1===x2 &&
             y1===y2
@@ -1657,14 +1686,17 @@ function oledDrawLine(
             break;
         }
 
+
         const e2=
             2*error;
+
 
         if(e2>=dy){
 
             error+=dy;
             x1+=sx;
         }
+
 
         if(e2<=dx){
 
@@ -1751,52 +1783,44 @@ function oledDrawText(
 
 
     /*
-        Render text at 4× resolution.
+        High-resolution temporary text canvas.
 
-        This gives Canvas more samples to work with
-        before the result is reduced to the 128×64
-        logical OLED.
+        The logical OLED is still 128×64,
+        but text is rendered at 4× resolution.
     */
 
     const tempCanvas=
         document.createElement("canvas");
 
     tempCanvas.width=
-        OLED_RENDER_WIDTH;
+        OLED_WIDTH*
+        OLED_RENDER_SCALE;
 
     tempCanvas.height=
-        OLED_RENDER_HEIGHT;
+        OLED_HEIGHT*
+        OLED_RENDER_SCALE;
 
 
     const tempContext=
         tempCanvas.getContext("2d");
 
-    tempContext.imageSmoothingEnabled=true;
+
+    if(!tempContext){
+        return;
+    }
 
 
     tempContext.clearRect(
         0,
         0,
-        OLED_RENDER_WIDTH,
-        OLED_RENDER_HEIGHT
+        tempCanvas.width,
+        tempCanvas.height
     );
 
 
     tempContext.fillStyle=
-        oledState.textColor
-            ?"white"
-            :"black";
+        "white";
 
-
-    /*
-        Scale the text rendering.
-
-        Original:
-            8px × textSize
-
-        Internal:
-            8px × textSize × 4
-    */
 
     tempContext.font=
         (
@@ -1828,36 +1852,23 @@ function oledDrawText(
         tempContext.getImageData(
             0,
             0,
-            OLED_RENDER_WIDTH,
-            OLED_RENDER_HEIGHT
+            tempCanvas.width,
+            tempCanvas.height
         );
 
 
     /*
         Convert the high-resolution text back
-        into the logical 128×64 OLED.
+        into the logical 128×64 framebuffer.
 
-        Each logical pixel receives 16 samples:
-
-            4 × 4 = 16
-
-        The average coverage determines whether
-        that OLED pixel is considered illuminated.
+        Every logical OLED pixel gets 16 samples.
     */
 
-    for(
-        let y=0;
-        y<OLED_HEIGHT;
-        y++
-    ){
+    for(let y=0;y<OLED_HEIGHT;y++){
 
-        for(
-            let x=0;
-            x<OLED_WIDTH;
-            x++
-        ){
+        for(let x=0;x<OLED_WIDTH;x++){
 
-            let brightnessTotal=0;
+            let total=0;
 
 
             for(
@@ -1882,36 +1893,31 @@ function oledDrawText(
                         OLED_RENDER_SCALE+
                         sy;
 
+
                     const index=
                         (
                             ry*
-                            OLED_RENDER_WIDTH+
+                            tempCanvas.width+
                             rx
                         )*
                         4;
 
-                    brightnessTotal+=
+
+                    total+=
                         image.data[index];
                 }
             }
 
 
-            const averageBrightness=
-                brightnessTotal/
+            const average=
+                total/
                 (
                     OLED_RENDER_SCALE*
                     OLED_RENDER_SCALE
                 );
 
 
-            /*
-                Threshold the averaged result.
-
-                This keeps the actual framebuffer
-                binary like an SSD1306.
-            */
-
-            if(averageBrightness>20){
+            if(average>20){
 
                 oledState.buffer[y][x]=
                     oledState.textColor
@@ -1923,10 +1929,10 @@ function oledDrawText(
 
 
     /*
-        Arduino Print advances the cursor.
+        Arduino Print cursor movement.
     */
 
-    const width=
+    const textWidth=
         tempContext.measureText(
             value
         ).width/
@@ -1943,7 +1949,7 @@ function oledDrawText(
     }else{
 
         oledState.cursorX+=
-            width;
+            textWidth;
     }
 }
 
@@ -1984,16 +1990,19 @@ function oledDisplay(){
         return;
     }
 
+
     /*
         Equivalent to:
 
             display.display();
 
-        The framebuffer becomes visible.
+        The framebuffer is now rendered
+        onto the visible OLED.
     */
 
     renderOLED();
 }
+
 /* ============================================================
    DELAY
    ============================================================ */
