@@ -309,15 +309,15 @@ const simulatorState={
     time:0
 };
 
-const oledState={
+const oledState = {
     initialized:false,
     address:0x3C,
     cursorX:0,
     cursorY:0,
     textSize:1,
     textColor:1,
-    buffer:[],
-    displayOn:true
+    displayOn:true,
+    buffer:null
 };
 
 /* ============================================================
@@ -1230,10 +1230,23 @@ function executeSerialPrint(value,newLine=false){
     consoleBox.textContent+=text;
     consoleBox.scrollTop=consoleBox.scrollHeight;
 }
-
 /* ============================================================
    4-PIN I2C OLED
    ============================================================ */
+
+const OLED_WIDTH = 128;
+const OLED_HEIGHT = 64;
+
+const oledState = {
+    initialized:false,
+    address:0x3C,
+    cursorX:0,
+    cursorY:0,
+    textSize:1,
+    textColor:1,
+    displayOn:true,
+    buffer:null
+};
 
 function getOLEDCanvas(){
     return document.getElementById(
@@ -1251,53 +1264,167 @@ function getOLEDContext(){
     return canvas.getContext("2d");
 }
 
-function clearOLEDCanvas(){
-    const context=getOLEDContext();
 
-    if(!context){
+/* ============================================================
+   OLED FRAMEBUFFER
+   ============================================================ */
+
+function createOLEDFramebuffer(){
+
+    oledState.buffer=[];
+
+    for(let y=0;y<OLED_HEIGHT;y++){
+
+        const row=[];
+
+        for(let x=0;x<OLED_WIDTH;x++){
+            row.push(0);
+        }
+
+        oledState.buffer.push(row);
+    }
+}
+
+function clearOLEDFramebuffer(){
+
+    if(!oledState.buffer){
+        createOLEDFramebuffer();
         return;
     }
 
-    context.fillStyle="#050505";
-    context.fillRect(
+    for(let y=0;y<OLED_HEIGHT;y++){
+
+        for(let x=0;x<OLED_WIDTH;x++){
+            oledState.buffer[y][x]=0;
+        }
+    }
+}
+
+
+/* ============================================================
+   RENDER OLED
+   ============================================================ */
+
+function renderOLED(){
+
+    const canvas=getOLEDCanvas();
+    const context=getOLEDContext();
+
+    if(!canvas || !context){
+        return;
+    }
+
+    const imageData=context.createImageData(
+        OLED_WIDTH,
+        OLED_HEIGHT
+    );
+
+    for(let y=0;y<OLED_HEIGHT;y++){
+
+        for(let x=0;x<OLED_WIDTH;x++){
+
+            const index=
+                (y*OLED_WIDTH+x)*4;
+
+            const pixel=
+                oledState.buffer &&
+                oledState.buffer[y] &&
+                oledState.buffer[y][x]
+                    ?255
+                    :0;
+
+            imageData.data[index]=pixel;
+            imageData.data[index+1]=pixel;
+            imageData.data[index+2]=pixel;
+            imageData.data[index+3]=255;
+        }
+    }
+
+    context.putImageData(
+        imageData,
         0,
-        0,
-        128,
-        64
+        0
+    );
+
+    canvas.classList.toggle(
+        "active",
+        oledState.initialized
     );
 }
 
+
+/* ============================================================
+   OLED BEGIN
+   ============================================================ */
+
 function initializeOLED(){
+
     oledState.initialized=true;
     oledState.address=0x3C;
+
     oledState.cursorX=0;
     oledState.cursorY=0;
+
     oledState.textSize=1;
     oledState.textColor=1;
-    oledState.buffer=[];
 
-    clearOLEDCanvas();
+    oledState.displayOn=true;
+
+    createOLEDFramebuffer();
+    clearOLEDFramebuffer();
+
+    renderOLED();
 
     simulatorLog(
         "OLED initialized at I2C address 0x3C"
     );
 }
 
-function oledClearDisplay(){
-    oledState.buffer=[];
 
-    clearOLEDCanvas();
+/* ============================================================
+   CLEAR DISPLAY
+   ============================================================ */
+
+function oledClearDisplay(){
+
+    if(!oledState.initialized){
+        return;
+    }
+
+    clearOLEDFramebuffer();
 
     oledState.cursorX=0;
     oledState.cursorY=0;
+
+    /*
+        Real SSD1306 behaviour:
+        clearDisplay() changes the framebuffer.
+        The physical display is updated by display().
+    */
+
 }
+
+
+/* ============================================================
+   CURSOR
+   ============================================================ */
 
 function oledSetCursor(x,y){
-    oledState.cursorX=Number(x)||0;
-    oledState.cursorY=Number(y)||0;
+
+    oledState.cursorX=
+        Number(x)||0;
+
+    oledState.cursorY=
+        Number(y)||0;
 }
 
+
+/* ============================================================
+   TEXT SIZE
+   ============================================================ */
+
 function oledSetTextSize(size){
+
     oledState.textSize=
         Math.max(
             1,
@@ -1308,101 +1435,48 @@ function oledSetTextSize(size){
         );
 }
 
+
+/* ============================================================
+   TEXT COLOR
+   ============================================================ */
+
 function oledSetTextColor(color){
+
     oledState.textColor=
         Number(color)?1:0;
 }
 
-function oledDrawText(text,newLine=false){
-    const context=getOLEDContext();
 
-    if(!context){
-        return;
-    }
-
-    if(!oledState.displayOn){
-        return;
-    }
-
-    const size=oledState.textSize;
-
-    context.font=
-        (8*size)+"px monospace";
-
-    context.fillStyle=
-        oledState.textColor
-            ?"white"
-            :"black";
-
-    context.textBaseline="top";
-
-    const textValue=String(text);
-
-    context.fillText(
-        textValue,
-        oledState.cursorX,
-        oledState.cursorY
-    );
-
-    if(newLine){
-        oledState.cursorY+=
-            8*size;
-
-        oledState.cursorX=0;
-    }else{
-        oledState.cursorX+=
-            context.measureText(
-                textValue
-            ).width;
-    }
-}
-
-function oledDisplay(){
-    const canvas=getOLEDCanvas();
-
-    if(!canvas){
-        return;
-    }
-
-    canvas.classList.toggle(
-        "active",
-        oledState.initialized
-    );
-}
-
-function oledPrint(value){
-    oledDrawText(
-        value,
-        false
-    );
-}
-
-function oledPrintln(value){
-    oledDrawText(
-        value,
-        true
-    );
-}
+/* ============================================================
+   DRAW PIXEL
+   ============================================================ */
 
 function oledDrawPixel(x,y,color){
-    const context=getOLEDContext();
 
-    if(!context){
+    if(!oledState.buffer){
         return;
     }
 
-    context.fillStyle=
-        Number(color)
-            ?"white"
-            :"black";
+    x=Math.round(Number(x)||0);
+    y=Math.round(Number(y)||0);
 
-    context.fillRect(
-        Number(x)||0,
-        Number(y)||0,
-        1,
-        1
-    );
+    if(
+        x<0 ||
+        x>=OLED_WIDTH ||
+        y<0 ||
+        y>=OLED_HEIGHT
+    ){
+        return;
+    }
+
+    oledState.buffer[y][x]=
+        Number(color)?1:0;
 }
+
+
+/* ============================================================
+   DRAW LINE
+   ============================================================ */
 
 function oledDrawLine(
     x1,
@@ -1411,31 +1485,61 @@ function oledDrawLine(
     y2,
     color
 ){
-    const context=getOLEDContext();
 
-    if(!context){
-        return;
+    x1=Math.round(Number(x1)||0);
+    y1=Math.round(Number(y1)||0);
+
+    x2=Math.round(Number(x2)||0);
+    y2=Math.round(Number(y2)||0);
+
+    color=Number(color)?1:0;
+
+    /*
+        Bresenham line algorithm.
+        This draws directly into the OLED framebuffer.
+    */
+
+    const dx=Math.abs(x2-x1);
+    const sx=x1<x2?1:-1;
+
+    const dy=-Math.abs(y2-y1);
+    const sy=y1<y2?1:-1;
+
+    let error=dx+dy;
+
+    while(true){
+
+        oledDrawPixel(
+            x1,
+            y1,
+            color
+        );
+
+        if(
+            x1===x2 &&
+            y1===y2
+        ){
+            break;
+        }
+
+        const e2=2*error;
+
+        if(e2>=dy){
+            error+=dy;
+            x1+=sx;
+        }
+
+        if(e2<=dx){
+            error+=dx;
+            y1+=sy;
+        }
     }
-
-    context.strokeStyle=
-        Number(color)
-            ?"white"
-            :"black";
-
-    context.beginPath();
-
-    context.moveTo(
-        Number(x1)||0,
-        Number(y1)||0
-    );
-
-    context.lineTo(
-        Number(x2)||0,
-        Number(y2)||0
-    );
-
-    context.stroke();
 }
+
+
+/* ============================================================
+   FILL RECT
+   ============================================================ */
 
 function oledFillRect(
     x,
@@ -1444,23 +1548,197 @@ function oledFillRect(
     height,
     color
 ){
-    const context=getOLEDContext();
 
-    if(!context){
+    x=Math.round(Number(x)||0);
+    y=Math.round(Number(y)||0);
+
+    width=Math.round(Number(width)||0);
+    height=Math.round(Number(height)||0);
+
+    color=Number(color)?1:0;
+
+    for(
+        let py=y;
+        py<y+height;
+        py++
+    ){
+
+        for(
+            let px=x;
+            px<x+width;
+            px++
+        ){
+
+            oledDrawPixel(
+                px,
+                py,
+                color
+            );
+        }
+    }
+}
+
+
+/* ============================================================
+   OLED TEXT
+   ============================================================ */
+
+function oledDrawText(
+    text,
+    newLine=false
+){
+
+    if(!oledState.initialized){
         return;
     }
 
-    context.fillStyle=
-        Number(color)
+    const value=String(text);
+    const size=oledState.textSize;
+
+    /*
+        Canvas text is used only as a convenient way
+        to generate pixels.
+
+        We render it onto a temporary 128×64 canvas,
+        then copy the resulting pixels into the
+        SSD1306 framebuffer.
+    */
+
+    const tempCanvas=
+        document.createElement("canvas");
+
+    tempCanvas.width=OLED_WIDTH;
+    tempCanvas.height=OLED_HEIGHT;
+
+    const tempContext=
+        tempCanvas.getContext("2d");
+
+    tempContext.clearRect(
+        0,
+        0,
+        OLED_WIDTH,
+        OLED_HEIGHT
+    );
+
+    tempContext.fillStyle=
+        oledState.textColor
             ?"white"
             :"black";
 
-    context.fillRect(
-        Number(x)||0,
-        Number(y)||0,
-        Number(width)||0,
-        Number(height)||0
+    tempContext.font=
+        (8*size)+"px monospace";
+
+    tempContext.textBaseline="top";
+
+    tempContext.fillText(
+        value,
+        oledState.cursorX,
+        oledState.cursorY
     );
+
+    const image=
+        tempContext.getImageData(
+            0,
+            0,
+            OLED_WIDTH,
+            OLED_HEIGHT
+        );
+
+    /*
+        Merge generated text pixels into
+        the actual OLED framebuffer.
+    */
+
+    for(let y=0;y<OLED_HEIGHT;y++){
+
+        for(let x=0;x<OLED_WIDTH;x++){
+
+            const index=
+                (y*OLED_WIDTH+x)*4;
+
+            const brightness=
+                image.data[index];
+
+            if(brightness>20){
+
+                oledState.buffer[y][x]=
+                    oledState.textColor
+                        ?1
+                        :0;
+            }
+        }
+    }
+
+    /*
+        Arduino Print advances the cursor.
+    */
+
+    const width=
+        tempContext.measureText(
+            value
+        ).width;
+
+    if(newLine){
+
+        oledState.cursorY+=
+            8*size;
+
+        oledState.cursorX=0;
+
+    }else{
+
+        oledState.cursorX+=
+            width;
+    }
+}
+
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+
+function oledPrint(value){
+
+    oledDrawText(
+        value,
+        false
+    );
+}
+
+
+/* ============================================================
+   PRINTLN
+   ============================================================ */
+
+function oledPrintln(value){
+
+    oledDrawText(
+        value,
+        true
+    );
+}
+
+
+/* ============================================================
+   DISPLAY
+   ============================================================ */
+
+function oledDisplay(){
+
+    if(!oledState.initialized){
+        return;
+    }
+
+    /*
+        This is the simulated equivalent of:
+
+            display.display();
+
+        Everything previously drawn into the
+        framebuffer becomes visible now.
+    */
+
+    renderOLED();
 }
 /* ============================================================
    DELAY
