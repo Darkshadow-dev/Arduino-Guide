@@ -626,6 +626,107 @@ def parse_function_call(
         ]
     }
 
+def parse_variable(
+    line,
+    constants=None
+):
+    line = clean_line(line)
+    line = line.rstrip(";").strip()
+
+    match = re.match(
+        r"^(int|long|float|double|bool|boolean|byte|String|unsigned(?:\s+long)?)\s+(\w+)(?:\s*=\s*(.*))?$",
+        line
+    )
+
+    if match:
+        variable_type = match.group(1)
+        name = match.group(2)
+        value = match.group(3)
+
+        return {
+            "op": "DECLARE",
+            "type": variable_type,
+            "name": name,
+            "value": parse_expression(
+                value,
+                constants
+            )
+            if value is not None
+            else {
+                "type": "VALUE",
+                "value": 0
+            }
+        }
+
+    match = re.match(
+        r"^(\w+)\s*(\+=|-=|\*=|/=|=|\+\+|--)\s*(.*)$",
+        line
+    )
+
+    if match:
+        return {
+            "op": "ASSIGN",
+            "name": match.group(1),
+            "operator": match.group(2),
+            "value": parse_expression(
+                match.group(3),
+                constants
+            )
+            if match.group(3)
+            else None
+        }
+
+    return None
+
+
+def parse_function_call(
+    line,
+    constants=None
+):
+    line = clean_line(line)
+
+    match = re.match(
+        r"^([A-Za-z_]\w*)\s*\((.*)\)\s*;?$",
+        line,
+        re.DOTALL
+    )
+
+    if not match:
+        return None
+
+    function = match.group(1)
+
+    if function in {
+        "pinMode",
+        "digitalWrite",
+        "digitalRead",
+        "analogRead",
+        "analogWrite",
+        "delay",
+        "delayMicroseconds",
+        "tone",
+        "noTone",
+        "map"
+    }:
+        return None
+
+    args = split_arguments(
+        match.group(2)
+    )
+
+    return {
+        "op": "FUNCTION_CALL",
+        "function": function,
+        "args": [
+            parse_expression(
+                arg,
+                constants
+            )
+            for arg in args
+        ]
+    }
+
+
 def parse_instruction(
     line,
     objects=None,
