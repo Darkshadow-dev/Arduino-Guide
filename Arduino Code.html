@@ -224,6 +224,39 @@ header::-webkit-scrollbar{
   background:#0b111d;
 }
 
+#errorMarkers{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.error-marker{
+  position:absolute;
+  left:12px;
+  right:12px;
+  height:20px;
+  border-bottom:2px solid #ff4d5a;
+  background:rgba(255,70,80,.06);
+}
+
+#errorTooltip{
+  position:absolute;
+  z-index:30;
+  display:none;
+  max-width:420px;
+  padding:6px 9px;
+  border:1px solid #7d3942;
+  border-radius:5px;
+  background:#24151a;
+  color:#ffd7da;
+  box-shadow:0 5px 18px rgba(0,0,0,.45);
+  font-size:12px;
+  line-height:1.35;
+  pointer-events:none;
+  white-space:normal;
+}
 /* =========================
    AUTOCOMPLETE
 ========================= */
@@ -275,63 +308,6 @@ header::-webkit-scrollbar{
   color:#647994;
   font-size:10px;
 }
-/* =========================
-   ERROR HELP
-========================= */
-
-#errorPanel{
-  display:none;
-  width:280px;
-  min-width:230px;
-  height:100%;
-  overflow:auto;
-  background:#24151a;
-  border-left:1px solid #69313b;
-}
-
-#errorPanel.visible{
-  display:block;
-}
-
-.error-card{
-  padding:7px 10px;
-  border-bottom:1px solid #43232a;
-  cursor:pointer;
-  font-size:12px;
-}
-
-.error-card:hover{
-  background:#321a20;
-}
-
-.error-card-title{
-  color:#ff6872;
-  font-weight:bold;
-}
-
-.error-card-help{
-  color:#c5a8ad;
-  margin-top:2px;
-  line-height:1.35;
-}
-
-.warning-card{
-  padding:7px 10px;
-  border-bottom:1px solid #4b3a20;
-  cursor:pointer;
-  font-size:12px;
-}
-
-.warning-card-title{
-  color:#f5c451;
-  font-weight:bold;
-}
-
-.warning-card-help{
-  color:#c8bfa5;
-  margin-top:2px;
-  line-height:1.35;
-}
 
 /* =========================
    BOTTOM
@@ -340,7 +316,7 @@ header::-webkit-scrollbar{
 #bottomBar{
   height:130px;
   display:grid;
-  grid-template-columns:minmax(0,1fr) 280px;
+  grid-template-columns:1fr;
   grid-template-rows:37px minmax(0,1fr);
   background:#0d1420;
   border-top:1px solid #263044;
@@ -349,7 +325,7 @@ header::-webkit-scrollbar{
 #consoleHeader{
   grid-column:1 / -1;
   grid-row:1;
-  height:37px;
+  height:38px;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -555,7 +531,8 @@ header::-webkit-scrollbar{
   <div id="lineNums"></div>
 
   <div id="editorBox">
-
+  <div id="errorMarkers"></div>
+  <div id="errorTooltip"></div>
     <pre id="highlight"></pre>
 
     <textarea
@@ -579,6 +556,7 @@ header::-webkit-scrollbar{
   </div>
 
 </div>
+
 
 <div id="bottomBar">
 
@@ -610,8 +588,6 @@ header::-webkit-scrollbar{
 
   </div>
 
-  <div id="errorPanel"></div>
-
   <pre id="console"></pre>
 
 </div>
@@ -633,7 +609,8 @@ let downloadHexButton;
 let autocomplete;
 let autocompleteItems;
 let errorPanel;
-
+let errorMarkers;
+let errorTooltip;
 let lastHexUrl = null;
 
 let autocompleteResults = [];
@@ -1145,30 +1122,67 @@ window.onload = () => {
     document.getElementById("compileInfo");
 
   downloadHexButton =
-    document.getElementById(
-      "downloadHexButton"
-    );
+    document.getElementById("downloadHexButton");
 
   autocomplete =
-    document.getElementById(
-      "autocomplete"
-    );
+    document.getElementById("autocomplete");
 
   autocompleteItems =
-    document.getElementById(
-      "autocompleteItems"
-    );
+    document.getElementById("autocompleteItems");
 
-  errorPanel =
-    document.getElementById(
-      "errorPanel"
-    );
+  editorBox =
+    document.getElementById("editorBox");
+
+  errorMarkers =
+    document.getElementById("errorMarkers");
+
+  errorTooltip =
+    document.getElementById("errorTooltip");
+
+
+  /* File input */
 
   fileInput.addEventListener(
     "change",
     openFile
   );
 
+
+  /* Error tooltip */
+
+  editor.addEventListener(
+    "mousemove",
+    event => {
+
+      const line =
+        getEditorLineFromMouse(event);
+
+      showErrorTooltip(
+        line,
+        event.clientX,
+        event.clientY
+      );
+
+    }
+  );
+
+
+  editor.addEventListener(
+    "mouseleave",
+    () => {
+
+      if(errorTooltip){
+
+        errorTooltip.style.display =
+          "none";
+
+      }
+
+    }
+  );
+
+
+  /* Load saved project */
 
   const savedCode =
     localStorage.getItem(
@@ -1201,11 +1215,14 @@ window.onload = () => {
   updateAll();
 
 
+  /* Editor input */
+
   editor.addEventListener(
     "input",
     () => {
 
       updateAll();
+
       saveLocal();
 
       setStatus("idle");
@@ -1218,17 +1235,23 @@ window.onload = () => {
   );
 
 
+  /* Scroll */
+
   editor.addEventListener(
     "scroll",
     syncScroll
   );
 
 
+  /* Keyboard */
+
   editor.addEventListener(
     "keydown",
     handleEditorKeys
   );
 
+
+  /* Autocomplete click */
 
   editor.addEventListener(
     "click",
@@ -1239,6 +1262,8 @@ window.onload = () => {
     }
   );
 
+
+  /* Close autocomplete */
 
   document.addEventListener(
     "click",
@@ -1307,6 +1332,10 @@ function updateAll(){
 }
 
 
+/* =========================
+   LINE NUMBERS
+========================= */
+
 function updateLines(){
 
   const count =
@@ -1364,6 +1393,10 @@ function updateLines(){
 }
 
 
+/* =========================
+   SCROLL SYNC
+========================= */
+
 function syncScroll(){
 
   highlight.scrollTop =
@@ -1374,6 +1407,15 @@ function syncScroll(){
 
   lines.scrollTop =
     editor.scrollTop;
+
+
+  /*
+    Error markers move with the editor.
+    Their position is calculated from the
+    current scroll position.
+  */
+
+  updateErrorMarkers();
 
 }
 
@@ -1398,6 +1440,7 @@ function handleEditorKeys(e){
 
       autocompleteIndex++;
 
+
       if(
         autocompleteIndex >=
         autocompleteResults.length
@@ -1406,6 +1449,7 @@ function handleEditorKeys(e){
         autocompleteIndex = 0;
 
       }
+
 
       renderAutocomplete();
 
@@ -1420,6 +1464,7 @@ function handleEditorKeys(e){
 
       autocompleteIndex--;
 
+
       if(
         autocompleteIndex < 0
       ){
@@ -1428,6 +1473,7 @@ function handleEditorKeys(e){
           autocompleteResults.length - 1;
 
       }
+
 
       renderAutocomplete();
 
@@ -1502,9 +1548,9 @@ function handleEditorKeys(e){
       editor.value.substring(
         0,
         start
-      )
-      + "  "
-      + editor.value.substring(
+      ) +
+      "  " +
+      editor.value.substring(
         end
       );
 
@@ -1517,6 +1563,7 @@ function handleEditorKeys(e){
 
 
     updateAll();
+
     saveLocal();
 
     return;
@@ -1549,11 +1596,12 @@ function handleEditorKeys(e){
         editor.value.substring(
           0,
           start
-        )
-        + "{}"
-        + editor.value.substring(
+        ) +
+        "{}" +
+        editor.value.substring(
           end
         );
+
 
       editor.selectionStart =
         start + 1;
@@ -1561,7 +1609,9 @@ function handleEditorKeys(e){
       editor.selectionEnd =
         start + 1;
 
+
       updateAll();
+
       saveLocal();
 
       return;
@@ -1663,6 +1713,7 @@ function showAutocomplete(force){
 
         }
 
+
         return item[0]
           .toLowerCase()
           .startsWith(lower);
@@ -1707,6 +1758,7 @@ function renderAutocomplete(){
         document.createElement(
           "div"
         );
+
 
       div.className =
         "autocomplete-item";
@@ -1816,43 +1868,49 @@ function positionAutocomplete(){
 
 }
 
+
 function acceptAutocomplete(){
 
   if(!autocompleteResults.length){
+
     return;
+
   }
+
 
   const item =
     autocompleteResults[
       autocompleteIndex
     ];
 
+
   const selected =
     item[0];
+
 
   const extra =
     item[2] || "";
 
+
   const pos =
     editor.selectionStart;
+
 
   const word =
     getCurrentWord();
 
+
   const start =
     pos - word.length;
+
 
   let insertText =
     selected + extra;
 
+
   let cursorOffset =
     insertText.length;
 
-  /*
-     () means:
-     insert function()
-     and put cursor between the brackets
-  */
 
   if(extra === "()"){
 
@@ -1864,11 +1922,6 @@ function acceptAutocomplete(){
 
   }
 
-  /*
-     Templates can also be used later.
-     Example:
-     ["if","Keyword"," () {\n  \n}"]
-  */
 
   editor.value =
     editor.value.substring(
@@ -1880,11 +1933,13 @@ function acceptAutocomplete(){
       pos
     );
 
+
   editor.selectionStart =
     start + cursorOffset;
 
   editor.selectionEnd =
     start + cursorOffset;
+
 
   hideAutocomplete();
 
@@ -1893,6 +1948,7 @@ function acceptAutocomplete(){
   saveLocal();
 
 }
+
 
 function hideAutocomplete(){
 
@@ -2130,6 +2186,7 @@ function saveLocal(){
     editor.value
   );
 
+
   localStorage.setItem(
     "arduino_name",
     filename.value
@@ -2139,7 +2196,7 @@ function saveLocal(){
 
 
 /* =========================
-   NEW
+   NEW PROJECT
 ========================= */
 
 function newProject(){
@@ -2191,7 +2248,7 @@ function newProject(){
 
 
 /* =========================
-   SAVE
+   SAVE FILE
 ========================= */
 
 function saveFile(){
@@ -2251,7 +2308,7 @@ function saveFile(){
 
 
 /* =========================
-   OPEN
+   OPEN FILE
 ========================= */
 
 function openFile(e){
@@ -2395,6 +2452,10 @@ async function compileCode(){
       "";
 
 
+    /* =========================
+       SUCCESS
+    ========================= */
+
     if(data.success){
 
       let output =
@@ -2458,31 +2519,44 @@ async function compileCode(){
       clearErrorPanel();
 
 
-    }else{
-
-      consoleBox.textContent =
-        "=== COMPILE FAILED ===\n\n" +
-        rawOutput;
-
-
-      compileInfo.textContent =
-        "Failed";
-
-
-      setStatus("error");
-
-
-      localStorage.setItem(
-        "arduino_compile_success",
-        "false"
-      );
-
-
-      analyzeCompilerOutput(
-        rawOutput
-      );
+      return;
 
     }
+
+
+    /* =========================
+       COMPILE FAILED
+    ========================= */
+
+    consoleBox.textContent =
+      "=== COMPILE FAILED ===";
+
+
+    compileInfo.textContent =
+      "Failed";
+
+
+    setStatus("error");
+
+
+    localStorage.setItem(
+      "arduino_compile_success",
+      "false"
+    );
+
+
+    /*
+      The real compiler output is NOT
+      shown in the console.
+
+      It is only used internally to
+      find the bad line and generate
+      the tooltip.
+    */
+
+    analyzeCompilerOutput(
+      rawOutput
+    );
 
 
   }catch(error){
@@ -2518,7 +2592,20 @@ async function compileCode(){
 function analyzeCompilerOutput(output){
 
   const errors = [];
+
   const warnings = [];
+
+
+  if(!output){
+
+    renderErrorPanel(
+      errors,
+      warnings
+    );
+
+    return;
+
+  }
 
 
   const linesFound =
@@ -2529,15 +2616,15 @@ function analyzeCompilerOutput(output){
     line => {
 
       /*
-        GCC / Arduino CLI:
+        Arduino / GCC examples:
 
-        file.ino:12:5:
-        error: something
+        project.ino:12:5: error: expected ')'
+        project.ino:8:3: warning: ...
       */
 
       const match =
         line.match(
-          /:(\d+)(?::\d+)?:\s*(?:fatal error|error|warning):\s*(.*)/i
+          /:(\d+)(?::(\d+))?:\s*(?:fatal error|error|warning):\s*(.*)/i
         );
 
 
@@ -2555,8 +2642,17 @@ function analyzeCompilerOutput(output){
         );
 
 
+      const columnNumber =
+        match[2]
+          ? parseInt(
+              match[2],
+              10
+            )
+          : null;
+
+
       const message =
-        match[2].trim();
+        match[3].trim();
 
 
       const lower =
@@ -2568,7 +2664,8 @@ function analyzeCompilerOutput(output){
 
 
       if(
-        line.toLowerCase()
+        line
+          .toLowerCase()
           .includes("warning")
       ){
 
@@ -2578,17 +2675,20 @@ function analyzeCompilerOutput(output){
       }
 
 
-      let help =
+      const help =
         getErrorHelp(
           lower,
-          message
+          message,
+          columnNumber
         );
 
 
       const item = {
         line:lineNumber,
+        column:columnNumber,
         message:message,
         help:help,
+        tooltip:help,
         type:type
       };
 
@@ -2608,8 +2708,8 @@ function analyzeCompilerOutput(output){
 
 
   /*
-    Library errors sometimes have no normal
-    Arduino source line format.
+    Some library errors don't contain
+    a normal source-line reference.
   */
 
   if(
@@ -2629,13 +2729,21 @@ function analyzeCompilerOutput(output){
 
       errors.push({
         line:0,
+        column:null,
         message:
           "Missing library/header: " +
           includeMatch[1],
         help:
           getErrorHelp(
             "no such file or directory",
-            includeMatch[1]
+            includeMatch[1],
+            null
+          ),
+        tooltip:
+          getErrorHelp(
+            "no such file or directory",
+            includeMatch[1],
+            null
           ),
         type:"error"
       });
@@ -2653,19 +2761,6 @@ function analyzeCompilerOutput(output){
 
   updateAll();
 
-
-  if(
-    errors.length ||
-    warnings.length
-  ){
-
-    consoleBox.textContent +=
-      "\n\n=== QUICK HELP ===\n" +
-      "See the error help above the output.\n" +
-      "Click an error to jump to its line.";
-
-  }
-
 }
 
 
@@ -2675,7 +2770,8 @@ function analyzeCompilerOutput(output){
 
 function getErrorHelp(
   lower,
-  original
+  original,
+  column
 ){
 
   if(
@@ -2703,9 +2799,19 @@ function getErrorHelp(
     )
   ){
 
+    if(column){
+
+      return (
+        "Expected ';' — check the statement near column " +
+        column +
+        "."
+      );
+
+    }
+
     return (
       "A semicolon (;) is probably missing at the end " +
-      "of the previous statement."
+      "of the statement."
     );
 
   }
@@ -2713,14 +2819,58 @@ function getErrorHelp(
 
   if(
     lower.includes(
-      "was not declared in this scope"
+      "expected ')'"
+    )
+  ){
+
+    if(column){
+
+      return (
+        "Expected ')' — add ')' after column " +
+        column +
+        "."
+      );
+
+    }
+
+    return (
+      "Expected ')' — add the missing ')' near this line."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected '('"
+    )
+  ){
+
+    if(column){
+
+      return (
+        "Expected '(' — add '(' near column " +
+        column +
+        "."
+      );
+
+    }
+
+    return (
+      "Expected '(' — check the function or condition on this line."
+    );
+
+  }
+
+
+  if(
+    lower.includes(
+      "expected '{'"
     )
   ){
 
     return (
-      "Arduino/C++ cannot find this name. " +
-      "Check spelling, capitalization, variable declarations, " +
-      "and whether the required library is included."
+      "Expected '{' — add an opening { for this block."
     );
 
   }
@@ -2744,16 +2894,14 @@ function getErrorHelp(
 
   if(
     lower.includes(
-      "expected ')' "
-    ) ||
-    lower.includes(
-      "expected ')'"
+      "was not declared in this scope"
     )
   ){
 
     return (
-      "A closing ) is missing. Check your function calls, if(), " +
-      "for(), while(), and other expressions."
+      "Arduino/C++ cannot find this name. " +
+      "Check spelling, capitalization, variable declarations, " +
+      "and whether the required library is included."
     );
 
   }
@@ -2934,7 +3082,7 @@ function getErrorHelp(
 
 
 /* =========================
-   ERROR PANEL
+   ERROR MARKERS
 ========================= */
 
 function renderErrorPanel(
@@ -2942,117 +3090,326 @@ function renderErrorPanel(
   warnings
 ){
 
-  errorPanel.innerHTML = "";
+  compilerErrors =
+    errors || [];
 
 
-  errors.forEach(
-    error => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
+  compilerWarnings =
+    warnings || [];
 
 
-      card.className =
-        "error-card";
+  updateErrorMarkers();
 
-
-      card.innerHTML =
-        `<div class="error-card-title">
-          ${error.line
-            ? "Line " + error.line + ": "
-            : ""}
-          ${escapeHtml(error.message)}
-        </div>
-        <div class="error-card-help">
-          ${escapeHtml(error.help)}
-        </div>`;
-
-
-      if(error.line){
-
-        card.onclick =
-          () =>
-            jumpToLine(
-              error.line
-            );
-
-      }
-
-
-      errorPanel.appendChild(
-        card
-      );
-
-    }
-  );
-
-
-  warnings.forEach(
-    warning => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "warning-card";
-
-
-      card.innerHTML =
-        `<div class="warning-card-title">
-          Line ${warning.line}: ${escapeHtml(warning.message)}
-        </div>
-        <div class="warning-card-help">
-          ${escapeHtml(warning.help)}
-        </div>`;
-
-
-      card.onclick =
-        () =>
-          jumpToLine(
-            warning.line
-          );
-
-
-      errorPanel.appendChild(
-        card
-      );
-
-    }
-  );
-
-
-  if(
-    errors.length ||
-    warnings.length
-  ){
-
-    errorPanel.classList.add(
-      "visible"
-    );
-
-  }else{
-
-    errorPanel.classList.remove(
-      "visible"
-    );
-
-  }
+  updateLines();
 
 }
 
 
+/* =========================
+   UPDATE ERROR MARKERS
+========================= */
+
+function updateErrorMarkers(){
+
+  if(!errorMarkers){
+
+    return;
+
+  }
+
+
+  errorMarkers.innerHTML = "";
+
+
+  if(!compilerErrors.length){
+
+    return;
+
+  }
+
+
+  const lineHeight =
+    parseFloat(
+      getComputedStyle(editor).lineHeight
+    );
+
+
+  const editorPaddingTop =
+    10;
+
+
+  compilerErrors.forEach(
+    error => {
+
+      if(
+        !error.line ||
+        error.line < 1
+      ){
+
+        return;
+
+      }
+
+
+      const marker =
+        document.createElement(
+          "div"
+        );
+
+
+      marker.className =
+        "error-marker";
+
+
+      marker.dataset.line =
+        error.line;
+
+
+      marker.dataset.message =
+        error.tooltip ||
+        error.message;
+
+
+      marker.style.top =
+        (
+          editorPaddingTop +
+          (
+            error.line - 1
+          ) *
+          lineHeight -
+          editor.scrollTop
+        ) + "px";
+
+
+      marker.style.height =
+        lineHeight + "px";
+
+
+      errorMarkers.appendChild(
+        marker
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   FIND ERROR
+========================= */
+
+function getErrorAtLine(
+  lineNumber
+){
+
+  return compilerErrors.find(
+    error =>
+      error.line === lineNumber
+  ) || null;
+
+}
+
+
+/* =========================
+   ERROR TOOLTIP
+========================= */
+
+function showErrorTooltip(
+  lineNumber,
+  mouseX,
+  mouseY
+){
+
+  if(
+    !errorTooltip ||
+    !editorBox
+  ){
+
+    return;
+
+  }
+
+
+  const error =
+    getErrorAtLine(
+      lineNumber
+    );
+
+
+  if(!error){
+
+    errorTooltip.style.display =
+      "none";
+
+    return;
+
+  }
+
+
+  errorTooltip.textContent =
+    error.tooltip ||
+    error.help ||
+    error.message;
+
+
+  errorTooltip.style.display =
+    "block";
+
+
+  const rect =
+    editorBox.getBoundingClientRect();
+
+
+  let left =
+    mouseX -
+    rect.left +
+    12;
+
+
+  let top =
+    mouseY -
+    rect.top +
+    12;
+
+
+  const tooltipWidth =
+    Math.min(
+      420,
+      editorBox.clientWidth - 10
+    );
+
+
+  const maxLeft =
+    editorBox.clientWidth -
+    tooltipWidth -
+    5;
+
+
+  if(left > maxLeft){
+
+    left =
+      Math.max(
+        5,
+        maxLeft
+      );
+
+  }
+
+
+  if(left < 5){
+
+    left = 5;
+
+  }
+
+
+  if(
+    top + 60 >
+    editorBox.clientHeight
+  ){
+
+    top =
+      mouseY -
+      rect.top -
+      60;
+
+  }
+
+
+  if(top < 5){
+
+    top = 5;
+
+  }
+
+
+  errorTooltip.style.left =
+    left + "px";
+
+
+  errorTooltip.style.top =
+    top + "px";
+
+}
+
+
+/* =========================
+   GET EDITOR LINE
+========================= */
+
+function getEditorLineFromMouse(
+  event
+){
+
+  if(!editor){
+
+    return 1;
+
+  }
+
+
+  const rect =
+    editor.getBoundingClientRect();
+
+
+  const lineHeight =
+    parseFloat(
+      getComputedStyle(
+        editor
+      ).lineHeight
+    );
+
+
+  const paddingTop =
+    10;
+
+
+  const y =
+    event.clientY -
+    rect.top +
+    editor.scrollTop -
+    paddingTop;
+
+
+  return Math.max(
+    1,
+    Math.floor(
+      y / lineHeight
+    ) + 1
+  );
+
+}
+
+
+/* =========================
+   CLEAR ERRORS
+========================= */
+
 function clearErrorPanel(){
 
-  errorPanel.innerHTML = "";
+  compilerErrors = [];
 
-  errorPanel.classList.remove(
-    "visible"
-  );
+  compilerWarnings = [];
+
+
+  if(errorMarkers){
+
+    errorMarkers.innerHTML =
+      "";
+
+  }
+
+
+  if(errorTooltip){
+
+    errorTooltip.style.display =
+      "none";
+
+  }
+
+
+  updateLines();
 
 }
 
@@ -3062,21 +3419,26 @@ function clearErrorPanel(){
 ========================= */
 
 let compilerErrors = [];
+
 let compilerWarnings = [];
 
 
 function getCurrentErrorLines(){
 
   return {
+
     errors:
-      compilerErrors.map(
-        x => x.line
-      ),
+      compilerErrors
+        .map(
+          x => x.line
+        ),
 
     warnings:
-      compilerWarnings.map(
-        x => x.line
-      )
+      compilerWarnings
+        .map(
+          x => x.line
+        )
+
   };
 
 }
@@ -3086,7 +3448,9 @@ function getCurrentErrorLines(){
    JUMP TO LINE
 ========================= */
 
-function jumpToLine(lineNumber){
+function jumpToLine(
+  lineNumber
+){
 
   if(
     !lineNumber ||
@@ -3115,15 +3479,18 @@ function jumpToLine(lineNumber){
   ){
 
     position +=
-      allLines[i].length + 1;
+      allLines[i].length +
+      1;
 
   }
 
 
   editor.focus();
 
+
   editor.selectionStart =
     position;
+
 
   editor.selectionEnd =
     Math.min(
