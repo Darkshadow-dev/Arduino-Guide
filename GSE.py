@@ -897,12 +897,10 @@ def parse_instruction(
         }
 
         if len(args)>=3:
-
-            instruction["duration"]=
-                parse_expression(
-                    args[2],
-                    constants
-                )
+            instruction["duration"] = parse_expression(
+                args[2],
+                constants
+            )
 
         return instruction
 
