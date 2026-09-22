@@ -355,18 +355,6 @@ def parse_expression(
         else:
             break
 
-
-    /*
-        Logical NOT.
-
-        This is important for:
-
-            !display.begin(...)
-
-        because display.begin() must first be parsed
-        as a CALL expression.
-    */
-
     if value.startswith("!"):
 
         return {
@@ -376,11 +364,6 @@ def parse_expression(
                 constants
             )
         }
-
-
-    /*
-        Logical OR
-    */
 
     for operator in ["||"]:
 
@@ -410,11 +393,6 @@ def parse_expression(
 
             return result
 
-
-    /*
-        Logical AND
-    */
-
     for operator in ["&&"]:
 
         parts = split_operator(
@@ -442,11 +420,6 @@ def parse_expression(
                 }
 
             return result
-
-
-    /*
-        Comparisons
-    */
 
     for operator in [
         "==",
@@ -476,18 +449,6 @@ def parse_expression(
                     constants
                 )
             }
-
-
-    /*
-        Arithmetic
-
-        Do not treat a leading "-" as subtraction.
-
-        This allows values such as:
-
-            -1
-            -5
-    */
 
     for operator in [
         "+",
@@ -521,21 +482,6 @@ def parse_expression(
                     constants
                 )
             }
-
-
-    /*
-        Function / method call.
-
-        Supports:
-
-            digitalRead(2)
-            analogRead(A0)
-            display.begin(...)
-            display.print(...)
-            display.println(...)
-
-        The name may contain one dot.
-    */
 
     call_match = re.fullmatch(
         r"([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)?)\s*\((.*)\)",
@@ -571,11 +517,6 @@ def parse_expression(
             "function": function_name,
             "args": arguments
         }
-
-
-    /*
-        Normal value / constant / variable.
-    */
 
     return {
         "type": "VALUE",
