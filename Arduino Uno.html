@@ -922,18 +922,10 @@ function setupButtons(){
         const isToggle=
             button.classList.contains("toggleButton");
 
-        /*
-            PUSH BUTTON
-            Press = HIGH
-            Release = LOW
-        */
-
         if(!isToggle){
 
             const press=event=>{
-                if(event){
-                    event.preventDefault();
-                }
+                event.preventDefault();
 
                 setButtonState(
                     pinNumber,
@@ -942,9 +934,7 @@ function setupButtons(){
             };
 
             const release=event=>{
-                if(event){
-                    event.preventDefault();
-                }
+                event.preventDefault();
 
                 setButtonState(
                     pinNumber,
@@ -953,45 +943,27 @@ function setupButtons(){
             };
 
             button.addEventListener(
-                "mousedown",
+                "pointerdown",
                 press
             );
 
             button.addEventListener(
-                "mouseup",
+                "pointerup",
                 release
             );
 
             button.addEventListener(
-                "mouseleave",
+                "pointerleave",
                 release
             );
 
             button.addEventListener(
-                "touchstart",
-                press,
-                {passive:false}
-            );
-
-            button.addEventListener(
-                "touchend",
-                release,
-                {passive:false}
-            );
-
-            button.addEventListener(
-                "touchcancel",
-                release,
-                {passive:false}
+                "pointercancel",
+                release
             );
 
             return;
         }
-
-        /*
-            TOGGLE BUTTON
-            Click = switch HIGH/LOW
-        */
 
         button.addEventListener(
             "click",
