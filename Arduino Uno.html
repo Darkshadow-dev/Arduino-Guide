@@ -375,32 +375,98 @@ function validateGSE(){
 }
 
 function resolveGSEValue(value){
-    if(value===null || value===undefined){
+
+    if(
+        value===null ||
+        value===undefined
+    ){
         return 0;
     }
 
-    if(value && typeof value==="object"){
+
+    if(
+        value &&
+        typeof value==="object"
+    ){
+
+        /* ====================================================
+           VALUE
+           ==================================================== */
 
         if(value.type==="VALUE"){
-            return resolveGSEValue(value.value);
+
+            return resolveGSEValue(
+                value.value
+            );
         }
 
-        if(value.type==="CALL"){
-            const args=value.args.map(
-                arg=>resolveGSEValue(arg)
-            );
 
-            if(value.function==="digitalRead"){
+        /* ====================================================
+           FUNCTION / METHOD CALL
+           ==================================================== */
+
+        if(value.type==="CALL"){
+
+            const args=
+                value.args.map(
+                    arg=>resolveGSEValue(arg)
+                );
+
+
+            /* =================================================
+               DIGITAL READ
+               ================================================= */
+
+            if(
+                value.function==="digitalRead"
+            ){
+
                 return executeDigitalRead({
                     pin:args[0]
                 });
             }
 
-            if(value.function==="analogRead"){
+
+            /* =================================================
+               ANALOG READ
+               ================================================= */
+
+            if(
+                value.function==="analogRead"
+            ){
+
                 return executeAnalogRead({
                     pin:args[0]
                 });
             }
+
+
+            /* =================================================
+               OLED BEGIN
+               =================================================
+
+               Real Arduino:
+
+                   display.begin(
+                       SSD1306_SWITCHCAPVCC,
+                       0x3C
+                   )
+
+               returns true when initialization succeeds.
+
+               The simulator's OLED is already available,
+               so this simply reports successful initialization.
+            */
+
+            if(
+                value.function==="display.begin"
+            ){
+
+                initializeOLED();
+
+                return true;
+            }
+
 
             throw new Error(
                 "Unsupported expression function: "+
@@ -408,79 +474,155 @@ function resolveGSEValue(value){
             );
         }
 
+
+        /* ====================================================
+           COMPARE
+           ==================================================== */
+
         if(value.type==="COMPARE"){
-            const left=resolveGSEValue(value.left);
-            const right=resolveGSEValue(value.right);
+
+            const left=
+                resolveGSEValue(
+                    value.left
+                );
+
+            const right=
+                resolveGSEValue(
+                    value.right
+                );
+
 
             switch(value.operator){
+
                 case "==":
                     return left==right;
+
                 case "!=":
                     return left!=right;
+
                 case ">":
                     return left>right;
+
                 case "<":
                     return left<right;
+
                 case ">=":
                     return left>=right;
+
                 case "<=":
                     return left<=right;
             }
 
+
             return false;
         }
+
+
+        /* ====================================================
+           LOGICAL
+           ==================================================== */
 
         if(value.type==="LOGICAL"){
-            const left=resolveGSEValue(value.left);
+
+            const left=
+                resolveGSEValue(
+                    value.left
+                );
+
 
             if(value.operator==="&&"){
-                if(!left)return false;
+
+                if(!left){
+                    return false;
+                }
 
                 return Boolean(
-                    resolveGSEValue(value.right)
+                    resolveGSEValue(
+                        value.right
+                    )
                 );
             }
+
 
             if(value.operator==="||"){
-                if(left)return true;
+
+                if(left){
+                    return true;
+                }
 
                 return Boolean(
-                    resolveGSEValue(value.right)
+                    resolveGSEValue(
+                        value.right
+                    )
                 );
             }
+
 
             return false;
         }
 
+
+        /* ====================================================
+           NOT
+           ==================================================== */
+
         if(value.type==="NOT"){
+
             return !Boolean(
-                resolveGSEValue(value.value)
+                resolveGSEValue(
+                    value.value
+                )
             );
         }
 
-        if(value.type==="ARITHMETIC"){
-            const left=Number(
-                resolveGSEValue(value.left)
-            );
 
-            const right=Number(
-                resolveGSEValue(value.right)
-            );
+        /* ====================================================
+           ARITHMETIC
+           ==================================================== */
+
+        if(value.type==="ARITHMETIC"){
+
+            const left=
+                Number(
+                    resolveGSEValue(
+                        value.left
+                    )
+                );
+
+            const right=
+                Number(
+                    resolveGSEValue(
+                        value.right
+                    )
+                );
+
 
             switch(value.operator){
+
                 case "+":
                     return left+right;
+
                 case "-":
                     return left-right;
+
                 case "*":
                     return left*right;
+
                 case "/":
-                    return right!==0?left/right:0;
+                    return right!==0
+                        ?left/right
+                        :0;
             }
+
 
             return 0;
         }
     }
+
+
+    /* ========================================================
+       VARIABLES
+       ======================================================== */
 
     if(
         typeof value==="string" &&
@@ -489,8 +631,10 @@ function resolveGSEValue(value){
             value
         )
     ){
+
         return gseVariables[value];
     }
+
 
     return value;
 }
