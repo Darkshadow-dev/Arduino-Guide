@@ -1960,219 +1960,154 @@ function hideAutocomplete(){
 
 }
 
-
 /* =========================
    SYNTAX HIGHLIGHTING
 ========================= */
 
 function highlightCode(){
 
-  let code =
-    editor.value
-      .replace(
-        /&/g,
-        "&amp;"
-      )
-      .replace(
-        /</g,
-        "&lt;"
-      )
-      .replace(
-        />/g,
-        "&gt;"
-      );
-
+  let code = editor.value
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
 
   const tokens = [];
 
-
   const save = html => {
-
-    const id =
-      `___TOKEN_${tokens.length}___`;
-
+    const id = `___TOKEN_${tokens.length}___`;
     tokens.push(html);
-
     return id;
-
   };
-
 
   /* Comments */
 
-  code =
-    code.replace(
-      /(\/\/.*)$/gm,
-      m =>
-        save(
-          `<span style="color:#22c55e">${m}</span>`
-        )
-    );
+  code = code.replace(/(\/\/.*)$/gm,
+    m => save(`<span style="color:#22c55e">${m}</span>`));
 
-
-  code =
-    code.replace(
-      /(\/\*[\s\S]*?\*\/)/g,
-      m =>
-        save(
-          `<span style="color:#22c55e">${m}</span>`
-        )
-    );
-
+  code = code.replace(/(\/\*[\s\S]*?\*\/)/g,
+    m => save(`<span style="color:#22c55e">${m}</span>`));
 
   /* Strings */
 
-  code =
-    code.replace(
-      /("(?:\\.|[^"\\])*")/g,
-      m =>
-        save(
-          `<span style="color:#f59e0b">${m}</span>`
-        )
-    );
+  code = code.replace(/("(?:\\.|[^"\\])*")/g,
+    m => save(`<span style="color:#f59e0b">${m}</span>`));
 
-
-  code =
-    code.replace(
-      /('(?:\\.|[^'\\])*')/g,
-      m =>
-        save(
-          `<span style="color:#f59e0b">${m}</span>`
-        )
-    );
-
+  code = code.replace(/('(?:\\.|[^'\\])*')/g,
+    m => save(`<span style="color:#f59e0b">${m}</span>`));
 
   /* Preprocessor */
 
-  code =
-    code.replace(
-      /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning)\b[^\n]*)/g,
-      m =>
-        save(
-          `<span style="color:#f472b6">${m}</span>`
-        )
-    );
-
+  code = code.replace(
+    /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning|line)\b[^\n]*)/g,
+    m => save(`<span style="color:#f472b6">${m}</span>`)
+  );
 
   /* Arduino functions */
 
-  code =
-    code.replace(
-      /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros)\b/g,
-      '<span style="color:#38bdf8">$1</span>'
-    );
+  code = code.replace(
+    /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros|pulseIn|pulseInLong|tone|noTone|shiftIn|shiftOut|attachInterrupt|detachInterrupt|interrupts|noInterrupts)\b/g,
+    '<span style="color:#38bdf8">$1</span>'
+  );
 
+  /* Serial / communication */
 
-  /* Serial */
+  code = code.replace(
+    /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush|peek|find|findUntil|parseInt|parseFloat|setTimeout)\b/g,
+    '<span style="color:#38bdf8">$1</span>'
+  );
 
-  code =
-    code.replace(
-      /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush)\b/g,
-      '<span style="color:#38bdf8">$1</span>'
-    );
+  /* Arduino constants */
 
+  code = code.replace(
+    /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56|CHANGE|RISING|FALLING|LSBFIRST|MSBFIRST)\b/g,
+    '<span style="color:#fbbf24">$1</span>'
+  );
 
-  /* Special */
+  /* Pin / hardware related */
 
-  code =
-    code.replace(
-      /\b(attachInterrupt|detachInterrupt|interrupts|noInterrupts|tone|noTone|pulseIn|pulseInLong|shiftIn|shiftOut)\b/g,
-      '<span style="color:#38bdf8">$1</span>'
-    );
+  code = code.replace(
+    /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET|VCC|GND|VIN|IOREF)\b/g,
+    '<span style="color:#60a5fa">$1</span>'
+  );
 
+  /* Common C/C++ types */
 
-  /* Constants */
+  code = code.replace(
+    /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|uint64_t|int8_t|int16_t|int32_t|int64_t|word)\b/g,
+    '<span style="color:#c084fc">$1</span>'
+  );
 
-  code =
-    code.replace(
-      /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56)\b/g,
-      '<span style="color:#fbbf24">$1</span>'
-    );
+  /* C/C++ keywords */
 
+  code = code.replace(
+    /\b(if|else|for|while|do|switch|case|default|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|friend|template|typename|namespace|using|new|delete|this|nullptr|auto|register|inline|virtual|override|final|enum|union|try|catch|throw|true|false)\b/g,
+    '<span style="color:#fb7185">$1</span>'
+  );
 
-  /* Hardware */
+  /* Arduino libraries */
 
-  code =
-    code.replace(
-      /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET)\b/g,
-      '<span style="color:#60a5fa">$1</span>'
-    );
+  code = code.replace(
+    /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper|Wire1|SPI1|LittleFS|FS|IRremote|RTClib|AccelStepper)\b/g,
+    '<span style="color:#60a5fa">$1</span>'
+  );
 
+  /* Display / library objects */
 
-  /* Types */
+  code = code.replace(
+    /\b(display|Serial|Serial1|Serial2|Serial3|Wire|SPI|lcd|servo|sensor|oled|screen|button|led|motor|relay|buzzer|encoder|rtc|sd|file)\b/g,
+    '<span style="color:#e879f9">$1</span>'
+  );
 
-  code =
-    code.replace(
-      /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t)\b/g,
-      '<span style="color:#c084fc">$1</span>'
-    );
+  /* Mathematical functions */
 
+  code = code.replace(
+    /\b(abs|min|max|constrain|map|pow|sqrt|sq|sin|cos|tan|asin|acos|atan|atan2|random|randomSeed|round|floor|ceil|exp|log)\b/g,
+    '<span style="color:#2dd4bf">$1</span>'
+  );
 
-  /* Keywords */
+  /* Common C/C++ functions */
 
-  code =
-    code.replace(
-      /\b(if|else|for|while|do|switch|case|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|new|delete|true|false|nullptr)\b/g,
-      '<span style="color:#fb7185">$1</span>'
-    );
+  code = code.replace(
+    /\b(sizeof|memcpy|memmove|memset|memcmp|strcmp|strncmp|strlen|strcpy|strncpy|strcat|strchr|strstr|atoi|atol|atof|malloc|calloc|realloc|free)\b/g,
+    '<span style="color:#2dd4bf">$1</span>'
+  );
 
+  /* Memory / low-level functions */
 
-  /* Libraries */
+  code = code.replace(
+    /\b(pgm_read_byte|pgm_read_word|pgm_read_dword|EEPROM\.read|EEPROM\.write|EEPROM\.update|get|put)\b/g,
+    '<span style="color:#2dd4bf">$1</span>'
+  );
 
-  code =
-    code.replace(
-      /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper)\b/g,
-      '<span style="color:#60a5fa">$1</span>'
-    );
+  /* Register / bit operations */
 
+  code = code.replace(
+    /\b(DDRB|DDRC|DDRD|PORTB|PORTC|PORTD|PINB|PINC|PIND|ADCSRA|ADCSRB|ADMUX|ADCL|ADCH|TCCR0A|TCCR0B|TCCR1A|TCCR1B|TCCR2A|TCCR2B|TCNT0|TCNT1|TCNT2|OCR0A|OCR0B|OCR1A|OCR1B|OCR2A|OCR2B|TIMSK0|TIMSK1|TIMSK2|TIFR0|TIFR1|TIFR2|SREG|SP|SPL|SPH)\b/g,
+    '<span style="color:#60a5fa">$1</span>'
+  );
 
-  /* Objects */
+  /* Bit / utility macros */
 
-  code =
-    code.replace(
-      /\b(display|Serial|Wire|lcd|servo|sensor|oled|screen)\b/g,
-      '<span style="color:#e879f9">$1</span>'
-    );
-
-
-  /* Math */
-
-  code =
-    code.replace(
-      /\b(abs|min|max|constrain|map|pow|sqrt|sin|cos|tan|random|randomSeed)\b/g,
-      '<span style="color:#2dd4bf">$1</span>'
-    );
-
-
-  /* C/C++ */
-
-  code =
-    code.replace(
-      /\b(sizeof|memcpy|memset|strcmp|strlen|strcpy|atoi|atof)\b/g,
-      '<span style="color:#2dd4bf">$1</span>'
-    );
-
+  code = code.replace(
+    /\b(bitRead|bitWrite|bitSet|bitClear|bitToggle|highByte|lowByte|_BV|F|PSTR)\b/g,
+    '<span style="color:#2dd4bf">$1</span>'
+  );
 
   /* Numbers */
 
-  code =
-    code.replace(
-      /\b(0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?[fFlLuU]*)\b/g,
-      '<span style="color:#a78bfa">$1</span>'
-    );
-
+  code = code.replace(
+    /\b(0[bB][01]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[fFlLuU]*)\b/g,
+    '<span style="color:#a78bfa">$1</span>'
+  );
 
   /* Restore */
 
-  code =
-    code.replace(
-      /___TOKEN_(\d+)___/g,
-      (_, i) => tokens[i]
-    );
+  code = code.replace(
+    /___TOKEN_(\d+)___/g,
+    (_, i) => tokens[i]
+  );
 
-
-  highlight.innerHTML =
-    code;
+  highlight.innerHTML = code;
 
 }
 
@@ -4155,4 +4090,6 @@ function clearConsole(){
 
 </body>
 </html>
+
+
 
