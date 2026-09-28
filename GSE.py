@@ -6,37 +6,15 @@ GSE_VERSION = 7
 
 SUPPORTED_LIBRARIES = {
     "Wire.h",
-    "SPI.h",
-    "EEPROM.h",
-    "Servo.h",
-    "SoftwareSerial.h",
     "Adafruit_GFX.h",
     "Adafruit_SSD1306.h",
-    "LiquidCrystal.h",
-    "DHT.h",
-    "OneWire.h",
-    "DallasTemperature.h",
-    "SD.h",
-    "Stepper.h",
-    "RTClib.h"
+    "LiquidCrystal.h"
 }
 
 
 VIRTUAL_LIBRARIES = {
-    "Wire.h": "I2C",
-    "SPI.h": "SPI",
-    "EEPROM.h": "EEPROM",
-    "Servo.h": "SERVO",
-    "SoftwareSerial.h": "SOFTWARE_SERIAL",
     "Adafruit_GFX.h": "OLED4",
-    "Adafruit_SSD1306.h": "OLED4",
-    "LiquidCrystal.h": "LCD",
-    "DHT.h": "DHT",
-    "OneWire.h": "ONEWIRE",
-    "DallasTemperature.h": "DS18B20",
-    "SD.h": "SD",
-    "Stepper.h": "STEPPER",
-    "RTClib.h": "RTC"
+    "Adafruit_SSD1306.h": "OLED4"
 }
 
 
@@ -61,19 +39,9 @@ BUILTIN_FUNCTIONS = {
     "analogWrite",
     "delay",
     "delayMicroseconds",
-    "millis",
-    "micros",
     "tone",
     "noTone",
-    "map",
-    "constrain",
-    "min",
-    "max",
-    "abs",
-    "pow",
-    "sqrt",
-    "random",
-    "randomSeed"
+    "map"
 }
 
 
@@ -897,143 +865,6 @@ def parse_instruction(
         return {
             "op": "DELAY_US",
             "us": parse_expression(
-                args[0],
-                constants
-            )
-        }
-
-    if function == "millis":
-        if args:
-            raise ValueError(
-                "millis requires no arguments"
-            )
-
-        return {
-            "op": "MILLIS"
-        }
-
-    if function == "micros":
-        if args:
-            raise ValueError(
-                "micros requires no arguments"
-            )
-
-        return {
-            "op": "MICROS"
-        }
-
-    if function == "randomSeed":
-        if len(args) != 1:
-            raise ValueError(
-                "randomSeed requires 1 argument"
-            )
-
-        return {
-            "op": "RANDOM_SEED",
-            "value": parse_expression(
-                args[0],
-                constants
-            )
-        }
-
-    if function == "random":
-        if len(args) not in (1, 2):
-            raise ValueError(
-                "random requires 1 or 2 arguments"
-            )
-
-        return {
-            "op": "RANDOM",
-            "args": [
-                parse_expression(
-                    arg,
-                    constants
-                )
-                for arg in args
-            ]
-        }
-
-    if function == "constrain":
-        if len(args) != 3:
-            raise ValueError(
-                "constrain requires 3 arguments"
-            )
-
-        return {
-            "op": "CONSTRAIN",
-            "value": parse_expression(
-                args[0],
-                constants
-            ),
-            "minimum": parse_expression(
-                args[1],
-                constants
-            ),
-            "maximum": parse_expression(
-                args[2],
-                constants
-            )
-        }
-
-    if function == "abs":
-        if len(args) != 1:
-            raise ValueError(
-                "abs requires 1 argument"
-            )
-
-        return {
-            "op": "ABS",
-            "value": parse_expression(
-                args[0],
-                constants
-            )
-        }
-
-    if function in ("min", "max"):
-        if len(args) != 2:
-            raise ValueError(
-                function + " requires 2 arguments"
-            )
-
-        return {
-            "op": function.upper(),
-            "left": parse_expression(
-                args[0],
-                constants
-            ),
-            "right": parse_expression(
-                args[1],
-                constants
-            )
-        }
-
-    if function == "pow":
-        if len(args) != 2:
-            raise ValueError(
-                "pow requires 2 arguments"
-            )
-
-        return {
-            "op": "POW",
-            "base": parse_expression(
-                args[0],
-                constants
-            ),
-            "exponent": parse_expression(
-                args[1],
-                constants
-            )
-        }
-
-    if function == "sqrt":
-        if len(args) != 1:
-            raise ValueError(
-                "sqrt requires 1 argument"
-            )
-
-        return {
-            "op": "SQRT",
-            "value": parse_expression(
                 args[0],
                 constants
             )
