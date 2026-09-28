@@ -18,8 +18,7 @@ void loop() {
   digitalWrite(LED_BUILTIN, LOW);
   delay(1000);
 
-}
-`
+}`
 },
 
 button:{
@@ -35,8 +34,7 @@ void loop() {
 
   int value = digitalRead(2);
 
-}
-`
+}`
 },
 
 "button-led":{
@@ -52,8 +50,7 @@ void loop() {
 
   digitalWrite(13, HIGH);
 
-}
-`
+}`
 },
 pwm:{
 title:"PWM LED",
@@ -68,8 +65,7 @@ void loop(){
 
   analogWrite(9, 128);
 
-}
-`
+}`
 },
 
 "multi-led":{
@@ -105,8 +101,7 @@ void loop(){
 
   delay(500);
 
-}
-`
+}`
 },
 
 buzzer:{
@@ -126,8 +121,7 @@ void loop(){
   noTone(6);
   delay(500);
 
-}
-`
+}`
 },
 
 analog:{
@@ -147,8 +141,7 @@ void loop(){
 
   delay(200);
 
-}
-`
+}`
 },
 
 joystick:{
@@ -178,8 +171,7 @@ void loop(){
 
   delay(200);
 
-}
-`
+}`
 },
 
 oled:{
@@ -228,8 +220,7 @@ void setup(){
 
 void loop(){
 
-}
-`
+}`
 },
 
 serial:{
@@ -247,8 +238,7 @@ void loop(){
 
   delay(1000);
 
-}
-`
+}`
 },
 
 timer:{
@@ -272,8 +262,7 @@ void loop(){
 
   }
 
-}
-`
+}`
 },
 
 interrupts:{
@@ -309,8 +298,7 @@ void loop(){
 
   }
 
-}
-`
+}`
 },
 
 eeprom:{
@@ -336,8 +324,7 @@ void setup(){
 
 void loop(){
 
-}
-`
+}`
 },
 
 "pwm-control":{
@@ -371,8 +358,7 @@ void loop(){
 
   }
 
-}
-`
+}`
 },
 
 "battery-monitor":{
@@ -398,8 +384,7 @@ void loop(){
 
   delay(1000);
 
-}
-`
+}`
 },
 
 "usb-monitor":{
@@ -425,8 +410,7 @@ void loop(){
 
   delay(500);
 
-}
-`
+}`
 },
 
 "solar-monitor":{
@@ -454,8 +438,7 @@ void loop(){
 
   delay(1000);
 
-}
-`
+}`
 },
 
 "power-supply-test":{
@@ -481,8 +464,7 @@ void loop(){
 
   delay(1000);
 
-}
-`
+}`
 },
 
 "low-voltage-alert":{
@@ -516,8 +498,7 @@ void loop(){
 
   delay(500);
 
-}
-`
+}`
 },
 
 "led-test":{
@@ -541,8 +522,7 @@ void loop(){
 
   delay(500);
 
-}
-`
+}`
 },
 
 "speaker-test":{
@@ -566,8 +546,7 @@ void loop(){
 
   delay(500);
 
-}
-`
+}`
 },
 
 "button-test":{
@@ -595,8 +574,7 @@ void loop(){
 
   delay(100);
 
-}
-`
+}`
 },
 
 "relay-test":{
@@ -622,8 +600,7 @@ void loop(){
 
   delay(1000);
 
-}
-`
+}`
 },
 
 "sensor-test":{
@@ -647,8 +624,7 @@ void loop(){
 
   delay(500);
 
-}
-`
+}`
 }
 
 };
@@ -688,7 +664,6 @@ void loop() { // Starts loop(). Everything inside this function repeats continuo
 } // Ends loop().
   // The Arduino immediately starts loop() again.
   // Because loop() repeats forever, the LED continuously turns ON and OFF.
-
 `
 },
 
@@ -717,7 +692,6 @@ void loop() { // Starts loop(). It repeats continuously.
 
 } // Ends loop().
   // The button is read again when loop() starts over.
-
 `
 },
 
@@ -746,7 +720,6 @@ void loop() { // Starts loop(). Everything inside repeats continuously.
 } // Ends loop().
   // loop() starts again immediately.
   // Pin 13 remains HIGH, so electricity is continuously supplied to the circuit.
-
 `
 },
 
@@ -776,7 +749,6 @@ void loop() { // Starts the repeating loop.
 
 } // Ends loop().
   // The same PWM value is continuously written to pin 9.
-
 `
 },
 
@@ -861,7 +833,6 @@ void loop() { // Starts the repeating loop.
 
 } // Ends loop().
   // The tone starts again when loop() repeats.
-
 `
 },
 
@@ -947,7 +918,6 @@ void loop() { // Starts the repeating loop.
   delay(200); // Waits 200 milliseconds before reading everything again.
 
 } // Ends loop().
-
 `
 },
 
@@ -1026,8 +996,7 @@ void loop(){ // Runs repeatedly.
   // Nothing needs to happen here.
   // The OLED already contains the displayed text.
 
-}
-`
+}`
 },
 
 serial:{
@@ -1054,7 +1023,6 @@ void loop() { // Starts the repeating loop.
 
 } // Ends loop().
   // The message is sent again when loop() repeats.
-
 `
 },
 
@@ -1098,7 +1066,6 @@ void loop() { // Starts the repeating loop.
 
 } // Ends loop().
   // loop() keeps running and repeatedly checks the elapsed time.
-
 `
 },
 
@@ -1156,7 +1123,6 @@ void loop(){ // Starts the normal program loop.
   } // Ends the if statement.
 
 } // Ends loop().
-
 `
 },
 
@@ -1193,7 +1159,6 @@ void loop(){ // Starts loop().
              // Nothing needs to repeat in this example.
 
 } // Ends loop().
-
 `
 },
 
@@ -1243,7 +1208,6 @@ void loop(){ // Starts the repeating loop.
 
 } // Ends loop().
   // The brightness cycle starts again.
-
 `
 },
 
@@ -1280,7 +1244,6 @@ void loop(){ // Starts the repeating loop.
   delay(1000); // Waits one second before taking another measurement.
 
 } // Ends loop().
-
 `
 },
 
@@ -1316,7 +1279,6 @@ void loop(){ // Starts the repeating loop.
   delay(500); // Waits 500 milliseconds before measuring again.
 
 } // Ends loop().
-
 `
 },
 
@@ -1355,7 +1317,6 @@ void loop(){ // Starts the repeating loop.
   delay(1000); // Waits one second before taking another reading.
 
 } // Ends loop().
-
 `
 },
 
@@ -1390,7 +1351,6 @@ void loop(){ // Starts the repeating loop.
   delay(1000); // Waits one second before checking again.
 
 } // Ends loop().
-
 `
 },
 
@@ -1433,7 +1393,6 @@ void loop(){ // Starts the repeating loop.
   delay(500); // Waits 500 milliseconds before checking the voltage again.
 
 } // Ends loop().
-
 `
 },
 
@@ -1463,7 +1422,6 @@ void loop(){ // Starts the repeating loop.
 
 } // Ends loop().
   // The LED repeatedly flashes twice per second.
-
 `
 },
 
@@ -1497,7 +1455,6 @@ void loop(){ // Starts the repeating loop.
 
 } // Ends loop().
   // The test tone starts again when loop() repeats.
-
 `
 },
 
@@ -1535,7 +1492,6 @@ void loop(){ // Starts the repeating loop.
               // This reduces how quickly messages can be printed.
 
 } // Ends loop().
-
 `
 },
 
@@ -1574,7 +1530,6 @@ delay(1000); // Keeps the relay deactivated for 1 second.
 } // loop() ends.
 // The loop starts again, so the relay repeatedly switches
 // ON for 1 second and OFF for 1 second.
-
 `
 },
 
@@ -1607,10 +1562,10 @@ void loop(){ // Starts the repeating loop.
 
 } // Ends loop().
   // The sensor is continuously monitored.
-
 `
 }
 
 };
+
 
 
