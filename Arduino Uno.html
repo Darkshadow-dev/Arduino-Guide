@@ -1145,18 +1145,19 @@ function updateButtonVisual(pinNumber){
     }
 }
 
-function setButtonState(pinNumber,state){
+async function setButtonState(pinNumber,state){
     const pin=getPin(pinNumber);
 
-const oldValue=pin.input;
+    const oldValue=pin.input;
+    const newValue=state?1:0;
 
-pin.input=newValue;
+    pin.input=newValue;
 
-await triggerInterruptForPin(
-    pinNumber,
-    oldValue,
-    newValue
-);
+    await triggerInterruptForPin(
+        pinNumber,
+        oldValue,
+        newValue
+    );
 
     updateButtonVisual(pinNumber);
 
@@ -1166,7 +1167,6 @@ await triggerInterruptForPin(
         (pin.input?"HIGH":"LOW")
     );
 }
-
 function setupButtons(){
 
     document.querySelectorAll(".pinButton").forEach(button=>{
