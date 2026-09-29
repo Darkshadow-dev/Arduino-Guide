@@ -49,6 +49,9 @@ BUILTIN_VALUES = {
     "SSD1306_SWITCHCAPVCC": 2,
     "SSD1306_WHITE": 1,
     "SSD1306_BLACK": 0
+    "RISING": "RISING",
+    "FALLING": "FALLING",
+    "CHANGE": "CHANGE",
 }
 
 
@@ -63,6 +66,9 @@ BUILTIN_FUNCTIONS = {
     "tone",
     "noTone",
     "map"
+    "digitalPinToInterrupt",
+    "attachInterrupt",
+    "detachInterrupt"
 } #Add for loop and i in for loop
 
 
@@ -1334,6 +1340,39 @@ def parse_instruction(
             "LiquidCrystal runtime support is not enabled yet: "
             + function
         )
+
+    if function == "attachInterrupt":
+        if len(args) != 3:
+            raise ValueError(
+                "attachInterrupt requires 3 arguments"
+            )
+
+        return {
+            "op": "ATTACH_INTERRUPT",
+            "interrupt": parse_expression(
+                args[0],
+                constants
+            ),
+            "function": args[1].strip(),
+            "mode": parse_expression(
+                args[2],
+                constants
+            )
+        }
+
+    if function == "detachInterrupt":
+        if len(args) != 1:
+            raise ValueError(
+                "detachInterrupt requires 1 argument"
+            )
+
+        return {
+            "op": "DETACH_INTERRUPT",
+            "interrupt": parse_expression(
+                args[0],
+                constants
+            )
+        }
 
     # --------------------------------------------------------
     # USER FUNCTION

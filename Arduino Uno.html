@@ -314,7 +314,9 @@ const simulatorState={
     },
     spi:{
         initialized:false
-    }
+    },
+
+   interrupts:{}
 };
 
 const servoState={};
@@ -539,6 +541,12 @@ if(value.function==="random"){
             (max-min)
         )+min;
     }
+}
+
+if(value.function==="digitalPinToInterrupt"){
+    return digitalPinToInterrupt(
+        args[0]
+    );
 }
 
             if(
@@ -794,6 +802,58 @@ switch(value.operator){
     return value;
 }
 
+function digitalPinToInterrupt(pin){
+    pin=Number(pin);
+
+    if(pin===2){
+        return 0;
+    }
+
+    if(pin===3){
+        return 1;
+    }
+
+    return -1;
+}
+
+async function executeAttachInterrupt(
+    interrupt,
+    functionName,
+    mode
+){
+    interrupt=Number(interrupt);
+
+    simulatorState.interrupts[interrupt]={
+        function:functionName,
+        mode:mode,
+        lastValue:null
+    };
+
+    simulatorLog(
+        "Interrupt "+
+        interrupt+
+        " attached to "+
+        functionName+
+        " ("+
+        mode+
+        ")."
+    );
+}
+
+function executeDetachInterrupt(
+    interrupt
+){
+    interrupt=Number(interrupt);
+
+    delete simulatorState.interrupts[interrupt];
+
+    simulatorLog(
+        "Interrupt "+
+        interrupt+
+        " detached."
+    );
+}
+
 /* ============================================================
    PIN STATE
    ============================================================ */
@@ -922,6 +982,70 @@ function updateDigitalPin(pinNumber){
         updateBuiltinLED(pin.pwm);
     }
 }
+async function triggerInterruptForPin(
+    pinNumber,
+    oldValue,
+    newValue
+){
+    const interrupt=
+        digitalPinToInterrupt(
+            pinNumber
+        );
+
+    if(interrupt<0){
+        return;
+    }
+
+    const entry=
+        simulatorState.interrupts[
+            interrupt
+        ];
+
+    if(!entry){
+        return;
+    }
+
+    const oldState=
+        Number(oldValue)?1:0;
+
+    const newState=
+        Number(newValue)?1:0;
+
+    let triggered=false;
+
+    if(entry.mode==="CHANGE"){
+        triggered=
+            oldState!==newState;
+    }
+
+    else if(entry.mode==="RISING"){
+        triggered=
+            oldState===0 &&
+            newState===1;
+    }
+
+    else if(entry.mode==="FALLING"){
+        triggered=
+            oldState===1 &&
+            newState===0;
+    }
+
+    else if(
+        Number(entry.mode)===0
+    ){
+        triggered=
+            newState===0;
+    }
+
+    if(!triggered){
+        return;
+    }
+
+    await executeUserFunction(
+        entry.function,
+        []
+    );
+}
 function executeAnalogWrite(instruction){
     const pinNumber=instruction.pin;
 
@@ -1024,7 +1148,15 @@ function updateButtonVisual(pinNumber){
 function setButtonState(pinNumber,state){
     const pin=getPin(pinNumber);
 
-    pin.input=state?1:0;
+const oldValue=pin.input;
+
+pin.input=newValue;
+
+await triggerInterruptForPin(
+    pinNumber,
+    oldValue,
+    newValue
+);
 
     updateButtonVisual(pinNumber);
 
@@ -2627,6 +2759,39 @@ async function executeInstruction(
             );
 
             break;
+
+case "ATTACH_INTERRUPT":{
+    const interrupt=
+        await resolveGSEValue(
+            instruction.interrupt
+        );
+
+    const mode=
+        await resolveGSEValue(
+            instruction.mode
+        );
+
+    await executeAttachInterrupt(
+        interrupt,
+        instruction.function,
+        mode
+    );
+
+    break;
+}
+
+case "DETACH_INTERRUPT":{
+    const interrupt=
+        await resolveGSEValue(
+            instruction.interrupt
+        );
+
+    executeDetachInterrupt(
+        interrupt
+    );
+
+    break;
+}
 
 case "WIRE_BEGIN":{
     simulatorState.wire.initialized=true;
