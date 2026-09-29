@@ -290,7 +290,11 @@
         </div>
 
     </div>
-
+<div>
+    <button onclick="showGSE()">Show GSE</button>
+    <button onclick="copyGSE()">Copy GSE</button>
+    <button onclick="downloadGSE()">Download GSE</button>
+</div>
 </div>
 
 <script>
@@ -393,6 +397,109 @@ async function loadGSE(){
             data.error||"Invalid GSE response."
         );
     }
+
+function getGSEJSON(){
+    if(!gse){
+        throw new Error(
+            "GSE has not been loaded yet."
+        );
+    }
+
+    return JSON.stringify(
+        gse,
+        null,
+        4
+    );
+}
+
+function showGSE(){
+    try{
+        const json=getGSEJSON();
+
+        const win=window.open(
+            "",
+            "_blank"
+        );
+
+        if(!win){
+            throw new Error(
+                "Browser blocked the new window."
+            );
+        }
+
+        win.document.write(
+            "<pre>"+json+"</pre>"
+        );
+
+        win.document.close();
+
+    }catch(error){
+        simulatorLog(
+            "GSE viewer error: "+
+            error.message
+        );
+    }
+}
+
+async function copyGSE(){
+    try{
+        const json=getGSEJSON();
+
+        await navigator.clipboard.writeText(
+            json
+        );
+
+        simulatorLog(
+            "GSE JSON copied to clipboard."
+        );
+
+    }catch(error){
+        simulatorLog(
+            "GSE copy error: "+
+            error.message
+        );
+    }
+}
+
+function downloadGSE(){
+    try{
+        const json=getGSEJSON();
+
+        const blob=new Blob(
+            [json],
+            {
+                type:"application/json"
+            }
+        );
+
+        const url=
+            URL.createObjectURL(blob);
+
+        const link=
+            document.createElement("a");
+
+        link.href=url;
+        link.download="gse-output.json";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        simulatorLog(
+            "GSE JSON downloaded."
+        );
+
+    }catch(error){
+        simulatorLog(
+            "GSE download error: "+
+            error.message
+        );
+    }
+}
 
     gse=data.executable;
     validateGSE();
