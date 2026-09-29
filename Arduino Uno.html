@@ -307,8 +307,47 @@ const simulatorState={
     pins:{},
     analogPins:{},
     serial:[],
-    time:0
+    time:0,
+    randomSeed:1,
+    wire:{
+        initialized:false
+    },
+    spi:{
+        initialized:false
+    }
 };
+
+const servoState={};
+
+function getServo(objectName){
+    if(!servoState[objectName]){
+        servoState[objectName]={
+            attached:false,
+            pin:null,
+            angle:0
+        };
+    }
+
+    return servoState[objectName];
+}
+
+function gseRandom(){
+    let seed=
+        Number(
+            simulatorState.randomSeed
+        )>>>0;
+
+    seed=
+        (
+            seed*
+            1664525+
+            1013904223
+        )>>>0;
+
+    simulatorState.randomSeed=seed;
+
+    return seed/4294967296;
+}
 
 /* ============================================================
    STATUS / CONSOLE
@@ -418,6 +457,89 @@ async function resolveGSEValue(value){
                     await resolveGSEValue(arg)
                 );
             }
+
+if(value.function==="millis"){
+    return simulatorState.time;
+}
+
+if(value.function==="micros"){
+    return simulatorState.time*1000;
+}
+
+if(value.function==="constrain"){
+    return Math.min(
+        Math.max(
+            Number(args[0]),
+            Number(args[1])
+        ),
+        Number(args[2])
+    );
+}
+
+if(value.function==="abs"){
+    return Math.abs(
+        Number(args[0])
+    );
+}
+
+if(value.function==="min"){
+    return Math.min(
+        Number(args[0]),
+        Number(args[1])
+    );
+}
+
+if(value.function==="max"){
+    return Math.max(
+        Number(args[0]),
+        Number(args[1])
+    );
+}
+
+if(value.function==="pow"){
+    return Math.pow(
+        Number(args[0]),
+        Number(args[1])
+    );
+}
+
+if(value.function==="sqrt"){
+    return Math.sqrt(
+        Number(args[0])
+    );
+}
+
+if(value.function==="random"){
+    if(args.length===1){
+        const max=
+            Number(args[0]);
+
+        if(max<=0){
+            return 0;
+        }
+
+        return Math.floor(
+            gseRandom()*max
+        );
+    }
+
+    if(args.length===2){
+        const min=
+            Number(args[0]);
+
+        const max=
+            Number(args[1]);
+
+        if(max<=min){
+            return min;
+        }
+
+        return Math.floor(
+            gseRandom()*
+            (max-min)
+        )+min;
+    }
+}
 
             if(
                 value.function==="digitalRead"
@@ -605,22 +727,26 @@ async function resolveGSEValue(value){
                     )
                 );
 
-            switch(value.operator){
+switch(value.operator){
+    case "+":
+        return left+right;
 
-                case "+":
-                    return left+right;
+    case "-":
+        return left-right;
 
-                case "-":
-                    return left-right;
+    case "*":
+        return left*right;
 
-                case "*":
-                    return left*right;
+    case "/":
+        return right!==0
+            ?left/right
+            :0;
 
-                case "/":
-                    return right!==0
-                        ?left/right
-                        :0;
-            }
+    case "%":
+        return right!==0
+            ?left%right
+            :0;
+}
 
             return 0;
         }
@@ -1341,6 +1467,74 @@ function executeSerialBegin(baud){
         simulatorState.serialBaud+
         " baud."
     );
+}
+
+function executeServoAttach(objectName,pin){
+    const servo=getServo(objectName);
+
+    servo.attached=true;
+    servo.pin=Number(pin);
+
+    simulatorLog(
+        "Servo "+
+        objectName+
+        " attached to pin "+
+        servo.pin+
+        "."
+    );
+}
+
+function executeServoWrite(objectName,angle){
+    const servo=getServo(objectName);
+
+    if(!servo.attached){
+        simulatorLog(
+            "Servo "+
+            objectName+
+            " is not attached."
+        );
+        return;
+    }
+
+    servo.angle=Math.max(
+        0,
+        Math.min(
+            180,
+            Number(angle)
+        )
+    );
+
+    simulatorLog(
+        "Servo "+
+        objectName+
+        " angle: "+
+        servo.angle+"°"
+    );
+}
+
+function executeServoDetach(objectName){
+    const servo=getServo(objectName);
+
+    servo.attached=false;
+    servo.pin=null;
+
+    simulatorLog(
+        "Servo "+
+        objectName+
+        " detached."
+    );
+}
+
+function executeServoRead(objectName){
+    const servo=getServo(objectName);
+
+    return servo.angle;
+}
+
+function executeServoAttached(objectName){
+    const servo=getServo(objectName);
+
+    return servo.attached;
 }
 
 function executeSerialPrint(
@@ -2433,6 +2627,74 @@ async function executeInstruction(
             );
 
             break;
+
+case "WIRE_BEGIN":{
+    simulatorState.wire.initialized=true;
+
+    simulatorLog(
+        "I2C / Wire initialized."
+    );
+
+    break;
+}
+
+case "SPI_BEGIN":{
+    simulatorState.spi.initialized=true;
+
+    simulatorLog(
+        "SPI initialized."
+    );
+
+    break;
+}
+
+case "RANDOM_SEED":{
+    const seed=
+        await resolveGSEValue(
+            instruction.seed
+        );
+
+    simulatorState.randomSeed=
+        Number(seed)>>>0;
+
+    break;
+}
+
+case "SERVO_ATTACH":{
+    const pin=
+        await resolveGSEValue(
+            instruction.pin
+        );
+
+    executeServoAttach(
+        instruction.object,
+        pin
+    );
+
+    break;
+}
+
+case "SERVO_WRITE":{
+    const angle=
+        await resolveGSEValue(
+            instruction.angle
+        );
+
+    executeServoWrite(
+        instruction.object,
+        angle
+    );
+
+    break;
+}
+
+case "SERVO_DETACH":{
+    executeServoDetach(
+        instruction.object
+    );
+
+    break;
+}
 
         case "OLED_BEGIN":
 

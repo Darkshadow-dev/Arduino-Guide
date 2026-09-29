@@ -6,15 +6,36 @@ GSE_VERSION = 7
 
 SUPPORTED_LIBRARIES = {
     "Wire.h",
+    "SPI.h",
+    "EEPROM.h",
+    "Servo.h",
+    "SoftwareSerial.h",
     "Adafruit_GFX.h",
     "Adafruit_SSD1306.h",
-    "LiquidCrystal.h"
+    "LiquidCrystal.h",
+    "DHT.h",
+    "OneWire.h",
+    "DallasTemperature.h",
+    "SD.h",
+    "Stepper.h",
+    "RTClib.h"
 }
 
-
 VIRTUAL_LIBRARIES = {
+    "Wire.h": "I2C",
+    "SPI.h": "SPI",
+    "EEPROM.h": "EEPROM",
+    "Servo.h": "SERVO",
+    "SoftwareSerial.h": "SOFTWARE_SERIAL",
     "Adafruit_GFX.h": "OLED4",
-    "Adafruit_SSD1306.h": "OLED4"
+    "Adafruit_SSD1306.h": "OLED4",
+    "LiquidCrystal.h": "LCD",
+    "DHT.h": "DHT",
+    "OneWire.h": "ONEWIRE",
+    "DallasTemperature.h": "DS18B20",
+    "SD.h": "SD",
+    "Stepper.h": "STEPPER",
+    "RTClib.h": "RTC"
 }
 
 
@@ -42,7 +63,7 @@ BUILTIN_FUNCTIONS = {
     "tone",
     "noTone",
     "map"
-}
+} #Add for loop and i in for loop
 
 
 CONTROL_FUNCTIONS = {
@@ -483,7 +504,8 @@ def parse_expression(
         "+",
         "-",
         "*",
-        "/"
+        "/",
+        "%"
     ):
         if (
             operator == "-"
@@ -665,6 +687,21 @@ def parse_library_declaration(
         line,
         re.DOTALL
     )
+
+    match = re.match(
+        r"^Servo\s+"
+        r"([A-Za-z_]\w*)$",
+        line
+    )
+
+    if match:
+        return {
+            "op": "LIBRARY_OBJECT",
+            "library": "Servo",
+            "system": "SERVO",
+            "object": match.group(1),
+            "args": []
+        }
 
     if match:
         return {
@@ -1196,6 +1233,97 @@ def parse_instruction(
             "Unsupported OLED4 function: "
             + function
         )
+
+    if function == "Wire.begin":
+        if len(args) > 2:
+            raise ValueError(
+                "Wire.begin requires 0, 1, or 2 arguments"
+            )
+
+        return {
+            "op": "WIRE_BEGIN",
+            "args": [
+                parse_expression(
+                    arg,
+                    constants
+                )
+                for arg in args
+            ]
+        }
+
+    if function == "SPI.begin":
+        if args:
+            raise ValueError(
+                "SPI.begin requires no arguments"
+            )
+
+        return {
+            "op": "SPI_BEGIN"
+        }
+
+    if library == "Servo":
+        if method == "attach":
+            if len(args) != 1:
+                raise ValueError(
+                    "Servo.attach requires 1 argument"
+                )
+
+            return {
+                "op": "SERVO_ATTACH",
+                "object": object_name,
+                "pin": parse_expression(
+                    args[0],
+                    constants
+                )
+            }
+
+        if method == "write":
+            if len(args) != 1:
+                raise ValueError(
+                    "Servo.write requires 1 argument"
+                )
+
+            return {
+                "op": "SERVO_WRITE",
+                "object": object_name,
+                "angle": parse_expression(
+                    args[0],
+                    constants
+                )
+            }
+
+        if method == "detach":
+            if args:
+                raise ValueError(
+                    "Servo.detach requires no arguments"
+                )
+
+            return {
+                "op": "SERVO_DETACH",
+                "object": object_name
+            }
+
+        if method == "read":
+            if args:
+                raise ValueError(
+                    "Servo.read requires no arguments"
+                )
+
+            return {
+                "op": "SERVO_READ",
+                "object": object_name
+            }
+
+        if method == "attached":
+            if args:
+                raise ValueError(
+                    "Servo.attached requires no arguments"
+                )
+
+            return {
+                "op": "SERVO_ATTACHED",
+                "object": object_name
+            }
 
     # --------------------------------------------------------
     # LiquidCrystal
