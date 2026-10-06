@@ -65,7 +65,7 @@ BUILTIN_FUNCTIONS = {
     "delayMicroseconds",
     "tone",
     "noTone",
-    "map"
+    "map",
     "digitalPinToInterrupt",
     "attachInterrupt",
     "detachInterrupt"
@@ -1746,6 +1746,7 @@ def parse_block(
 
             instructions.extend(parsed)
             continue
+
         if re.match(
             r"^if\s*\(",
             line
