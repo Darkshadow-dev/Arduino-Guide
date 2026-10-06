@@ -23,7 +23,13 @@ SERVER
 const GSE_SERVER =
     "https://arduino-guide-6.onrender.com";
 
+const EEPROM_SIZE=1024;
 
+const eepromState={
+    memory:new Array(
+        EEPROM_SIZE
+    ).fill(255)
+};
 /*
 ============================================================
 GSE
@@ -782,3 +788,4 @@ START
 */
 
 startSimulator();
+

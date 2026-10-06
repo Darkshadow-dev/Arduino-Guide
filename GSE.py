@@ -69,7 +69,7 @@ BUILTIN_FUNCTIONS = {
     "digitalPinToInterrupt",
     "attachInterrupt",
     "detachInterrupt"
-} #Add for loop and i in for loop
+} #Add for loop and i in for for loop   for(int i=0;i<255;i++){
 
 
 CONTROL_FUNCTIONS = {
@@ -877,6 +877,38 @@ def parse_instruction(
             ),
             "value": parse_expression(
                 args[1],
+                constants
+            )
+        }
+
+    if function == "EEPROM.write":
+        if len(args) != 2:
+            raise ValueError(
+                "EEPROM.write requires 2 arguments"
+            )
+
+        return {
+            "op": "EEPROM_WRITE",
+            "address": parse_expression(
+                args[0],
+                constants
+            ),
+            "value": parse_expression(
+                args[1],
+                constants
+            )
+        }
+
+    if function == "EEPROM.read":
+        if len(args) != 1:
+            raise ValueError(
+                "EEPROM.read requires 1 argument"
+            )
+
+        return {
+            "op": "EEPROM_READ",
+            "address": parse_expression(
+                args[0],
                 constants
             )
         }
@@ -2188,4 +2220,5 @@ def compile_gse(
             "loop": loop
         }
     }
+
 

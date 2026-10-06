@@ -323,6 +323,13 @@ const simulatorState={
    interrupts:{}
 };
 
+const EEPROM_SIZE=1024;
+
+const eepromState={
+    memory:new Array(
+        EEPROM_SIZE
+    ).fill(255)
+};
 const servoState={};
 
 function getServo(objectName){
@@ -512,6 +519,20 @@ if(value.function==="pow"){
 if(value.function==="sqrt"){
     return Math.sqrt(
         Number(args[0])
+    );
+}
+
+if(
+    value.type==="CALL" &&
+    value.function==="EEPROM.read"
+){
+    const address=
+        await resolveGSEValue(
+            value.args[0]
+        );
+
+    return executeEEPROMRead(
+        address
     );
 }
 
@@ -1605,6 +1626,58 @@ function executeSerialBegin(baud){
     );
 }
 
+function executeEEPROMWrite(
+    address,
+    value
+){
+    address=Number(address);
+    value=Number(value);
+
+    if(
+        !Number.isInteger(address) ||
+        address<0 ||
+        address>=EEPROM_SIZE
+    ){
+        throw new Error(
+            "EEPROM address out of range: "+
+            address
+        );
+    }
+
+    value=Math.max(
+        0,
+        Math.min(
+            255,
+            value
+        )
+    );
+
+    eepromState.memory[address]=value;
+
+    simulatorLog(
+        "EEPROM["+address+"] = "+value
+    );
+}
+
+function executeEEPROMRead(
+    address
+){
+    address=Number(address);
+
+    if(
+        !Number.isInteger(address) ||
+        address<0 ||
+        address>=EEPROM_SIZE
+    ){
+        throw new Error(
+            "EEPROM address out of range: "+
+            address
+        );
+    }
+
+    return eepromState.memory[address];
+}
+
 function executeServoAttach(objectName,pin){
     const servo=getServo(objectName);
 
@@ -2648,6 +2721,36 @@ async function executeInstruction(
             break;
         }
 
+case "EEPROM_WRITE":{
+    const address=
+        await resolveGSEValue(
+            instruction.address
+        );
+
+    const value=
+        await resolveGSEValue(
+            instruction.value
+        );
+
+    executeEEPROMWrite(
+        address,
+        value
+    );
+
+    break;
+}
+
+case "EEPROM_READ":{
+    const address=
+        await resolveGSEValue(
+            instruction.address
+        );
+
+    return executeEEPROMRead(
+        address
+    );
+}
+
         case "NO_TONE":
 
             stopBuzzer();
@@ -3298,6 +3401,7 @@ startSimulator();
 
 </body>
 </html>
+
 
 
 
