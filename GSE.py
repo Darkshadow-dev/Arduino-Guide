@@ -370,6 +370,38 @@ def parse_expression(
             "value": 0
         }
 
+    sizeof_match = re.fullmatch(
+        r"sizeof\s*\(\s*([A-Za-z_]\w*)\s*\)",
+        value
+    )
+
+    if sizeof_match:
+        sizeof_type = sizeof_match.group(1)
+
+        sizes = {
+            "byte": 1,
+            "bool": 1,
+            "boolean": 1,
+            "char": 1,
+            "int": 2,
+            "unsigned": 2,
+            "long": 4,
+            "float": 4,
+            "double": 4,
+            "Record": 4
+        }
+
+        if sizeof_type in sizes:
+            return {
+                "type": "VALUE",
+                "value": sizes[sizeof_type]
+            }
+
+        raise ValueError(
+            "Unsupported sizeof type: "
+            + sizeof_type
+        )
+
     # Remove balanced outer parentheses.
     while (
         value.startswith("(")
