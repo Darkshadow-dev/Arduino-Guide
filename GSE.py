@@ -505,6 +505,26 @@ def parse_expression(
                 )
             }
 
+    # Postfix increment / decrement.
+    if re.fullmatch(
+        r"[A-Za-z_]\w*\+\+",
+        value
+    ):
+        return {
+            "type": "POSTFIX",
+            "operator": "++",
+            "name": value[:-2].strip()
+        }
+
+    if re.fullmatch(
+        r"[A-Za-z_]\w*--",
+        value
+    ):
+        return {
+            "type": "POSTFIX",
+            "operator": "--",
+            "name": value[:-2].strip()
+        }
     # Arithmetic.
     for operator in (
         "+",
@@ -1516,6 +1536,97 @@ def tokenize_lines(code):
 # ============================================================
 # IF / BLOCKS
 # ============================================================
+def parse_for(
+    lines,
+    index,
+    objects=None,
+    constants=None
+):
+    line = lines[index].strip()
+
+    condition_start = line.find("(")
+    condition_end = line.rfind(")")
+
+    if (
+        condition_start == -1
+        or condition_end == -1
+    ):
+        raise ValueError(
+            "Invalid for loop: " + line
+        )
+
+    content = line[
+        condition_start + 1:
+        condition_end
+    ]
+
+    parts = split_operator(
+        content,
+        ";"
+    )
+
+    if len(parts) != 3:
+        raise ValueError(
+            "Invalid for loop: " + line
+        )
+
+    init_text = parts[0].strip()
+    condition_text = parts[1].strip()
+    increment_text = parts[2].strip()
+
+    init = parse_variable(
+        init_text,
+        constants
+    )
+
+    if init is None:
+        raise ValueError(
+            "Invalid for initialization: "
+            + init_text
+        )
+
+    condition = parse_expression(
+        condition_text,
+        constants
+    )
+
+    increment = parse_variable(
+        increment_text,
+        constants
+    )
+
+    if increment is None:
+        raise ValueError(
+            "Invalid for increment: "
+            + increment_text
+        )
+
+    index += 1
+
+    if (
+        index >= len(lines)
+        or lines[index].strip() != "{"
+    ):
+        raise ValueError(
+            "Expected { after for loop."
+        )
+
+    body, index = parse_block(
+        lines,
+        index + 1,
+        objects,
+        constants
+    )
+
+    return [
+        {
+            "op": "FOR",
+            "init": init,
+            "condition": condition,
+            "increment": increment,
+            "body": body
+        }
+    ], index
 
 def parse_if(
     lines,
@@ -1622,6 +1733,19 @@ def parse_block(
         if line == "}":
             return instructions, index + 1
 
+        if re.match(
+            r"^for\s*\(",
+            line
+        ):
+            parsed, index = parse_for(
+                lines,
+                index,
+                objects,
+                constants
+            )
+
+            instructions.extend(parsed)
+            continue
         if re.match(
             r"^if\s*\(",
             line

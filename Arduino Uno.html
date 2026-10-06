@@ -2721,6 +2721,43 @@ async function executeInstruction(
             break;
         }
 
+case "FOR":{
+    await executeInstruction(
+        instruction.init
+    );
+
+    let guard=0;
+
+    while(
+        await resolveGSEValue(
+            instruction.condition
+        )
+    ){
+        for(
+            const bodyInstruction
+            of instruction.body
+        ){
+            await executeInstruction(
+                bodyInstruction
+            );
+        }
+
+        await executeInstruction(
+            instruction.increment
+        );
+
+        guard++;
+
+        if(guard>100000){
+            throw new Error(
+                "FOR loop exceeded simulator safety limit."
+            );
+        }
+    }
+
+    break;
+}
+
 case "EEPROM_WRITE":{
     const address=
         await resolveGSEValue(
