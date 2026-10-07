@@ -767,8 +767,9 @@ window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);
 
 
-
-/* ================================================================ Account ============================================= */
+/* ================================================================
+   Account
+================================================================ */
 
 const GUIDE_ACCOUNT_KEYS = [
     "arduinoTutorialProgress",
@@ -783,36 +784,130 @@ const GUIDE_ACCOUNT_KEYS = [
     "firebase:host:arduino-guideg-default-rtdb.europe-west1.firebasedatabase.app",
     "communityUser",
     "userId",
-    "arduino_name"
+    "arduino_name",
+
+    /* Quiz Hub / Code Challenge */
+    "arduino-saved-projects",
+    "arduino-code-progress"
 ];
 
-const GUIDE_ACCOUNT_FILENAME = "Arduino-Guide-Account.json";
+/*
+   Keys beginning with these prefixes are also stored
+   inside the Arduino Guide Account.
+*/
+const GUIDE_ACCOUNT_KEY_PREFIXES = [
+    "arduino-code-",
+    "arduino-project-"
+];
+
+const GUIDE_ACCOUNT_FILENAME =
+    "Arduino-Guide-Account.json";
 
 let guideAccountFile = null;
 let guideAccountLastModified = 0;
 let guideAccountSaving = false;
 let guideAccountLoading = false;
 
+
+/* ================================================================
+   Account Key Detection
+================================================================ */
+
+function guideIsAccountKey(key){
+
+    if(!key){
+        return false;
+    }
+
+    if(
+        GUIDE_ACCOUNT_KEYS.includes(key)
+    ){
+        return true;
+    }
+
+    return GUIDE_ACCOUNT_KEY_PREFIXES.some(
+        prefix => key.startsWith(prefix)
+    );
+}
+
+
+/* ================================================================
+   Get Local Storage Data
+================================================================ */
+
 function guideGetLocalStorageData(){
 
     const data = {};
 
+    /*
+       Exact account keys
+    */
     GUIDE_ACCOUNT_KEYS.forEach(key => {
 
-        const value = localStorage.getItem(key);
+        const value =
+            localStorage.getItem(key);
 
         if(value !== null){
+
             data[key] = value;
+
         }
 
     });
 
+    /*
+       Prefix-based account keys
+    */
+    for(
+        let index = 0;
+        index < localStorage.length;
+        index++
+    ){
+
+        const key =
+            localStorage.key(index);
+
+        if(
+            !key ||
+            data[key] !== undefined
+        ){
+            continue;
+        }
+
+        if(
+            GUIDE_ACCOUNT_KEY_PREFIXES.some(
+                prefix =>
+                    key.startsWith(prefix)
+            )
+        ){
+
+            const value =
+                localStorage.getItem(key);
+
+            if(value !== null){
+
+                data[key] = value;
+
+            }
+
+        }
+
+    }
+
     return data;
 }
 
+
+/* ================================================================
+   Load Local Storage Data
+================================================================ */
+
 function guideLoadLocalStorageData(data){
 
-    if(!data || typeof data !== "object"){
+    if(
+        !data ||
+        typeof data !== "object"
+    ){
         return;
     }
 
@@ -820,21 +915,30 @@ function guideLoadLocalStorageData(data){
 
     try{
 
-        GUIDE_ACCOUNT_KEYS.forEach(key => {
+        Object.keys(data).forEach(key => {
 
-            if(Object.prototype.hasOwnProperty.call(data,key)){
+            if(
+                !guideIsAccountKey(key)
+            ){
+                return;
+            }
 
-                const value = data[key];
+            const value =
+                data[key];
 
-                if(value === null || value === undefined){
+            if(
+                value === null ||
+                value === undefined
+            ){
 
-                    localStorage.removeItem(key);
+                localStorage.removeItem(key);
 
-                }else{
+            }else{
 
-                    localStorage.setItem(key,String(value));
-
-                }
+                localStorage.setItem(
+                    key,
+                    String(value)
+                );
 
             }
 
@@ -847,6 +951,11 @@ function guideLoadLocalStorageData(data){
     }
 
 }
+
+
+/* ================================================================
+   Create Account
+================================================================ */
 
 async function createGuideAccount(){
 
@@ -863,20 +972,25 @@ async function createGuideAccount(){
 
     try{
 
-        guideAccountFile = await window.showSaveFilePicker({
+        guideAccountFile =
+            await window.showSaveFilePicker({
 
-            suggestedName: GUIDE_ACCOUNT_FILENAME,
+                suggestedName:
+                    GUIDE_ACCOUNT_FILENAME,
 
-            types: [
-                {
-                    description: "Arduino Guide Account",
-                    accept: {
-                        "application/json": [".json"]
+                types: [
+                    {
+                        description:
+                            "Arduino Guide Account",
+
+                        accept: {
+                            "application/json":
+                                [".json"]
+                        }
                     }
-                }
-            ]
+                ]
 
-        });
+            });
 
         await guideSaveAccountFile();
 
@@ -884,20 +998,32 @@ async function createGuideAccount(){
 
         guideStartAccountWatcher();
 
-        console.log("Arduino Guide account created.");
+        console.log(
+            "Arduino Guide account created."
+        );
 
     }catch(error){
 
-        if(error.name !== "AbortError"){
+        if(
+            error.name !==
+            "AbortError"
+        ){
+
             console.error(
                 "Could not create Arduino Guide account:",
                 error
             );
+
         }
 
     }
 
 }
+
+
+/* ================================================================
+   Open Account
+================================================================ */
 
 async function openGuideAccount(){
 
@@ -913,22 +1039,27 @@ async function openGuideAccount(){
 
     try{
 
-        const handles = await window.showOpenFilePicker({
+        const handles =
+            await window.showOpenFilePicker({
 
-            multiple: false,
+                multiple:false,
 
-            types: [
-                {
-                    description: "Arduino Guide Account",
-                    accept: {
-                        "application/json": [".json"]
+                types: [
+                    {
+                        description:
+                            "Arduino Guide Account",
+
+                        accept: {
+                            "application/json":
+                                [".json"]
+                        }
                     }
-                }
-            ]
+                ]
 
-        });
+            });
 
-        guideAccountFile = handles[0];
+        guideAccountFile =
+            handles[0];
 
         await guideLoadAccountFile();
 
@@ -936,20 +1067,32 @@ async function openGuideAccount(){
 
         guideStartAccountWatcher();
 
-        console.log("Arduino Guide account loaded.");
+        console.log(
+            "Arduino Guide account loaded."
+        );
 
     }catch(error){
 
-        if(error.name !== "AbortError"){
+        if(
+            error.name !==
+            "AbortError"
+        ){
+
             console.error(
                 "Could not open Arduino Guide account:",
                 error
             );
+
         }
 
     }
 
 }
+
+
+/* ================================================================
+   Save Account File
+================================================================ */
 
 async function guideSaveAccountFile(){
 
@@ -965,20 +1108,34 @@ async function guideSaveAccountFile(){
 
     try{
 
-        const data = guideGetLocalStorageData();
+        const data =
+            guideGetLocalStorageData();
 
         const account = {
-            format: "Arduino Guide Account",
-            version: 1,
-            updated: new Date().toISOString(),
-            data: data
+
+            format:
+                "Arduino Guide Account",
+
+            version:
+                2,
+
+            updated:
+                new Date().toISOString(),
+
+            data:
+                data
+
         };
 
         const writable =
             await guideAccountFile.createWritable();
 
         await writable.write(
-            JSON.stringify(account,null,4)
+            JSON.stringify(
+                account,
+                null,
+                4
+            )
         );
 
         await writable.close();
@@ -1003,6 +1160,11 @@ async function guideSaveAccountFile(){
     }
 
 }
+
+
+/* ================================================================
+   Load Account File
+================================================================ */
 
 async function guideLoadAccountFile(){
 
@@ -1029,7 +1191,8 @@ async function guideLoadAccountFile(){
 
         if(
             !account ||
-            account.format !== "Arduino Guide Account" ||
+            account.format !==
+                "Arduino Guide Account" ||
             !account.data
         ){
 
@@ -1049,14 +1212,20 @@ async function guideLoadAccountFile(){
             file.lastModified;
 
         const currentPage =
-            localStorage.getItem("arduino-last-page");
+            localStorage.getItem(
+                "arduino-last-page"
+            );
 
         if(
             currentPage &&
-            typeof activatePage === "function"
+            typeof activatePage ===
+                "function"
         ){
 
-            activatePage(currentPage,false);
+            activatePage(
+                currentPage,
+                false
+            );
 
         }
 
@@ -1064,7 +1233,8 @@ async function guideLoadAccountFile(){
             new CustomEvent(
                 "arduinoAccountLoaded",
                 {
-                    detail: account.data
+                    detail:
+                        account.data
                 }
             )
         );
@@ -1087,6 +1257,11 @@ async function guideLoadAccountFile(){
     }
 
 }
+
+
+/* ================================================================
+   Check Account File
+================================================================ */
 
 async function guideCheckAccountFile(){
 
@@ -1123,22 +1298,23 @@ async function guideCheckAccountFile(){
 
 }
 
+
+/* ================================================================
+   Account File Watcher
+================================================================ */
+
 function guideStartAccountWatcher(){
 
     if(!guideAccountFile){
         return;
     }
 
-    /*
-       Check every 1 second.
-
-       This detects manual changes made to the JSON file.
-    */
-
     if(window.guideAccountWatcher){
+
         clearInterval(
             window.guideAccountWatcher
         );
+
     }
 
     window.guideAccountWatcher =
@@ -1149,118 +1325,194 @@ function guideStartAccountWatcher(){
 
 }
 
+
+/* ================================================================
+   Local Storage Watcher
+================================================================ */
+
 function guideWatchLocalStorage(){
 
     const originalSetItem =
-        localStorage.setItem.bind(localStorage);
+        localStorage.setItem.bind(
+            localStorage
+        );
 
     const originalRemoveItem =
-        localStorage.removeItem.bind(localStorage);
+        localStorage.removeItem.bind(
+            localStorage
+        );
 
     const originalClear =
-        localStorage.clear.bind(localStorage);
+        localStorage.clear.bind(
+            localStorage
+        );
 
-    localStorage.setItem = function(key,value){
 
-        const result =
-            originalSetItem(key,value);
+    /* ------------------------------------------------------------
+       setItem
+    ------------------------------------------------------------ */
 
-        if(
-            !guideAccountLoading &&
-            GUIDE_ACCOUNT_KEYS.includes(key) &&
-            guideAccountFile
-        ){
+    localStorage.setItem =
+        function(key,value){
 
-            guideSaveAccountFile();
+            const result =
+                originalSetItem(
+                    key,
+                    value
+                );
 
-        }
+            if(
+                !guideAccountLoading &&
+                guideIsAccountKey(key) &&
+                guideAccountFile
+            ){
 
-        return result;
+                guideSaveAccountFile();
 
-    };
-    localStorage.removeItem = function(key){
+            }
 
-        const result =
-            originalRemoveItem(key);
+            return result;
 
-        if(
-            !guideAccountLoading &&
-            GUIDE_ACCOUNT_KEYS.includes(key) &&
-            guideAccountFile
-        ){
+        };
 
-            guideSaveAccountFile();
 
-        }
+    /* ------------------------------------------------------------
+       removeItem
+    ------------------------------------------------------------ */
 
-        return result;
+    localStorage.removeItem =
+        function(key){
 
-    };
+            const result =
+                originalRemoveItem(key);
 
-    localStorage.clear = function(){
+            if(
+                !guideAccountLoading &&
+                guideIsAccountKey(key) &&
+                guideAccountFile
+            ){
 
-        const result =
-            originalClear();
+                guideSaveAccountFile();
 
-        if(
-            !guideAccountLoading &&
-            guideAccountFile
-        ){
+            }
 
-            guideSaveAccountFile();
+            return result;
 
-        }
+        };
 
-        return result;
 
-    };
+    /* ------------------------------------------------------------
+       clear
+    ------------------------------------------------------------ */
+
+    localStorage.clear =
+        function(){
+
+            const result =
+                originalClear();
+
+            if(
+                !guideAccountLoading &&
+                guideAccountFile
+            ){
+
+                guideSaveAccountFile();
+
+            }
+
+            return result;
+
+        };
 
 }
 
-window.addEventListener("storage",function(event){
 
-    if(
-        GUIDE_ACCOUNT_KEYS.includes(event.key) &&
-        guideAccountFile
-    ){
+/* ================================================================
+   Storage Event
+================================================================ */
 
-        guideSaveAccountFile();
+window.addEventListener(
+    "storage",
+    function(event){
+
+        if(
+            guideIsAccountKey(
+                event.key
+            ) &&
+            guideAccountFile
+        ){
+
+            guideSaveAccountFile();
+
+        }
 
     }
+);
 
-});
+
+/* ================================================================
+   IndexedDB - Account Handle
+================================================================ */
 
 function guideOpenHandleDB(){
 
-    return new Promise((resolve,reject)=>{
+    return new Promise(
+        (resolve,reject) => {
 
-        const request =
-            indexedDB.open(
-                "ArduinoGuideAccountDB",
-                1
-            );
+            const request =
+                indexedDB.open(
+                    "ArduinoGuideAccountDB",
+                    1
+                );
 
-        request.onupgradeneeded = function(){
+            request.onupgradeneeded =
+                function(){
 
-            const db = request.result;
+                    const db =
+                        request.result;
 
-            if(!db.objectStoreNames.contains("account")){
-                db.createObjectStore("account");
-            }
+                    if(
+                        !db.objectStoreNames.contains(
+                            "account"
+                        )
+                    ){
 
-        };
+                        db.createObjectStore(
+                            "account"
+                        );
 
-        request.onsuccess = function(){
-            resolve(request.result);
-        };
+                    }
 
-        request.onerror = function(){
-            reject(request.error);
-        };
+                };
 
-    });
+            request.onsuccess =
+                function(){
+
+                    resolve(
+                        request.result
+                    );
+
+                };
+
+            request.onerror =
+                function(){
+
+                    reject(
+                        request.error
+                    );
+
+                };
+
+        }
+    );
 
 }
+
+
+/* ================================================================
+   Store Account Handle
+================================================================ */
+
 async function guideStoreAccountHandle(){
 
     if(!guideAccountFile){
@@ -1296,31 +1548,52 @@ async function guideStoreAccountHandle(){
 
 }
 
+
+/* ================================================================
+   Restore Account Handle
+================================================================ */
+
 async function guideRestoreAccountHandle(){
 
     try{
+
         const db =
             await guideOpenHandleDB();
+
         const handle =
-            await new Promise((resolve,reject)=>{
+            await new Promise(
+                (resolve,reject) => {
 
-                const transaction =
-                    db.transaction(
-                        "account",
-                        "readonly"
-                    );
+                    const transaction =
+                        db.transaction(
+                            "account",
+                            "readonly"
+                        );
 
-                const request =
-                    transaction
-                        .objectStore("account")
-                        .get("fileHandle");
+                    const request =
+                        transaction
+                            .objectStore(
+                                "account"
+                            )
+                            .get(
+                                "fileHandle"
+                            );
 
-                request.onsuccess =
-                    () => resolve(request.result);
+                    request.onsuccess =
+                        () =>
+                            resolve(
+                                request.result
+                            );
 
-                request.onerror =
-                    () => reject(request.error);
-            });
+                    request.onerror =
+                        () =>
+                            reject(
+                                request.error
+                            );
+
+                }
+            );
+
         if(!handle){
             return false;
         }
@@ -1330,45 +1603,80 @@ async function guideRestoreAccountHandle(){
                 mode:"readwrite"
             });
 
-        if(permission !== "granted"){
+        if(
+            permission !==
+            "granted"
+        ){
+
             permission =
                 await handle.requestPermission({
                     mode:"readwrite"
                 });
+
         }
 
-        if(permission !== "granted"){
+        if(
+            permission !==
+            "granted"
+        ){
+
             return false;
+
         }
 
-        guideAccountFile = handle;
+        guideAccountFile =
+            handle;
+
         await guideLoadAccountFile();
+
         guideStartAccountWatcher();
+
         console.log(
             "Arduino Guide account automatically restored."
         );
+
         return true;
 
     }catch(error){
+
         console.warn(
             "Could not restore Arduino Guide account:",
             error
         );
+
         return false;
+
     }
+
 }
 
+
+/* ================================================================
+   Initialize Account System
+================================================================ */
+
 async function initializeGuideAccountSystem(){
+
     guideWatchLocalStorage();
+
     await guideRestoreAccountHandle();
+
 }
+
+
+/* ================================================================
+   Start
+================================================================ */
 
 window.addEventListener(
     "load",
     function(){
+
         initializeGuideAccountSystem();
+
     }
 );
+
 
 
 

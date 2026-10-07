@@ -375,13 +375,14 @@ nav a:hover{
 
 /* LEFT LINE NUMBERS */
 #lineNums{
-  width:50px;
-  padding:10px 5px;
-  color:#666;
-  text-align:right;
-  font-size:14px;
-  line-height:1.4;
-  overflow:hidden;
+    width:50px;
+    padding:10px 5px;
+    color:#666;
+    text-align:right;
+    font-size:14px;
+    line-height:1.4;
+    overflow:hidden;
+    white-space:pre;
 }
 
 /* EDITOR BOX */
@@ -421,6 +422,74 @@ nav a:hover{
   outline:none;
 }
 
+/* ===== CODE CHALLENGE SAVE / STATUS ===== */
+
+.codeSaveStatus{
+  margin-top:8px;
+  font-size:13px;
+  color:#64748b;
+}
+
+.codeSaveStatus.saved{
+  color:#00a651;
+}
+
+.codeSaveStatus.error{
+  color:#ff5252;
+}
+
+.codeResult{
+  margin-top:12px;
+  padding:12px;
+  border-radius:8px;
+  background:#eef6ff;
+  font-weight:600;
+}
+
+.codeResult.success{
+  background:#d4f8d4;
+  color:#08752d;
+}
+
+.codeResult.failed{
+  background:#ffd6d6;
+  color:#9b111e;
+}
+
+.codeResult.warning{
+  background:#fff3cd;
+  color:#856404;
+}
+
+.codeSavedProjects{
+  margin-top:15px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.savedProject{
+  padding:10px;
+  background:#fff;
+  border-radius:8px;
+  border:1px solid #dbe7f0;
+}
+
+.savedProject button{
+  margin-top:6px;
+  padding:7px 10px;
+  border:none;
+  border-radius:6px;
+  background:#00979d;
+  color:white;
+  cursor:pointer;
+}
+
+.challengeComplete{
+  color:#00c853;
+  font-weight:bold;
+}
+
 </style>
 </head>
 
@@ -438,7 +507,7 @@ nav a:hover{
 </div>
   <h3>Rank</h3>
   <p id="rankBox">
-    <img src="Images/Rank/rank_beginner.png" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;">
+    <img src="Images/Rank/rank_beginner.png" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;border:5px;">
     Beginner
   </p>
 </div>
@@ -854,6 +923,69 @@ function getRankImg(rank){
   }
 }
 
+const codeChallenges = [
+    {
+        name: "Blink LED Challenge",
+        need: 180,
+        id: "blink",
+        desc: "Blink the built-in LED"
+    },
+    {
+        name: "Buzzer Challenge",
+        need: 190,
+        id: "buzzer",
+        desc: "Play tones with a buzzer"
+    },
+    {
+        name: "Multi LED Challenge",
+        need: 200,
+        id: "multiled",
+        desc: "Control multiple LEDs"
+    },
+    {
+        name: "Custom Project I",
+        need: 230,
+        id: "custom1",
+        desc: "Create your own Arduino project"
+    },
+    {
+        name: "4 Digital Inputs Monitor",
+        need: 260,
+        id: "monitor4",
+        desc: "Read four buttons and print their states"
+    },
+    {
+        name: "Joystick Monitor",
+        need: 290,
+        id: "joystick",
+        desc: "Display joystick X/Y values"
+    },
+    {
+        name: "Joystick Servo Control",
+        need: 320,
+        id: "servo",
+        desc: "Move a servo or stepper using a joystick"
+    },
+    {
+        name: "Smart Distance Scanner",
+        need: 350,
+        id: "distance",
+        desc: "Servo + ultrasonic sensor"
+    },
+    {
+        name: "Radar System",
+        need: 380,
+        id: "radar",
+        desc: "Automatic scanner with distance display, buzzer and LED"
+    },
+    {
+        name: "Custom Project II",
+        need: 400,
+        id: "custom2",
+        desc: "Large original Arduino project"
+    }
+];
+
 function updateRank(){
   let score = Object.values(progress || {})
     .reduce((sum, p) => sum + (p.score || 0), 0);
@@ -892,6 +1024,63 @@ try{
   console.error(err);
 }
 }
+function updateEditor(){
+
+    const editorElement =
+        document.getElementById("editor");
+
+    const highlightElement =
+        document.getElementById("highlight");
+
+    const lineElement =
+        document.getElementById("lineNums");
+
+    if(
+        !editorElement ||
+        !highlightElement ||
+        !lineElement
+    ){
+        return;
+    }
+
+    const code =
+        editorElement.value || "";
+
+    /* Use the existing Arduino syntax highlighter */
+    highlightElement.innerHTML =
+        highlightQuizCode(code);
+
+    /* Keep an extra newline so the last line
+       remains aligned with the textarea */
+    if(code.endsWith("\n")){
+        highlightElement.innerHTML += "\n";
+    }
+
+    /* Line numbers */
+    const lineCount =
+        Math.max(
+            1,
+            code.split("\n").length
+        );
+
+    lineElement.textContent =
+        Array.from(
+            {length:lineCount},
+            (_,index) => index + 1
+        ).join("\n");
+
+    /* Keep everything aligned */
+    highlightElement.scrollTop =
+        editorElement.scrollTop;
+
+    highlightElement.scrollLeft =
+        editorElement.scrollLeft;
+
+    lineElement.scrollTop =
+        editorElement.scrollTop;
+}
+
+
 function saveProgress(){
   localStorage.setItem("progress", JSON.stringify(progress));
 }
@@ -918,929 +1107,1552 @@ function getTotalXP(){
     .reduce((sum, p) => sum + (p.score || 0), 0);
 }
 
-function openCodeQuiz(u){
-
-  mode = "code";
-
-  document.getElementById("quizSelect").style.display = "none";
-  document.getElementById("controls").style.display = "none";
-
-  const area = document.getElementById("quizArea");
-  area.innerHTML = "";
-
-  const div = document.createElement("div");
-  div.className = "codeArea";
-
-  const title = u?.name || "Code Challenge";
-  const desc = u?.desc || "";
-
-  let html = `
-    <h3>${title}</h3>
-    <p>${desc}</p>
-
-<div id="editorWrap">
-  <div id="lineNums"></div>
-  <div id="editorBox">
-    <pre id="highlight"></pre>
-    <textarea id="editor" placeholder="Write Arduino code here..."></textarea>
-  </div>
-</div>
-
-
-    <button id="submitBtn" onclick="startCodeChallenge('${u.id}')">Submit Code</button>
-    <br><br>
-  `;
-
-  // CUSTOM override
-  if(u.id === "custom"){
-    html = `
-      <h3>${title}</h3>
-      <p>${desc}</p>
-
-      <input id="projTitle" placeholder="Project Title">
-      <input id="projDesc" placeholder="What does it do?">
-
-      <textarea id="editor" placeholder="Write Arduino code here..."></textarea>
-
-      <button id="submitBtn" onclick="submitCode('${u.id}')">Submit Project</button>
-
-      <br><br>
-    `;
-  }
-  setTimeout(initEditor, 0);
-  div.innerHTML = html;
-  area.appendChild(div);
-}
-
-let editor, highlight, lines;
-
-function initEditor(){
-  editor = document.getElementById("editor");
-  highlight = document.getElementById("highlight");
-  lines = document.getElementById("lineNums");
-
-  if(!editor) return;
-
-  editor.addEventListener("input", () => {
-    updateEditor();
-  });
-
-  editor.addEventListener("scroll", () => {
-    highlight.scrollTop = editor.scrollTop;
-    highlight.scrollLeft = editor.scrollLeft;
-    lines.scrollTop = editor.scrollTop;
-  });
-
-  updateEditor();
-}
-
-function updateEditor(){
-  updateLines();
-  highlightCode();
-}
-
-function updateLines(){
-  const count = editor.value.split("\n").length;
-  lines.innerHTML = Array.from({length:count}, (_,i)=>i+1).join("<br>");
-}
-
-/* SYNTAX */
-function highlightCode(){
-  let code = editor.value
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;");
-
-  const tokens = [];
-  const save = html => {
-    const id = `___TOKEN_${tokens.length}___`;
-    tokens.push(html);
-    return id;
-  };
-
-  /* Comments */
-  code = code.replace(/(\/\/.*)$/gm,
-    m => save(`<span style="color:#22c55e">${m}</span>`));
-
-  code = code.replace(/(\/\*[\s\S]*?\*\/)/g,
-    m => save(`<span style="color:#22c55e">${m}</span>`));
-
-  /* Strings */
-  code = code.replace(/("(?:\\.|[^"\\])*")/g,
-    m => save(`<span style="color:#f59e0b">${m}</span>`));
-
-  code = code.replace(/('(?:\\.|[^'\\])*')/g,
-    m => save(`<span style="color:#f59e0b">${m}</span>`));
-
-  /* Preprocessor */
-  code = code.replace(/(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning|line)\b[^\n]*)/g,
-    m => save(`<span style="color:#f472b6">${m}</span>`));
-
-  /* Arduino functions */
-  code = code.replace(/\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros|pulseIn|pulseInLong|tone|noTone|shiftIn|shiftOut|attachInterrupt|detachInterrupt|interrupts|noInterrupts)\b/g,
-    '<span style="color:#38bdf8">$1</span>');
-
-  /* Serial / communication */
-  code = code.replace(/\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush|peek|find|findUntil|parseInt|parseFloat|setTimeout)\b/g,
-    '<span style="color:#38bdf8">$1</span>');
-
-  /* Arduino constants */
-  code = code.replace(/\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56|CHANGE|RISING|FALLING|LSBFIRST|MSBFIRST)\b/g,
-    '<span style="color:#fbbf24">$1</span>');
-
-  /* Pin / hardware related */
-  code = code.replace(/\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET|VCC|GND|VIN|IOREF)\b/g,
-    '<span style="color:#60a5fa">$1</span>');
-
-  /* Common C/C++ types */
-  code = code.replace(/\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|uint64_t|int8_t|int16_t|int32_t|int64_t|word)\b/g,
-    '<span style="color:#c084fc">$1</span>');
-
-  /* C/C++ keywords */
-  code = code.replace(/\b(if|else|for|while|do|switch|case|default|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|friend|template|typename|namespace|using|new|delete|this|nullptr|auto|register|inline|virtual|override|final|enum|union|try|catch|throw|true|false)\b/g,
-    '<span style="color:#fb7185">$1</span>');
-
-  /* Arduino libraries / common objects */
-  code = code.replace(/\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper|Wire1|SPI1|LittleFS|FS|IRremote|RTClib|AccelStepper)\b/g,
-    '<span style="color:#60a5fa">$1</span>');
-
-  /* Common display / library objects */
-  code = code.replace(/\b(display|Serial|Serial1|Serial2|Serial3|Wire|SPI|lcd|servo|sensor|oled|screen|button|led|motor|relay|buzzer|encoder|rtc|sd|file)\b/g,
-    '<span style="color:#e879f9">$1</span>');
-
-  /* Mathematical / standard functions */
-  code = code.replace(/\b(abs|min|max|constrain|map|pow|sqrt|sq|sin|cos|tan|asin|acos|atan|atan2|random|randomSeed|round|floor|ceil|exp|log)\b/g,
-    '<span style="color:#2dd4bf">$1</span>');
-
-  /* Common C/C++ functions */
-  code = code.replace(/\b(sizeof|memcpy|memmove|memset|memcmp|strcmp|strncmp|strlen|strcpy|strncpy|strcat|strchr|strstr|atoi|atol|atof|malloc|calloc|realloc|free)\b/g,
-    '<span style="color:#2dd4bf">$1</span>');
-
-  /* Memory / low-level functions */
-  code = code.replace(/\b(pgm_read_byte|pgm_read_word|pgm_read_dword|EEPROM\.read|EEPROM\.write|EEPROM\.update|get|put)\b/g,
-    '<span style="color:#2dd4bf">$1</span>');
-
-  /* Register / bit operations */
-  code = code.replace(/\b(DDRB|DDRC|DDRD|PORTB|PORTC|PORTD|PINB|PINC|PIND|ADCSRA|ADCSRB|ADMUX|ADCL|ADCH|TCCR0A|TCCR0B|TCCR1A|TCCR1B|TCCR2A|TCCR2B|TCNT0|TCNT1|TCNT2|OCR0A|OCR0B|OCR1A|OCR1B|OCR2A|OCR2B|TIMSK0|TIMSK1|TIMSK2|TIFR0|TIFR1|TIFR2|SREG|SP|SPL|SPH)\b/g,
-    '<span style="color:#60a5fa">$1</span>');
-
-  /* Bit / utility macros */
-  code = code.replace(/\b(bitRead|bitWrite|bitSet|bitClear|bitToggle|highByte|lowByte|_BV|F|PSTR)\b/g,
-    '<span style="color:#2dd4bf">$1</span>');
-
-  /* Numbers */
-  code = code.replace(/\b(0[bB][01]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[fFlLuU]*)\b/g,
-    '<span style="color:#a78bfa">$1</span>');
-
-  /* Restore protected comments / strings / preprocessor */
-  code = code.replace(/___TOKEN_(\d+)___/g,
-    (_,i) => tokens[i]);
-
-  highlight.innerHTML = code;
-}
-
-function exitCodeMode(){
-
-  mode = "quiz";
-
-  document.getElementById("quizSelect").style.display = "flex";
-  document.getElementById("controls").style.display = "block";
-
-  document.getElementById("quizArea").innerHTML = "";
-
-  loadQuiz(currentQuizIndex);
-}
-
 function renderSidebarQuizzes(){
 
-  const box = document.getElementById("sidebarQuizzes");
+  const box =
+    document.getElementById("sidebarQuizzes");
+
+  if(!box){
+    return;
+  }
+
   box.innerHTML = "";
 
-  const xp = getTotalXP();
+  codeChallenges.forEach(challenge => {
 
+    const button =
+      document.createElement("button");
 
+    button.className = "codeBtn";
 
+    const unlocked =
+      getTotalXP() >= challenge.need;
 
-  /* ================= CODE CHALLENGES (NEW PART) ================= */
-const codeChallenges=[
-{name:"Blink LED Challenge",need:180,id:"blink",desc:"Blink the built-in LED"},
-{name:"Buzzer Challenge",need:190,id:"buzzer",desc:"Play tones with a buzzer"},
-{name:"Multi LED Challenge",need:200,id:"multiled",desc:"Control multiple LEDs"},
-{name:"Custom Project I",need:230,id:"custom1",desc:"Create your own Arduino project"},
-{name:"4 Digital Inputs Monitor",need:260,id:"monitor4",desc:"Read four buttons and print their states"},
-{name:"Joystick Monitor",need:290,id:"joystick",desc:"Display joystick X/Y values"},
-{name:"Joystick Servo Control",need:320,id:"servo",desc:"Move a servo or stepper using a joystick"},
-{name:"Smart Distance Scanner",need:350,id:"distance",desc:"Servo + ultrasonic sensor"},
-{name:"Radar System",need:380,id:"radar",desc:"Automatic scanner with distance display, buzzer and LED"},
-{name:"Custom Project II",need:400,id:"custom2",desc:"Large original Arduino project"}
-];
+    const completed =
+      isCodeChallengeCompleted(
+        challenge.id
+      );
 
-  // separator (optional visual)
-  const sep = document.createElement("hr");
-  sep.style.width = "100%";
-  sep.style.border = "1px solid #222";
-  box.appendChild(sep);
+    if(!unlocked){
+      button.classList.add("locked");
+      button.disabled = true;
 
-  codeChallenges.forEach(c => {
+      button.textContent =
+        `${challenge.name} 🔒`;
+    }else{
 
-    const btn = document.createElement("button");
-    btn.className = "cat";
+      if(completed){
+        button.textContent =
+          `${challenge.name} ✓`;
+      }else{
+        button.textContent =
+          challenge.name;
+      }
 
-    if (xp < c.need) {
-      btn.textContent = `${c.name} 🔒 (${c.need} XP)`;
-      btn.style.opacity = "0.4";
-      btn.disabled = true;
-    } else {
-      btn.textContent = `${c.name} ⚡`;
-      btn.onclick = () => openCodeQuiz(c);
+      button.addEventListener(
+        "click",
+        () => openCodeQuiz(challenge)
+      );
     }
 
-    box.appendChild(btn);
+    box.appendChild(button);
   });
 }
 
-/*====================== Arduino Code Analyzer ======================*/
+/* =========================================================
+   CODE CHALLENGE SYSTEM
+   ========================================================= */
 
-function analyzeCode(raw){
+let challengeResult = null;
+let challengeTimer = null;
 
-  const original=raw||"";
+const CODE_STORAGE_PREFIX = "arduino-code-";
+const CODE_PROJECT_STORAGE = "arduino-saved-projects";
+const CODE_PROGRESS_STORAGE = "arduino-code-progress";
 
-  const code=original
-    .replace(/\r/g,"")
-    .replace(/\t/g," ")
-    .replace(/\/\/.*$/gm,"")
-    .replace(/\/\*[\s\S]*?\*\//g,"")
-    .replace(/\s+/g," ")
-    .toLowerCase()
-    .trim();
+/* ===== LOCAL CODE STORAGE ===== */
 
-  const data={
+function getCodeStorageKey(id){
+    return CODE_STORAGE_PREFIX + id;
+}
 
-    raw:original,
-    code:code,
+function saveCodeLocally(id){
+    if(!id) return;
 
-    lines:0,
-    comments:0,
+    const editorElement = document.getElementById("editor");
 
-    setup:false,
-    loop:false,
+    if(!editorElement) return;
 
-    libraries:[],
-    variables:[],
-    arrays:[],
-    pins:[],
+    const code = editorElement.value;
 
-    functions:{},
-    keywords:{},
+    localStorage.setItem(
+        getCodeStorageKey(id),
+        code
+    );
 
-    complexity:0
+    const status =
+        document.getElementById("codeSaveStatus");
 
-  };
+    if(status){
+        status.textContent =
+            "✓ Code saved locally";
 
-  /*--------------- Lines ----------------*/
-
-  data.lines=original
-    .split("\n")
-    .filter(v=>v.trim()!="")
-    .length;
-
-  /*--------------- Comments ----------------*/
-
-  const comments=original.match(/\/\/.*|\/\*[\s\S]*?\*\//g);
-  data.comments=comments?comments.length:0;
-
-  /*--------------- setup / loop ----------------*/
-
-  data.setup=/void\s+setup\s*\(/i.test(original);
-  data.loop=/void\s+loop\s*\(/i.test(original);
-
-  /*--------------- Libraries ----------------*/
-
-  const libs=[
-    "servo",
-    "wire",
-    "spi",
-    "eeprom",
-    "liquidcrystal",
-    "liquidcrystal_i2c",
-    "adafruit_ssd1306",
-    "adafruit_gfx",
-    "stepper",
-    "irremote",
-    "dht",
-    "ezbutton"
-  ];
-
-  libs.forEach(lib=>{
-    if(code.includes("#include") && code.includes(lib)){
-      data.libraries.push(lib);
+        status.className =
+            "codeSaveStatus saved";
     }
-  });
-
-  /*--------------- Variables ----------------*/
-
-  const vars=original.match(/\b(int|float|double|char|bool|byte|long|short|unsigned|String)\s+[A-Za-z_]\w*/g);
-
-  if(vars){
-    vars.forEach(v=>{
-      data.variables.push(v);
-    });
-  }
-
-  /*--------------- Arrays ----------------*/
-
-  const arrays=original.match(/\b(int|float|char|bool|byte|long|String)\s+[A-Za-z_]\w*\s*\[/g);
-
-  if(arrays){
-    arrays.forEach(v=>{
-      data.arrays.push(v);
-    });
-  }
-
-  /*--------------- Functions ----------------*/
-
-  const funcs=[
-
-    "pinmode",
-    "digitalwrite",
-    "digitalread",
-    "analogwrite",
-    "analogread",
-
-    "delay",
-    "delaymicroseconds",
-
-    "millis",
-    "micros",
-
-    "tone",
-    "notone",
-
-    "pulsein",
-
-    "serial.begin",
-    "serial.print",
-    "serial.println",
-    "serial.read",
-    "serial.available",
-
-    "attach",
-    "write",
-    "step",
-
-    "display",
-    "print",
-
-    "map",
-    "constrain"
-
-  ];
-
-  funcs.forEach(fn=>{
-
-    const escaped=fn.replace(".","\\.");
-
-    const count=(code.match(new RegExp(escaped+"\\s*\\(","g"))||[]).length;
-
-    data.functions[fn]=count;
-
-  });
-
-  /*--------------- Keywords ----------------*/
-
-  const keys=[
-    "if",
-    "else",
-    "switch",
-    "case",
-    "for",
-    "while",
-    "do",
-    "break",
-    "continue",
-    "return"
-  ];
-
-  keys.forEach(k=>{
-
-    data.keywords[k]=(code.match(new RegExp("\\b"+k+"\\b","g"))||[]).length;
-
-  });
-
-  /*--------------- Detect Pins ----------------*/
-
-  const pins=original.match(/\b(A[0-5]|[0-9]{1,2})\b/g);
-
-  if(pins){
-
-    data.pins=[...new Set(pins)];
-
-  }
-
-  /*--------------- Complexity ----------------*/
-
-  data.complexity=
-
-      data.lines
-    + data.variables.length*2
-    + data.arrays.length*3
-    + data.comments
-    + data.libraries.length*4
-    + Object.values(data.functions).reduce((a,b)=>a+b,0)
-    + Object.values(data.keywords).reduce((a,b)=>a+b,0);
-
-  return data;
-
 }
 
-/*================ EXTRA DETECTION =================*/
-
-function analogWriteCount(code){
-  return count(code,"analogwrite");
+function loadCodeLocally(id){
+    return localStorage.getItem(
+        getCodeStorageKey(id)
+    ) || "";
 }
 
-function digitalReadCount(code){
-  return count(code,"digitalread");
+function clearSavedCode(id){
+    localStorage.removeItem(
+        getCodeStorageKey(id)
+    );
 }
 
-function serialCount(code){
-  return count(code,"serial.");
+/* ===== PROJECT DATA ===== */
+
+function getSavedProjects(){
+    try{
+        return JSON.parse(
+            localStorage.getItem(
+                CODE_PROJECT_STORAGE
+            ) || "[]"
+        );
+    }catch(err){
+        console.error(
+            "Saved project data corrupted:",
+            err
+        );
+
+        return [];
+    }
 }
 
-function delayCount(code){
-  return count(code,"delay");
+function saveProjects(projects){
+    localStorage.setItem(
+        CODE_PROJECT_STORAGE,
+        JSON.stringify(projects)
+    );
 }
 
-function millisCount(code){
-  return count(code,"millis");
+/* ===== SAVE CUSTOM PROJECT ===== */
+
+function saveCustomProject(id){
+    const titleElement =
+        document.getElementById("projTitle");
+
+    const descElement =
+        document.getElementById("projDesc");
+
+    const editorElement =
+        document.getElementById("editor");
+
+    if(
+        !titleElement ||
+        !descElement ||
+        !editorElement
+    ){
+        return;
+    }
+
+    const title =
+        titleElement.value.trim();
+
+    const description =
+        descElement.value.trim();
+
+    const code =
+        editorElement.value;
+
+    if(!title && !description && !code.trim()){
+        return;
+    }
+
+    const projects =
+        getSavedProjects();
+
+    const projectKey =
+        "challenge-" + id;
+
+    const existingIndex =
+        projects.findIndex(
+            p => p.key === projectKey
+        );
+
+    const project = {
+        key: projectKey,
+        id: id,
+        title: title,
+        description: description,
+        code: code,
+        updatedAt: Date.now()
+    };
+
+    if(existingIndex >= 0){
+        projects[existingIndex] = project;
+    }else{
+        projects.push(project);
+    }
+
+    saveProjects(projects);
+
+    localStorage.setItem(
+        "arduino-project-" + id,
+        JSON.stringify(project)
+    );
 }
 
-function switchCount(code){
-  return count(code,"switch");
+function loadCustomProject(id){
+    const saved =
+        localStorage.getItem(
+            "arduino-project-" + id
+        );
+
+    if(!saved){
+        return null;
+    }
+
+    try{
+        return JSON.parse(saved);
+    }catch(err){
+        console.error(
+            "Invalid saved project:",
+            err
+        );
+
+        return null;
+    }
 }
 
-function caseCount(code){
-  return count(code,"case");
+/* ===== CHALLENGE PROGRESS ===== */
+
+function loadCodeProgress(){
+    try{
+        return JSON.parse(
+            localStorage.getItem(
+                CODE_PROGRESS_STORAGE
+            ) || "{}"
+        );
+    }catch(err){
+        return {};
+    }
 }
 
-function returnCount(code){
-  return count(code,"return");
+function saveCodeProgress(progress){
+    localStorage.setItem(
+        CODE_PROGRESS_STORAGE,
+        JSON.stringify(progress)
+    );
 }
 
-function includeCount(code){
-  return (code.match(/#include/gi)||[]).length;
+function isCodeChallengeCompleted(id){
+    const progress =
+        loadCodeProgress();
+
+    return !!(
+        progress[id] &&
+        progress[id].completed === true
+    );
 }
 
-function usesWire(code){
-  return hasLibrary(code,"wire");
+/* ===== OPEN CODE CHALLENGE ===== */
+
+function openCodeQuiz(u){
+
+    if(!u || !u.id){
+        console.error(
+            "Invalid code challenge:",
+            u
+        );
+        return;
+    }
+
+    mode = "code";
+
+    activeCodeChallenge = u.id;
+    challengeResult = null;
+
+    if(challengeTimer){
+        clearInterval(challengeTimer);
+        challengeTimer = null;
+    }
+
+    const quizSelect =
+        document.getElementById("quizSelect");
+
+    const controls =
+        document.getElementById("controls");
+
+    const area =
+        document.getElementById("quizArea");
+
+    if(!area){
+        return;
+    }
+
+    if(quizSelect){
+        quizSelect.style.display = "none";
+    }
+
+    if(controls){
+        controls.style.display = "none";
+    }
+
+    area.innerHTML = "";
+
+    const div =
+        document.createElement("div");
+
+    div.className = "codeArea";
+
+    const title =
+        u.name || "Code Challenge";
+
+    const desc =
+        u.desc || "";
+
+    const completed =
+        isCodeChallengeCompleted(u.id);
+
+    let html = `
+        <h3>${escapeHTML(title)}</h3>
+
+        <p>${escapeHTML(desc)}</p>
+
+        ${
+            completed
+            ? `
+                <p class="challengeComplete">
+                    ✓ Challenge already completed
+                </p>
+            `
+            : ""
+        }
+
+
+        <div id="editorWrap">
+
+            <div id="lineNums"></div>
+
+            <div id="editorBox">
+
+                <pre id="highlight"></pre>
+
+                <textarea
+                    id="editor"
+                    spellcheck="false"
+                    placeholder="Write Arduino code here..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <div
+            id="codeSaveStatus"
+            class="codeSaveStatus"
+        >
+            Code will be saved locally.
+        </div>
+
+        <button
+            id="submitCodeBtn"
+            type="button"
+        >
+            Submit Code
+        </button>
+
+        <button
+            id="clearCodeBtn"
+            type="button"
+        >
+            Clear Saved Code
+        </button>
+
+        <div id="codeResult"></div>
+    `;
+
+    if(
+        u.id === "custom1" ||
+        u.id === "custom2"
+    ){
+
+        html = `
+            <h3>${escapeHTML(title)}</h3>
+
+            <p>${escapeHTML(desc)}</p>
+
+            ${
+                completed
+                ? `
+                    <p class="challengeComplete">
+                        ✓ Challenge already completed
+                    </p>
+                `
+                : ""
+            }
+
+            <input
+                id="projTitle"
+                placeholder="Project Title"
+            >
+
+            <input
+                id="projDesc"
+                placeholder="What does it do?"
+            >
+
+            <div id="editorWrap">
+
+                <div id="lineNums"></div>
+
+                <div id="editorBox">
+
+                    <pre id="highlight"></pre>
+
+                    <textarea
+                        id="editor"
+                        spellcheck="false"
+                        placeholder="Write Arduino code here..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+            <div
+                id="codeSaveStatus"
+                class="codeSaveStatus"
+            >
+                Project will be saved locally.
+            </div>
+
+            <button
+                id="submitCodeBtn"
+                type="button"
+            >
+                Submit Project
+            </button>
+
+            <button
+                id="clearCodeBtn"
+                type="button"
+            >
+                Clear Saved Project
+            </button>
+
+            <div id="codeResult"></div>
+        `;
+    }
+
+    div.innerHTML = html;
+    area.appendChild(div);
+
+    /*
+       IMPORTANT:
+       HTML must be inserted before initEditor().
+    */
+    initEditor();
+
+    restoreCodeChallenge(u);
+
+    const submitButton =
+        document.getElementById(
+            "submitCodeBtn"
+        );
+
+    if(submitButton){
+
+        submitButton.addEventListener(
+            "click",
+            () => {
+
+                if(
+                    u.id === "custom1" ||
+                    u.id === "custom2"
+                ){
+                    submitCode(u.id);
+                }else{
+                    startCodeChallenge(u.id);
+                }
+
+            }
+        );
+
+    }
+
+    const clearButton =
+        document.getElementById(
+            "clearCodeBtn"
+        );
+
+    if(clearButton){
+
+        clearButton.addEventListener(
+            "click",
+            clearCurrentCode
+        );
+
+    }
 }
 
-function usesSPI(code){
-  return hasLibrary(code,"spi");
+/* ===== RESTORE CODE ===== */
+
+function restoreCodeChallenge(u){
+
+    const editorElement =
+        document.getElementById("editor");
+
+    if(!editorElement){
+        return;
+    }
+
+    let savedCode = "";
+
+    if(
+        u.id === "custom1" ||
+        u.id === "custom2"
+    ){
+
+        const project =
+            loadCustomProject(u.id);
+
+        if(project){
+
+            const titleElement =
+                document.getElementById(
+                    "projTitle"
+                );
+
+            const descElement =
+                document.getElementById(
+                    "projDesc"
+                );
+
+            if(titleElement){
+                titleElement.value =
+                    project.title || "";
+            }
+
+            if(descElement){
+                descElement.value =
+                    project.description || "";
+            }
+
+            savedCode =
+                project.code || "";
+        }
+
+    }else{
+        savedCode =
+            loadCodeLocally(u.id);
+    }
+
+    editorElement.value =
+        savedCode;
+
+    updateEditor();
+
+    const status =
+        document.getElementById(
+            "codeSaveStatus"
+        );
+
+    if(status){
+
+        if(savedCode.trim()){
+
+            status.textContent =
+                "✓ Saved code restored";
+
+            status.className =
+                "codeSaveStatus saved";
+
+        }else{
+
+            status.textContent =
+                "Code will be saved locally.";
+
+            status.className =
+                "codeSaveStatus";
+        }
+    }
 }
 
-function usesServo(code){
-  return hasLibrary(code,"servo");
+/* ===== CLEAR CURRENT CODE ===== */
+
+function clearCurrentCode(){
+
+    if(!activeCodeChallenge){
+        return;
+    }
+
+    const id =
+        activeCodeChallenge;
+
+    if(
+        id === "custom1" ||
+        id === "custom2"
+    ){
+
+        localStorage.removeItem(
+            "arduino-project-" + id
+        );
+
+        const projects =
+            getSavedProjects();
+
+        const filtered =
+            projects.filter(
+                p => p.id !== id
+            );
+
+        saveProjects(filtered);
+
+    }else{
+
+        clearSavedCode(id);
+
+    }
+
+    const editorElement =
+        document.getElementById("editor");
+
+    if(editorElement){
+        editorElement.value = "";
+        updateEditor();
+    }
+
+    const titleElement =
+        document.getElementById("projTitle");
+
+    const descElement =
+        document.getElementById("projDesc");
+
+    if(titleElement){
+        titleElement.value = "";
+    }
+
+    if(descElement){
+        descElement.value = "";
+    }
+
+    const result =
+        document.getElementById("codeResult");
+
+    if(result){
+        result.textContent = "";
+        result.className = "codeResult";
+    }
+
+    const status =
+        document.getElementById(
+            "codeSaveStatus"
+        );
+
+    if(status){
+        status.textContent =
+            "Saved code cleared.";
+
+        status.className =
+            "codeSaveStatus";
+    }
 }
 
-function usesStepper(code){
-  return hasLibrary(code,"stepper");
+/* ===== EDITOR INITIALIZATION ===== */
+
+function initEditor(){
+
+    editor =
+        document.getElementById("editor");
+
+    highlight =
+        document.getElementById("highlight");
+
+    lines =
+        document.getElementById("lineNums");
+
+    if(
+        !editor ||
+        !highlight ||
+        !lines
+    ){
+        return;
+    }
+
+    /*
+       Prevent duplicate listeners.
+    */
+    if(editor.dataset.initialized === "true"){
+        updateEditor();
+        return;
+    }
+
+    editor.dataset.initialized = "true";
+
+    editor.addEventListener(
+        "input",
+        () => {
+
+            updateEditor();
+
+            /*
+               Save immediately while typing.
+            */
+            saveCurrentCode();
+        }
+    );
+
+    editor.addEventListener(
+        "scroll",
+        () => {
+
+            highlight.scrollTop =
+                editor.scrollTop;
+
+            highlight.scrollLeft =
+                editor.scrollLeft;
+
+            lines.scrollTop =
+                editor.scrollTop;
+        }
+    );
+
+    updateEditor();
 }
 
-function usesLiquidCrystal(code){
-  return hasLibrary(code,"liquidcrystal");
+/* ===== SAVE CURRENT CODE ===== */
+
+function saveCurrentCode(){
+
+    if(!activeCodeChallenge){
+        return;
+    }
+
+    const editorElement =
+        document.getElementById("editor");
+
+    if(!editorElement){
+        return;
+    }
+
+    const id =
+        activeCodeChallenge;
+
+    if(
+        id === "custom1" ||
+        id === "custom2"
+    ){
+
+        saveCustomProject(id);
+
+    }else{
+
+        saveCodeLocally(id);
+
+    }
 }
 
-function usesEEPROM(code){
-  return hasLibrary(code,"eeprom");
+/* ===== ESCAPE HTML ===== */
+
+function escapeHTML(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 }
 
-function usesPin(code,pin){
-
-  return new RegExp("\\b"+pin+"\\b").test(code);
-
-}
-
-function usesPins(code,pins){
-
-  return pins.every(p=>usesPin(code,p));
-
-}
-
-function countPins(code){
-
-  const found=new Set();
-
-  const matches=code.match(/\b([0-9]|1[0-3]|a[0-5])\b/gi)||[];
-
-  matches.forEach(v=>found.add(v.toUpperCase()));
-
-  return found.size;
-
-}
-
-function hasSetup(code){
-  return has(code,"void setup(");
-}
-
-function hasLoop(code){
-  return has(code,"void loop(");
-}
-
-function hasIf(code){
-  return ifCount(code)>0;
-}
-
-function hasFor(code){
-  return count(code,"for")>0;
-}
-
-function hasWhile(code){
-  return count(code,"while")>0;
-}
-
-function hasSwitch(code){
-  return switchCount(code)>0;
-}
-
-function usesInterrupt(code){
-  return has(code,"attachinterrupt");
-}
-
-function usesMap(code){
-  return hasFunction(code,"map");
-}
-
-function usesConstrain(code){
-  return hasFunction(code,"constrain");
-}
-
-function usesRandom(code){
-  return hasFunction(code,"random");
-}
-
-function usesTone(code){
-  return hasFunction(code,"tone");
-}
-
-function usesNoTone(code){
-  return hasFunction(code,"notone");
-}
-
-function scoreCode(raw,code){
-
-  const c=complexity(raw,code);
-
-  let score=0;
-
-  score+=c.lines;
-  score+=c.vars*3;
-  score+=c.ifs*4;
-  score+=c.loops*6;
-  score+=c.pinModes*3;
-  score+=c.digitalWrites*2;
-  score+=c.analogReads*3;
-
-  score+=analogWriteCount(code)*3;
-  score+=digitalReadCount(code)*2;
-  score+=serialCount(code)*3;
-  score+=delayCount(code);
-  score+=millisCount(code)*4;
-  score+=switchCount(code)*5;
-  score+=caseCount(code);
-  score+=returnCount(code);
-
-  if(usesWire(code))score+=15;
-  if(usesSPI(code))score+=15;
-  if(usesServo(code))score+=15;
-  if(usesStepper(code))score+=20;
-  if(usesLiquidCrystal(code))score+=20;
-  if(usesEEPROM(code))score+=20;
-
-  score+=countPins(code);
-
-  return score;
-
-}
-
-function commonErrors(raw){
-
-  const errors=[];
-
-  if(!/void\s+setup\s*\(/i.test(raw))
-    errors.push("Missing setup()");
-
-  if(!/void\s+loop\s*\(/i.test(raw))
-    errors.push("Missing loop()");
-
-  if((raw.match(/\{/g)||[]).length!==(raw.match(/\}/g)||[]).length)
-    errors.push("Unmatched braces");
-
-  if(raw.includes("digitalWrite(")&&!raw.includes("pinMode("))
-    errors.push("digitalWrite without pinMode");
-
-  if(raw.includes("analogWrite(")&&!raw.includes("pinMode("))
-    errors.push("analogWrite without pinMode");
-
-  if(raw.includes("Serial.print")&&!raw.includes("Serial.begin"))
-    errors.push("Serial.begin missing");
-
-  return errors;
-
-}
-
-function submitCode(id){
-
-const raw=editor?editor.value:"";
-const code=normalize(raw);
-const info=complexity(raw,code);
-
-let passed=false;
-
-//================ BLINK =================
-if(id==="blink"){
-
-passed=
-hasAll(code,[
-"void setup",
-"void loop",
-"pinmode(",
-"digitalwrite(",
-"delay("
-])&&
-count(code,"digitalwrite")>=2&&
-hasAny(code,["high","low"])&&
-info.lines>=8;
-
-}
-
-//================ BUZZER =================
-else if(id==="buzzer"){
-
-passed=
-hasFunction(code,"tone")&&
-hasFunction(code,"noTone")&&
-hasFunction(code,"delay")&&
-count(code,"tone")>=1&&
-info.lines>=8;
-
-}
-
-//================ MULTI LED =================
-else if(id==="multiled"){
-
-passed=
-count(code,"pinmode")>=2&&
-count(code,"digitalwrite")>=4&&
-count(code,"delay")>=2&&
-hasAny(code,["for(","while("])&&
-info.lines>=12;
-
-}
-
-//================ OLD 4 PIN MONITOR =================
-else if(id==="monitor4"){
-
-passed=
-hasLibrary(code,"Serial")&&
-hasFunction(code,"Serial.begin")&&
-hasFunction(code,"Serial.print")&&
-count(code,"pinmode")>=4&&
-count(code,"digitalread")>=4&&
-info.lines>=18;
-
-}
-
-//================ JOYSTICK + MONITOR =================
-else if(id==="joystick"){
-
-passed=
-count(code,"analogread")>=2&&
-hasFunction(code,"Serial.begin")&&
-count(code,"serial.print")>=2&&
-count(code,"if")>=1&&
-info.lines>=18;
-
-}
-
-//================ JOYSTICK + SERVO =================
-else if(id==="servo"){
-
-passed=
-hasLibrary(code,"Servo")&&
-hasFunction(code,"attach")&&
-hasFunction(code,"write")&&
-count(code,"analogread")>=2&&
-count(code,"map")>=1&&
-info.lines>=20;
-
-}
-
-//================ JOYSTICK + SERVO + SENSOR =================
-else if(id==="distance"){
-
-passed=
-(
-hasLibrary(code,"Servo")||
-hasLibrary(code,"Stepper")
-)&&
-count(code,"analogread")>=2&&
-count(code,"pulsein")>=1&&
-count(code,"digitalwrite")>=2&&
-count(code,"if")>=2&&
-info.lines>=28;
-
-}
-
-//================ RADAR =================
-else if(id==="radar"){
-
-passed=
-(
-hasLibrary(code,"Servo")||
-hasLibrary(code,"Stepper")
-)&&
-hasFunction(code,"pulseIn")&&
-hasFunction(code,"Serial.print")&&
-count(code,"tone")>=1&&
-count(code,"digitalwrite")>=2&&
-count(code,"for")>=1&&
-info.lines>=35;
-
-}
-
-//================ CUSTOM 1 =================
-else if(id==="custom1"){
-
-const title=document.getElementById("projTitle").value.trim();
-const desc=document.getElementById("projDesc").value.trim();
-
-passed=
-title.length>=5&&
-desc.length>=20&&
-info.lines>=40&&
-info.vars>=5&&
-info.ifs>=2&&
-info.loops>=1&&
-(
-count(code,"digitalwrite")+
-count(code,"analogread")+
-count(code,"analogwrite")+
-count(code,"serial.print")
-)>=8;
-
-}
-
-//================ CUSTOM 2 =================
-else if(id==="custom2"){
-
-const title=document.getElementById("projTitle").value.trim();
-const desc=document.getElementById("projDesc").value.trim();
-
-passed=
-title.length>=5&&
-desc.length>=30&&
-info.lines>=60&&
-info.vars>=8&&
-info.ifs>=4&&
-info.loops>=2&&
-(
-count(code,"digitalwrite")+
-count(code,"analogread")+
-count(code,"analogwrite")+
-count(code,"serial.print")+
-count(code,"tone")
-)>=15;
-
-}
-
-//================ RESULT =================
-if(passed){
-alert("✅ Challenge Passed!");
-}else{
-alert("❌ Challenge Failed.");
-}
-
-}
+/* =========================================================
+   SUBMIT CODE
+   ========================================================= */
 
 async function startCodeChallenge(id){
 
-  const code = document.getElementById("editor").value;
+    const editorElement =
+        document.getElementById("editor");
 
-  if(!code.trim()){
-    alert("Write code first!");
-    return;
-  }
-
-  // lock UI
-  const btns = document.querySelectorAll("#quizArea button");
-  btns.forEach(b => b.disabled = true);
-
-  const consoleBox = document.getElementById("scoreBox");
-  consoleBox.textContent = "⏳ Sending code to compiler...";
-
-  activeCodeChallenge = id;
-  challengeResult = null;
-
-  try {
-    const res = await fetch("https://arduino-guide-6.onrender.com/compile", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({
-        code: code,
-      })
-    });
-
-    const result = await res.json();
-
-    challengeResult = result;
-
-    consoleBox.textContent = "⏳ Compiling... wait for result";
-
-    startChallengeTimer();
-
-  } catch (err) {
-    consoleBox.textContent = "❌ Server error";
-    console.error(err);
-
-    // unlock UI
-    btns.forEach(b => b.disabled = false);
-    activeCodeChallenge = null;
-  }
-}
-
-function startChallengeTimer(){
-
-  let timeLeft = 3;
-
-  const consoleBox = document.getElementById("scoreBox");
-
-  challengeTimer = setInterval(() => {
-
-    timeLeft--;
-
-    consoleBox.textContent = `⏳ Processing... ${timeLeft}s`;
-
-    if(timeLeft <= 0){
-      clearInterval(challengeTimer);
-      showChallengeResult();
+    if(!editorElement){
+        return;
     }
 
-  }, 1000);
+    const code =
+        editorElement.value;
+
+    if(!code.trim()){
+
+        showCodeResult(
+            "Write code first!",
+            "warning"
+        );
+
+        return;
+    }
+
+    /*
+       ALWAYS save before submitting.
+    */
+    saveCurrentCode();
+
+    /*
+       Already completed?
+       We still allow testing/submitting,
+       but XP will NOT be awarded again.
+    */
+    const alreadyCompleted =
+        isCodeChallengeCompleted(id);
+
+    const buttons =
+        document.querySelectorAll(
+            "#quizArea button"
+        );
+
+    buttons.forEach(
+        b => b.disabled = true
+    );
+
+    const resultBox =
+        document.getElementById(
+            "codeResult"
+        );
+
+    if(resultBox){
+        resultBox.textContent =
+            "⏳ Sending code to compiler...";
+        resultBox.className =
+            "codeResult";
+    }
+
+    try{
+
+        const res =
+            await fetch(
+                "https://arduino-guide-6.onrender.com/compile",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        code:code
+                    })
+                }
+            );
+
+        if(!res.ok){
+            throw new Error(
+                "Compiler HTTP error: " +
+                res.status
+            );
+        }
+
+        const result =
+            await res.json();
+
+        challengeResult =
+            result;
+
+        showCodeResult(
+            "⏳ Compiler response received.",
+            "warning"
+        );
+
+        /*
+           Do not use an artificial fixed
+           3-second timer for compilation.
+           The server response has already arrived.
+        */
+        showChallengeResult();
+
+    }catch(err){
+
+        console.error(
+            "Code challenge error:",
+            err
+        );
+
+        buttons.forEach(
+            b => b.disabled = false
+        );
+
+        showCodeResult(
+            "❌ Compiler/server error. Your code was saved locally.",
+            "failed"
+        );
+
+        activeCodeChallenge = id;
+    }
 }
+
+/* =========================================================
+   RESULT
+   ========================================================= */
 
 function showChallengeResult(){
 
-  const consoleBox = document.getElementById("scoreBox");
+    const buttons =
+        document.querySelectorAll(
+            "#quizArea button"
+        );
 
-  const btns = document.querySelectorAll("#quizArea button");
-  btns.forEach(b => b.disabled = false);
+    buttons.forEach(
+        b => b.disabled = false
+    );
 
-  if(!challengeResult){
-    consoleBox.textContent = "❌ No compiler response";
-    activeCodeChallenge = null;
-    return;
-  }
+    if(!challengeResult){
 
-  const output = (challengeResult.output || "").toLowerCase();
+        showCodeResult(
+            "❌ No compiler response.",
+            "failed"
+        );
 
-  const passed =
-    !output.includes("error") &&
-    !output.includes("fail");
+        return;
+    }
 
-  if(passed){
-    consoleBox.textContent = "✅ Challenge Passed!";
+    /*
+       Check compiler response more safely.
+    */
+    const output =
+        String(
+            challengeResult.output || ""
+        );
 
-    // FIX: safe XP function
-    addXPForChallenge(activeCodeChallenge);
+    const lowerOutput =
+        output.toLowerCase();
 
-    // update progress
-    saveProgress();
-    updateRank();
+    /*
+       A compilation result should not be considered
+       successful merely because the word "error"
+       is absent from arbitrary output.
 
-  } else {
-    consoleBox.textContent = "❌ Challenge Failed!";
-  }
+       If the server explicitly reports failure,
+       fail it. Otherwise require the compiler to
+       have actually returned a usable result.
+    */
 
-  activeCodeChallenge = null;
+    let passed = true;
+
+    if(
+        challengeResult.success === false ||
+        challengeResult.ok === false ||
+        challengeResult.compiled === false
+    ){
+        passed = false;
+    }
+
+    if(
+        lowerOutput.includes(
+            "error:"
+        ) ||
+        lowerOutput.includes(
+            "compilation error"
+        ) ||
+        lowerOutput.includes(
+            "compile error"
+        )
+    ){
+        passed = false;
+    }
+
+    if(passed){
+
+        const alreadyCompleted =
+            isCodeChallengeCompleted(
+                activeCodeChallenge
+            );
+
+        markCodeChallengeComplete(
+            activeCodeChallenge
+        );
+
+        if(alreadyCompleted){
+
+            showCodeResult(
+                "✅ Code compiled successfully. Challenge already completed — no additional XP awarded.",
+                "success"
+            );
+
+        }else{
+
+            const xp =
+                addXPForChallenge(
+                    activeCodeChallenge
+                );
+
+            showCodeResult(
+                "✅ Challenge Passed! +" +
+                xp +
+                " XP",
+                "success"
+            );
+        }
+
+        saveProgress();
+        updateRank();
+        renderSidebarQuizzes();
+
+    }else{
+
+        showCodeResult(
+            "❌ Challenge Failed. Fix the code and try again. Your saved code was kept.",
+            "failed"
+        );
+    }
 }
+
+/* =========================================================
+   CODE CHALLENGE PROGRESS
+   ========================================================= */
+
+function markCodeChallengeComplete(id){
+
+    if(!id){
+        return;
+    }
+
+    const progress =
+        loadCodeProgress();
+
+    if(!progress[id]){
+
+        progress[id] = {
+            completed:true,
+            completedAt:Date.now()
+        };
+
+    }else{
+
+        /*
+           Never remove completion.
+        */
+        progress[id].completed = true;
+
+        if(!progress[id].completedAt){
+            progress[id].completedAt =
+                Date.now();
+        }
+    }
+
+    saveCodeProgress(progress);
+}
+
+/* =========================================================
+   XP
+   ========================================================= */
+
 function addXPForChallenge(id){
 
-  const xpMap = {
-  };
+    /*
+       XP values stay controlled.
+       Most importantly, XP can only be awarded
+       once for each challenge.
+    */
 
-  const xp = xpMap[id] || 5;
+    const xpMap = {
+        blink:5,
+        buzzer:5,
+        multiled:5,
+        monitor4:5,
+        joystick:5,
+        servo:5,
+        distance:5,
+        radar:5,
+        custom1:5,
+        custom2:5
+    };
 
-  const key = "code-" + id;
+    const xp =
+        xpMap[id] || 5;
 
-  if(!progress[key]){
-    progress[key] = { score: xp, total: xp };
-  } else {
-    progress[key].score += xp;
-  }
+    const key =
+        "code-" + id;
 
-  saveProgress();
-  updateRank();
+    /*
+       This is the critical anti-infinite-XP check.
+    */
+    if(progress[key] && progress[key].awarded){
+        return 0;
+    }
+
+    progress[key] = {
+        score:xp,
+        total:xp,
+        awarded:true,
+        completed:true
+    };
+
+    saveProgress();
+
+    return xp;
+}
+
+/* =========================================================
+   CUSTOM PROJECT SUBMISSION
+   ========================================================= */
+
+function submitCode(id){
+
+    const editorElement =
+        document.getElementById("editor");
+
+    if(!editorElement){
+        return;
+    }
+
+    const raw =
+        editorElement.value;
+
+    if(!raw.trim()){
+
+        showCodeResult(
+            "Write code first!",
+            "warning"
+        );
+
+        return;
+    }
+
+    /*
+       Save before analysis.
+    */
+    saveCurrentCode();
+
+    const code =
+        normalize(raw);
+
+    const info =
+        complexity(raw,code);
+
+    let passed = false;
+
+    /* ================= CUSTOM 1 ================= */
+
+    if(id === "custom1"){
+
+        const titleElement =
+            document.getElementById(
+                "projTitle"
+            );
+
+        const descElement =
+            document.getElementById(
+                "projDesc"
+            );
+
+        const title =
+            titleElement
+            ? titleElement.value.trim()
+            : "";
+
+        const desc =
+            descElement
+            ? descElement.value.trim()
+            : "";
+
+        passed =
+            title.length >= 5 &&
+            desc.length >= 20 &&
+            info.lines >= 40 &&
+            info.vars >= 5 &&
+            info.ifs >= 2 &&
+            info.loops >= 1 &&
+            (
+                count(code,"digitalwrite") +
+                count(code,"analogread") +
+                count(code,"analogwrite") +
+                count(code,"serial.print")
+            ) >= 8;
+    }
+
+    /* ================= CUSTOM 2 ================= */
+
+    else if(id === "custom2"){
+
+        const titleElement =
+            document.getElementById(
+                "projTitle"
+            );
+
+        const descElement =
+            document.getElementById(
+                "projDesc"
+            );
+
+        const title =
+            titleElement
+            ? titleElement.value.trim()
+            : "";
+
+        const desc =
+            descElement
+            ? descElement.value.trim()
+            : "";
+
+        passed =
+            title.length >= 5 &&
+            desc.length >= 30 &&
+            info.lines >= 60 &&
+            info.vars >= 8 &&
+            info.ifs >= 4 &&
+            info.loops >= 2 &&
+            (
+                count(code,"digitalwrite") +
+                count(code,"analogread") +
+                count(code,"analogwrite") +
+                count(code,"serial.print") +
+                count(code,"tone")
+            ) >= 15;
+    }
+
+    if(passed){
+
+        const alreadyCompleted =
+            isCodeChallengeCompleted(id);
+
+        markCodeChallengeComplete(id);
+
+        if(alreadyCompleted){
+
+            showCodeResult(
+                "✅ Project passed again. Already completed — no additional XP awarded.",
+                "success"
+            );
+
+        }else{
+
+            const xp =
+                addXPForChallenge(id);
+
+            showCodeResult(
+                "✅ Challenge Passed! +" +
+                xp +
+                " XP",
+                "success"
+            );
+        }
+
+        saveProgress();
+        updateRank();
+        renderSidebarQuizzes();
+
+    }else{
+
+        showCodeResult(
+            "❌ Challenge Failed. Improve the project and try again. Your project was saved locally.",
+            "failed"
+        );
+    }
+}
+
+/* =========================================================
+   RESULT MESSAGE
+   ========================================================= */
+
+function showCodeResult(message,type){
+
+    const box =
+        document.getElementById(
+            "codeResult"
+        );
+
+    if(!box){
+        return;
+    }
+
+    box.textContent =
+        message;
+
+    box.className =
+        "codeResult " +
+        (type || "");
+}
+
+/* =========================================================
+   SAVED PROJECTS VIEW
+   ========================================================= */
+
+function renderSavedProjects(){
+
+    const old =
+        document.getElementById(
+            "savedProjects"
+        );
+
+    if(old){
+        old.remove();
+    }
+
+    const projects =
+        getSavedProjects();
+
+    if(projects.length === 0){
+        return;
+    }
+
+    const container =
+        document.createElement("div");
+
+    container.id =
+        "savedProjects";
+
+    container.className =
+        "codeSavedProjects";
+
+    const heading =
+        document.createElement("h3");
+
+    heading.textContent =
+        "Saved Local Projects";
+
+    container.appendChild(
+        heading
+    );
+
+    projects.forEach(
+        project => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "savedProject";
+
+            const title =
+                document.createElement(
+                    "strong"
+                );
+
+            title.textContent =
+                project.title ||
+                "Untitled Project";
+
+            const desc =
+                document.createElement(
+                    "p"
+                );
+
+            desc.textContent =
+                project.description ||
+                "No description.";
+
+            const restore =
+                document.createElement(
+                    "button"
+                );
+
+            restore.type =
+                "button";
+
+            restore.textContent =
+                "Restore";
+
+            restore.addEventListener(
+                "click",
+                () => {
+
+                    const projectId =
+                        project.id;
+
+                    if(
+                        projectId ===
+                            "custom1" ||
+                        projectId ===
+                            "custom2"
+                    ){
+
+                        openCodeQuiz({
+                            id:projectId,
+                            name:
+                                project.title ||
+                                "Custom Project",
+                            desc:
+                                project.description ||
+                                ""
+                        });
+
+                    }
+                }
+            );
+
+            item.appendChild(title);
+            item.appendChild(desc);
+            item.appendChild(restore);
+
+            container.appendChild(item);
+        }
+    );
+
+    const area =
+        document.getElementById(
+            "quizArea"
+        );
+
+    if(area){
+        area.appendChild(
+            container
+        );
+    }
+}
+
+function highlightQuizCode(code){
+
+    code = code
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+
+    const tokens = [];
+
+    const save = html => {
+        const id =
+            `___QUIZTOKEN${tokens.length}___`;
+
+        tokens.push(html);
+
+        return id;
+    };
+
+    /* Comments */
+    code = code.replace(
+        /(\/\/.*)$/gm,
+        m => save(
+            `<span style="color:#22c55e">${m}</span>`
+        )
+    );
+
+    code = code.replace(
+        /(\/\*[\s\S]*?\*\/)/g,
+        m => save(
+            `<span style="color:#22c55e">${m}</span>`
+        )
+    );
+
+    /* Strings */
+    code = code.replace(
+        /("(?:\\.|[^"\\])*")/g,
+        m => save(
+            `<span style="color:#f59e0b">${m}</span>`
+        )
+    );
+
+    code = code.replace(
+        /('(?:\\.|[^'\\])*')/g,
+        m => save(
+            `<span style="color:#f59e0b">${m}</span>`
+        )
+    );
+
+    /* Preprocessor */
+    code = code.replace(
+        /(#(?:include|define|if|ifdef|ifndef|else|elif|endif|pragma|undef|error|warning|line)\b[^\n]*)/g,
+        m => save(
+            `<span style="color:#f472b6">${m}</span>`
+        )
+    );
+
+    /* Arduino functions */
+    code = code.replace(
+        /\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|millis|micros|pulseIn|pulseInLong|tone|noTone|shiftIn|shiftOut|attachInterrupt|detachInterrupt|interrupts|noInterrupts)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+    /* Serial / communication */
+    code = code.replace(
+        /\b(Serial|Serial1|Serial2|Serial3|begin|end|available|read|write|print|println|printf|flush|peek|find|findUntil|parseInt|parseFloat|setTimeout)\b/g,
+        '<span style="color:#38bdf8">$1</span>'
+    );
+
+    /* Arduino constants */
+    code = code.replace(
+        /\b(HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|LED_BUILTIN|DEFAULT|INTERNAL|INTERNAL1V1|INTERNAL2V56|CHANGE|RISING|FALLING|LSBFIRST|MSBFIRST|true|false)\b/g,
+        '<span style="color:#fbbf24">$1</span>'
+    );
+
+    /* Pins / hardware */
+    code = code.replace(
+        /\b(A[0-5]|SDA|SCL|MOSI|MISO|SCK|SS|RX|TX|AREF|RESET|VCC|GND|VIN|IOREF)\b/g,
+        '<span style="color:#60a5fa">$1</span>'
+    );
+
+    /* C / C++ types */
+    code = code.replace(
+        /\b(void|bool|boolean|char|byte|short|int|long|unsigned|signed|float|double|string|String|size_t|uint8_t|uint16_t|uint32_t|uint64_t|int8_t|int16_t|int32_t|int64_t|word)\b/g,
+        '<span style="color:#c084fc">$1</span>'
+    );
+
+    /* C / C++ keywords */
+    code = code.replace(
+        /\b(if|else|for|while|do|switch|case|default|break|continue|return|goto|const|static|volatile|extern|struct|class|public|private|protected|friend|template|typename|namespace|using|new|delete|this|nullptr|auto|register|inline|virtual|override|final|enum|union|try|catch|throw)\b/g,
+        '<span style="color:#fb7185">$1</span>'
+    );
+
+    /* Arduino libraries */
+    code = code.replace(
+        /\b(Wire|SPI|EEPROM|Servo|SoftwareSerial|Adafruit_GFX|Adafruit_SSD1306|LiquidCrystal|DHT|OneWire|DallasTemperature|SD|WiFi|Ethernet|Stepper|Wire1|SPI1|LittleFS|FS|IRremote|RTClib|AccelStepper)\b/g,
+        '<span style="color:#60a5fa">$1</span>'
+    );
+
+    /* Objects */
+    code = code.replace(
+        /\b(display|Serial|Serial1|Serial2|Serial3|Wire|SPI|lcd|servo|sensor|oled|screen|button|led|motor|relay|buzzer|encoder|rtc|sd|file)\b/g,
+        '<span style="color:#e879f9">$1</span>'
+    );
+
+    /* Mathematical functions */
+    code = code.replace(
+        /\b(abs|min|max|constrain|map|pow|sqrt|sq|sin|cos|tan|asin|acos|atan|atan2|random|randomSeed|round|floor|ceil|exp|log)\b/g,
+        '<span style="color:#2dd4bf">$1</span>'
+    );
+
+    /* Common C / C++ functions */
+    code = code.replace(
+        /\b(sizeof|memcpy|memmove|memset|memcmp|strcmp|strncmp|strlen|strcpy|strncpy|strcat|strchr|strstr|atoi|atol|atof|malloc|calloc|realloc|free)\b/g,
+        '<span style="color:#2dd4bf">$1</span>'
+    );
+
+    /* EEPROM / memory */
+    code = code.replace(
+        /\b(EEPROM\.read|EEPROM\.write|EEPROM\.update|get|put)\b/g,
+        '<span style="color:#2dd4bf">$1</span>'
+    );
+
+    /* Registers */
+    code = code.replace(
+        /\b(DDRB|DDRC|DDRD|PORTB|PORTC|PORTD|PINB|PINC|PIND|ADCSRA|ADCSRB|ADMUX|ADCL|ADCH|TCCR0A|TCCR0B|TCCR1A|TCCR1B|TCCR2A|TCCR2B|TCNT0|TCNT1|TCNT2|OCR0A|OCR0B|OCR1A|OCR1B|OCR2A|OCR2B|TIMSK0|TIMSK1|TIMSK2|TIFR0|TIFR1|TIFR2|SREG|SP|SPL|SPH)\b/g,
+        '<span style="color:#60a5fa">$1</span>'
+    );
+
+    /* Bit / utility macros */
+    code = code.replace(
+        /\b(bitRead|bitWrite|bitSet|bitClear|bitToggle|highByte|lowByte|_BV|F|PSTR)\b/g,
+        '<span style="color:#2dd4bf">$1</span>'
+    );
+
+    /* Numbers */
+    code = code.replace(
+        /\b(0[bB][01]+|0[xX][0-9a-fA-F]+|0[oO][0-7]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?[fFlLuU]*)\b/g,
+        '<span style="color:#a78bfa">$1</span>'
+    );
+
+    /* Restore protected sections */
+    code = code.replace(
+        /___QUIZTOKEN(\d+)___/g,
+        (_,i) => tokens[i]
+    );
+
+    return code;
 }
 
 
@@ -1861,6 +2673,7 @@ window.onload = () => {
 
 </body>
 </html>
+
 
 
 

@@ -542,9 +542,7 @@ let userAnswers = [];
 let totalQuestions = 0;
 let progress = JSON.parse(localStorage.getItem("progress")) || {};
 let mode = "quiz"; // "quiz" or "code"
-let activeCodeChallenge = null;
-let challengeTimer = null;
-let challengeResult = null;
+
 function getDraftKey(){
   return currentCategory + "-" + currentQuizIndex + "-draft";
 }
@@ -564,5 +562,6 @@ function clearDraft(){
 const board = {
   value: "uno"
 };
+
 
 
