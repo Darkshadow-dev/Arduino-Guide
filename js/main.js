@@ -767,9 +767,7 @@ window.addEventListener("resize", checkOrientation);
 window.addEventListener("orientationchange", checkOrientation);
 
 
-/* ================================================================
-   Account
-================================================================ */
+/* ================================================================   Account   ================================================================ */
 
 const GUIDE_ACCOUNT_KEYS = [
     "arduinoTutorialProgress",
