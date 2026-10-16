@@ -4,6 +4,8 @@ import subprocess
 import os
 import json
 import secrets
+import shutil
+from pathlib import Path
 import GSE
 
 app = Flask(__name__)
@@ -13,8 +15,11 @@ CORS(app)
 # ARDUINO CLI CONFIG
 # ============================================================
 
-ARDUINO_DATA_DIR = "/opt/render/project/src/.arduino"
-CLI = "/opt/render/project/src/bin/arduino-cli"
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+ARDUINO_DATA_DIR = os.environ.get("ARDUINO_DATA_DIR", os.path.join(APP_DIR, ".arduino"))
+CLI = os.environ.get("ARDUINO_CLI", os.path.join(APP_DIR, "bin", "arduino-cli"))
+if not os.path.isfile(CLI):
+    CLI = shutil.which("arduino-cli") or CLI
 
 os.environ["ARDUINO_DATA_DIR"] = ARDUINO_DATA_DIR
 
@@ -28,13 +33,13 @@ os.environ["PATH"] = (
 # DIRECTORIES
 # ============================================================
 
-BASE = os.path.abspath("sketches")
+BASE = os.path.join(APP_DIR, "sketches")
 os.makedirs(BASE, exist_ok=True)
 
-GSE_BASE = os.path.abspath("gse")
+GSE_BASE = os.path.join(APP_DIR, "gse")
 os.makedirs(GSE_BASE, exist_ok=True)
 
-HEX_BASE = os.path.abspath("hex")
+HEX_BASE = os.path.join(APP_DIR, "hex")
 os.makedirs(HEX_BASE, exist_ok=True)
 
 # ============================================================
@@ -71,7 +76,8 @@ def run_cmd(cmd):
             cmd,
             capture_output=True,
             text=True,
-            env=env
+            env=env,
+            timeout=180
         )
 
         return {
@@ -79,6 +85,8 @@ def run_cmd(cmd):
             "output": result.stdout + result.stderr
         }
 
+    except subprocess.TimeoutExpired:
+        return {"success": False, "output": "Arduino CLI command timed out after 180 seconds."}
     except Exception as e:
         return {
             "success": False,
@@ -526,6 +534,12 @@ def download_exe():
 # ============================================================
 # SESSION
 # ============================================================
+
+@app.route("/health", methods=["GET"])
+def health():
+    cli_ok = os.path.isfile(CLI) or shutil.which(CLI) is not None
+    return jsonify({"success": True, "status": "ok", "arduino_cli_available": bool(cli_ok), "gse_available": hasattr(GSE, "compile_gse")})
+
 
 @app.route("/session")
 def session():
