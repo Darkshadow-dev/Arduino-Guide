@@ -20,11 +20,13 @@ class Parser:
             elif re.fullmatch(r'-?\d+(?:\.\d+)?', raw):
                 self.defines[macro] = float(raw) if '.' in raw else int(raw)
             elif raw in ('true','false'): self.defines[macro] = raw == 'true'
+            elif raw in self.defines: self.defines[macro] = self.defines[raw]
         source = re.sub(r'^\s*#\s*(?:include|define|pragma)\s*[^\n]*', '', source, flags=re.M)
         self.toks = [t for t in TOKEN_RE.findall(source) if t.strip() and not t.lstrip().startswith(('//','/*'))]
         self.i = 0
         self.globals = []
         self.functions = {}
+        self.structs = {}
 
     def peek(self, n=0): return self.toks[self.i+n] if self.i+n < len(self.toks) else ''
     def pop(self):
@@ -47,11 +49,18 @@ class Parser:
     def parse(self):
         while self.peek():
             if self.accept(';'): continue
+            if self.peek() == 'struct':
+                self.parse_struct()
+                continue
             # tolerate common global declarations / prototypes
             start=self.i
             try:
                 typ=self.parse_type()
                 name=self.pop()
+                array_size=None
+                if self.accept('['):
+                    size_expr=self.expr(); self.expect(']')
+                    array_size=size_expr
                 if typ.split()[-1] in ('Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107') and self.accept('('):
                     depth=1
                     while self.peek() and depth:
@@ -73,14 +82,36 @@ class Parser:
                     else:
                         self.skip_to_semicolon()
                 else:
-                    # global declaration, potentially multiple vars
+                    # Global scalars, C arrays, and struct arrays.
                     val={'type':'VALUE','value':0}
-                    if self.accept('='): val=self.expr()
-                    self.globals.append({'op':'DECLARE','name':name,'value':val})
+                    if array_size is not None:
+                        items=[]
+                        if self.accept('='):
+                            if self.accept('{'):
+                                while self.peek() and self.peek()!='}':
+                                    items.append(self.expr())
+                                    if not self.accept(','): break
+                                self.expect('}')
+                            else:
+                                raise GSEError('Array initializer must use braces.')
+                        self.globals.append({'op':'DECLARE_ARRAY','name':name,'elementType':typ.split()[-1],'size':array_size,'items':items})
+                    else:
+                        if self.accept('='): val=self.expr()
+                        self.globals.append({'op':'DECLARE','name':name,'value':val,'declaredType':typ.split()[-1]})
                     while self.accept(','):
                         nm=self.pop(); v={'type':'VALUE','value':0}
-                        if self.accept('='): v=self.expr()
-                        self.globals.append({'op':'DECLARE','name':nm,'value':v})
+                        if self.accept('['):
+                            size=self.expr(); self.expect(']'); items=[]
+                            if self.accept('='):
+                                self.expect('{')
+                                while self.peek() and self.peek()!='}':
+                                    items.append(self.expr())
+                                    if not self.accept(','): break
+                                self.expect('}')
+                            self.globals.append({'op':'DECLARE_ARRAY','name':nm,'elementType':typ.split()[-1],'size':size,'items':items})
+                        else:
+                            if self.accept('='): v=self.expr()
+                            self.globals.append({'op':'DECLARE','name':nm,'value':v,'declaredType':typ.split()[-1]})
                     self.expect(';')
             except GSEError:
                 # reset and report a useful unsupported syntax message rather than loop
@@ -89,14 +120,35 @@ class Parser:
                 raise GSEError(f"Unsupported Arduino syntax near '{token}'. The GSE simulator supports common sketch statements; use Compile for full C++ validation.")
         if 'setup' not in self.functions: self.functions['setup']={'parameters':[],'program':[]}
         if 'loop' not in self.functions: self.functions['loop']={'parameters':[],'program':[]}
-        return {'format':'GSE','version':1,'board':'arduino:avr:uno','program':{'setup':self.functions.pop('setup')['program'],'loop':self.functions.pop('loop')['program']},'globals':self.globals,'functions':self.functions}
+        return {'format':'GSE','version':2,'board':'arduino:avr:uno','program':{'setup':self.functions.pop('setup')['program'],'loop':self.functions.pop('loop')['program']},'globals':self.globals,'functions':self.functions,'structs':self.structs}
+
+    def parse_struct(self):
+        self.expect('struct')
+        name=self.pop()
+        self.expect('{')
+        fields=[]
+        while self.peek() and self.peek()!='}':
+            if self.accept(';'): continue
+            field_type=self.parse_type()
+            field_name=self.pop()
+            array_size=None
+            if self.accept('['):
+                size_tokens=[]
+                while self.peek() and self.peek()!=']': size_tokens.append(self.pop())
+                self.expect(']')
+                array_size=''.join(size_tokens)
+            self.expect(';')
+            fields.append({'name':field_name,'type':field_type,'array_size':array_size})
+        self.expect('}')
+        self.expect(';')
+        self.structs[name]=fields
 
     def parse_type(self):
         # C/C++ qualifiers may precede the actual type (e.g. const int, unsigned long).
         qualifiers=[]
         while self.peek() in ('const','static','volatile','unsigned','signed','long','short') and len(qualifiers)<4:
             qualifiers.append(self.pop())
-        if self.peek() not in TYPES or self.peek() in ('const','static','volatile'):
+        if self.peek() not in TYPES and self.peek() not in self.structs or self.peek() in ('const','static','volatile'):
             if not qualifiers: raise GSEError('type expected')
             # e.g. `unsigned` alone is accepted as an int-like type
             if qualifiers[-1] in ('unsigned','signed','long','short'): pass
@@ -125,6 +177,20 @@ class Parser:
         self.expect('}'); return out
     def statement(self):
         if self.peek()=='{': return self.block()
+        if self.accept('switch'):
+            self.expect('('); value=self.expr(); self.expect(')'); self.expect('{')
+            cases=[]; current=None
+            while self.peek() and self.peek()!='}':
+                if self.accept('case'):
+                    label=self.expr(); self.expect(':')
+                    current={'value':label,'body':[]}; cases.append(current)
+                elif self.accept('default'):
+                    self.expect(':'); current={'default':True,'body':[]}; cases.append(current)
+                else:
+                    if current is None: raise GSEError('switch content must start with case/default')
+                    current['body'].extend(self.statement())
+            self.expect('}')
+            return [{'op':'SWITCH','value':value,'cases':cases}]
         if self.accept('if'):
             self.expect('('); cond=self.expr(); self.expect(')'); then=self.statement()
             otherwise=[]
@@ -175,28 +241,54 @@ class Parser:
             value={'type':'VALUE','value':0}
             if self.peek()!=';': value=self.expr()
             self.expect(';'); return [{'op':'RETURN','value':value}]
-        if self.peek() in TYPES:
+        if self.peek() in TYPES or self.peek() in self.structs:
             return self.simple_statement()
-        if self.accept('break') or self.accept('continue'):
-            self.expect(';'); raise GSEError('break/continue are not yet supported by the GSE simulator')
+        if self.accept('break'):
+            self.expect(';'); return [{'op':'BREAK'}]
+        if self.accept('continue'):
+            self.expect(';'); return [{'op':'CONTINUE'}]
         return self.simple_statement()
     def simple_statement(self, in_for=False):
-        if self.peek() in TYPES:
-            self.parse_type(); name=self.pop(); value={'type':'VALUE','value':0}
-            if self.accept('='): value=self.expr()
-            out=[{'op':'DECLARE','name':name,'value':value}]
+        if self.peek() in TYPES or self.peek() in self.structs:
+            typ=self.parse_type(); name=self.pop()
+            if self.accept('['):
+                size=self.expr(); self.expect(']'); items=[]
+                if self.accept('='):
+                    self.expect('{')
+                    while self.peek() and self.peek()!='}':
+                        items.append(self.expr())
+                        if not self.accept(','): break
+                    self.expect('}')
+                out=[{'op':'DECLARE_ARRAY','name':name,'elementType':typ.split()[-1],'size':size,'items':items}]
+            else:
+                value={'type':'VALUE','value':0}
+                if self.accept('='): value=self.expr()
+                out=[{'op':'DECLARE','name':name,'value':value,'declaredType':typ.split()[-1]}]
         else:
+            # Parse a variable/member/index lvalue before deciding whether this is
+            # assignment, increment, or a function/library call.
             name=self.pop()
-            if name in ('Serial.begin','Wire.begin','SPI.begin') or name.endswith('.begin') or name in ('pinMode','digitalWrite','analogWrite','Serial.print','Serial.println','delay','delayMicroseconds','tone','noTone','randomSeed','attachInterrupt','detachInterrupt','EEPROM.write','display.clearDisplay','display.display','display.setTextSize','display.setTextColor','display.setCursor','display.print','display.println','display.drawPixel','display.drawLine','display.drawRect','display.fillRect','display.drawFastHLine','display.drawFastVLine','display.drawCircle','display.fillCircle','display.drawRoundRect','display.fillRoundRect','display.invertDisplay','display.dim','display.setRotation','display.startscrollright','display.startscrollleft','display.stopscroll') or name.endswith('.attach') or name.endswith('.detach') or name.endswith('.write') or name.endswith('.writeMicroseconds') or name.endswith('.read') or name.endswith('.attached') or ('.' in name and name.rsplit('.',1)[-1] in ('clearDisplay','display','setTextSize','setTextColor','setCursor','print','println','drawPixel','drawLine','drawRect','fillRect','drawFastHLine','drawFastVLine','drawCircle','fillCircle','drawRoundRect','fillRoundRect','invertDisplay','dim','setRotation','startscrollright','startscrollleft','stopscroll')):
-                self.expect('('); args=self.args_after_open(); out=self.call_statement(name,args)
-            elif self.peek() in ('=','+=','-=','*=','/=','++','--'):
-                op=self.pop()
-                if op in ('++','--'): out=[{'op':'ASSIGN','name':name,'operator':op,'value':{'type':'VALUE','value':0}}]
-                else:
-                    value=self.expr(); out=[{'op':'ASSIGN','name':name,'operator':op,'value':value}]
-            elif self.accept('('):
-                args=self.args_after_open(); out=[{'op':'FUNCTION_CALL','function':name,'args':args}]
-            else: raise GSEError('unsupported statement')
+            if self.accept('('):
+                args=self.args_after_open()
+                try: out=self.call_statement(name,args)
+                except GSEError: out=[{'op':'FUNCTION_CALL','function':name,'args':args}]
+            else:
+                target=name
+                while True:
+                    if self.accept('['):
+                        idx=self.expr(); self.expect(']')
+                        target={'type':'INDEX','base':target,'index':idx}
+                    elif self.accept('.'):
+                        member=self.pop(); target={'type':'MEMBER','base':target,'member':member}
+                    else: break
+                if self.peek() in ('=','+=','-=','*=','/=','++','--'):
+                    op=self.pop()
+                    if op in ('++','--'): out=[{'op':'ASSIGN','target':target,'name':target if isinstance(target,str) else None,'operator':op,'value':{'type':'VALUE','value':0}}]
+                    else:
+                        value=self.expr(); out=[{'op':'ASSIGN','target':target,'name':target if isinstance(target,str) else None,'operator':op,'value':value}]
+                elif self.accept('('):
+                    args=self.args_after_open(); out=self.call_statement(name,args)
+                else: raise GSEError('unsupported statement')
         if not in_for: self.expect(';')
         return out
     def args_after_open(self):
@@ -221,7 +313,9 @@ class Parser:
         if n=='randomSeed': return [{'op':'RANDOM_SEED','seed':v(0)}]
         if n=='Wire.begin': return [{'op':'WIRE_BEGIN'}]
         if n=='SPI.begin': return [{'op':'SPI_BEGIN'}]
-        if n=='EEPROM.write': return [{'op':'EEPROM_WRITE','address':v(0),'value':v(1)}]
+        if n in ('EEPROM.write','EEPROM.update'): return [{'op':'EEPROM_WRITE','address':v(0),'value':v(1)}]
+        if n=='EEPROM.put': return [{'op':'EEPROM_PUT','address':v(0),'value':v(1)}]
+        if n=='EEPROM.get': return [{'op':'EEPROM_GET','address':v(0),'target':v(1)}]
         if n=='attachInterrupt': return [{'op':'ATTACH_INTERRUPT','interrupt':v(0),'function':a[1].get('value','') if len(a)>1 else '', 'mode':v(2)}]
         if n=='detachInterrupt': return [{'op':'DETACH_INTERRUPT','interrupt':v(0)}]
         if n.endswith('.attach'):
@@ -262,6 +356,14 @@ class Parser:
         elif self.accept('('):
             args=self.args_after_open(); left={'type':'CALL','function':t,'args':args}
         else: left=t
+        while True:
+            if self.accept('['):
+                index=self.expr(); self.expect(']'); left={'type':'INDEX','base':left,'index':index}; continue
+            if self.accept('.'):
+                left={'type':'MEMBER','base':left,'member':self.pop()}; continue
+            if self.peek() in self.PREC and self.PREC[self.peek()]>=minp:
+                break
+            break
         while self.peek() in self.PREC and self.PREC[self.peek()]>=minp:
             op=self.pop(); prec=self.PREC[op]; right=self.expr(prec+1)
             typ='LOGICAL' if op in ('&&','||') else ('COMPARE' if op in ('==','!=','<','>','<=','>=') else 'ARITHMETIC')

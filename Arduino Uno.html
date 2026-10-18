@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arduino Uno Simulator</title>
 <link rel="stylesheet" href="css/uno.css">
+<style>
+/* These simulator-only styles live in this HTML file so css/uno.css does not need editing. */
+#oled16Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#061313}
+#servoUnit{position:absolute;left:445px;top:175px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
+#servoCase{position:absolute;left:50%;top:52px;transform:translateX(-50%);width:74px;height:54px;border:3px solid #8297a4;border-radius:8px;background:linear-gradient(145deg,#455b6a,#172630);box-shadow:inset 0 2px 4px #ffffff44}
+#servoHub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border:3px solid #b6c7d1;border-radius:50%;background:#344955}
+#servoHorn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(0deg);transform-origin:center;width:58px;height:7px;border-radius:5px;background:#e6edf1;border:1px solid #6d7e87}
+#servoAngle{position:absolute;top:110px;left:0;width:100%;font-weight:bold;color:#9cecff}
+#servoStatus{position:absolute;top:124px;left:0;width:100%;color:#a9bbc5}
+#servoUnit.attached #servoStatus{color:#087b3e}
+#servoUnit.attached #servoCase{box-shadow:0 0 9px #39c87966,inset 0 2px 4px #ffffff44}
+@media(max-width:700px){#servoUnit{transform:scale(.8);transform-origin:top left}}
+</style>
 </head>
 <body>
 
@@ -449,6 +462,77 @@ if(
 }
 }
 
+function gseTypeSize(type){
+    type=String(type||"").replace(/\b(const|volatile|static|unsigned|signed)\b/g,"").trim();
+    if(type in (gse&&gse.structs||{}))return (gse.structs[type]||[]).reduce((n,f)=>n+gseTypeSize(f.type),0);
+    if(type==="byte"||type==="char"||type==="bool"||type==="boolean")return 1;
+    if(type==="int"||type==="short")return 2;
+    if(type==="long"||type==="float")return 4;
+    if(type==="double")return 4;
+    return 2;
+}
+function makeGSEStruct(typeName){
+    const fields=(gse&&gse.structs&&gse.structs[typeName])||[];
+    const value={__gseType:typeName};
+    for(const field of fields){
+        if(field.array_size)value[field.name]=new Array(Number(field.array_size)||0).fill(0);
+        else value[field.name]=0;
+    }
+    return value;
+}
+async function readGSETarget(target){
+    if(typeof target==="string")return await resolveGSEValue(target);
+    if(!target||typeof target!=="object")return 0;
+    if(target.type==="INDEX"){
+        const base=await resolveGSEValue(target.base), index=await resolveGSEValue(target.index);
+        return base==null?0:base[Number(index)]??0;
+    }
+    if(target.type==="MEMBER"){
+        const base=await resolveGSEValue(target.base);
+        return base==null?0:base[target.member]??0;
+    }
+    return await resolveGSEValue(target);
+}
+async function writeGSETarget(target,value){
+    if(typeof target==="string"){
+        const scopes=[...gseFunctionScopes].reverse();
+        for(const scope of scopes){if(Object.prototype.hasOwnProperty.call(scope,target)){scope[target]=value;return;}}
+        gseVariables[target]=value;return;
+    }
+    if(!target||typeof target!=="object")throw new Error("Invalid assignment target.");
+    if(target.type==="INDEX"){
+        const base=await resolveGSEValue(target.base), index=Number(await resolveGSEValue(target.index));
+        if(base==null)throw new Error("Array assignment target is missing.");
+        base[index]=value;return;
+    }
+    if(target.type==="MEMBER"){
+        const base=await resolveGSEValue(target.base);
+        if(base==null)throw new Error("Struct assignment target is missing.");
+        base[target.member]=value;return;
+    }
+    throw new Error("Unsupported assignment target.");
+}
+function eepromWriteTyped(address,value,type){
+    const size=gseTypeSize(type);
+    let n=Number(value)||0;
+    for(let i=0;i<size;i++)executeEEPROMWrite(Number(address)+i,(Math.trunc(n) >>> (8*i)) & 255);
+}
+function eepromReadTyped(address,type){
+    const size=gseTypeSize(type);let n=0;
+    for(let i=0;i<size;i++)n|=(executeEEPROMRead(Number(address)+i)&255)<<(8*i);
+    return n;
+}
+function eepromPutStruct(address,object){
+    if(!object||!object.__gseType)throw new Error("EEPROM.put requires a supported GSE struct value.");
+    const fields=(gse.structs&&gse.structs[object.__gseType])||[];let offset=0;
+    for(const field of fields){eepromWriteTyped(Number(address)+offset,object[field.name],field.type);offset+=gseTypeSize(field.type);}
+}
+function eepromGetStruct(address,object){
+    if(!object||!object.__gseType)throw new Error("EEPROM.get requires a supported GSE struct target.");
+    const fields=(gse.structs&&gse.structs[object.__gseType])||[];let offset=0;
+    for(const field of fields){object[field.name]=eepromReadTyped(Number(address)+offset,field.type);offset+=gseTypeSize(field.type);}return object;
+}
+
 async function resolveGSEValue(value){
 
     if(
@@ -470,6 +554,16 @@ async function resolveGSEValue(value){
             );
         }
 
+        if(value.type==="INDEX"){
+            const base=await resolveGSEValue(value.base);
+            const index=await resolveGSEValue(value.index);
+            return base==null?0:base[Number(index)]??0;
+        }
+        if(value.type==="MEMBER"){
+            const base=await resolveGSEValue(value.base);
+            return base==null?0:base[value.member]??0;
+        }
+
         if(value.type==="CALL"){
 
             const args=[];
@@ -482,6 +576,14 @@ async function resolveGSEValue(value){
             }
 
 if(value.function==="F"||value.function==="String")return args.length?args[0]:"";
+if(value.function==="sizeof"){
+    const typeName=String(args[0]??"");
+    const fields=(gse&&gse.structs&&gse.structs[typeName])||[];
+    if(fields.length){
+        return fields.reduce((total,field)=>total+gseTypeSize(field.type),0);
+    }
+    return ({byte:1,char:1,bool:1,boolean:1,int:2,unsigned:2,short:2,long:4,float:4,double:4})[typeName]||2;
+}
 if(value.function==="round")return Math.round(Number(args[0])||0);
 if(value.function==="floor")return Math.floor(Number(args[0])||0);
 if(value.function==="ceil")return Math.ceil(Number(args[0])||0);
@@ -2439,88 +2541,18 @@ function executeDelay(milliseconds){
 
 
 async function executeAssignment(instruction){
-
-    const name=instruction.name;
+    const target=instruction.target!==undefined?instruction.target:instruction.name;
     const operator=instruction.operator;
-
-    let targetScope=gseVariables;
-
-    for(
-        let i=gseFunctionScopes.length-1;
-        i>=0;
-        i--
-    ){
-
-        if(
-            Object.prototype.hasOwnProperty.call(
-                gseFunctionScopes[i],
-                name
-            )
-        ){
-
-            targetScope=
-                gseFunctionScopes[i];
-
-            break;
-        }
-    }
-
-    if(operator==="++"){
-
-        targetScope[name]=
-            Number(targetScope[name]||0)+1;
-
-        return;
-    }
-
-    if(operator==="--"){
-
-        targetScope[name]=
-            Number(targetScope[name]||0)-1;
-
-        return;
-    }
-
-    const value=
-        await resolveGSEValue(
-            instruction.value
-        );
-
-    if(operator==="="){
-
-        targetScope[name]=value;
-
-        return;
-    }
-
-    const current=Number(
-        targetScope[name]||0
-    );
-
-    const amount=Number(value)||0;
-
-    if(operator==="+="){
-
-        targetScope[name]=
-            current+amount;
-
-    }else if(operator==="-="){
-
-        targetScope[name]=
-            current-amount;
-
-    }else if(operator==="*="){
-
-        targetScope[name]=
-            current*amount;
-
-    }else if(operator==="/="){
-
-        targetScope[name]=
-            amount!==0
-                ?current/amount
-                :0;
-    }
+    const current=await readGSETarget(target);
+    if(operator==="++")return writeGSETarget(target,(Number(current)||0)+1);
+    if(operator==="--")return writeGSETarget(target,(Number(current)||0)-1);
+    const value=await resolveGSEValue(instruction.value);
+    if(operator==="=")return writeGSETarget(target,value);
+    const a=Number(current)||0,b=Number(value)||0;
+    if(operator==="+=")return writeGSETarget(target,a+b);
+    if(operator==="-=")return writeGSETarget(target,a-b);
+    if(operator==="*=")return writeGSETarget(target,a*b);
+    if(operator==="/=")return writeGSETarget(target,b!==0?a/b:0);
 }
 
 async function resolveFunctionArguments(args){
@@ -2626,11 +2658,11 @@ async function executeInstruction(
 
         case "DECLARE":{
 
-            const value=
-                await resolveGSEValue(
-                    instruction.value
-                );
-
+            let value=await resolveGSEValue(instruction.value);
+            if(instruction.declaredType && gse && gse.structs && gse.structs[instruction.declaredType]){
+                if(!value || typeof value!=="object")value=makeGSEStruct(instruction.declaredType);
+                value.__gseType=instruction.declaredType;
+            }
             const scope=
                 gseFunctionScopes.length>0
                     ?gseFunctionScopes[
@@ -2642,6 +2674,22 @@ async function executeInstruction(
                 instruction.name
             ]=value;
 
+            break;
+        }
+        case "DECLARE_ARRAY":{
+            const size=Math.max(0,Math.min(4096,Number(await resolveGSEValue(instruction.size))||0));
+            const typeName=instruction.elementType;
+            const items=[];
+            for(const item of instruction.items||[])items.push(await resolveGSEValue(item));
+            const array=new Array(size);
+            for(let i=0;i<size;i++){
+                if(i<items.length)array[i]=items[i];
+                else if(gse&&gse.structs&&gse.structs[typeName])array[i]=makeGSEStruct(typeName);
+                else array[i]=0;
+                if(gse&&gse.structs&&gse.structs[typeName]&&array[i]&&typeof array[i]==="object")array[i].__gseType=typeName;
+            }
+            const scope=gseFunctionScopes.length?gseFunctionScopes[gseFunctionScopes.length-1]:gseVariables;
+            scope[instruction.name]=array;
             break;
         }
 
@@ -2668,10 +2716,7 @@ async function executeInstruction(
                         true
                     );
 
-                if(
-                    result &&
-                    result.returned
-                ){
+                if(result && (result.returned || result.halted || result.broken || result.continued)){
                     return result;
                 }
 
@@ -2683,10 +2728,7 @@ async function executeInstruction(
                         true
                     );
 
-                if(
-                    result &&
-                    result.returned
-                ){
+                if(result && (result.returned || result.halted || result.broken || result.continued)){
                     return result;
                 }
             }
@@ -2756,40 +2798,48 @@ async function executeInstruction(
         }
 
 case "FOR":{
-    await executeInstruction(
-        instruction.init
-    );
-
+    await executeInstruction(instruction.init);
     let guard=0;
-
-    while(
-        await resolveGSEValue(
-            instruction.condition
-        )
-    ){
-        for(
-            const bodyInstruction
-            of instruction.body
-        ){
-            await executeInstruction(
-                bodyInstruction
-            );
-        }
-
-        await executeInstruction(
-            instruction.increment
-        );
-
+    while(await resolveGSEValue(instruction.condition)){
+        const result=await executeProgram(instruction.body,true);
+        if(result&&result.returned)return result;
+        if(result&&result.halted)return result;
+        if(result&&result.broken)break;
+        await executeInstruction(instruction.increment);
         guard++;
-
-        if(guard>100000){
-            throw new Error(
-                "FOR loop exceeded simulator safety limit."
-            );
-        }
+        if(guard>100000)throw new Error("Loop exceeded simulator safety limit.");
+        if(guard%10===0)await new Promise(resolve=>setTimeout(resolve,0));
     }
-
     break;
+}
+case "SWITCH":{
+    const value=await resolveGSEValue(instruction.value);
+    let selected=-1,defaultIndex=-1;
+    for(let i=0;i<(instruction.cases||[]).length;i++){
+        const c=instruction.cases[i];
+        if(c.default)defaultIndex=i;
+        else if(await resolveGSEValue(c.value)===value){selected=i;break;}
+    }
+    if(selected<0)selected=defaultIndex;
+    for(let i=selected;i>=0&&i<instruction.cases.length;i++){
+        const result=await executeProgram(instruction.cases[i].body,true);
+        if(result&&result.returned)return result;
+        if(result&&result.halted)return result;
+        if(result&&result.broken)break;
+    }
+    break;
+}
+case "BREAK": return {broken:true};
+case "CONTINUE": return {continued:true};
+case "EEPROM_PUT":{
+    const address=Number(await resolveGSEValue(instruction.address));
+    const object=await resolveGSEValue(instruction.value);
+    eepromPutStruct(address,object);break;
+}
+case "EEPROM_GET":{
+    const address=Number(await resolveGSEValue(instruction.address));
+    const object=await readGSETarget(instruction.target);
+    eepromGetStruct(address,object);break;
 }
 
 case "EEPROM_WRITE":{
@@ -3305,7 +3355,9 @@ async function executeProgram(instructions){
             result &&
             (
                 result.returned ||
-                result.halted
+                result.halted ||
+                result.broken ||
+                result.continued
             )
         ){
             return result;
