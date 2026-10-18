@@ -17,17 +17,17 @@ CORS(app)
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 ARDUINO_DATA_DIR = os.environ.get("ARDUINO_DATA_DIR", os.path.join(APP_DIR, ".arduino"))
-CLI = os.environ.get("ARDUINO_CLI", os.path.join(APP_DIR, "bin", "arduino-cli"))
-if not os.path.isfile(CLI):
-    CLI = shutil.which("arduino-cli") or CLI
-
+LOCAL_BIN = os.path.join(APP_DIR, "bin")
+CLI_CANDIDATES = [
+    os.environ.get("ARDUINO_CLI"),
+    os.path.join(LOCAL_BIN, "arduino-cli"),
+    os.path.join(LOCAL_BIN, "arduino-cli.exe"),
+    shutil.which("arduino-cli"),
+    shutil.which("arduino-cli.exe"),
+]
+CLI = next((candidate for candidate in CLI_CANDIDATES if candidate and (os.path.isfile(candidate) or shutil.which(candidate))), "arduino-cli")
 os.environ["ARDUINO_DATA_DIR"] = ARDUINO_DATA_DIR
-
-# Make sure Arduino CLI can be found and uses the correct data dir.
-os.environ["PATH"] = (
-    "/opt/render/project/src/bin:"
-    + os.environ.get("PATH", "")
-)
+os.environ["PATH"] = LOCAL_BIN + os.pathsep + os.environ.get("PATH", "")
 
 # ============================================================
 # DIRECTORIES
@@ -60,10 +60,7 @@ def run_cmd(cmd):
 
         env["ARDUINO_DATA_DIR"] = ARDUINO_DATA_DIR
 
-        env["PATH"] = (
-            "/opt/render/project/src/bin:"
-            + env.get("PATH", "")
-        )
+        env["PATH"] = LOCAL_BIN + os.pathsep + env.get("PATH", "")
 
         library_path = os.path.join(
             ARDUINO_DATA_DIR,
@@ -272,11 +269,7 @@ def compile_code():
     # Public download URL.
     # --------------------------------------------------------
 
-    hex_url = (
-        "https://arduino-guide-6.onrender.com/"
-        "download-hex/"
-        + hex_token
-    )
+    hex_url = request.host_url.rstrip("/") + "/download-hex/" + hex_token
 
     return jsonify({
         "success": True,

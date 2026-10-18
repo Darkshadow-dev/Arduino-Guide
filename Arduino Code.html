@@ -597,7 +597,9 @@ header::-webkit-scrollbar{
 <script>
 
 const API =
-  "https://arduino-guide-6.onrender.com";
+  (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? "http://127.0.0.1:5000"
+    : "https://arduino-guide-6.onrender.com";
 
 let editor;
 let highlight;
@@ -3578,17 +3580,13 @@ async function runSimulator(){
     setStatus("success");
 
 
-    if(!data.url){
-
-      throw new Error(
-        "Server did not return a simulator URL."
-      );
-
+    if(!data.token){
+      throw new Error("Server did not return a GSE token.");
     }
 
-
-    window.location.href =
-      data.url;
+    const simulatorURL = new URL("Arduino Uno.html", window.location.href);
+    simulatorURL.searchParams.set("gse", data.token);
+    window.location.href = simulatorURL.href;
 
   }catch(error){
 

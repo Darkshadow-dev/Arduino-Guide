@@ -5,8 +5,8 @@ It is not a replacement for the Arduino C++ compiler; use /compile for real buil
 import re
 
 TOKEN_RE = re.compile(r'''\s+|//[^\n]*|/\*[\s\S]*?\*/|(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(?:0[xX][\da-fA-F]+)|(?:\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|(?:[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)|(?:\+\+|--|\+=|-=|\*=|/=|==|!=|<=|>=|&&|\|\||<<|>>|->)|[^\s]''')
-TYPES = {'void','bool','boolean','byte','char','unsigned','signed','short','int','long','float','double','String','string','size_t','uint8_t','uint16_t','uint32_t','int8_t','int16_t','int32_t','const','static','volatile','PROGMEM'}
-CONSTANTS = {'HIGH':1,'LOW':0,'INPUT':'INPUT','OUTPUT':'OUTPUT','INPUT_PULLUP':'INPUT_PULLUP','LED_BUILTIN':13,'A0':'A0','A1':'A1','A2':'A2','A3':'A3','A4':'A4','A5':'A5','true':True,'false':False,'PI':3.141592653589793,'TWO_PI':6.283185307179586,'LSBFIRST':0,'MSBFIRST':1,'RISING':'RISING','FALLING':'FALLING','CHANGE':'CHANGE'}
+TYPES = {'void','bool','boolean','byte','char','unsigned','signed','short','int','long','float','double','String','string','size_t','uint8_t','uint16_t','uint32_t','int8_t','int16_t','int32_t','const','static','volatile','PROGMEM','Servo','Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107','SSD1306'}
+CONSTANTS = {'HIGH':1,'LOW':0,'INPUT':'INPUT','OUTPUT':'OUTPUT','INPUT_PULLUP':'INPUT_PULLUP','LED_BUILTIN':13,'A0':'A0','A1':'A1','A2':'A2','A3':'A3','A4':'A4','A5':'A5','true':True,'false':False,'PI':3.141592653589793,'TWO_PI':6.283185307179586,'LSBFIRST':0,'MSBFIRST':1,'RISING':'RISING','FALLING':'FALLING','CHANGE':'CHANGE','SSD1306_WHITE':1,'SSD1306_BLACK':0,'SSD1306_INVERSE':2,'SSD1306_SWITCHCAPVCC':2,'SSD1306_EXTERNALVCC':1,'SSD1306_DISPLAYON':1,'SSD1306_DISPLAYOFF':0,'WHITE':1,'BLACK':0,'INVERSE':2}
 
 class GSEError(ValueError): pass
 
@@ -15,7 +15,9 @@ class Parser:
         self.defines = dict(CONSTANTS)
         for macro, raw in re.findall(r'^\s*#\s*define\s+(\w+)\s+([^\n]+)', source, flags=re.M):
             raw = raw.strip()
-            if re.fullmatch(r'-?\d+(?:\.\d+)?', raw):
+            if re.fullmatch(r'-?0[xX][\da-fA-F]+', raw):
+                self.defines[macro] = int(raw, 16)
+            elif re.fullmatch(r'-?\d+(?:\.\d+)?', raw):
                 self.defines[macro] = float(raw) if '.' in raw else int(raw)
             elif raw in ('true','false'): self.defines[macro] = raw == 'true'
         source = re.sub(r'^\s*#\s*(?:include|define|pragma)\s*[^\n]*', '', source, flags=re.M)
@@ -50,6 +52,16 @@ class Parser:
             try:
                 typ=self.parse_type()
                 name=self.pop()
+                if typ.split()[-1] in ('Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107') and self.accept('('):
+                    depth=1
+                    while self.peek() and depth:
+                        token=self.pop()
+                        if token=='(': depth+=1
+                        elif token==')': depth-=1
+                    if depth: raise GSEError('Unclosed display constructor.')
+                    self.expect(';')
+                    self.globals.append({'op':'DECLARE','name':name,'value':{'type':'VALUE','value':0}})
+                    continue
                 if self.accept('('):
                     params=self.parse_params_after_open()
                     if self.peek()=='{':
@@ -175,7 +187,7 @@ class Parser:
             out=[{'op':'DECLARE','name':name,'value':value}]
         else:
             name=self.pop()
-            if name in ('Serial.begin','Wire.begin','SPI.begin') or name.endswith('.begin') or name in ('pinMode','digitalWrite','analogWrite','Serial.print','Serial.println','delay','delayMicroseconds','tone','noTone','randomSeed','attachInterrupt','detachInterrupt','EEPROM.write','display.clearDisplay','display.display','display.setTextSize','display.setTextColor','display.setCursor','display.print','display.println','display.drawPixel','display.drawLine','display.drawRect'):
+            if name in ('Serial.begin','Wire.begin','SPI.begin') or name.endswith('.begin') or name in ('pinMode','digitalWrite','analogWrite','Serial.print','Serial.println','delay','delayMicroseconds','tone','noTone','randomSeed','attachInterrupt','detachInterrupt','EEPROM.write','display.clearDisplay','display.display','display.setTextSize','display.setTextColor','display.setCursor','display.print','display.println','display.drawPixel','display.drawLine','display.drawRect','display.fillRect','display.drawFastHLine','display.drawFastVLine','display.drawCircle','display.fillCircle','display.drawRoundRect','display.fillRoundRect','display.invertDisplay','display.dim','display.setRotation','display.startscrollright','display.startscrollleft','display.stopscroll') or name.endswith('.attach') or name.endswith('.detach') or name.endswith('.write') or name.endswith('.writeMicroseconds') or name.endswith('.read') or name.endswith('.attached') or ('.' in name and name.rsplit('.',1)[-1] in ('clearDisplay','display','setTextSize','setTextColor','setCursor','print','println','drawPixel','drawLine','drawRect','fillRect','drawFastHLine','drawFastVLine','drawCircle','fillCircle','drawRoundRect','fillRoundRect','invertDisplay','dim','setRotation','startscrollright','startscrollleft','stopscroll')):
                 self.expect('('); args=self.args_after_open(); out=self.call_statement(name,args)
             elif self.peek() in ('=','+=','-=','*=','/=','++','--'):
                 op=self.pop()
@@ -212,9 +224,19 @@ class Parser:
         if n=='EEPROM.write': return [{'op':'EEPROM_WRITE','address':v(0),'value':v(1)}]
         if n=='attachInterrupt': return [{'op':'ATTACH_INTERRUPT','interrupt':v(0),'function':a[1].get('value','') if len(a)>1 else '', 'mode':v(2)}]
         if n=='detachInterrupt': return [{'op':'DETACH_INTERRUPT','interrupt':v(0)}]
-        oled={'display.begin':'OLED_BEGIN','display.clearDisplay':'OLED_CLEAR','display.display':'OLED_DISPLAY','display.setTextSize':'OLED_TEXT_SIZE','display.setTextColor':'OLED_TEXT_COLOR','display.setCursor':'OLED_CURSOR','display.print':'OLED_PRINT','display.println':'OLED_PRINTLN','display.drawPixel':'OLED_PIXEL','display.drawLine':'OLED_LINE','display.drawRect':'OLED_RECT'}
-        if n in oled:
-            op=oled[n]; keys={'OLED_TEXT_SIZE':['value'],'OLED_TEXT_COLOR':['value'],'OLED_CURSOR':['x','y'],'OLED_PRINT':['value'],'OLED_PRINTLN':['value'],'OLED_PIXEL':['x','y','color'],'OLED_LINE':['x1','y1','x2','y2','color'],'OLED_RECT':['x','y','w','h','color']}.get(op,[])
+        if n.endswith('.attach'):
+            return [{'op':'SERVO_ATTACH','object':n.rsplit('.',1)[0],'pin':v(0)}]
+        if n.endswith('.detach'):
+            return [{'op':'SERVO_DETACH','object':n.rsplit('.',1)[0]}]
+        if n.endswith('.write'):
+            return [{'op':'SERVO_WRITE','object':n.rsplit('.',1)[0],'angle':v(0)}]
+        if n.endswith('.writeMicroseconds'):
+            return [{'op':'SERVO_WRITE_US','object':n.rsplit('.',1)[0],'value':v(0)}]
+        oled_methods={'begin':'OLED_BEGIN','clearDisplay':'OLED_CLEAR','display':'OLED_DISPLAY','setTextSize':'OLED_TEXT_SIZE','setTextColor':'OLED_TEXT_COLOR','setCursor':'OLED_CURSOR','print':'OLED_PRINT','println':'OLED_PRINTLN','drawPixel':'OLED_PIXEL','drawLine':'OLED_LINE','drawRect':'OLED_RECT','fillRect':'OLED_FILL_RECT','drawFastHLine':'OLED_HLINE','drawFastVLine':'OLED_VLINE','drawCircle':'OLED_CIRCLE','fillCircle':'OLED_FILL_CIRCLE','drawRoundRect':'OLED_ROUND_RECT','fillRoundRect':'OLED_FILL_ROUND_RECT','invertDisplay':'OLED_INVERT','dim':'OLED_DIM','setRotation':'OLED_ROTATION','startscrollright':'OLED_SCROLL_RIGHT','startscrollleft':'OLED_SCROLL_LEFT','stopscroll':'OLED_SCROLL_STOP'}
+        method=n.rsplit('.',1)[-1]
+        if '.' in n and method in oled_methods and n not in ('Wire.begin','SPI.begin','Serial.begin'):
+            op=oled_methods[method]
+            keys={'OLED_TEXT_SIZE':['value'],'OLED_TEXT_COLOR':['value'],'OLED_CURSOR':['x','y'],'OLED_PRINT':['value'],'OLED_PRINTLN':['value'],'OLED_PIXEL':['x','y','color'],'OLED_LINE':['x1','y1','x2','y2','color'],'OLED_RECT':['x','y','width','height','color'],'OLED_FILL_RECT':['x','y','width','height','color'],'OLED_HLINE':['x','y','width','color'],'OLED_VLINE':['x','y','height','color'],'OLED_CIRCLE':['x','y','r','color'],'OLED_FILL_CIRCLE':['x','y','r','color'],'OLED_ROUND_RECT':['x','y','width','height','r','color'],'OLED_FILL_ROUND_RECT':['x','y','width','height','r','color'],'OLED_INVERT':['value'],'OLED_DIM':['value'],'OLED_ROTATION':['value'],'OLED_SCROLL_RIGHT':['start','stop'],'OLED_SCROLL_LEFT':['start','stop']}.get(op,[])
             inst={'op':op}; inst.update({k:v(i) for i,k in enumerate(keys)}); return [inst]
         if n.endswith('.begin'): return []
         raise GSEError(f'unsupported call {n}')

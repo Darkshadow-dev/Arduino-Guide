@@ -153,8 +153,7 @@
 
                 <div id="oled16">
                     <div id="oled16Screen">
-                        OLED DISPLAY<br>
-                        128 × 64
+                        <canvas id="oled16Canvas" width="128" height="64"></canvas>
                     </div>
 
                     <div class="oled16Pins">
@@ -167,6 +166,17 @@
                         <div class="oled16Pin"></div>
                         <div class="oled16Pin"></div>
                     </div>
+                </div>
+
+                <!-- SERVO MOTOR -->
+                <div id="servoUnit" aria-label="Simulated servo motor">
+                    <div class="servoTopLabel">SERVO MOTOR · D9</div>
+                    <div id="servoCase">
+                        <div id="servoHub"></div>
+                        <div id="servoHorn"></div>
+                        <div id="servoAngle">0°</div>
+                    </div>
+                    <div id="servoStatus">DETACHED</div>
                 </div>
 
                 <!-- SENSORS -->
@@ -303,7 +313,7 @@ const statusBox=document.getElementById("simulatorStatus");
 const consoleBox=document.getElementById("simulatorConsole");
 const gseVariables = {};
 const gseFunctionScopes = [];
-const GSE_SERVER="https://arduino-guide-6.onrender.com";
+const GSE_SERVER=(location.hostname==="localhost"||location.hostname==="127.0.0.1")?"http://127.0.0.1:5000":"https://arduino-guide-6.onrender.com";
 let gse=null;
 const token=new URLSearchParams(window.location.search).get("gse");
 
@@ -471,6 +481,16 @@ async function resolveGSEValue(value){
                 );
             }
 
+if(value.function==="F"||value.function==="String")return args.length?args[0]:"";
+if(value.function==="round")return Math.round(Number(args[0])||0);
+if(value.function==="floor")return Math.floor(Number(args[0])||0);
+if(value.function==="ceil")return Math.ceil(Number(args[0])||0);
+if(value.function==="sin")return Math.sin(Number(args[0])||0);
+if(value.function==="cos")return Math.cos(Number(args[0])||0);
+if(value.function==="tan")return Math.tan(Number(args[0])||0);
+if(value.function==="log")return Math.log(Number(args[0])||1);
+if(value.function==="exp")return Math.exp(Number(args[0])||0);
+if(value.function==="sq")return Math.pow(Number(args[0])||0,2);
 if(value.function==="millis"){
     return simulatorState.time;
 }
@@ -568,6 +588,12 @@ if(value.function==="random"){
     }
 }
 
+if(/\.read$/.test(value.function)){
+    return executeServoRead(value.function.slice(0,-5));
+}
+if(/\.attached$/.test(value.function)){
+    return executeServoAttached(value.function.slice(0,-9))?1:0;
+}
 if(value.function==="digitalPinToInterrupt"){
     return digitalPinToInterrupt(
         args[0]
@@ -746,19 +772,11 @@ if(value.function==="digitalPinToInterrupt"){
 
         if(value.type==="ARITHMETIC"){
 
-            const left=
-                Number(
-                    await resolveGSEValue(
-                        value.left
-                    )
-                );
-
-            const right=
-                Number(
-                    await resolveGSEValue(
-                        value.right
-                    )
-                );
+            const rawLeft=await resolveGSEValue(value.left);
+            const rawRight=await resolveGSEValue(value.right);
+            if(value.operator==="+"&&(typeof rawLeft==="string"||typeof rawRight==="string"))return String(rawLeft)+String(rawRight);
+            const left=Number(rawLeft)||0;
+            const right=Number(rawRight)||0;
 
 switch(value.operator){
     case "+":
@@ -946,7 +964,7 @@ function executeDigitalWrite(instruction){
 function executeDigitalRead(instruction){
     const pinNumber=instruction.pin;
     const pin=getPin(pinNumber);
-
+    if(pin.mode==="INPUT_PULLUP")return pin.input?0:1;
     return pin.input?1:0;
 }
 
@@ -1678,11 +1696,26 @@ function executeEEPROMRead(
     return eepromState.memory[address];
 }
 
+function updateServoVisual(objectName){
+    const servo=getServo(objectName);
+    const root=document.getElementById("servoUnit");
+    const horn=document.getElementById("servoHorn");
+    const angle=document.getElementById("servoAngle");
+    const status=document.getElementById("servoStatus");
+    if(!root||!horn||!angle||!status)return;
+    root.dataset.object=objectName;
+    horn.style.transform="translate(-50%,-50%) rotate("+(Number(servo.angle)||0)+"deg)";
+    angle.textContent=(Number(servo.angle)||0)+"°";
+    status.textContent=servo.attached?"ATTACHED · D"+servo.pin:"DETACHED";
+    root.classList.toggle("attached",!!servo.attached);
+}
+
 function executeServoAttach(objectName,pin){
     const servo=getServo(objectName);
 
     servo.attached=true;
     servo.pin=Number(pin);
+    updateServoVisual(objectName);
 
     simulatorLog(
         "Servo "+
@@ -1712,6 +1745,7 @@ function executeServoWrite(objectName,angle){
             Number(angle)
         )
     );
+    updateServoVisual(objectName);
 
     simulatorLog(
         "Servo "+
@@ -1726,6 +1760,7 @@ function executeServoDetach(objectName){
 
     servo.attached=false;
     servo.pin=null;
+    updateServoVisual(objectName);
 
     simulatorLog(
         "Servo "+
@@ -1780,6 +1815,9 @@ const oledState = {
     textSize:1,
     textColor:1,
     displayOn:true,
+    inverted:false,
+    dim:false,
+    rotation:0,
     buffer:null
 };
 
@@ -1789,9 +1827,7 @@ const oledState = {
    ============================================================ */
 
 function getOLEDCanvas(){
-    return document.getElementById(
-        "oled4Canvas"
-    );
+    return document.getElementById("oled4Canvas");
 }
 
 
@@ -1833,12 +1869,11 @@ function clearOLEDFramebuffer(){
    ============================================================ */
 
 function renderOLED(){
-    const canvas=getOLEDCanvas();
+    const canvases=[getOLEDCanvas(),document.getElementById("oled16Canvas")].filter(Boolean);
+    for(const canvas of canvases)renderOLEDCanvas(canvas);
+}
 
-    if(!canvas){
-        return;
-    }
-
+function renderOLEDCanvas(canvas){
     const renderWidth=
         OLED_WIDTH*
         OLED_RENDER_SCALE;
@@ -1872,7 +1907,7 @@ function renderOLED(){
     /*
         OLED background.
     */
-    context.fillStyle="#061313";
+    context.fillStyle=oledState.inverted?"#49ffff":"#061313";
 
     context.fillRect(
         0,
@@ -1896,7 +1931,8 @@ function renderOLED(){
 
         for(let x=0;x<OLED_WIDTH;x++){
 
-            if(!oledState.buffer[y][x]){
+            const pixel=!!oledState.buffer[y][x];
+            if(!pixel&&!oledState.inverted){
                 continue;
             }
 
@@ -1911,10 +1947,9 @@ function renderOLED(){
             /*
                 Small glow around illuminated pixel.
             */
-            context.fillStyle=
-                "rgba(73,255,255,.12)";
+            context.fillStyle=(oledState.inverted&&pixel)?"rgba(0,0,0,0)":(oledState.dim?"rgba(73,255,255,.04)":"rgba(73,255,255,.12)");
 
-            context.fillRect(
+            if(!(oledState.inverted&&pixel))context.fillRect(
                 px-1,
                 py-1,
                 OLED_RENDER_SCALE+2,
@@ -1924,8 +1959,7 @@ function renderOLED(){
             /*
                 Main OLED pixel.
             */
-            context.fillStyle=
-                "#49ffff";
+            context.fillStyle=oledState.inverted?(pixel?"#061313":"#49ffff"):(oledState.dim?"#174f4f":"#49ffff");
 
             context.fillRect(
                 px,
@@ -2997,6 +3031,12 @@ case "SERVO_WRITE":{
     break;
 }
 
+case "SERVO_WRITE_US":{
+    const pulse=Number(await resolveGSEValue(instruction.value));
+    executeServoWrite(instruction.object,Math.round((pulse-1000)*180/1000));
+    break;
+}
+
 case "SERVO_DETACH":{
     executeServoDetach(
         instruction.object
@@ -3114,26 +3154,63 @@ case "SERVO_DETACH":{
 
             break;
 
-        case "OLED_RECT":
-
-            oledFillRect(
-                await resolveGSEValue(
-                    instruction.x
-                ),
-                await resolveGSEValue(
-                    instruction.y
-                ),
-                await resolveGSEValue(
-                    instruction.width
-                ),
-                await resolveGSEValue(
-                    instruction.height
-                ),
-                await resolveGSEValue(
-                    instruction.color
-                )
-            );
-
+        case "OLED_RECT":{
+            const x=await resolveGSEValue(instruction.x);
+            const y=await resolveGSEValue(instruction.y);
+            const w=await resolveGSEValue(instruction.width);
+            const h=await resolveGSEValue(instruction.height);
+            const c=await resolveGSEValue(instruction.color);
+            oledDrawLine(x,y,x+w-1,y,c);
+            oledDrawLine(x,y+h-1,x+w-1,y+h-1,c);
+            oledDrawLine(x,y,x,y+h-1,c);
+            oledDrawLine(x+w-1,y,x+w-1,y+h-1,c);
+            break;
+        }
+        case "OLED_FILL_RECT":
+            oledFillRect(await resolveGSEValue(instruction.x),await resolveGSEValue(instruction.y),await resolveGSEValue(instruction.width),await resolveGSEValue(instruction.height),await resolveGSEValue(instruction.color));
+            break;
+        case "OLED_HLINE":
+            oledDrawLine(await resolveGSEValue(instruction.x),await resolveGSEValue(instruction.y),Number(await resolveGSEValue(instruction.x))+Number(await resolveGSEValue(instruction.width))-1,await resolveGSEValue(instruction.y),await resolveGSEValue(instruction.color));
+            break;
+        case "OLED_VLINE":
+            oledDrawLine(await resolveGSEValue(instruction.x),await resolveGSEValue(instruction.y),await resolveGSEValue(instruction.x),Number(await resolveGSEValue(instruction.y))+Number(await resolveGSEValue(instruction.height))-1,await resolveGSEValue(instruction.color));
+            break;
+        case "OLED_CIRCLE":
+        case "OLED_FILL_CIRCLE":{
+            const cx=Number(await resolveGSEValue(instruction.x));
+            const cy=Number(await resolveGSEValue(instruction.y));
+            const r=Math.max(0,Math.min(64,Number(await resolveGSEValue(instruction.r))||0));
+            const color=await resolveGSEValue(instruction.color);
+            for(let yy=-r;yy<=r;yy++){
+                for(let xx=-r;xx<=r;xx++){
+                    const d=xx*xx+yy*yy;
+                    if(instruction.op==="OLED_FILL_CIRCLE"?d<=r*r:Math.abs(d-r*r)<=Math.max(1,r))oledDrawPixel(cx+xx,cy+yy,color);
+                }
+            }
+            break;
+        }
+        case "OLED_ROUND_RECT":
+        case "OLED_FILL_ROUND_RECT":{
+            const x=await resolveGSEValue(instruction.x),y=await resolveGSEValue(instruction.y),w=await resolveGSEValue(instruction.width),h=await resolveGSEValue(instruction.height),c=await resolveGSEValue(instruction.color);
+            if(instruction.op==="OLED_FILL_ROUND_RECT")oledFillRect(x,y,w,h,c);
+            else {oledDrawLine(x,y,x+w-1,y,c);oledDrawLine(x,y+h-1,x+w-1,y+h-1,c);oledDrawLine(x,y,x,y+h-1,c);oledDrawLine(x+w-1,y,x+w-1,y+h-1,c);}
+            break;
+        }
+        case "OLED_INVERT":
+            oledState.inverted=!!(await resolveGSEValue(instruction.value));
+            break;
+        case "OLED_DIM":
+            oledState.dim=!!(await resolveGSEValue(instruction.value));
+            break;
+        case "OLED_ROTATION":{
+            oledState.rotation=Number(await resolveGSEValue(instruction.value))||0;
+            for(const id of ["oled4Canvas","oled16Canvas"]){const c=document.getElementById(id);if(c)c.style.transform="rotate("+((oledState.rotation%4)*90)+"deg)";}
+            break;
+        }
+        case "OLED_SCROLL_RIGHT":
+        case "OLED_SCROLL_LEFT":
+        case "OLED_SCROLL_STOP":
+            simulatorLog("OLED hardware scrolling is not animated in this simulator.");
             break;
 
         case "DELAY":{
