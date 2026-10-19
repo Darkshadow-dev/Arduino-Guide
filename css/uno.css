@@ -680,6 +680,8 @@ body{
     box-sizing:border-box;
 }
 
+.oledTypeLabel{position:absolute;left:0;right:0;top:-16px;text-align:center;color:#829ca0;font:bold 7px monospace;letter-spacing:.2px;white-space:nowrap}
+
 #oled4 .oledScreen{
     position:absolute;
     left:8px;
@@ -715,7 +717,7 @@ body{
     justify-content:space-between;
     gap:2px;
     color:#aaa;
-    font:5px monospace;
+    font:6px monospace;
     text-align:center;
 }
 
@@ -746,7 +748,7 @@ body{
     background:#061313;
     border:1px solid #173f3f;
     color:#49ffff;
-    font:7px monospace;
+    font:8px monospace;
     padding:6px;
     box-sizing:border-box;
 }
@@ -755,16 +757,19 @@ body{
     position:absolute;
     left:8px;
     right:8px;
-    bottom:5px;
     display:flex;
     justify-content:space-between;
 }
 
-.oled16Pin{
+.oled16Pins.top{top:1px}
+.oled16Pins.bottom{bottom:3px}
+.oled16Pins i{
     width:4px;
     height:4px;
-    border-radius:50%;
-    background:#666;
+    display:block;
+    border-radius:1px;
+    background:linear-gradient(180deg,#d5c18d,#897644);
+    box-shadow:0 0 0 1px #4f492f;
 }
 
 /* ============================================================
@@ -813,6 +818,11 @@ body{
     color:#aaa;
     font:8px monospace;
 }
+
+#analogRouting{position:absolute;left:22px;top:154px;width:96px;padding:7px 6px;display:grid;gap:5px;border:1px solid #506268;border-radius:7px;background:linear-gradient(145deg,#34454a,#1e2b30);box-shadow:0 3px 8px #0005;color:#e5eeee;font:7px monospace;pointer-events:auto;z-index:12}
+#analogRouting strong{font-size:8px;letter-spacing:.3px;color:#78d4c5}
+#analogRouting label{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#dce7e5}
+#analogRouting small{color:#aab9ba;font:7px/1.3 Arial,sans-serif}
 
 #joystick.active{
     cursor:grabbing;
@@ -942,7 +952,6 @@ body{
 
 #powerKit{position:absolute;left:432px;top:27px;width:174px;min-height:252px;padding:10px 10px 8px;border:1px solid #8c9ea2;border-radius:10px;background:linear-gradient(145deg,#fcfdf9,#dce5e3);box-shadow:0 6px 13px #26373d4d;color:#21353d;pointer-events:auto;font:8px Arial,sans-serif;z-index:7}
 .powerKitHeading{display:flex;justify-content:space-between;align-items:center;color:#354b56;font:bold 8px monospace;letter-spacing:.2px}
-.powerKitHeading small{color:#178783;font-size:7px}
 .powerSources{display:flex;gap:5px;margin:7px 0 5px}
 .sourceButton{flex:1;padding:5px 3px;border:1px solid #9aabae;border-radius:5px;background:#f8faf8;color:#485a62;font:bold 7px Arial;cursor:pointer}
 .sourceButton.active{border-color:#198f88;background:#d3f0e6;color:#086560;box-shadow:inset 0 0 0 1px #49b69e}
@@ -963,14 +972,30 @@ body{
 .solarControl output{color:#0c7974;font: bold 8px monospace}
 #solarVoltage{width:100%;height:13px;margin:3px 0 4px;accent-color:#138f87;cursor:pointer}
 #solarVoltage:disabled{opacity:.45;cursor:not-allowed}
-.resistorControls{display:flex;align-items:center;justify-content:center;gap:5px;margin:3px 0 6px;color:#56656b;font:bold 7px monospace}
+.resistorControls{display:flex;align-items:center;justify-content:center;gap:5px;margin:3px 0 6px;color:#56656b;font:bold 8px monospace}
 .resistorControls label{display:flex;align-items:center;gap:2px}
-.resistorControls select{width:43px;padding:2px 1px;border:1px solid #a8b3b2;border-radius:3px;background:#fff;color:#27373c;font:7px monospace}
 .dividerSymbol{color:#159187;font-size:12px}
+.scrollSelect{position:relative;display:inline-flex;vertical-align:middle;min-width:0;z-index:1}
+.scrollSelectNative{position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;opacity:0!important;pointer-events:none!important}
+.scrollSelectButton{display:flex;align-items:center;justify-content:space-between;gap:4px;width:76px;min-height:23px;padding:3px 5px;border:1px solid #8f9fa0;border-radius:4px;background:linear-gradient(#fff,#e8efec);color:#24363a;font:8px monospace;text-align:left;cursor:pointer}
+.scrollSelectButton::after{content:"▾";color:#197d77;font-size:9px}
+.scrollSelectButton:focus-visible,.scrollSelectOption:focus-visible{outline:2px solid #19a89e;outline-offset:1px}
+.scrollSelectMenu{position:absolute;top:calc(100% + 2px);left:0;min-width:100%;max-height:114px;overflow-y:auto;overscroll-behavior:contain;padding:2px;border:1px solid #728887;border-radius:5px;background:#f8fbf8;box-shadow:0 5px 12px #101b1c55;z-index:50;scrollbar-width:thin;scrollbar-color:#6a9993 #e2eae7}
+.scrollSelectMenu[hidden]{display:none}
+.scrollSelectOption{display:block;box-sizing:border-box;width:100%;height:21px;min-height:21px;padding:0 6px;border:0;border-radius:3px;background:transparent;color:#263b3e;font:8px/21px monospace;text-align:left;white-space:nowrap;cursor:pointer}
+.scrollSelectMenu::-webkit-scrollbar{width:8px}
+.scrollSelectMenu::-webkit-scrollbar-track{border-radius:5px;background:#e2eae7}
+.scrollSelectMenu::-webkit-scrollbar-thumb{border:2px solid #e2eae7;border-radius:5px;background:#6a9993}
+.scrollSelectOption:hover,.scrollSelectOption[aria-selected="true"]{background:#d2ece5;color:#075c58}
+#analogRouting .scrollSelect{width:53px;justify-content:flex-end}
+#analogRouting .scrollSelectButton{width:53px;min-height:21px;padding:2px 4px;background:#f2f7f5;font-size:8px}
+#analogRouting .scrollSelectMenu{min-width:56px}
+.resistorControls .scrollSelectButton{width:50px;min-height:21px;padding:2px 4px;font-size:8px}
+.resistorControls .scrollSelectMenu{min-width:54px;max-height:114px}
 .voltageReadings{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px;border-radius:5px;background:#edf2ee;border:1px solid #d1dcd7}
 .voltageReadings span{display:flex;flex-direction:column;gap:2px;color:#78878b;font:bold 6px monospace}
 .voltageReadings b{color:#1d4548;font:bold 9px monospace}
-.powerNote{display:block;margin-top:5px;color:#66767a;font:6px/1.25 Arial,sans-serif}
+.powerNote{display:block;margin-top:5px;color:#66767a;font:7px/1.3 Arial,sans-serif}
 .powerNote.overvoltage{color:#a62828;font-weight:bold}
 
 #servoUnit{position:absolute;left:386px;top:290px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
