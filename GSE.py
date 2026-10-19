@@ -361,8 +361,10 @@ class Parser:
         method=n.rsplit('.',1)[-1]
         if '.' in n and method in oled_methods and n not in ('Wire.begin','SPI.begin','Serial.begin'):
             op=oled_methods[method]
-            keys={'OLED_TEXT_SIZE':['value'],'OLED_TEXT_COLOR':['value'],'OLED_CURSOR':['x','y'],'OLED_PRINT':['value'],'OLED_PRINTLN':['value'],'OLED_PIXEL':['x','y','color'],'OLED_LINE':['x1','y1','x2','y2','color'],'OLED_RECT':['x','y','width','height','color'],'OLED_FILL_RECT':['x','y','width','height','color'],'OLED_HLINE':['x','y','width','color'],'OLED_VLINE':['x','y','height','color'],'OLED_CIRCLE':['x','y','r','color'],'OLED_FILL_CIRCLE':['x','y','r','color'],'OLED_ROUND_RECT':['x','y','width','height','r','color'],'OLED_FILL_ROUND_RECT':['x','y','width','height','r','color'],'OLED_INVERT':['value'],'OLED_DIM':['value'],'OLED_ROTATION':['value'],'OLED_SCROLL_RIGHT':['start','stop'],'OLED_SCROLL_LEFT':['start','stop']}.get(op,[])
-            inst={'op':op,'object':object_name}; inst.update({k:v(i) for i,k in enumerate(keys)}); return [inst]
+            keys={'OLED_BEGIN':['power','address'],'OLED_TEXT_SIZE':['value'],'OLED_TEXT_COLOR':['value'],'OLED_CURSOR':['x','y'],'OLED_PRINT':['value'],'OLED_PRINTLN':['value'],'OLED_PIXEL':['x','y','color'],'OLED_LINE':['x1','y1','x2','y2','color'],'OLED_RECT':['x','y','width','height','color'],'OLED_FILL_RECT':['x','y','width','height','color'],'OLED_HLINE':['x','y','width','color'],'OLED_VLINE':['x','y','height','color'],'OLED_CIRCLE':['x','y','r','color'],'OLED_FILL_CIRCLE':['x','y','r','color'],'OLED_ROUND_RECT':['x','y','width','height','r','color'],'OLED_FILL_ROUND_RECT':['x','y','width','height','r','color'],'OLED_INVERT':['value'],'OLED_DIM':['value'],'OLED_ROTATION':['value'],'OLED_SCROLL_RIGHT':['start','stop'],'OLED_SCROLL_LEFT':['start','stop']}.get(op,[])
+            inst={'op':op,'object':object_name}; inst.update({k:v(i) for i,k in enumerate(keys)})
+            if op=='OLED_BEGIN' and len(a)<2: inst['address']={'type':'VALUE','value':0x3C}
+            return [inst]
         if n.endswith('.begin'): return []
         raise GSEError(f'unsupported call {n}')
 

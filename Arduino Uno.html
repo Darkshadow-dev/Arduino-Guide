@@ -794,12 +794,10 @@ if(value.function==="digitalPinToInterrupt"){
                 );
             }
 
-            if(
-                value.function==="display.begin"
-            ){
-
-                initializeOLED();
-
+            const oledBeginMatch=String(value.function||"").match(/^([A-Za-z_$][\w$]*)\.begin$/);
+            if(oledBeginMatch && gse && gse.library_objects && gse.library_objects[oledBeginMatch[1]]==="OLED"){
+                activateOLED(oledBeginMatch[1]);
+                initializeOLED(args.length>1?args[1]:0x3C);
                 return true;
             }
 
@@ -2379,9 +2377,10 @@ function renderOLEDCanvas(canvas){
    OLED BEGIN
    ============================================================ */
 
-function initializeOLED(){
+function initializeOLED(address=0x3C){
     oledState.initialized=true;
-    oledState.address=0x3C;
+    const parsedAddress=Number(address);
+    oledState.address=Number.isFinite(parsedAddress)?parsedAddress:0x3C;
 
     oledState.cursorX=0;
     oledState.cursorY=0;
@@ -2397,7 +2396,7 @@ function initializeOLED(){
     renderOLED();
 
     simulatorLog(
-        "OLED initialized at I2C address 0x3C"
+        "OLED initialized at I2C address 0x"+oledState.address.toString(16).toUpperCase()
     );
 }
 
@@ -3378,7 +3377,7 @@ case "SERVO_DETACH":{
 
         case "OLED_BEGIN":
 
-            initializeOLED();
+            initializeOLED(instruction.address===undefined?0x3C:await resolveGSEValue(instruction.address));
 
             break;
 
