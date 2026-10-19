@@ -496,6 +496,8 @@ header::-webkit-scrollbar{
     <option value="multi-led">Multi LED</option>
     <option value="buzzer">Buzzer</option>
     <option value="analog">Analog</option>
+    <option value="voltage-monitor">Solar / 9V Voltage Monitor</option>
+    <option value="servo">Servo Sweep</option>
     <option value="joystick">Joystick</option>
     <option value="serial">Serial</option>
     <option value="timer">GSE Full Test</option>
@@ -3686,6 +3688,42 @@ void loop(){
 void loop(){
   Serial.println(analogRead(A0));
   delay(200);
+}`,
+
+    "voltage-monitor":`/*
+  Voltage divider: source (+) -> R1 -> A0 -> R2 -> GND
+  Start with R1 = R2 = 10k ohms in the simulator.
+  The divider keeps a 9V battery within the Uno's 0-5V A0 range.
+*/
+void setup(){
+  Serial.begin(9600);
+}
+
+void loop(){
+  int adc = analogRead(A0);
+  long sourceMillivolts = (long)adc * 10000 / 1023;
+  Serial.print("A0 ADC: ");
+  Serial.print(adc);
+  Serial.print("  Source mV: ");
+  Serial.println(sourceMillivolts);
+  delay(500);
+}`,
+
+    servo:`#include <Servo.h>
+
+Servo arm;
+
+void setup(){
+  arm.attach(9);
+}
+
+void loop(){
+  arm.write(0);
+  delay(500);
+  arm.write(90);
+  delay(500);
+  arm.write(180);
+  delay(500);
 }`,
 
     joystick:`void setup(){

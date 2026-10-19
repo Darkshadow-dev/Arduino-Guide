@@ -6,17 +6,7 @@
 <title>Arduino Uno Simulator</title>
 <link rel="stylesheet" href="css/uno.css">
 <style>
-/* These simulator-only styles live in this HTML file so css/uno.css does not need editing. */
 #oled16Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#061313}
-#servoUnit{position:absolute;left:445px;top:175px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
-#servoCase{position:absolute;left:50%;top:52px;transform:translateX(-50%);width:74px;height:54px;border:3px solid #8297a4;border-radius:8px;background:linear-gradient(145deg,#455b6a,#172630);box-shadow:inset 0 2px 4px #ffffff44}
-#servoHub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border:3px solid #b6c7d1;border-radius:50%;background:#344955}
-#servoHorn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(0deg);transform-origin:center;width:58px;height:7px;border-radius:5px;background:#e6edf1;border:1px solid #6d7e87}
-#servoAngle{position:absolute;top:110px;left:0;width:100%;font-weight:bold;color:#9cecff}
-#servoStatus{position:absolute;top:124px;left:0;width:100%;color:#a9bbc5}
-#servoUnit.attached #servoStatus{color:#087b3e}
-#servoUnit.attached #servoCase{box-shadow:0 0 9px #39c87966,inset 0 2px 4px #ffffff44}
-@media(max-width:700px){#servoUnit{transform:scale(.8);transform-origin:top left}}
 </style>
 </head>
 <body>
@@ -79,6 +69,10 @@
             </div>
 
             <div id="crystal"></div>
+
+            <div id="usbPort" aria-label="USB Type-B programming port">
+                <span>USB</span>
+            </div>
 
             <div id="builtinLed"></div>
 
@@ -180,6 +174,30 @@
                         <div class="oled16Pin"></div>
                     </div>
                 </div>
+
+                <!-- SOLAR / BATTERY VOLTAGE LAB: VIRTUAL COMPONENTS CONNECTED TO A0 BY CODE -->
+                <section id="powerKit" aria-label="Voltage source and resistor divider">
+                    <div class="powerKitHeading"><span>POWER + VOLTAGE LAB</span><small>A0 INPUT</small></div>
+                    <div class="powerSources">
+                        <button type="button" class="sourceButton active" data-source="pot" aria-pressed="true">◉ POT</button>
+                        <button type="button" class="sourceButton" data-source="solar" aria-pressed="false">☀ SOLAR</button>
+                        <button type="button" class="sourceButton" data-source="battery" aria-pressed="false">▰ 9V</button>
+                    </div>
+                    <div class="sourceVisuals" aria-hidden="true">
+                        <div class="potSourceVisual"><span></span><i></i></div>
+                        <div class="solarVisual"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                        <div class="batteryVisual"><span>9V</span><i></i><b>ALKALINE</b></div>
+                    </div>
+                    <label class="solarControl" for="solarVoltage">Solar output <output id="solarVoltageLabel">6.0 V</output></label>
+                    <input id="solarVoltage" type="range" min="0" max="9" value="6" step="0.1" aria-label="Solar panel voltage">
+                    <div class="resistorControls">
+                        <label>R1 <select id="resistorTop" aria-label="Upper voltage divider resistor"><option>1000</option><option>4700</option><option selected>10000</option><option>22000</option><option>47000</option></select> Ω</label>
+                        <span class="dividerSymbol" aria-hidden="true">÷</span>
+                        <label>R2 <select id="resistorBottom" aria-label="Lower voltage divider resistor"><option>1000</option><option>4700</option><option selected>10000</option><option>22000</option><option>47000</option></select> Ω</label>
+                    </div>
+                    <div class="voltageReadings"><span>INPUT <b id="sourceVoltageValue">0.0 V</b></span><span id="a0ModeLabel">POT → A0 <b id="a0VoltageValue">0.00 V</b></span><span>ADC <b id="adcVoltageValue">0 / 1023</b></span></div>
+                    <small id="powerNote" class="powerNote">Pot mode feeds A0 directly.</small>
+                </section>
 
                 <!-- SERVO MOTOR -->
                 <div id="servoUnit" aria-label="Simulated servo motor">
@@ -305,7 +323,7 @@
         </div>
 
         <div id="pinInfo">
-            DIGITAL 2–13 • ANALOG A0–A5 • COMPONENTS PREWIRED
+            DIGITAL 2–13 • A0 VOLTAGE METER • CODE-CONNECTED COMPONENTS · NO WIRES
         </div>
 
         <div id="simulatorVersion">
@@ -1079,9 +1097,7 @@ function executeAnalogRead(instruction){
     const pinName=String(pin);
 
     if(pinName==="A0"){
-        return Number(
-            potentiometerState.value||0
-        );
+        return readA0Value();
     }
 
     if(pinName==="A1"){
@@ -1590,6 +1606,68 @@ const potentiometerState={
     dragging:false
 };
 
+const powerKitState={source:"pot",solarVolts:6};
+
+function readA0Voltage(){
+    if(powerKitState.source==="pot"){
+        return potentiometerState.value/1023*5;
+    }
+    const sourceVolts=powerKitState.source==="battery"?9:powerKitState.solarVolts;
+    const r1=Number(document.getElementById("resistorTop")?.value||10000);
+    const r2=Number(document.getElementById("resistorBottom")?.value||10000);
+    return sourceVolts*r2/(r1+r2);
+}
+
+function readA0Value(){
+    if(powerKitState.source==="pot")return Number(potentiometerState.value||0);
+    return Math.round(Math.min(5,Math.max(0,readA0Voltage()))/5*1023);
+}
+
+function updatePowerKit(){
+    const outVolts=readA0Voltage();
+    const sourceVolts=powerKitState.source==="battery"?9:powerKitState.source==="pot"?outVolts:powerKitState.solarVolts;
+    const adc=readA0Value();
+    const sourceValue=document.getElementById("sourceVoltageValue");
+    const outValue=document.getElementById("a0VoltageValue");
+    const adcValue=document.getElementById("adcVoltageValue");
+    const solarLabel=document.getElementById("solarVoltageLabel");
+    const slider=document.getElementById("solarVoltage");
+    const modeLabel=document.getElementById("a0ModeLabel");
+    const note=document.getElementById("powerNote");
+    const kit=document.getElementById("powerKit");
+    if(kit)kit.dataset.source=powerKitState.source;
+    if(sourceValue)sourceValue.textContent=sourceVolts.toFixed(1)+" V";
+    if(outValue)outValue.textContent=outVolts.toFixed(2)+" V";
+    if(adcValue)adcValue.textContent=adc+" / 1023";
+    if(modeLabel)modeLabel.firstChild.textContent=powerKitState.source==="pot"?"POT → A0 ":"DIVIDER → A0 ";
+    if(note){
+        note.textContent=powerKitState.source==="pot"?"Pot mode feeds A0 directly; divider applies to solar and 9V.":outVolts>5?"A0 is above 5V. Increase R1 or lower the source voltage.":"R1 + R2 form a divider. Keep A0 at or below 5V.";
+        note.classList.toggle("overvoltage",powerKitState.source!=="pot"&&outVolts>5);
+    }
+    if(solarLabel)solarLabel.textContent=powerKitState.solarVolts.toFixed(1)+" V";
+    if(slider)slider.disabled=powerKitState.source!=="solar";
+    document.querySelectorAll(".sourceButton").forEach(button=>{
+        const active=button.dataset.source===powerKitState.source;
+        button.classList.toggle("active",active);
+        button.setAttribute("aria-pressed",String(active));
+    });
+    simulatorState.analogPins.A0=adc;
+}
+
+function setupPowerKit(){
+    document.querySelectorAll(".sourceButton").forEach(button=>button.addEventListener("click",()=>{
+        powerKitState.source=button.dataset.source;
+        updatePowerKit();
+    }));
+    document.getElementById("solarVoltage")?.addEventListener("input",event=>{
+        powerKitState.solarVolts=Number(event.target.value);
+        updatePowerKit();
+    });
+    document.getElementById("resistorTop")?.addEventListener("change",updatePowerKit);
+    document.getElementById("resistorBottom")?.addEventListener("change",updatePowerKit);
+    updatePowerKit();
+}
+
 function updatePotentiometer(){
     const knob=document.getElementById("potKnob");
     const value=document.getElementById("potValue");
@@ -1604,6 +1682,7 @@ function updatePotentiometer(){
 
     value.innerHTML=
         "A0<br>"+potentiometerState.value;
+    if(powerKitState.source==="pot")updatePowerKit();
 }
 
 function setupPotentiometer(){
@@ -1638,6 +1717,7 @@ function setupPotentiometer(){
             Math.round(angle/270*1023);
 
         updatePotentiometer();
+        if(powerKitState.source==="pot")updatePowerKit();
     };
 
     const release=()=>{
@@ -1804,10 +1884,14 @@ function updateServoVisual(objectName){
     const horn=document.getElementById("servoHorn");
     const angle=document.getElementById("servoAngle");
     const status=document.getElementById("servoStatus");
+    const label=root?.querySelector(".servoTopLabel");
     if(!root||!horn||!angle||!status)return;
     root.dataset.object=objectName;
-    horn.style.transform="translate(-50%,-50%) rotate("+(Number(servo.angle)||0)+"deg)";
-    angle.textContent=(Number(servo.angle)||0)+"°";
+    const servoAngle=Math.max(0,Math.min(180,Number(servo.angle)||0));
+    servo.angle=servoAngle;
+    horn.style.transform="translate(-50%,-50%) rotate("+servoAngle+"deg)";
+    angle.textContent=servoAngle+"°";
+    if(label)label.textContent="SERVO MOTOR · "+(servo.pin===null?"D9":"D"+servo.pin);
     status.textContent=servo.attached?"ATTACHED · D"+servo.pin:"DETACHED";
     root.classList.toggle("attached",!!servo.attached);
 }
@@ -3410,6 +3494,12 @@ async function executeLoop(){
 async function startSimulator(){
     try{
 
+        setupButtons();
+        setupJoystick();
+        setupPotentiometer();
+        updatePotentiometer();
+        setupPowerKit();
+
         if(!token){
             setStatus(
                 "No GSE token.",
@@ -3417,11 +3507,6 @@ async function startSimulator(){
             );
             return;
         }
-
-        setupButtons();
-        setupJoystick();
-        setupPotentiometer();
-        updatePotentiometer();
 
         await loadGSE();
 

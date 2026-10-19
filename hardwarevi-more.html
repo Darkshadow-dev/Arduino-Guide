@@ -107,6 +107,7 @@
             <div class="hardwarevi-more-section">
 
                 <h3>Wiring PWM LED</h3>
+                <span class="example-level intermediate-level">Intermediate</span>
 
                 <p>
                     Click on the
@@ -198,6 +199,7 @@
             <div class="hardwarevi-more-section">
 
                 <h3>Analog Read</h3>
+                <span class="example-level intermediate-level">Intermediate</span>
 
                 <p>
                     Click on the
@@ -282,6 +284,22 @@
 
             </div>
 
+            <div class="hardwarevi-more-section">
+                <h3>Multiple LEDs</h3><span class="example-level intermediate-level">Intermediate</span>
+                <p>Control three LEDs independently from pins 11, 12 and 13.</p>
+                <p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=multi-led#examples">Multiple LEDs</a> example.</p>
+                <details class="wiring-card"><summary>Arduino + Three LEDs</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-LED's-circuit.png" alt="Arduino Uno wired to three LEDs through individual resistors"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Wiring Explained</summary><p>Connect each LED through its own current-limiting resistor to pins 11, 12 and 13. Connect the other LED legs to GND.</p></details>
+            </div>
+
+            <div class="hardwarevi-more-section">
+                <h3>OLED Display</h3><span class="example-level intermediate-level">Intermediate</span>
+                <p>A 128 × 64 SSD1306 display uses the Uno's I²C bus.</p>
+                <p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=oled#examples">OLED Display</a> example.</p>
+                <details class="wiring-card"><summary>Arduino + I²C OLED</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-OLED-circuit.png" alt="Four-wire I²C OLED connected to Arduino Uno"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Wiring Explained</summary><p>Connect VCC to 5V, GND to GND, SDA to A4 and SCL to A5 on the Uno.</p></details>
+            </div>
+
         </div>
 
 
@@ -294,6 +312,7 @@
             <div class="hardwarevi-more-section">
 
                 <h3>Wiring LED and Button</h3>
+                <span class="example-level">Basic</span>
 
                 <p>
                     Click on the
@@ -381,6 +400,7 @@
             <div class="hardwarevi-more-section">
 
                 <h3>Wiring a Joystick</h3>
+                <span class="example-level intermediate-level">Intermediate</span>
 
                 <p>
                     Use the joystick to read X, Y and button input.
@@ -401,7 +421,7 @@
                             <div class="wire-slide active">
 
                                 <img class="wire-img"
-                                     src="Wiring Images/Circuit/Arduino-Joystick-circuit.png">
+                                     src="Wiring Images/Circuit/Arduino-Joystick-circuit.svg"
 
                             </div>
 
@@ -433,6 +453,41 @@
 
                 </details>
 
+            </div>
+
+            <div class="hardwarevi-more-section">
+                <h3>Serial Monitor</h3><span class="example-level advanced-level">Advanced</span>
+                <p>Send sketch output to the computer over USB.</p><p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=serial#examples">Serial Monitor</a> example.</p>
+                <details class="wiring-card"><summary>Arduino ↔ Computer</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-Serial-monitor.svg" alt="Arduino Uno connected by USB to a computer Serial Monitor"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Setup Explained</summary><p>Upload the sketch, open Serial Monitor and select 9600 baud to match Serial.begin(9600).</p></details>
+            </div>
+
+            <div class="hardwarevi-more-section">
+                <h3>Timers with millis()</h3><span class="example-level advanced-level">Advanced</span>
+                <p>Toggle the built-in LED on a timed interval without pausing the loop.</p><p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=timer#examples">Timers</a> example.</p>
+                <details class="wiring-card"><summary>Built-in LED Timing</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-Timer-millis.svg" alt="Arduino Uno millis timer controlling its built-in pin 13 LED"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Timing Explained</summary><p>No external parts are needed. millis() tracks elapsed time while the program continues running other loop tasks.</p></details>
+            </div>
+
+            <div class="hardwarevi-more-section">
+                <h3>External Interrupts</h3><span class="example-level advanced-level">Advanced</span>
+                <p>A button on digital pin 2 triggers an interrupt and toggles the built-in LED.</p><p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=interrupts#examples">Interrupts</a> example.</p>
+                <details class="wiring-card"><summary>Button on D2 + INPUT_PULLUP</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-Interrupt-button.svg" alt="Momentary button between digital pin 2 and ground for an Arduino interrupt"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Wiring Explained</summary><p>Wire one side of a momentary button to D2 and the other to GND. INPUT_PULLUP needs no external pull-up resistor; pressing makes a FALLING edge.</p></details>
+            </div>
+
+            <div class="hardwarevi-more-section">
+                <h3>EEPROM Save</h3><span class="example-level advanced-level">Advanced</span>
+                <p>Save a value in the Uno's built-in non-volatile memory and read it back.</p><p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=eeprom#examples">EEPROM Save</a> example.</p>
+                <details class="wiring-card"><summary>Internal Memory + Serial Output</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-EEPROM-save.svg" alt="Arduino internal EEPROM write and read flow with result sent over USB Serial"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Memory Explained</summary><p>EEPROM is inside the Uno, so no external memory wiring is needed. The sketch writes address 0, reads it back and prints the value over USB Serial.</p></details>
+            </div>
+
+            <div class="hardwarevi-more-section">
+                <h3>PWM Control</h3><span class="example-level advanced-level">Advanced</span>
+                <p>Fade an external LED by changing the PWM duty cycle on pin 9.</p><p>Open the <a class="next-link nl-green nl-noneunderline nl-md" href="Examples.html?example=pwm-control#examples">PWM Control</a> example.</p>
+                <details class="wiring-card"><summary>Arduino + PWM LED</summary><div class="wire-gallery" data-wire-gallery><button class="gallery-btn gallery-prev" aria-label="Previous wiring image">‹</button><div class="wire-box"><div class="wire-slide active"><img class="wire-img" src="Wiring Images/Circuit/Arduino-PWM-control.svg" alt="Arduino pin 9 connected through a current-limiting resistor to an LED and ground"></div></div><button class="gallery-btn gallery-next" aria-label="Next wiring image">›</button></div></details>
+                <details><summary>Wiring Explained</summary><p>Connect D9 through a 220–330 Ω resistor to the LED anode; connect the LED cathode to GND.</p></details>
             </div>
 
         </div>

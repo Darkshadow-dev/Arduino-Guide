@@ -55,7 +55,7 @@ body{
     min-width:760px;
     height:1250px;
     background:
-        radial-gradient(circle at 50% 20%,#292d33 0,#202328 45%,#191b1f 100%);
+        radial-gradient(ellipse at 50% 40%,#303944 0,#242a31 42%,#191d23 100%);
 }
 
 /* ============================================================
@@ -133,12 +133,13 @@ body{
     left:50%;
     top:285px;
     transform:translateX(-50%);
-    background:#008b8b;
-    border:3px solid #075d5d;
-    border-radius:15px;
+    background:linear-gradient(145deg,#149da0 0%,#087c83 55%,#06646c 100%);
+    border:3px solid #07545b;
+    border-radius:19px;
     box-shadow:
         0 12px 30px rgba(0,0,0,.55),
-        inset 0 0 25px rgba(255,255,255,.06);
+        inset 0 0 25px rgba(255,255,255,.08),
+        inset 0 0 0 7px rgba(0,45,52,.11);
 }
 
 /* ============================================================
@@ -409,10 +410,10 @@ body{
     left:50%;
     top:750px;
     transform:translateX(-50%);
-    background:#e4e1d6;
-    border:3px solid #aaa79d;
-    border-radius:8px;
-    box-shadow:0 12px 30px rgba(0,0,0,.55);
+    background:linear-gradient(145deg,#f4f2e9,#deddd5);
+    border:3px solid #aab3b6;
+    border-radius:13px;
+    box-shadow:0 16px 35px rgba(0,0,0,.5),inset 0 0 0 5px rgba(255,255,255,.35);
     padding:20px;
 }
 
@@ -431,13 +432,7 @@ body{
     right:18px;
     height:9px;
     border-radius:4px;
-    background:repeating-linear-gradient(
-        to right,
-        #bbb8af 0,
-        #bbb8af 4px,
-        transparent 4px,
-        transparent 10px
-    );
+    background:linear-gradient(to bottom,transparent 0 3px,#d84c4c 3px 5px,transparent 5px),repeating-linear-gradient(to right,#c9c9c1 0,#c9c9c1 4px,transparent 4px,transparent 10px);
 }
 
 #breadboardRailTop{
@@ -466,8 +461,8 @@ body{
     align-self:center;
     justify-self:center;
     border-radius:50%;
-    background:#8d8a82;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.55);
+    background:#78828a;
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.4);
 }
 
 /* ============================================================
@@ -558,7 +553,7 @@ body{
 
 #buttonBank{
     position:absolute;
-    left:245px;
+    left:95px;
     top:210px;
     display:grid;
     grid-template-columns:repeat(4,60px);
@@ -625,7 +620,7 @@ body{
 
 #potentiometer{
     position:absolute;
-    right:30px;
+    left:270px;
     bottom:52px;
     width:82px;
     height:82px;
@@ -862,7 +857,7 @@ body{
 #buzzer{
     position:absolute;
     right:25px;
-    top:190px;
+    top:285px;
     width:75px;
     height:65px;
     background:#292b2d;
@@ -941,13 +936,52 @@ body{
 
 
 /* Interactive servo visual for GSE sketches */
-#servoUnit{position:absolute;left:445px;top:175px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace}
-.servoTopLabel{font-weight:bold;letter-spacing:.3px;margin-bottom:6px;color:#425463}
-#servoCase{position:relative;width:82px;height:72px;margin:0 auto;background:linear-gradient(145deg,#4a9dd2,#1f5c8a);border:3px solid #19415e;border-radius:9px;box-shadow:inset 0 2px 4px #ffffff44,0 3px 5px #0004}
+#usbPort{position:absolute;left:-24px;top:146px;width:32px;height:66px;border:3px solid #677783;border-radius:5px 0 0 5px;background:linear-gradient(90deg,#cbd2d7,#647681 38%,#263843 42% 70%,#a9b4ba 74%);box-shadow:0 3px 6px #003c42;display:flex;align-items:center;justify-content:center}
+#usbPort span{position:absolute;left:-1px;top:23px;transform:translateX(-100%);font:7px monospace;color:#d6ecee;letter-spacing:1px}
+#usbPort::after{content:"";position:absolute;left:7px;right:7px;top:17px;bottom:17px;border-radius:2px;background:#162b35;box-shadow:inset 0 0 0 2px #a4afb5}
+
+#powerKit{position:absolute;left:432px;top:27px;width:174px;min-height:252px;padding:10px 10px 8px;border:1px solid #8c9ea2;border-radius:10px;background:linear-gradient(145deg,#fcfdf9,#dce5e3);box-shadow:0 6px 13px #26373d4d;color:#21353d;pointer-events:auto;font:8px Arial,sans-serif;z-index:7}
+.powerKitHeading{display:flex;justify-content:space-between;align-items:center;color:#354b56;font:bold 8px monospace;letter-spacing:.2px}
+.powerKitHeading small{color:#178783;font-size:7px}
+.powerSources{display:flex;gap:5px;margin:7px 0 5px}
+.sourceButton{flex:1;padding:5px 3px;border:1px solid #9aabae;border-radius:5px;background:#f8faf8;color:#485a62;font:bold 7px Arial;cursor:pointer}
+.sourceButton.active{border-color:#198f88;background:#d3f0e6;color:#086560;box-shadow:inset 0 0 0 1px #49b69e}
+.sourceVisuals{height:48px;display:flex;align-items:center;justify-content:center}
+.solarVisual{display:grid;grid-template-columns:repeat(4,22px);grid-template-rows:repeat(2,14px);gap:2px;padding:4px;border:2px solid #485e73;border-radius:4px;background:#172e49;transform:skewY(-4deg);box-shadow:2px 3px 0 #8d9ca2}
+.solarVisual span{background:linear-gradient(135deg,#4389bb,#1d527c);border:1px solid #68a6ca}
+.potSourceVisual{display:none;position:relative;width:43px;height:43px;border:4px solid #485158;border-radius:50%;background:radial-gradient(circle at 35% 30%,#747f82,#263238 65%);box-shadow:2px 3px 0 #9ba6a7}
+.potSourceVisual span{position:absolute;left:7px;top:7px;width:21px;height:21px;border:3px solid #aeb8b7;border-radius:50%;background:#4b5558}
+.potSourceVisual i{position:absolute;left:18px;top:3px;width:3px;height:13px;border-radius:3px;background:#f4cf59;transform:rotate(-45deg);transform-origin:50% 19px}
+.batteryVisual{display:none;position:relative;width:35px;height:42px;border:2px solid #48545b;border-radius:5px;background:linear-gradient(90deg,#566268,#1e2b32 45%,#38444a);box-shadow:2px 3px 0 #aab5b7;color:#f4da69;text-align:center;font:bold 11px Arial;padding-top:10px}
+.batteryVisual span{position:absolute;left:8px;top:-7px;width:14px;height:6px;border:2px solid #667278;border-bottom:0;background:#bcc5c7}
+.batteryVisual i{position:absolute;left:5px;top:3px;width:4px;height:3px;background:#e9eced}.batteryVisual b{position:absolute;bottom:3px;left:0;width:100%;font:4px Arial;color:#c1cbd0}
+#powerKit[data-source="battery"] .solarVisual{display:none}
+#powerKit[data-source="battery"] .batteryVisual{display:block}
+#powerKit[data-source="pot"] .solarVisual{display:none}
+#powerKit[data-source="pot"] .potSourceVisual{display:block}
+.solarControl{display:flex;justify-content:space-between;align-items:center;color:#54656b;font-weight:bold}
+.solarControl output{color:#0c7974;font: bold 8px monospace}
+#solarVoltage{width:100%;height:13px;margin:3px 0 4px;accent-color:#138f87;cursor:pointer}
+#solarVoltage:disabled{opacity:.45;cursor:not-allowed}
+.resistorControls{display:flex;align-items:center;justify-content:center;gap:5px;margin:3px 0 6px;color:#56656b;font:bold 7px monospace}
+.resistorControls label{display:flex;align-items:center;gap:2px}
+.resistorControls select{width:43px;padding:2px 1px;border:1px solid #a8b3b2;border-radius:3px;background:#fff;color:#27373c;font:7px monospace}
+.dividerSymbol{color:#159187;font-size:12px}
+.voltageReadings{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px;border-radius:5px;background:#edf2ee;border:1px solid #d1dcd7}
+.voltageReadings span{display:flex;flex-direction:column;gap:2px;color:#78878b;font:bold 6px monospace}
+.voltageReadings b{color:#1d4548;font:bold 9px monospace}
+.powerNote{display:block;margin-top:5px;color:#66767a;font:6px/1.25 Arial,sans-serif}
+.powerNote.overvoltage{color:#a62828;font-weight:bold}
+
+#servoUnit{position:absolute;left:386px;top:290px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
+.servoTopLabel{font-weight:bold;letter-spacing:.3px;margin-bottom:6px;color:#425463;background:#f0f4f2cc;border-radius:3px;padding:3px}
+#servoCase{position:relative;width:82px;height:72px;margin:0 auto;background:linear-gradient(145deg,#61b6e8,#1f5c8a);border:3px solid #19415e;border-radius:9px;box-shadow:inset 0 2px 4px #ffffff66,0 3px 5px #0004}
 #servoHub{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);border-radius:50%;background:#dce6ec;border:4px solid #7c929f;box-sizing:border-box;z-index:2}
 #servoHorn{position:absolute;left:50%;top:50%;width:54px;height:7px;transform:translate(-50%,-50%) rotate(0deg);transform-origin:50% 50%;background:#f2f5f7;border:1px solid #87949c;border-radius:4px;z-index:3;transition:transform .12s ease}
 #servoAngle{position:absolute;left:0;right:0;bottom:-18px;color:#17354a;font-weight:bold;font-size:9px}
-#servoStatus{margin-top:24px;color:#a33;font-weight:bold}
+#servoStatus{margin-top:24px;color:#a33;font-weight:bold;background:#f3f4f1cc;border-radius:3px;padding:3px}
 #servoUnit.attached #servoStatus{color:#087b3e}
-#servoUnit.attached #servoCase{box-shadow:0 0 9px #39c87966,inset 0 2px 4px #ffffff44}
+#servoUnit.attached #servoCase{box-shadow:0 0 12px #39c87999,inset 0 2px 4px #ffffff44}
+
+@media(max-width:700px){#powerKit{transform:scale(.9);transform-origin:top right;left:432px}#servoUnit{transform:scale(.92);transform-origin:top left}}
 #oled16Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#061313}

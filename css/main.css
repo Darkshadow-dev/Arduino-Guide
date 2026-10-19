@@ -1457,22 +1457,99 @@ button:disabled{
 
 /*---------3D-------*/
 #uno3d-wrap {
-  width: 80%;
-  height: 80vh;
-  max-height: 60%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
+  width: min(100%, 1100px);
+  height: clamp(360px, 68vh, 720px);
+  min-height: 360px;
+  margin: 18px auto 36px;
+  overflow: hidden;
+  display: block;
+  border: 1px solid rgba(17, 145, 151, .28);
+  border-radius: 22px;
+  background: radial-gradient(ellipse at 50% 45%, #ffffff 0%, #edf9fb 62%, #e2f2f5 100%);
+  box-shadow: 0 18px 48px rgba(20, 70, 83, .14), inset 0 1px 0 rgba(255,255,255,.9);
+  isolation: isolate;
+}
+
+#uno3d-wrap model-viewer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  --progress-bar-color: #119197;
+  --progress-bar-height: 4px;
+}
+
+#uno3d-wrap .model-viewer-loading,
+#uno3d-wrap .model-viewer-error {
+  position: absolute;
+  z-index: 2;
+  left: 16px;
+  bottom: 14px;
+  padding: 9px 13px;
+  border: 1px solid rgba(17, 145, 151, .18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .9);
+  color: #27666b;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(18, 60, 70, .08);
+}
+
+#uno3d-wrap .model-viewer-error:not([hidden]) {
+  color: #9d3333;
+  border-color: rgba(157, 51, 51, .25);
+  border-radius: 12px;
+}
+
+@media (max-width: 700px) {
+  #uno3d-wrap {
+    height: min(64vh, 520px);
+    min-height: 330px;
+    border-radius: 15px;
+  }
+}
+
+#uno3d-wrap model-viewer:focus-visible {
+  outline: 3px solid #119197;
+  outline-offset: -4px;
+}
+
+#uno3d-wrap model-viewer[loaded] ~ .model-viewer-loading {
+  display: none;
+}
+
+#uno3d-wrap model-viewer[load-error] ~ .model-viewer-error {
+  display: block;
+}
+
+#uno3d-wrap model-viewer:not([loaded]) {
+  cursor: progress;
+}
+
+/* The model-viewer element paints into its own WebGL canvas. */
+#uno3d-wrap model-viewer {
+  touch-action: pan-y;
   background: transparent;
 }
 
+/* Keep the interactive model usable on narrow screens. */
+#uno3d-wrap model-viewer {
+  contain: layout paint;
+}
+
+/* Loading progress remains visible without shifting the model. */
+#uno3d-wrap model-viewer::part(progress-bar) {
+  border-radius: 0 0 3px 3px;
+}
+
+/* Legacy selector retained for pages that reuse the Uno renderer. */
 #uno3d {
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
 
-/*---------- IMAGE PIN MAP --------------*/
+/*--------- IMAGE PIN MAP --------------*/
 .pin-map{
   position:relative;
   max-width:500px;
@@ -1580,6 +1657,31 @@ button:disabled{
 .hardwarevi-more-section{
     margin-bottom:8px;
 }
+
+.example-level{
+    display:inline-flex;
+    align-items:center;
+    margin:0 0 8px;
+    padding:4px 10px;
+    border:1px solid rgba(28,112,122,.22);
+    border-radius:999px;
+    background:#e9f4f5;
+    color:#315f67;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.03em;
+}
+
+.intermediate-level{
+    background:#e8f4ea;
+    border-color:#c5dfcb;
+    color:#326442;
+}
+
+.advanced-level{
+    background:#f0eafa;
+    border-color:#d8c8ee;
+    color:#63458b;
 }
 
 .hardwarevi-more-section h3{

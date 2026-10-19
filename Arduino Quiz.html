@@ -225,6 +225,11 @@ nav a:hover{
   gap:6px;
   font-weight:bold;
 }
+.xp-summary{margin:8px 10px 14px;color:#cbd5e1;font-size:12px;line-height:1.5}
+.xp-summary strong{display:block;color:#fff;font-size:18px}
+.xp-summary progress{display:block;width:100%;height:8px;margin:7px 0;accent-color:#22c55e}
+.xp-summary small{color:#94a3b8}
+#challengeCounter{margin:0 10px 8px;color:#aab5c8;font-size:12px;line-height:1.45}
 #quizSelect button.red{
   background:#ff5252;
   color:white;
@@ -510,6 +515,11 @@ nav a:hover{
     <img src="Images/Rank/rank_beginner.png" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;border:5px;">
     Beginner
   </p>
+  <div class="xp-summary" aria-live="polite">
+    <strong id="totalXPBox">0 XP</strong>
+    <progress id="xpMeter" value="0" max="452" aria-label="XP progress to Arduino Master"></progress>
+    <small id="rankProgressText">0 / 452 XP to Arduino Master</small>
+  </div>
 </div>
 <h2>Quizzes</h2>
   <button class="cat active" onclick="loadCategory('pins',this)">Pins</button>
@@ -517,6 +527,7 @@ nav a:hover{
   <button class="cat" onclick="loadCategory('software',this)">Software</button>
 <hr style="border:1px solid #222; width:100%;">
 <h2>Challenges</h2>
+<p id="challengeCounter">0 / 10 completed</p>
 <div id="sidebarQuizzes"></div>
 </div>
 
@@ -986,37 +997,71 @@ const codeChallenges = [
     }
 ];
 
+function getMaximumXP(){
+  const quizXP = Object.values(data || {}).reduce((sum, quizzes) =>
+    sum + quizzes.reduce((categorySum, quiz) => categorySum + quiz.length, 0), 0);
+  return quizXP + codeChallenges.length * 5;
+}
+
+function getRankLadder(maxXP){
+  const names = [
+    "Beginner", "Starter", "Learner", "Intermediate", "Advanced",
+    "Expert", "Professional", "Master", "Grandmaster", "Elite",
+    "Legend", "Mythic", "Arduino Master"
+  ];
+  const usableMaximum = Math.max(maxXP, (names.length - 1) * 5);
+  return names.map((name, index) => ({
+    name,
+    xp: index === 0 ? 0 : Math.round(usableMaximum * index / (names.length - 1))
+  }));
+}
+
+function syncChallengeXP(){
+  const codeProgress = loadCodeProgress();
+  let changed = false;
+  codeChallenges.forEach(challenge => {
+    if(codeProgress[challenge.id]?.completed === true){
+      const key = "code-" + challenge.id;
+      if(!progress[key]?.awarded){
+        progress[key] = {score:5, total:5, awarded:true, completed:true};
+        changed = true;
+      }
+    }
+  });
+  if(changed) saveProgress();
+}
+
 function updateRank(){
-  let score = Object.values(progress || {})
-    .reduce((sum, p) => sum + (p.score || 0), 0);
+  syncChallengeXP();
+  const score = getTotalXP();
+  const maxXP = getMaximumXP();
+  const ladder = getRankLadder(maxXP);
+  let rankIndex = 0;
+  ladder.forEach((entry, index) => {
+    if(score >= entry.xp) rankIndex = index;
+  });
+  const rank = ladder[rankIndex].name;
+  const nextRank = ladder[rankIndex + 1];
 
-  let rank = "Beginner";
+  document.getElementById("rankBox").innerHTML = `
+    <img src="${getRankImg(rank)}" alt="${rank} rank badge" style="width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-right:6px;">
+    <b>${rank}</b>
+  `;
 
-  if(score >= 10) rank = "Starter";
-  if(score >= 25) rank = "Learner";
-  if(score >= 50) rank = "Intermediate";
-  if(score >= 80) rank = "Advanced";
-  if(score >= 120) rank = "Expert";
-  if(score >= 170) rank = "Professional";
-  if(score >= 220) rank = "Master";
-  if(score >= 270) rank = "Grandmaster";
-  if(score >= 320) rank = "Elite";
-  if(score >= 360) rank = "Legend";
-  if(score >= 390) rank = "Mythic";
-  if(score >= 402) rank = "Arduino Master";
-
-document.getElementById("rankBox").innerHTML = `
-  <img src="${getRankImg(rank)}"
-  style="width:16px;height:16px;
-  vertical-align:middle;
-  margin-right:6px;">
-
-  <b>${rank}</b>
-
-  <small style="opacity:0.7;margin-left:6px;">
-    (${score} XP)
-  </small>
-`;
+  const totalXPBox = document.getElementById("totalXPBox");
+  const xpMeter = document.getElementById("xpMeter");
+  const rankProgressText = document.getElementById("rankProgressText");
+  if(totalXPBox) totalXPBox.textContent = `${score} XP`;
+  if(xpMeter){
+    xpMeter.max = maxXP;
+    xpMeter.value = Math.min(score, maxXP);
+    xpMeter.setAttribute("aria-label", `XP progress: ${score} of ${maxXP}`);
+  }
+  if(rankProgressText){
+    rankProgressText.textContent = nextRank
+      ? `${Math.max(0, nextRank.xp - score)} XP to ${nextRank.name} · ${maxXP} XP total`
+      : `Maximum rank · ${maxXP} XP total`;
+  }
 
 try{
   renderSidebarQuizzes();
@@ -1104,7 +1149,10 @@ function getQuizColor(score, total){
 
 function getTotalXP(){
   return Object.values(progress || {})
-    .reduce((sum, p) => sum + (p.score || 0), 0);
+    .reduce((sum, p) => {
+      const score = Number(p && p.score);
+      return sum + (Number.isFinite(score) && score > 0 ? score : 0);
+    }, 0);
 }
 
 function renderSidebarQuizzes(){
@@ -1117,6 +1165,18 @@ function renderSidebarQuizzes(){
   }
 
   box.innerHTML = "";
+
+  const codeProgress = loadCodeProgress();
+  const completedCount = codeChallenges.filter(challenge =>
+    codeProgress[challenge.id]?.completed === true
+  ).length;
+  const unlockedCount = codeChallenges.filter(challenge =>
+    getTotalXP() >= challenge.need
+  ).length;
+  const counter = document.getElementById("challengeCounter");
+  if(counter){
+    counter.textContent = `${completedCount} / ${codeChallenges.length} completed · ${unlockedCount} unlocked`;
+  }
 
   codeChallenges.forEach(challenge => {
 
@@ -1870,6 +1930,96 @@ function escapeHTML(value){
         .replace(/'/g,"&#039;");
 }
 
+function validateArduinoSyntax(source){
+    const errors = [];
+    const stack = [];
+    const matching = {"(":")", "[":"]", "{":"}"};
+    const lines = String(source || "").split("");
+    let state = "code";
+    let quote = "";
+    let escaped = false;
+    let line = 1;
+
+    for(let i = 0; i < lines.length; i++){
+        const ch = lines[i];
+        const next = lines[i + 1];
+        if(ch === "\n") line++;
+
+        if(state === "line-comment"){
+            if(ch === "\n") state = "code";
+            else lines[i] = " ";
+            continue;
+        }
+        if(state === "block-comment"){
+            if(ch === "*" && next === "/"){
+                lines[i] = " "; lines[i + 1] = " "; i++; state = "code";
+            }else if(ch !== "\n") lines[i] = " ";
+            continue;
+        }
+        if(state === "string"){
+            if(ch !== "\n") lines[i] = " ";
+            if(escaped){ escaped = false; continue; }
+            if(ch === "\\"){ escaped = true; continue; }
+            if(ch === quote) state = "code";
+            else if(ch === "\n"){
+                errors.push(`Line ${line}: string is missing its closing quote.`);
+                state = "code";
+            }
+            continue;
+        }
+
+        if(ch === "/" && next === "/"){
+            lines[i] = " "; lines[i + 1] = " "; i++; state = "line-comment"; continue;
+        }
+        if(ch === "/" && next === "*"){
+            lines[i] = " "; lines[i + 1] = " "; i++; state = "block-comment"; continue;
+        }
+        if(ch === '"' || ch === "'"){
+            quote = ch; lines[i] = " "; state = "string"; continue;
+        }
+        if(ch === "(" || ch === "[" || ch === "{"){
+            stack.push({char:ch, line});
+        }else if(ch === ")" || ch === "]" || ch === "}"){
+            const open = stack.pop();
+            if(!open || matching[open.char] !== ch){
+                errors.push(`Line ${line}: unexpected closing “${ch}”.`);
+            }
+        }
+    }
+    if(state === "block-comment") errors.push("A block comment is missing its closing */.");
+    if(state === "string") errors.push(`Line ${line}: string is missing its closing quote.`);
+    stack.forEach(open => errors.push(`Line ${open.line}: “${open.char}” is missing its closing “${matching[open.char]}”.`));
+
+    const cleanCode = lines.join("");
+    if(!/\bvoid\s+setup\s*\(\s*(?:void\s*)?\)/.test(cleanCode)){
+        errors.push("Add the Arduino setup() function: void setup() { ... }.");
+    }
+    if(!/\bvoid\s+loop\s*\(\s*(?:void\s*)?\)/.test(cleanCode)){
+        errors.push("Add the Arduino loop() function: void loop() { ... }.");
+    }
+
+    const statementCall = /^(?:pinMode|digitalWrite|digitalRead|analogRead|analogWrite|delay|delayMicroseconds|tone|noTone|Serial\.(?:begin|print|println|write)|EEPROM\.(?:read|write|update))\s*\(.*\)\s*$/;
+    const assignment = /^(?:(?:const|volatile|unsigned|signed|long|int|float|double|bool|boolean|byte|char|String|uint\d+_t)\s+)?[A-Za-z_]\w*\s*(?:=|\+=|-=|\*=|\/=)\s*.+$/;
+    cleanCode.split("\n").forEach((rawLine, index) => {
+        const text = rawLine.trim();
+        if(!text || text.startsWith("#") || /[;{}:]$/.test(text)) return;
+        if(/^(?:if|else|for|while|switch|case|do|class|struct|enum)\b/.test(text)) return;
+        if(/^(?:void|bool|boolean|char|byte|short|int|long|float|double|String|auto|static|unsigned|signed)\s+\w+\s*\([^;]*\)\s*$/.test(text)) return;
+        if(statementCall.test(text) || assignment.test(text)){
+            errors.push(`Line ${index + 1}: this statement looks like it is missing a semicolon.`);
+        }
+    });
+
+    return {valid: errors.length === 0, errors:[...new Set(errors)].slice(0, 6)};
+}
+
+function checkArduinoSyntax(code){
+    const result = validateArduinoSyntax(code);
+    if(result.valid) return true;
+    showCodeResult("Syntax check: " + result.errors.join(" "), "failed");
+    return false;
+}
+
 /* =========================================================
    SUBMIT CODE
    ========================================================= */
@@ -1895,6 +2045,8 @@ async function startCodeChallenge(id){
 
         return;
     }
+
+    if(!checkArduinoSyntax(code)) return;
 
     /*
        ALWAYS save before submitting.
@@ -2040,15 +2192,9 @@ function showChallengeResult(){
        have actually returned a usable result.
     */
 
-    let passed = true;
-
-    if(
-        challengeResult.success === false ||
-        challengeResult.ok === false ||
-        challengeResult.compiled === false
-    ){
-        passed = false;
-    }
+    let passed = challengeResult.success === true ||
+        challengeResult.ok === true ||
+        challengeResult.compiled === true;
 
     if(
         lowerOutput.includes(
@@ -2221,6 +2367,8 @@ function submitCode(id){
 
         return;
     }
+
+    if(!checkArduinoSyntax(raw)) return;
 
     /*
        Save before analysis.
