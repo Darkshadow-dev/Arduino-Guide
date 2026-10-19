@@ -43,6 +43,8 @@ class Parser:
         self.functions = {}
         self.structs = {}
         self.library_objects = {}
+        self.display_objects = []
+        self.display_transports = {}
 
     def peek(self, n=0): return self.toks[self.i+n] if self.i+n < len(self.toks) else ''
     def pop(self):
@@ -77,16 +79,22 @@ class Parser:
                 if self.accept('['):
                     size_expr=self.expr(); self.expect(']')
                     array_size=size_expr
-                if typ.split()[-1] in ('Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107','SoftwareSerial') and self.accept('('):
+                if typ.split()[-1] in ('Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107','SSD1306','SoftwareSerial') and self.accept('('):
                     depth=1
+                    constructor_tokens=[]
                     while self.peek() and depth:
                         token=self.pop()
+                        constructor_tokens.append(token)
                         if token=='(': depth+=1
                         elif token==')': depth-=1
                     if depth: raise GSEError('Unclosed display constructor.')
                     self.expect(';')
                     self.globals.append({'op':'DECLARE','name':name,'value':{'type':'VALUE','value':0}})
                     if typ.split()[-1]=='SoftwareSerial': self.library_objects[name]='SoftwareSerial'
+                    else:
+                        self.library_objects[name]='OLED'
+                        self.display_objects.append(name)
+                        self.display_transports[name]='spi' if 'SPI' in constructor_tokens else 'i2c'
                     continue
                 if self.accept('('):
                     params=self.parse_params_after_open()
@@ -137,7 +145,7 @@ class Parser:
                 raise GSEError(f"Unsupported Arduino syntax near '{token}'. The GSE simulator supports common sketch statements; use Compile for full C++ validation.")
         if 'setup' not in self.functions: self.functions['setup']={'parameters':[],'program':[]}
         if 'loop' not in self.functions: self.functions['loop']={'parameters':[],'program':[]}
-        return {'format':'GSE','version':2,'board':'arduino:avr:uno','program':{'setup':self.functions.pop('setup')['program'],'loop':self.functions.pop('loop')['program']},'globals':self.globals,'functions':self.functions,'structs':self.structs,'libraries':[{'header':header,'support':SUPPORTED_HEADERS.get(header)} for header in self.includes],'unsupported_libraries':[header for header in self.includes if header not in SUPPORTED_HEADERS],'library_objects':self.library_objects}
+        return {'format':'GSE','version':2,'board':'arduino:avr:uno','program':{'setup':self.functions.pop('setup')['program'],'loop':self.functions.pop('loop')['program']},'globals':self.globals,'functions':self.functions,'structs':self.structs,'libraries':[{'header':header,'support':SUPPORTED_HEADERS.get(header)} for header in self.includes],'unsupported_libraries':[header for header in self.includes if header not in SUPPORTED_HEADERS],'library_objects':self.library_objects,'display_objects':self.display_objects,'display_transports':self.display_transports}
 
     def parse_struct(self):
         self.expect('struct')
@@ -354,7 +362,7 @@ class Parser:
         if '.' in n and method in oled_methods and n not in ('Wire.begin','SPI.begin','Serial.begin'):
             op=oled_methods[method]
             keys={'OLED_TEXT_SIZE':['value'],'OLED_TEXT_COLOR':['value'],'OLED_CURSOR':['x','y'],'OLED_PRINT':['value'],'OLED_PRINTLN':['value'],'OLED_PIXEL':['x','y','color'],'OLED_LINE':['x1','y1','x2','y2','color'],'OLED_RECT':['x','y','width','height','color'],'OLED_FILL_RECT':['x','y','width','height','color'],'OLED_HLINE':['x','y','width','color'],'OLED_VLINE':['x','y','height','color'],'OLED_CIRCLE':['x','y','r','color'],'OLED_FILL_CIRCLE':['x','y','r','color'],'OLED_ROUND_RECT':['x','y','width','height','r','color'],'OLED_FILL_ROUND_RECT':['x','y','width','height','r','color'],'OLED_INVERT':['value'],'OLED_DIM':['value'],'OLED_ROTATION':['value'],'OLED_SCROLL_RIGHT':['start','stop'],'OLED_SCROLL_LEFT':['start','stop']}.get(op,[])
-            inst={'op':op}; inst.update({k:v(i) for i,k in enumerate(keys)}); return [inst]
+            inst={'op':op,'object':object_name}; inst.update({k:v(i) for i,k in enumerate(keys)}); return [inst]
         if n.endswith('.begin'): return []
         raise GSEError(f'unsupported call {n}')
 

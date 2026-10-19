@@ -141,13 +141,18 @@
                     <div id="joystickBase"></div>
                     <div id="joystickStick"></div>
                     <div id="joystickLabel">JOYSTICK</div>
-                    <div id="joystickRoutes" aria-label="Joystick analog pin routing">
-                        <label>X <select id="joystickXPin" aria-label="Joystick X axis analog pin"></select></label>
-                        <label>Y <select id="joystickYPin" aria-label="Joystick Y axis analog pin"></select></label>
-                    </div>
                 </div>
 
+                <section id="analogRouting" aria-label="Analog component pin routing">
+                    <strong>ANALOG ROUTING</strong>
+                    <label>POT <select id="powerAnalogPin" aria-label="Potentiometer and voltage source analog pin"></select></label>
+                    <label>JOY X <select id="joystickXPin" aria-label="Joystick X axis analog pin"></select></label>
+                    <label>JOY Y <select id="joystickYPin" aria-label="Joystick Y axis analog pin"></select></label>
+                    <small>Choose a free A0–A5 input for each component.</small>
+                </section>
+
  <div id="oled4">
+    <div class="oledTypeLabel">4-PIN I²C OLED</div>
     <div class="oledScreen">
         <canvas id="oled4Canvas" width="128" height="64"></canvas>
     </div>
@@ -163,25 +168,18 @@
                 <!-- OLED 16 PIN -->
 
                 <div id="oled16">
+                    <div class="oledTypeLabel">16-PIN OLED</div>
                     <div id="oled16Screen">
                         <canvas id="oled16Canvas" width="128" height="64"></canvas>
                     </div>
 
-                    <div class="oled16Pins">
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                        <div class="oled16Pin"></div>
-                    </div>
+                    <div class="oled16Pins top" aria-label="Eight upper display pins"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                    <div class="oled16Pins bottom" aria-label="Eight lower display pins"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
                 </div>
 
                 <!-- SOLAR / BATTERY VOLTAGE LAB: VIRTUAL COMPONENTS CONNECTED TO A0 BY CODE -->
                 <section id="powerKit" aria-label="Voltage source and resistor divider">
-                    <div class="powerKitHeading"><span>POWER + VOLTAGE LAB</span><label>PIN <select id="powerAnalogPin" aria-label="Potentiometer and voltage source analog pin"></select></label></div>
+                    <div class="powerKitHeading"><span>POWER + VOLTAGE LAB</span></div>
                     <div class="powerSources">
                         <button type="button" class="sourceButton active" data-source="pot" aria-pressed="true">◉ POT</button>
                         <button type="button" class="sourceButton" data-source="solar" aria-pressed="false">☀ SOLAR</button>
@@ -1616,6 +1614,94 @@ const potentiometerState={
 const powerKitState={source:"pot",solarVolts:6};
 const analogRouteState={power:"A0",joystickX:"A1",joystickY:"A2"};
 const analogRoutePins=["A0","A1","A2","A3","A4","A5"];
+let openScrollableDropdown=null;
+
+function setupScrollableDropdown(select){
+    if(!select||select.dataset.scrollDropdownReady)return;
+    select.dataset.scrollDropdownReady="true";
+    const wrapper=document.createElement("span");
+    wrapper.className="scrollSelect";
+    const nativeParent=select.parentNode;
+    nativeParent.insertBefore(wrapper,select);
+    wrapper.appendChild(select);
+    select.classList.add("scrollSelectNative");
+    select.setAttribute("aria-hidden","true");
+    select.tabIndex=-1;
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="scrollSelectButton";
+    button.setAttribute("aria-haspopup","listbox");
+    button.setAttribute("aria-expanded","false");
+    button.setAttribute("aria-label",select.getAttribute("aria-label")||"Choose a value");
+    const menu=document.createElement("div");
+    menu.className="scrollSelectMenu";
+    menu.setAttribute("role","listbox");
+    menu.hidden=true;
+    menu.id="menu-"+select.id;
+    button.setAttribute("aria-controls",menu.id);
+    wrapper.append(button,menu);
+
+    const sync=()=>{
+        const selected=select.options[select.selectedIndex];
+        button.firstChild?.remove();
+        button.insertBefore(document.createTextNode(selected?.textContent||select.value),button.firstChild);
+        menu.querySelectorAll("[role=option]").forEach(option=>{
+            option.setAttribute("aria-selected",String(option.dataset.value===select.value));
+        });
+    };
+    const close=()=>{
+        menu.hidden=true;
+        button.setAttribute("aria-expanded","false");
+        if(openScrollableDropdown===wrapper)openScrollableDropdown=null;
+    };
+    const refresh=()=>{
+        menu.replaceChildren();
+        Array.from(select.options).forEach(option=>{
+            const item=document.createElement("button");
+            item.type="button";
+            item.className="scrollSelectOption";
+            item.setAttribute("role","option");
+            item.dataset.value=option.value;
+            item.textContent=option.textContent;
+            item.addEventListener("click",event=>{
+                event.preventDefault();
+                event.stopPropagation();
+                select.value=option.value;
+                select.dispatchEvent(new Event("change",{bubbles:true}));
+                close();
+                sync();
+            });
+            menu.appendChild(item);
+        });
+        sync();
+    };
+    button.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        if(!menu.hidden){close();return;}
+        if(openScrollableDropdown&&openScrollableDropdown!==wrapper){
+            openScrollableDropdown.querySelector(".scrollSelectButton")?.click();
+        }
+        menu.hidden=false;
+        button.setAttribute("aria-expanded","true");
+        openScrollableDropdown=wrapper;
+    });
+    wrapper.addEventListener("keydown",event=>{
+        if(event.key==="Escape"){close();button.focus();}
+    });
+    document.addEventListener("pointerdown",event=>{
+        if(!wrapper.contains(event.target))close();
+    });
+    select.addEventListener("change",sync);
+    select._syncScrollableDropdown=sync;
+    select._refreshScrollableDropdown=refresh;
+    refresh();
+}
+
+function syncScrollableDropdown(select){
+    select?._refreshScrollableDropdown?.();
+    select?._syncScrollableDropdown?.();
+}
 
 function clampAnalog(value){
     return Math.max(0,Math.min(1023,Math.round(Number(value)||0)));
@@ -1642,10 +1728,13 @@ function setupAnalogRoutes(){
                 }
                 occupied.add(analogRouteState[otherKey]);
                 otherSelect.value=analogRouteState[otherKey];
+                syncScrollableDropdown(otherSelect);
             });
+            syncScrollableDropdown(select);
             updateJoystick();
             updatePowerKit();
         });
+        setupScrollableDropdown(select);
     });
 }
 
@@ -1700,6 +1789,7 @@ function updatePowerKit(){
 
 function setupPowerKit(){
     setupAnalogRoutes();
+    document.querySelectorAll("#resistorTop,#resistorBottom").forEach(setupScrollableDropdown);
     document.querySelectorAll(".sourceButton").forEach(button=>button.addEventListener("click",()=>{
         powerKitState.source=button.dataset.source;
         updatePowerKit();
@@ -1725,8 +1815,7 @@ function updatePotentiometer(){
     knob.style.transform=
         "rotate("+angle+"deg)";
 
-    value.innerHTML=
-        "A0<br>"+potentiometerState.value;
+    value.textContent=potentiometerState.value;
     if(powerKitState.source==="pot")updatePowerKit();
 }
 
@@ -2051,19 +2140,52 @@ const OLED_WIDTH = 128;
 const OLED_HEIGHT = 64;
 const OLED_RENDER_SCALE = 4;
 
-const oledState = {
-    initialized:false,
-    address:0x3C,
-    cursorX:0,
-    cursorY:0,
-    textSize:1,
-    textColor:1,
-    displayOn:true,
-    inverted:false,
-    dim:false,
-    rotation:0,
-    buffer:null
-};
+const oledStates=new Map();
+let activeOLEDName="__default";
+let oledState=createOLEDState("oled4Canvas");
+oledStates.set(activeOLEDName,oledState);
+
+function createOLEDState(canvasId){
+    return {
+        canvasId,
+        initialized:false,
+        address:0x3C,
+        cursorX:0,
+        cursorY:0,
+        textSize:1,
+        textColor:1,
+        displayOn:true,
+        inverted:false,
+        dim:false,
+        rotation:0,
+        buffer:null
+    };
+}
+
+function getOLEDCanvasId(objectName){
+    const name=String(objectName||"__default");
+    const transport=gse?.display_transports?.[name];
+    if(/(16|parallel|spi|second|oled2)/i.test(name)||transport==="spi")return "oled16Canvas";
+    const objects=gse?.display_objects||[];
+    const index=objects.indexOf(name);
+    if(transport==="i2c"&&index>=0){
+        const priorI2C=objects.slice(0,index).filter(object=>gse?.display_transports?.[object]==="i2c").length;
+        return priorI2C===0?"oled4Canvas":"oled16Canvas";
+    }
+    return index===1||index>1?"oled16Canvas":"oled4Canvas";
+}
+
+function activateOLED(objectName){
+    const name=String(objectName||"__default");
+    let state=oledStates.get(name);
+    if(!state){
+        state=createOLEDState(getOLEDCanvasId(name));
+        oledStates.set(name,state);
+    }
+    activeOLEDName=name;
+    oledState=state;
+    return state;
+}
 
 
 /* ============================================================
@@ -2071,7 +2193,7 @@ const oledState = {
    ============================================================ */
 
 function getOLEDCanvas(){
-    return document.getElementById("oled4Canvas");
+    return document.getElementById(oledState.canvasId);
 }
 
 
@@ -2113,8 +2235,11 @@ function clearOLEDFramebuffer(){
    ============================================================ */
 
 function renderOLED(){
-    const canvases=[getOLEDCanvas(),document.getElementById("oled16Canvas")].filter(Boolean);
-    for(const canvas of canvases)renderOLEDCanvas(canvas);
+    const canvas=getOLEDCanvas();
+    if(canvas){
+        canvas.style.transform="rotate("+((oledState.rotation%4)*90)+"deg)";
+        renderOLEDCanvas(canvas);
+    }
 }
 
 function renderOLEDCanvas(canvas){
@@ -2802,6 +2927,10 @@ async function executeInstruction(
         return null;
     }
 
+    if(String(instruction.op||"").startsWith("OLED_")){
+        activateOLED(instruction.object);
+    }
+
     switch(instruction.op){
 
         case "DECLARE":{
@@ -3406,7 +3535,8 @@ case "SERVO_DETACH":{
             break;
         case "OLED_ROTATION":{
             oledState.rotation=Number(await resolveGSEValue(instruction.value))||0;
-            for(const id of ["oled4Canvas","oled16Canvas"]){const c=document.getElementById(id);if(c)c.style.transform="rotate("+((oledState.rotation%4)*90)+"deg)";}
+            const canvas=getOLEDCanvas();
+            if(canvas)canvas.style.transform="rotate("+((oledState.rotation%4)*90)+"deg)";
             break;
         }
         case "OLED_SCROLL_RIGHT":
