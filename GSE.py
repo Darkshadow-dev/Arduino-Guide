@@ -342,7 +342,7 @@ class Parser:
         if n=='attachInterrupt': return [{'op':'ATTACH_INTERRUPT','interrupt':v(0),'function':a[1].get('value','') if len(a)>1 else '', 'mode':v(2)}]
         if n=='detachInterrupt': return [{'op':'DETACH_INTERRUPT','interrupt':v(0)}]
         if n.endswith('.attach'):
-            return [{'op':'SERVO_ATTACH','object':n.rsplit('.',1)[0],'pin':v(0)}]
+            return [{'op':'SERVO_ATTACH','object':n.rsplit('.',1)[0],'pin':v(0),'min_pulse':v(1),'max_pulse':v(2)}]
         if n.endswith('.detach'):
             return [{'op':'SERVO_DETACH','object':n.rsplit('.',1)[0]}]
         if n.endswith('.write'):

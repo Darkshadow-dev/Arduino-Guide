@@ -20,6 +20,7 @@ arduino-cli config set directories.user "$DATA_DIR"
 arduino-cli core update-index
 arduino-cli core install arduino:avr
 arduino-cli lib update-index
+arduino-cli lib install Servo
 arduino-cli lib install "Adafruit BusIO"
 arduino-cli lib install "Adafruit GFX Library"
 arduino-cli lib install "Adafruit SSD1306"

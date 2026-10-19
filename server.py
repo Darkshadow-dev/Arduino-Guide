@@ -209,9 +209,20 @@ def compile_code():
     # --------------------------------------------------------
 
     if not result["success"]:
+        compile_output = result["output"]
+        if "Servo.h" in compile_output and (
+            "No such file" in compile_output
+            or "fatal error" in compile_output.lower()
+        ):
+            compile_output += (
+                "\n\nServo support is provided by the Arduino AVR core for the Uno. "
+                "Install or refresh that core with `arduino-cli core install arduino:avr`, "
+                "then confirm it appears in `arduino-cli core list`. The simulator's "
+                "Servo shim does not replace the library needed for a hardware build."
+            )
         return jsonify({
             "success": False,
-            "output": result["output"],
+            "output": compile_output,
             "libraries": library_check["output"],
             "hex_url": None
         })

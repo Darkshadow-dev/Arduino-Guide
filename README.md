@@ -26,6 +26,7 @@ Before the first real compile on a local machine, install the Uno AVR core and l
 arduino-cli core update-index
 arduino-cli core install arduino:avr
 arduino-cli lib update-index
+arduino-cli lib install Servo
 arduino-cli lib install "Adafruit BusIO"
 arduino-cli lib install "Adafruit GFX Library"
 arduino-cli lib install "Adafruit SSD1306"
@@ -37,7 +38,7 @@ arduino-cli lib install "Adafruit SSD1306"
 - Start command: `python server.py`
 - Health check: `/health`
 
-The build script installs Arduino CLI, the AVR core, and the Adafruit SSD1306 dependencies. If the API hostname changes, update the API constants in `Arduino Code.html` and `Arduino Uno.html`.
+The build script installs Arduino CLI, the AVR core, Servo, and the Adafruit SSD1306 dependencies. If a Servo build reports a missing `Servo.h`, rerun `arduino-cli core install arduino:avr` and `arduino-cli lib install Servo` in the same CLI data directory used by the API. If the API hostname changes, update the API constants in `Arduino Code.html` and `Arduino Uno.html`.
 
 ## Simulator component support
 

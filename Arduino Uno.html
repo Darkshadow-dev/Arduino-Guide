@@ -141,6 +141,10 @@
                     <div id="joystickBase"></div>
                     <div id="joystickStick"></div>
                     <div id="joystickLabel">JOYSTICK</div>
+                    <div id="joystickRoutes" aria-label="Joystick analog pin routing">
+                        <label>X <select id="joystickXPin" aria-label="Joystick X axis analog pin"></select></label>
+                        <label>Y <select id="joystickYPin" aria-label="Joystick Y axis analog pin"></select></label>
+                    </div>
                 </div>
 
  <div id="oled4">
@@ -177,7 +181,7 @@
 
                 <!-- SOLAR / BATTERY VOLTAGE LAB: VIRTUAL COMPONENTS CONNECTED TO A0 BY CODE -->
                 <section id="powerKit" aria-label="Voltage source and resistor divider">
-                    <div class="powerKitHeading"><span>POWER + VOLTAGE LAB</span><small>A0 INPUT</small></div>
+                    <div class="powerKitHeading"><span>POWER + VOLTAGE LAB</span><label>PIN <select id="powerAnalogPin" aria-label="Potentiometer and voltage source analog pin"></select></label></div>
                     <div class="powerSources">
                         <button type="button" class="sourceButton active" data-source="pot" aria-pressed="true">◉ POT</button>
                         <button type="button" class="sourceButton" data-source="solar" aria-pressed="false">☀ SOLAR</button>
@@ -191,9 +195,9 @@
                     <label class="solarControl" for="solarVoltage">Solar output <output id="solarVoltageLabel">6.0 V</output></label>
                     <input id="solarVoltage" type="range" min="0" max="9" value="6" step="0.1" aria-label="Solar panel voltage">
                     <div class="resistorControls">
-                        <label>R1 <select id="resistorTop" aria-label="Upper voltage divider resistor"><option>1000</option><option>4700</option><option selected>10000</option><option>22000</option><option>47000</option></select> Ω</label>
+                        <label>R1 <select id="resistorTop" aria-label="Upper voltage divider resistor"><option>220</option><option>330</option><option>470</option><option>680</option><option>1000</option><option>2200</option><option>3300</option><option>4700</option><option>6800</option><option selected>10000</option><option>15000</option><option>22000</option><option>33000</option><option>47000</option><option>68000</option><option>100000</option><option>220000</option><option>470000</option></select> Ω</label>
                         <span class="dividerSymbol" aria-hidden="true">÷</span>
-                        <label>R2 <select id="resistorBottom" aria-label="Lower voltage divider resistor"><option>1000</option><option>4700</option><option selected>10000</option><option>22000</option><option>47000</option></select> Ω</label>
+                        <label>R2 <select id="resistorBottom" aria-label="Lower voltage divider resistor"><option>220</option><option>330</option><option>470</option><option>680</option><option>1000</option><option>2200</option><option>3300</option><option>4700</option><option>6800</option><option selected>10000</option><option>15000</option><option>22000</option><option>33000</option><option>47000</option><option>68000</option><option>100000</option><option>220000</option><option>470000</option></select> Ω</label>
                     </div>
                     <div class="voltageReadings"><span>INPUT <b id="sourceVoltageValue">0.0 V</b></span><span id="a0ModeLabel">POT → A0 <b id="a0VoltageValue">0.00 V</b></span><span>ADC <b id="adcVoltageValue">0 / 1023</b></span></div>
                     <small id="powerNote" class="powerNote">Pot mode feeds A0 directly.</small>
@@ -312,7 +316,7 @@
 
                 <div id="potentiometer">
                     <div id="potKnob"></div>
-                    <div id="potValue">A0<br>0</div>
+                    <div id="potValue"><span id="potPinLabel">A0</span><br><span id="potReading">0</span></div>
                 </div>
 <div id="buzzer">
     <div id="buzzerTop"></div>
@@ -378,7 +382,9 @@ function getServo(objectName){
         servoState[objectName]={
             attached:false,
             pin:null,
-            angle:0
+            angle:0,
+            minPulse:544,
+            maxPulse:2400
         };
     }
 
@@ -1130,25 +1136,17 @@ function executeAnalogRead(instruction){
     const pin=instruction.pin;
     const pinName=String(pin);
 
-    if(pinName==="A0"){
+    if(pinName===analogRouteState.power){
         return readA0Value();
     }
-
-    if(pinName==="A1"){
-        return Number(
-            simulatorState.analogPins.A1||512
-        );
+    if(pinName===analogRouteState.joystickX){
+        return clampAnalog(512+(joystickState.x/25)*512);
+    }
+    if(pinName===analogRouteState.joystickY){
+        return clampAnalog(512+(joystickState.y/25)*512);
     }
 
-    if(pinName==="A2"){
-        return Number(
-            simulatorState.analogPins.A2||512
-        );
-    }
-
-    return Number(
-        simulatorState.analogPins[pinName]||0
-    );
+    return Number(simulatorState.analogPins[pinName]??0);
 }
 /* ============================================================
    DIGITAL PIN DISPLAY
@@ -1458,33 +1456,8 @@ function updateJoystick(){
         values from 0..1023.
     */
 
-    simulatorState.analogPins.A1=
-        Math.round(
-            512+
-            (joystickState.x/25)*512
-        );
-
-    simulatorState.analogPins.A2=
-        Math.round(
-            512+
-            (joystickState.y/25)*512
-        );
-
-    simulatorState.analogPins.A1=Math.max(
-        0,
-        Math.min(
-            1023,
-            simulatorState.analogPins.A1
-        )
-    );
-
-    simulatorState.analogPins.A2=Math.max(
-        0,
-        Math.min(
-            1023,
-            simulatorState.analogPins.A2
-        )
-    );
+    simulatorState.analogPins[analogRouteState.joystickX]=clampAnalog(512+(joystickState.x/25)*512);
+    simulatorState.analogPins[analogRouteState.joystickY]=clampAnalog(512+(joystickState.y/25)*512);
 
     /*
         Joystick push switch is digital pin 7.
@@ -1641,6 +1614,40 @@ const potentiometerState={
 };
 
 const powerKitState={source:"pot",solarVolts:6};
+const analogRouteState={power:"A0",joystickX:"A1",joystickY:"A2"};
+const analogRoutePins=["A0","A1","A2","A3","A4","A5"];
+
+function clampAnalog(value){
+    return Math.max(0,Math.min(1023,Math.round(Number(value)||0)));
+}
+
+function setupAnalogRoutes(){
+    const routeControls={
+        power:document.getElementById("powerAnalogPin"),
+        joystickX:document.getElementById("joystickXPin"),
+        joystickY:document.getElementById("joystickYPin")
+    };
+    Object.entries(routeControls).forEach(([key,select])=>{
+        if(!select)return;
+        select.innerHTML=analogRoutePins.map(pin=>`<option value="${pin}">${pin}</option>`).join("");
+        select.value=analogRouteState[key];
+        select.addEventListener("change",()=>{
+            analogRouteState[key]=select.value;
+            const occupied=new Set([select.value]);
+            Object.entries(routeControls).forEach(([otherKey,otherSelect])=>{
+                if(otherKey===key||!otherSelect)return;
+                if(occupied.has(analogRouteState[otherKey])){
+                    const freePin=analogRoutePins.find(pin=>!occupied.has(pin));
+                    if(freePin)analogRouteState[otherKey]=freePin;
+                }
+                occupied.add(analogRouteState[otherKey]);
+                otherSelect.value=analogRouteState[otherKey];
+            });
+            updateJoystick();
+            updatePowerKit();
+        });
+    });
+}
 
 function readA0Voltage(){
     if(powerKitState.source==="pot"){
@@ -1654,7 +1661,7 @@ function readA0Voltage(){
 
 function readA0Value(){
     if(powerKitState.source==="pot")return Number(potentiometerState.value||0);
-    return Math.round(Math.min(5,Math.max(0,readA0Voltage()))/5*1023);
+    return clampAnalog(Math.min(5,Math.max(0,readA0Voltage()))/5*1023);
 }
 
 function updatePowerKit(){
@@ -1673,9 +1680,12 @@ function updatePowerKit(){
     if(sourceValue)sourceValue.textContent=sourceVolts.toFixed(1)+" V";
     if(outValue)outValue.textContent=outVolts.toFixed(2)+" V";
     if(adcValue)adcValue.textContent=adc+" / 1023";
-    if(modeLabel)modeLabel.firstChild.textContent=powerKitState.source==="pot"?"POT → A0 ":"DIVIDER → A0 ";
+    const inputPin=analogRouteState.power;
+    if(modeLabel)modeLabel.firstChild.textContent=powerKitState.source==="pot"?`POT → ${inputPin} `:`DIVIDER → ${inputPin} `;
+    const potPinLabel=document.getElementById("potPinLabel");
+    if(potPinLabel)potPinLabel.textContent=inputPin;
     if(note){
-        note.textContent=powerKitState.source==="pot"?"Pot mode feeds A0 directly; divider applies to solar and 9V.":outVolts>5?"A0 is above 5V. Increase R1 or lower the source voltage.":"R1 + R2 form a divider. Keep A0 at or below 5V.";
+        note.textContent=powerKitState.source==="pot"?`Pot mode feeds ${inputPin} directly; divider applies to solar and 9V.`:outVolts>5?`${inputPin} is above 5V. Increase R1 or lower the source voltage.`:`R1 + R2 form a divider. Keep ${inputPin} at or below 5V.`;
         note.classList.toggle("overvoltage",powerKitState.source!=="pot"&&outVolts>5);
     }
     if(solarLabel)solarLabel.textContent=powerKitState.solarVolts.toFixed(1)+" V";
@@ -1685,10 +1695,11 @@ function updatePowerKit(){
         button.classList.toggle("active",active);
         button.setAttribute("aria-pressed",String(active));
     });
-    simulatorState.analogPins.A0=adc;
+    simulatorState.analogPins[inputPin]=adc;
 }
 
 function setupPowerKit(){
+    setupAnalogRoutes();
     document.querySelectorAll(".sourceButton").forEach(button=>button.addEventListener("click",()=>{
         powerKitState.source=button.dataset.source;
         updatePowerKit();
@@ -1704,7 +1715,7 @@ function setupPowerKit(){
 
 function updatePotentiometer(){
     const knob=document.getElementById("potKnob");
-    const value=document.getElementById("potValue");
+    const value=document.getElementById("potReading");
 
     if(!knob||!value)return;
 
@@ -1930,11 +1941,13 @@ function updateServoVisual(objectName){
     root.classList.toggle("attached",!!servo.attached);
 }
 
-function executeServoAttach(objectName,pin){
+function executeServoAttach(objectName,pin,minPulse=544,maxPulse=2400){
     const servo=getServo(objectName);
 
     servo.attached=true;
     servo.pin=Number(pin);
+    servo.minPulse=Number(minPulse)||544;
+    servo.maxPulse=Number(maxPulse)||2400;
     updateServoVisual(objectName);
 
     simulatorLog(
@@ -1944,6 +1957,17 @@ function executeServoAttach(objectName,pin){
         servo.pin+
         "."
     );
+}
+
+function executeServoWriteMicroseconds(objectName,pulse){
+    const servo=getServo(objectName);
+    if(!servo.attached){
+        simulatorLog("Servo "+objectName+" is not attached.");
+        return;
+    }
+    const bounded=Math.max(servo.minPulse,Math.min(servo.maxPulse,Number(pulse)||1500));
+    const span=Math.max(1,servo.maxPulse-servo.minPulse);
+    executeServoWrite(objectName,Math.round((bounded-servo.minPulse)*180/span));
 }
 
 function executeServoWrite(objectName,angle){
@@ -3182,10 +3206,14 @@ case "SERVO_ATTACH":{
         await resolveGSEValue(
             instruction.pin
         );
+    const minPulse=await resolveGSEValue(instruction.min_pulse);
+    const maxPulse=await resolveGSEValue(instruction.max_pulse);
 
     executeServoAttach(
         instruction.object,
-        pin
+        pin,
+        minPulse,
+        maxPulse
     );
 
     break;
@@ -3207,7 +3235,7 @@ case "SERVO_WRITE":{
 
 case "SERVO_WRITE_US":{
     const pulse=Number(await resolveGSEValue(instruction.value));
-    executeServoWrite(instruction.object,Math.round((pulse-1000)*180/1000));
+    executeServoWriteMicroseconds(instruction.object,pulse);
     break;
 }
 
