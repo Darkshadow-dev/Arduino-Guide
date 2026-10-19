@@ -498,6 +498,7 @@ header::-webkit-scrollbar{
     <option value="analog">Analog</option>
     <option value="voltage-monitor">Solar / 9V Voltage Monitor</option>
     <option value="servo">Servo Sweep</option>
+    <option value="software-serial">Software Serial</option>
     <option value="joystick">Joystick</option>
     <option value="serial">Serial</option>
     <option value="timer">GSE Full Test</option>
@@ -602,6 +603,14 @@ const API =
   (location.hostname === "localhost" || location.hostname === "127.0.0.1")
     ? "http://127.0.0.1:5000"
     : "https://arduino-guide-6.onrender.com";
+
+function apiUnavailableHelp(){
+  const apiHost = new URL(API).hostname;
+  if(apiHost === "localhost" || apiHost === "127.0.0.1"){
+    return "The local API is not responding. Double-click `Start GSE API.cmd` in the Arduino Guide folder, then retry.";
+  }
+  return "The hosted Arduino Guide API is not responding yet. Wait briefly for it to wake, then retry.";
+}
 
 let editor;
 let highlight;
@@ -2502,11 +2511,12 @@ async function compileCode(){
 
   }catch(error){
 
+    const networkFailure = error instanceof TypeError || /failed to fetch|networkerror/i.test(error.message||"");
+
     consoleBox.textContent =
       "=== SERVER ERROR ===\n\n" +
       error.message +
-      "\n\n" +
-      "Check that the Render server is online.";
+      (networkFailure ? "\n\n" + apiUnavailableHelp() : "");
 
 
     compileInfo.textContent =
@@ -3592,6 +3602,8 @@ async function runSimulator(){
 
   }catch(error){
 
+    const networkFailure = error instanceof TypeError || /failed to fetch|networkerror/i.test(error.message||"");
+
     console.error(
       "Simulator error:",
       error
@@ -3600,7 +3612,7 @@ async function runSimulator(){
 
     consoleBox.textContent =
       "=== SIMULATOR ERROR ===\n\n" +
-      error.message;
+      error.message + (networkFailure ? "\n\n" + apiUnavailableHelp() : "");
 
 
     compileInfo.textContent =
@@ -3724,6 +3736,20 @@ void loop(){
   delay(500);
   arm.write(180);
   delay(500);
+}`,
+
+    "software-serial":`#include <SoftwareSerial.h>
+
+SoftwareSerial radio(10, 11);
+
+void setup(){
+  Serial.begin(9600);
+  radio.begin(9600);
+}
+
+void loop(){
+  radio.println("Hello from SoftwareSerial");
+  delay(1000);
 }`,
 
     joystick:`void setup(){

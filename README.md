@@ -14,7 +14,7 @@ GSE is not a full C++ compiler. Arduino CLI remains the authority for whether a 
 1. Install Python 3.10 or newer.
 2. Install Arduino CLI and ensure `arduino-cli.exe` is on `PATH`, or set `ARDUINO_CLI` to its full path.
 3. Open a terminal in this folder and run `python -m pip install -r requirements.txt`.
-4. Start the API in one terminal: `python server.py` (API is `http://127.0.0.1:5000`).
+4. Start the API in one terminal with `python server.py`, or double-click `Start GSE API.cmd` (API is `http://127.0.0.1:5000`).
 5. In a second terminal, run `python -m http.server 8000`.
 6. Open `http://127.0.0.1:8000/Arduino%20Code.html`.
 
@@ -41,7 +41,7 @@ The build script installs Arduino CLI, the AVR core, and the Adafruit SSD1306 de
 
 ## Simulator component support
 
-The current GSE/runtime supports common digital and PWM LED output, push/toggle input (including `INPUT_PULLUP`), serial output, delays, common control flow, Servo `attach`/`write`/`detach`/`read`, and common Adafruit SSD1306-style OLED operations: initialization, clear, text, pixels, lines, rectangles, circles and basic display settings. The two visual OLED panels mirror the same simulated framebuffer. Hardware scrolling is reported but not animated. Unsupported C++ constructs and APIs must use **Compile** for real compiler validation and may still need a dedicated GSE implementation before they can run in the simulator.
+The current GSE/runtime supports common digital and PWM LED output, push/toggle input (including `INPUT_PULLUP`), serial output, `SoftwareSerial` TX in the Serial Monitor (RX is an empty input), delays, common control flow, numeric casts/suffixes and bitwise expressions, Servo `attach`/`write`/`writeMicroseconds`/`detach`/`read`/`attached`, EEPROM read/write/update/put/get, Wire/SPI initialization, and common Adafruit SSD1306-style OLED operations: initialization, clear, text, pixels, lines, rectangles, circles and basic display settings. The two visual OLED panels mirror the same simulated framebuffer. Hardware scrolling is reported but not animated. GSE reports included headers that it cannot emulate; unsupported C++ constructs and APIs must use **Compile** for real compiler validation and may still need a dedicated GSE implementation before they can run in the simulator.
 
 The simulator is an educational model, not cycle-accurate hardware emulation. Cloud-hosted `/ports` and `/upload` cannot access a USB Arduino plugged into a user's own computer; use a local API for physical USB upload.
 

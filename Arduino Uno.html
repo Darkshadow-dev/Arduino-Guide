@@ -449,6 +449,10 @@ async function loadGSE(){
     gse=data.executable;
     validateGSE();
     simulatorLog("GSE loaded.");
+    const loadedLibraries=(gse.libraries||[]).filter(item=>item.support).map(item=>item.header);
+    if(loadedLibraries.length)simulatorLog("GSE library shims: "+loadedLibraries.join(", ")+".");
+    const unsupportedLibraries=gse.unsupported_libraries||[];
+    if(unsupportedLibraries.length)simulatorLog("GSE note: these headers are not emulated: "+unsupportedLibraries.join(", ")+". Use Compile for real library support.");
 }
 
 function validateGSE(){
@@ -708,8 +712,16 @@ if(value.function==="random"){
     }
 }
 
-if(/\.read$/.test(value.function)){
-    return executeServoRead(value.function.slice(0,-5));
+if(/\.(available|read|peek|isListening)$/.test(value.function)){
+    const method=value.function.slice(value.function.lastIndexOf(".")+1);
+    const objectName=value.function.slice(0,value.function.lastIndexOf("."));
+    if(gse.library_objects&&gse.library_objects[objectName]==="SoftwareSerial"){
+        if(method==="available")return 0;
+        if(method==="read"||method==="peek")return -1;
+        return 1;
+    }
+    if(method==="read")return executeServoRead(objectName);
+    if(method==="attached")return executeServoAttached(objectName)?1:0;
 }
 if(/\.attached$/.test(value.function)){
     return executeServoAttached(value.function.slice(0,-9))?1:0;
@@ -890,6 +902,10 @@ if(value.function==="digitalPinToInterrupt"){
             );
         }
 
+        if(value.type==="BITWISE_NOT"){
+            return ~(Number(await resolveGSEValue(value.value))|0);
+        }
+
         if(value.type==="ARITHMETIC"){
 
             const rawLeft=await resolveGSEValue(value.left);
@@ -917,6 +933,24 @@ switch(value.operator){
         return right!==0
             ?left%right
             :0;
+
+    case "&":
+        return (left|0)&(right|0);
+
+    case "|":
+        return (left|0)|(right|0);
+
+    case "^":
+        return (left|0)^(right|0);
+
+    case "<<":
+        return (left|0)<<(right&31);
+
+    case ">>":
+        return (left|0)>>(right&31);
+
+    case ">>>":
+        return (left>>>0) >>> (right&31);
 }
 
             return 0;
@@ -2637,6 +2671,12 @@ async function executeAssignment(instruction){
     if(operator==="-=")return writeGSETarget(target,a-b);
     if(operator==="*=")return writeGSETarget(target,a*b);
     if(operator==="/=")return writeGSETarget(target,b!==0?a/b:0);
+    if(operator==="%=")return writeGSETarget(target,b!==0?a%b:0);
+    if(operator==="&=")return writeGSETarget(target,(a|0)&(b|0));
+    if(operator==="|=")return writeGSETarget(target,(a|0)|(b|0));
+    if(operator==="^=")return writeGSETarget(target,(a|0)^(b|0));
+    if(operator==="<<=")return writeGSETarget(target,(a|0)<<(b&31));
+    if(operator===">>=")return writeGSETarget(target,(a|0)>>(b&31));
 }
 
 async function resolveFunctionArguments(args){

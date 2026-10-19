@@ -4,8 +4,22 @@ It is not a replacement for the Arduino C++ compiler; use /compile for real buil
 """
 import re
 
-TOKEN_RE = re.compile(r'''\s+|//[^\n]*|/\*[\s\S]*?\*/|(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(?:0[xX][\da-fA-F]+)|(?:\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|(?:[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)|(?:\+\+|--|\+=|-=|\*=|/=|==|!=|<=|>=|&&|\|\||<<|>>|->)|[^\s]''')
-TYPES = {'void','bool','boolean','byte','char','unsigned','signed','short','int','long','float','double','String','string','size_t','uint8_t','uint16_t','uint32_t','int8_t','int16_t','int32_t','const','static','volatile','PROGMEM','Servo','Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107','SSD1306'}
+TOKEN_RE = re.compile(r'''\s+|//[^\n]*|/\*[\s\S]*?\*/|(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(?:0[xX][\da-fA-F]+|0[bB][01]+|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)(?:[uU](?:[lL]{1,2})?|[lL]{1,2}[uU]?|[fF])?|(?:[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)|(?:<<=|>>=|>>>|\+\+|--|\+=|-=|\*=|/=|%=|&=|\|=|\^=|==|!=|<=|>=|&&|\|\||<<|>>|->)|[^\s]''')
+TYPES = {'void','bool','boolean','byte','char','unsigned','signed','short','int','long','float','double','String','string','size_t','uint8_t','uint16_t','uint32_t','int8_t','int16_t','int32_t','const','static','volatile','PROGMEM','Servo','SoftwareSerial','Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107','SSD1306'}
+SUPPORTED_HEADERS = {
+    'Arduino.h': 'Arduino core basics',
+    'Servo.h': 'Servo attach/write/detach/read',
+    'SoftwareSerial.h': 'software serial TX in the Serial Monitor; RX reads as empty',
+    'Wire.h': 'I2C initialization and SSD1306 transport',
+    'SPI.h': 'SPI initialization',
+    'EEPROM.h': 'EEPROM read/write/update/put/get',
+    'Adafruit_GFX.h': 'GFX drawing primitives used by the OLED simulator',
+    'Adafruit_SSD1306.h': 'SSD1306 OLED drawing and text',
+    'Adafruit_SH110X.h': 'SH110X OLED drawing and text',
+    'Adafruit_SH1106G.h': 'SH1106 OLED drawing and text',
+    'Adafruit_SH1107.h': 'SH1107 OLED drawing and text',
+    'math.h': 'common math functions',
+}
 CONSTANTS = {'HIGH':1,'LOW':0,'INPUT':'INPUT','OUTPUT':'OUTPUT','INPUT_PULLUP':'INPUT_PULLUP','LED_BUILTIN':13,'A0':'A0','A1':'A1','A2':'A2','A3':'A3','A4':'A4','A5':'A5','true':True,'false':False,'PI':3.141592653589793,'TWO_PI':6.283185307179586,'LSBFIRST':0,'MSBFIRST':1,'RISING':'RISING','FALLING':'FALLING','CHANGE':'CHANGE','SSD1306_WHITE':1,'SSD1306_BLACK':0,'SSD1306_INVERSE':2,'SSD1306_SWITCHCAPVCC':2,'SSD1306_EXTERNALVCC':1,'SSD1306_DISPLAYON':1,'SSD1306_DISPLAYOFF':0,'WHITE':1,'BLACK':0,'INVERSE':2}
 
 class GSEError(ValueError): pass
@@ -13,6 +27,7 @@ class GSEError(ValueError): pass
 class Parser:
     def __init__(self, source):
         self.defines = dict(CONSTANTS)
+        self.includes = list(dict.fromkeys(re.findall(r'^\s*#\s*include\s*[<"]([^>"]+)[>"]', source, flags=re.M)))
         for macro, raw in re.findall(r'^\s*#\s*define\s+(\w+)\s+([^\n]+)', source, flags=re.M):
             raw = raw.strip()
             if re.fullmatch(r'-?0[xX][\da-fA-F]+', raw):
@@ -27,6 +42,7 @@ class Parser:
         self.globals = []
         self.functions = {}
         self.structs = {}
+        self.library_objects = {}
 
     def peek(self, n=0): return self.toks[self.i+n] if self.i+n < len(self.toks) else ''
     def pop(self):
@@ -61,7 +77,7 @@ class Parser:
                 if self.accept('['):
                     size_expr=self.expr(); self.expect(']')
                     array_size=size_expr
-                if typ.split()[-1] in ('Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107') and self.accept('('):
+                if typ.split()[-1] in ('Adafruit_SSD1306','Adafruit_SH1106G','Adafruit_SH110X','Adafruit_SH1107','SoftwareSerial') and self.accept('('):
                     depth=1
                     while self.peek() and depth:
                         token=self.pop()
@@ -70,6 +86,7 @@ class Parser:
                     if depth: raise GSEError('Unclosed display constructor.')
                     self.expect(';')
                     self.globals.append({'op':'DECLARE','name':name,'value':{'type':'VALUE','value':0}})
+                    if typ.split()[-1]=='SoftwareSerial': self.library_objects[name]='SoftwareSerial'
                     continue
                 if self.accept('('):
                     params=self.parse_params_after_open()
@@ -120,7 +137,7 @@ class Parser:
                 raise GSEError(f"Unsupported Arduino syntax near '{token}'. The GSE simulator supports common sketch statements; use Compile for full C++ validation.")
         if 'setup' not in self.functions: self.functions['setup']={'parameters':[],'program':[]}
         if 'loop' not in self.functions: self.functions['loop']={'parameters':[],'program':[]}
-        return {'format':'GSE','version':2,'board':'arduino:avr:uno','program':{'setup':self.functions.pop('setup')['program'],'loop':self.functions.pop('loop')['program']},'globals':self.globals,'functions':self.functions,'structs':self.structs}
+        return {'format':'GSE','version':2,'board':'arduino:avr:uno','program':{'setup':self.functions.pop('setup')['program'],'loop':self.functions.pop('loop')['program']},'globals':self.globals,'functions':self.functions,'structs':self.structs,'libraries':[{'header':header,'support':SUPPORTED_HEADERS.get(header)} for header in self.includes],'unsupported_libraries':[header for header in self.includes if header not in SUPPORTED_HEADERS],'library_objects':self.library_objects}
 
     def parse_struct(self):
         self.expect('struct')
@@ -281,7 +298,7 @@ class Parser:
                     elif self.accept('.'):
                         member=self.pop(); target={'type':'MEMBER','base':target,'member':member}
                     else: break
-                if self.peek() in ('=','+=','-=','*=','/=','++','--'):
+                if self.peek() in ('=','+=','-=','*=','/=','%=','&=','|=','^=','<<=','>>=','++','--'):
                     op=self.pop()
                     if op in ('++','--'): out=[{'op':'ASSIGN','target':target,'name':target if isinstance(target,str) else None,'operator':op,'value':{'type':'VALUE','value':0}}]
                     else:
@@ -300,6 +317,12 @@ class Parser:
             self.expect(',')
     def call_statement(self,n,a):
         v=lambda i: a[i] if i<len(a) else {'type':'VALUE','value':0}
+        object_name,_,method=n.rpartition('.')
+        if self.library_objects.get(object_name)=='SoftwareSerial':
+            if method in ('begin','end','listen'): return []
+            if method=='print': return [{'op':'SERIAL_PRINT','value':v(0)}]
+            if method=='println': return [{'op':'SERIAL_PRINTLN','value':v(0)}]
+            if method=='write': return [{'op':'SERIAL_PRINT','value':v(0)}]
         if n=='pinMode': return [{'op':'PIN_MODE','pin':v(0),'mode':v(1)}]
         if n=='digitalWrite': return [{'op':'DIGITAL_WRITE','pin':v(0),'value':v(1)}]
         if n=='analogWrite': return [{'op':'ANALOG_WRITE','pin':v(0),'value':v(1)}]
@@ -336,22 +359,39 @@ class Parser:
         raise GSEError(f'unsupported call {n}')
 
     # Pratt expression parser. Operators map directly to the simulator's value schema.
-    PREC={'||':1,'&&':2,'==':3,'!=':3,'<':3,'>':3,'<=':3,'>=':3,'+':4,'-':4,'*':5,'/':5,'%':5}
+    PREC={'||':1,'&&':2,'|':3,'^':4,'&':5,'==':6,'!=':6,'<':7,'>':7,'<=':7,'>=':7,'<<':8,'>>':8,'>>>':8,'+':9,'-':9,'*':10,'/':10,'%':10}
     def expr(self,minp=0):
         t=self.pop()
-        if t in ('!','-','+'):
-            x=self.expr(6)
-            left={'type':'NOT','value':x} if t=='!' else ({'type':'ARITHMETIC','operator':'-','left':{'type':'VALUE','value':0},'right':x} if t=='-' else x)
+        if t in ('!','-','+','~','&','*'):
+            x=self.expr(11)
+            left={'type':'NOT','value':x} if t=='!' else ({'type':'BITWISE_NOT','value':x} if t=='~' else ({'type':'ARITHMETIC','operator':'-','left':{'type':'VALUE','value':0},'right':x} if t=='-' else x))
         elif t=='(':
-            left=self.expr(); self.expect(')')
+            start=self.i
+            if self.peek() in TYPES or self.peek() in self.structs:
+                try:
+                    self.parse_type()
+                    if self.accept(')'):
+                        left=self.expr(11)
+                    else:
+                        self.i=start
+                        left=self.expr(); self.expect(')')
+                except GSEError:
+                    self.i=start
+                    left=self.expr(); self.expect(')')
+            else:
+                left=self.expr(); self.expect(')')
         elif t in ('++','--'): raise GSEError('prefix increment unsupported')
         elif t.startswith(('"',"'")):
             raw=t[1:-1]
             try: value=bytes(raw,'utf8').decode('unicode_escape')
             except Exception: value=raw
             left={'type':'VALUE','value':value}
-        elif re.fullmatch(r'0[xX][\da-fA-F]+|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?',t):
-            left={'type':'VALUE','value':int(t,16) if t.lower().startswith('0x') else (float(t) if any(c in t for c in '.eE') else int(t))}
+        elif (number_match:=re.fullmatch(r'(0[xX][\da-fA-F]+|0[bB][01]+|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)(?:[uU](?:[lL]{1,2})?|[lL]{1,2}[uU]?|[fF])?',t)):
+            raw=number_match.group(1)
+            if raw.lower().startswith('0x'): number=int(raw,16)
+            elif raw.lower().startswith('0b'): number=int(raw,2)
+            else: number=float(raw) if any(c in raw for c in '.eE') else int(raw)
+            left={'type':'VALUE','value':number}
         elif t in self.defines: left={'type':'VALUE','value':self.defines[t]}
         elif self.accept('('):
             args=self.args_after_open(); left={'type':'CALL','function':t,'args':args}
