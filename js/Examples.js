@@ -866,6 +866,7 @@ void loop() { // Runs repeatedly while the Arduino is powered.
 
 }
   // The loop repeats, continuously reading A0 and displaying the value.
+  // Run Command is: arduino-cli monitor -p COM5 -c baudrate=4800
 `
 },
 
@@ -1566,6 +1567,7 @@ void loop(){ // Starts the repeating loop.
 }
 
 };
+
 
 
 
