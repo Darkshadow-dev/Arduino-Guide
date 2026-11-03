@@ -1,956 +1,125 @@
-*{
-    box-sizing:border-box;
-}
-
-html,body{
-    width:100%;
-    height:100%;
-    margin:0;
-    overflow:hidden;
-}
-
-body{
-    background:#17191d;
-    font-family:Arial,Helvetica,sans-serif;
-    color:#fff;
-}
-
-#backButton{
-    position:fixed;
-    top:10px;
-    left:10px;
-    z-index:1000;
-    background:#25282d;
-    color:#ddd;
-    border:1px solid #444;
-    border-radius:5px;
-    padding:7px 13px;
-    cursor:pointer;
-}
-
-#backButton:hover{
-    background:#33373d;
-}
-
-/* ============================================================
-   SCROLLABLE WORKSPACE
-   ============================================================ */
-
-#workspace{
-    position:absolute;
-    width:94vw;
-    height:94vh;
-    left:3vw;
-    top:3vh;
-    background:#202328;
-    border:1px solid #454950;
-    border-radius:10px;
-    box-shadow:0 15px 45px rgba(0,0,0,.55);
-    overflow:auto;
-}
-
-#simulator{
-    position:relative;
-    width:100%;
-    min-width:760px;
-    height:1250px;
-    background:
-        radial-gradient(ellipse at 50% 40%,#303944 0,#242a31 42%,#191d23 100%);
-}
-
-/* ============================================================
-   SERIAL MONITOR
-   ============================================================ */
-
-#simulatorStatus{
-    position:sticky;
-    left:18px;
-    top:18px;
-    width:270px;
-    min-height:34px;
-    padding:9px 12px;
-    background:#101216;
-    border:1px solid #3b4048;
-    border-radius:5px;
-    color:#bfc5ce;
-    font-family:monospace;
-    font-size:12px;
-    z-index:100;
-}
-
-#simulatorStatus.error{
-    color:#ff7777;
-    border-color:#713737;
-}
-
-#simulatorStatus.ready{
-    color:#71ed8b;
-    border-color:#315c3b;
-}
-
-#simulatorConsole{
-    position:sticky;
-    left:18px;
-    top:62px;
-    width:270px;
-    height:175px;
-    padding:10px;
-    overflow:auto;
-    background:#090b0d;
-    border:1px solid #3b4048;
-    border-radius:5px;
-    color:#55ee76;
-    font-family:monospace;
-    font-size:11px;
-    line-height:1.5;
-    white-space:pre-wrap;
-    box-shadow:inset 0 0 15px rgba(0,0,0,.7);
-    z-index:100;
-}
-
-/* ============================================================
-   WORKBENCH TITLE
-   ============================================================ */
-
-.workbenchTitle{
-    position:absolute;
-    top:20px;
-    right:22px;
-    color:#858b94;
-    font-size:12px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-}
-
-/* ============================================================
-   ARDUINO UNO
-   ============================================================ */
-
-#arduinoUno{
-    position:absolute;
-    width:500px;
-    height:390px;
-    left:50%;
-    top:285px;
-    transform:translateX(-50%);
-    background:linear-gradient(145deg,#149da0 0%,#087c83 55%,#06646c 100%);
-    border:3px solid #07545b;
-    border-radius:19px;
-    box-shadow:
-        0 12px 30px rgba(0,0,0,.55),
-        inset 0 0 25px rgba(255,255,255,.08),
-        inset 0 0 0 7px rgba(0,45,52,.11);
-}
-
-/* ============================================================
-   BOARD TOP
-   ============================================================ */
-
-#boardLabel{
-    position:absolute;
-    left:24px;
-    top:20px;
-    color:#e9ffff;
-    font-size:25px;
-    font-weight:bold;
-    letter-spacing:1px;
-}
-
-#boardSubLabel{
-    position:absolute;
-    left:26px;
-    top:51px;
-    color:#a5dcdc;
-    font-size:10px;
-    letter-spacing:2px;
-}
-
-/* ============================================================
-   CPU
-   ============================================================ */
-
-#cpuChip{
-    position:absolute;
-    left:50%;
-    top:120px;
-    transform:translateX(-50%);
-    width:150px;
-    height:82px;
-    background:#18191b;
-    border:2px solid #303338;
-    border-radius:3px;
-    box-shadow:0 4px 8px rgba(0,0,0,.45);
-}
-
-#cpuChip::before,
-#cpuChip::after{
-    content:"";
-    position:absolute;
-    left:-7px;
-    right:-7px;
-    height:3px;
-    background:repeating-linear-gradient(
-        to right,
-        #b5b5b5 0,
-        #b5b5b5 5px,
-        transparent 5px,
-        transparent 12px
-    );
-}
-
-#cpuChip::before{
-    top:13px;
-}
-
-#cpuChip::after{
-    bottom:13px;
-}
-
-#cpuText{
-    position:absolute;
-    width:100%;
-    text-align:center;
-    top:28px;
-    color:#aaa;
-    font:10px monospace;
-}
-
-/* ============================================================
-   CRYSTAL
-   ============================================================ */
-
-#crystal{
-    position:absolute;
-    left:50%;
-    top:220px;
-    transform:translateX(-50%);
-    width:58px;
-    height:18px;
-    background:#c7c7c7;
-    border:2px solid #777;
-    border-radius:3px;
-    box-shadow:0 2px 4px rgba(0,0,0,.4);
-}
-
-#crystal::after{
-    content:"16 MHz";
-    position:absolute;
-    left:100%;
-    top:3px;
-    margin-left:7px;
-    color:#b9dada;
-    font:8px monospace;
-}
-
-/* ============================================================
-   BOARD STATUS LEDS
-   ============================================================ */
-
-#boardLeds{
-    position:absolute;
-    right:25px;
-    top:21px;
-    display:flex;
-    gap:12px;
-}
-
-.boardLedUnit{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:4px;
-}
-
-.boardLed{
-    width:12px;
-    height:12px;
-    border-radius:50%;
-    background:#333;
-    border:1px solid #222;
-    box-shadow:inset 0 0 4px #000;
-}
-
-.boardLed.power{
-    background:#d52b2b;
-    box-shadow:0 0 7px rgba(255,40,40,.7);
-}
-
-.boardLedUnit span{
-    font:7px monospace;
-    color:#b8dcdc;
-}
-
-/* ============================================================
-   BUILT-IN LED
-   ============================================================ */
-
-#builtinLed{
-    position:absolute;
-    left:75%;
-    top:238px;
-    width:17px;
-    height:17px;
-    border-radius:50%;
-    background:#444;
-    border:2px solid #222;
-    box-shadow:inset 0 0 4px #111;
-}
-
-#builtinLed.on{
-    background:#ff3030;
-    box-shadow:
-        0 0 8px #ff3030,
-        0 0 20px #ff3030;
-}
-
-/* ============================================================
-   DIGITAL PIN HEADER
-   ============================================================ */
-
-#digitalHeader{
-    position:absolute;
-    left:18px;
-    right:18px;
-    bottom:62px;
-    height:65px;
-    background:#006f70;
-    border:1px solid #075959;
-    border-radius:5px;
-    padding:7px;
-}
-
-.pinHeaderTitle{
-    position:absolute;
-    top:-14px;
-    left:2px;
-    color:#b6dada;
-    font:8px monospace;
-}
-
-#digitalPins{
-    width:100%;
-    height:100%;
-    display:flex;
-    gap:4px;
-}
-
-.digitalPin{
-    flex:1;
-    min-width:0;
-    height:100%;
-    background:#25282b;
-    border:1px solid #111;
-    border-radius:3px;
-    color:#aaa;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-    font:10px monospace;
-}
-
-/* Pins DO NOT GLOW */
-
-.digitalPin::before{
-    content:"";
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#111;
-    border:1px solid #444;
-}
-
-.digitalPin.high{
-    color:#aaa;
-    background:#25282b;
-    border-color:#111;
-    box-shadow:none;
-}
-
-.digitalPin.high::before{
-    background:#111;
-    box-shadow:none;
-}
-
-/* ============================================================
-   ANALOG HEADER
-   ============================================================ */
-
-#analogPins{
-    position:absolute;
-    left:18px;
-    right:18px;
-    bottom:10px;
-    height:38px;
-    display:flex;
-    gap:5px;
-}
-
-.analogPin{
-    flex:1;
-    background:#25282b;
-    border:1px solid #111;
-    border-radius:3px;
-    color:#999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font:9px monospace;
-}
-
-/* ============================================================
-   BREADBOARD
-   ============================================================ */
-
-#breadboard{
-    position:absolute;
-    width:620px;
-    height:470px;
-    left:50%;
-    top:750px;
-    transform:translateX(-50%);
-    background:linear-gradient(145deg,#f4f2e9,#deddd5);
-    border:3px solid #aab3b6;
-    border-radius:13px;
-    box-shadow:0 16px 35px rgba(0,0,0,.5),inset 0 0 0 5px rgba(255,255,255,.35);
-    padding:20px;
-}
-
-#breadboardTitle{
-    position:absolute;
-    left:18px;
-    top:8px;
-    color:#77736a;
-    font:bold 12px monospace;
-}
-
-#breadboardRailTop,
-#breadboardRailBottom{
-    position:absolute;
-    left:18px;
-    right:18px;
-    height:9px;
-    border-radius:4px;
-    background:linear-gradient(to bottom,transparent 0 3px,#d84c4c 3px 5px,transparent 5px),repeating-linear-gradient(to right,#c9c9c1 0,#c9c9c1 4px,transparent 4px,transparent 10px);
-}
-
-#breadboardRailTop{
-    top:35px;
-}
-
-#breadboardRailBottom{
-    bottom:18px;
-}
-
-#breadboardHoles{
-    position:absolute;
-    left:28px;
-    right:28px;
-    top:58px;
-    bottom:47px;
-    display:grid;
-    grid-template-columns:repeat(30,1fr);
-    grid-template-rows:repeat(10,1fr);
-    gap:5px 4px;
-}
-
-.breadHole{
-    width:7px;
-    height:7px;
-    align-self:center;
-    justify-self:center;
-    border-radius:50%;
-    background:#78828a;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.4);
-}
-
-/* ============================================================
-   COMPONENT AREA
-   ============================================================ */
-
-#components{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-}
-
-#joystick{
-    pointer-events:auto;
-    cursor:grab;
-    user-select:none;
-}
-
-/* ============================================================
-   LED BANK
-   ============================================================ */
-
-#ledBank{
-    position:absolute;
-    left:20px;
-    bottom:105px;
-    display:grid;
-    grid-template-columns:repeat(6,26px);
-    gap:13px 12px;
-}
-
-.externalLed{
-    position:relative;
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    background:#555;
-    border:2px solid #444;
-    box-shadow:inset 0 0 5px #222;
-}
-
-.externalLed::after{
-    content:"";
-    position:absolute;
-    left:7px;
-    top:18px;
-    width:2px;
-    height:12px;
-    background:#777;
-}
-
-.externalLed.on{
-    box-shadow:0 0 12px currentColor;
-    filter:brightness(4.0);
-}
-
-.externalLed span{
-    position:absolute;
-    left:50%;
-    top:24px;
-    transform:translateX(-50%);
-    color:#625f58;
-    font:7px monospace;
-    white-space:nowrap;
-}
-
-.externalLed.on span{
-    color:#222;
-    font-weight:bold;
-}
-
-.ledRed{color:#ff3030;background:#752020;}
-.ledOrange{color:#ff8c20;background:#75451b;}
-.ledYellow{color:#ffe340;background:#75691d;}
-.ledGreen{color:#35e86d;background:#1e702f;}
-.ledBlue{color:#329dff;background:#214f75;}
-.ledPurple{color:#bd63ff;background:#552276;}
-.ledPink{color:#ff55b8;background:#742451;}
-.ledCyan{color:#38eaff;background:#20717a;}
-.ledWhite{color:#fff;background:#888;}
-.ledLime{color:#b7ff3c;background:#57751d;}
-.ledTeal{color:#38d8bb;background:#21695e;}
-.ledWarm{color:#ffbf45;background:#78531d;}
-
-/* ============================================================
-   BUTTON BANK
-   ============================================================ */
-
-#buttonBank{
-    position:absolute;
-    left:95px;
-    top:210px;
-    display:grid;
-    grid-template-columns:repeat(4,60px);
-    gap:10px;
-    pointer-events:auto;
-}
-
-.pinButton{
-    width:60px;
-    height:52px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:5px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:3px;
-    cursor:pointer;
-    user-select:none;
-    transition:.1s;
-}
-
-.pinButton span{
-    color:#aaa;
-    font:7px monospace;
-}
-
-.buttonCap{
-    width:27px;
-    height:27px;
-    border-radius:50%;
-    background:#a33;
-    border:2px solid #622;
-    color:#eee;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font:bold 5px monospace;
-    transition:.1s;
-}
-
-.pinButton.active{
-    border-color:#61df7b;
-    box-shadow:0 0 10px rgba(70,255,100,.4);
-}
-
-.pinButton.active .buttonCap{
-    background:#48e878;
-    border-color:#21763b;
-    color:#102015;
-    transform:scale(.88);
-}
-
-.toggleButton .buttonCap{
-    border-radius:4px;
-    background:#555;
-    border-color:#333;
-}
-
-/* ============================================================
-   POTENTIOMETER
-   ============================================================ */
-
-#potentiometer{
-    position:absolute;
-    left:270px;
-    bottom:52px;
-    width:82px;
-    height:82px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:7px;
-    pointer-events:auto;
-    user-select:none;
-}
-
-#potKnob{
-    position:absolute;
-    left:17px;
-    top:8px;
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    background:#18191b;
-    border:4px solid #666;
-    cursor:grab;
-    transform:rotate(-45deg);
-}
-
-#potKnob::after{
-    content:"";
-    position:absolute;
-    left:17px;
-    top:3px;
-    width:3px;
-    height:14px;
-    background:#ddd;
-    border-radius:2px;
-}
-
-#potValue{
-    position:absolute;
-    bottom:5px;
-    width:100%;
-    text-align:center;
-    color:#aaa;
-    font:7px monospace;
-}
-/* ============================================================
-   OLED 4 PIN
-   ============================================================ */
-
-#oled4{
-    position:absolute;
-    left:180px;
-    top:43px;
-    width:105px;
-    height:90px;
-    background:#111;
-    border:3px solid #333;
-    border-radius:4px;
-    box-shadow:0 3px 8px rgba(0,0,0,.5);
-    box-sizing:border-box;
-}
-
-.oledTypeLabel{position:absolute;left:0;right:0;top:-16px;text-align:center;color:#829ca0;font:bold 7px monospace;letter-spacing:.2px;white-space:nowrap}
-
-#oled4 .oledScreen{
-    position:absolute;
-    left:8px;
-    top:7px;
-    width:83px;
-    height:55px;
-    background:#050505;
-    border:3px solid #111;
-    border-radius:3px;
-    overflow:hidden;
-    box-sizing:border-box;
-}
-
-#oled4Canvas{
-    display:block;
-    width:100%;
-    height:100%;
-    image-rendering:pixelated;
-    background:#050505;
-}
-
-#oled4Canvas.active{
-    box-shadow:
-        0 0 8px rgba(255,255,255,.15);
-}
-
-.oledPins{
-    position:absolute;
-    left:8px;
-    right:8px;
-    bottom:5px;
-    display:flex;
-    justify-content:space-between;
-    gap:2px;
-    color:#aaa;
-    font:6px monospace;
-    text-align:center;
-}
-
-
-/* ============================================================
-   OLED 16 PIN
-   ============================================================ */
-
-#oled16{
-    position:absolute;
-    left:297px;
-    top:43px;
-    width:125px;
-    height:90px;
-    background:#101112;
-    border:3px solid #333;
-    border-radius:4px;
-    box-shadow:0 3px 8px rgba(0,0,0,.5);
-    box-sizing:border-box;
-}
-
-#oled16Screen{
-    position:absolute;
-    left:10px;
-    top:8px;
-    right:10px;
-    bottom:19px;
-    background:#061313;
-    border:1px solid #173f3f;
-    color:#49ffff;
-    font:8px monospace;
-    padding:6px;
-    box-sizing:border-box;
-}
-
-.oled16Pins{
-    position:absolute;
-    left:8px;
-    right:8px;
-    display:flex;
-    justify-content:space-between;
-}
-
-.oled16Pins.top{top:1px}
-.oled16Pins.bottom{bottom:3px}
-.oled16Pins i{
-    width:4px;
-    height:4px;
-    display:block;
-    border-radius:1px;
-    background:linear-gradient(180deg,#d5c18d,#897644);
-    box-shadow:0 0 0 1px #4f492f;
-}
-
-/* ============================================================
-   JOYSTICK
-   ============================================================ */
-
-#joystick{
-    position:absolute;
-    left:27px;
-    top:48px;
-    width:90px;
-    height:95px;
-    background:#202124;
-    border:2px solid #555;
-    border-radius:7px;
-}
-
-#joystickBase{
-    position:absolute;
-    left:18px;
-    top:18px;
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:#111;
-    border:3px solid #444;
-}
-
-#joystickStick{
-    position:absolute;
-    left:31px;
-    top:12px;
-    width:24px;
-    height:35px;
-    border-radius:10px;
-    background:#333;
-    border:2px solid #666;
-    transition:transform .08s;
-}
-
-#joystickLabel{
-    position:absolute;
-    bottom:6px;
-    width:100%;
-    text-align:center;
-    color:#aaa;
-    font:8px monospace;
-}
-
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
+#backButton{position:fixed;top:10px;left:10px;z-index:1000;background:#25282d;color:#ddd;border:1px solid #444;border-radius:5px;padding:7px 13px;cursor:pointer}
+#backButton:hover{background:#33373d}
+
+/* Scrollable workspace */
+#workspace{position:absolute;width:94vw;height:94vh;left:3vw;top:3vh;background:#202328;border:1px solid #454950;border-radius:10px;box-shadow:0 15px 45px rgba(0,0,0,.55);overflow:auto}
+#simulator{position:relative;width:100%;min-width:1100px;height:1450px;background:radial-gradient(ellipse at 50% 40%,#303944 0,#242a31 42%,#191d23 100%)}
+
+/* Serial monitor */
+#simulatorStatus{position:sticky;left:18px;top:18px;width:270px;min-height:34px;padding:9px 12px;background:#101216;border:1px solid #3b4048;border-radius:5px;color:#bfc5ce;font:12px monospace;z-index:100}
+#simulatorStatus.error{color:#ff7777;border-color:#713737}
+#simulatorStatus.ready{color:#71ed8b;border-color:#315c3b}
+#simulatorConsole{position:sticky;left:18px;top:62px;width:270px;height:175px;padding:10px;overflow:auto;background:#090b0d;border:1px solid #3b4048;border-radius:5px;color:#55ee76;font:11px/1.5 monospace;white-space:pre-wrap;box-shadow:inset 0 0 15px rgba(0,0,0,.7);z-index:100}
+.workbenchTitle{position:absolute;top:20px;right:22px;color:#858b94;font-size:12px;letter-spacing:2px;text-transform:uppercase}
+
+/* Arduino Uno */
+#arduinoUno{position:absolute;width:500px;height:390px;left:50%;top:285px;transform:translateX(-50%);background:linear-gradient(145deg,#149da0 0%,#087c83 55%,#06646c 100%);border:3px solid #07545b;border-radius:19px;box-shadow:0 12px 30px rgba(0,0,0,.55),inset 0 0 25px rgba(255,255,255,.08),inset 0 0 0 7px rgba(0,45,52,.11)}
+#boardLabel{position:absolute;left:24px;top:20px;color:#e9ffff;font-size:25px;font-weight:bold;letter-spacing:1px}
+#boardSubLabel{position:absolute;left:26px;top:51px;color:#a5dcdc;font-size:10px;letter-spacing:2px}
+#cpuChip{position:absolute;left:50%;top:120px;transform:translateX(-50%);width:150px;height:82px;background:#18191b;border:2px solid #303338;border-radius:3px;box-shadow:0 4px 8px rgba(0,0,0,.45)}
+#cpuChip:before,#cpuChip:after{content:"";position:absolute;left:-7px;right:-7px;height:3px;background:repeating-linear-gradient(to right,#b5b5b5 0,#b5b5b5 5px,transparent 5px,transparent 12px)}
+#cpuChip:before{top:13px}#cpuChip:after{bottom:13px}
+#cpuText{position:absolute;width:100%;text-align:center;top:28px;color:#aaa;font:10px monospace}
+#crystal{position:absolute;left:50%;top:220px;transform:translateX(-50%);width:58px;height:18px;background:#c7c7c7;border:2px solid #777;border-radius:3px;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+#crystal:after{content:"16 MHz";position:absolute;left:100%;top:3px;margin-left:7px;color:#b9dada;font:8px monospace}
+#boardLeds{position:absolute;right:25px;top:21px;display:flex;gap:12px}
+.boardLedUnit{display:flex;flex-direction:column;align-items:center;gap:4px}
+.boardLed{width:12px;height:12px;border-radius:50%;background:#333;border:1px solid #222;box-shadow:inset 0 0 4px #000}
+.boardLed.power{background:#d52b2b;box-shadow:0 0 7px rgba(255,40,40,.7)}
+.boardLedUnit span{font:7px monospace;color:#b8dcdc}
+#builtinLed{position:absolute;left:75%;top:238px;width:17px;height:17px;border-radius:50%;background:#444;border:2px solid #222;box-shadow:inset 0 0 4px #111}
+#builtinLed.on{background:#ff3030;box-shadow:0 0 8px #ff3030,0 0 20px #ff3030}
+#digitalHeader{position:absolute;left:18px;right:18px;bottom:62px;height:65px;background:#006f70;border:1px solid #075959;border-radius:5px;padding:7px}
+.pinHeaderTitle{position:absolute;top:-14px;left:2px;color:#b6dada;font:8px monospace}
+#digitalPins{width:100%;height:100%;display:flex;gap:4px}
+.digitalPin{flex:1;min-width:0;height:100%;background:#25282b;border:1px solid #111;border-radius:3px;color:#aaa;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:10px monospace}
+.digitalPin:before{content:"";width:8px;height:8px;border-radius:50%;background:#111;border:1px solid #444}
+.digitalPin.high{color:#aaa;background:#25282b;border-color:#111;box-shadow:none}
+.digitalPin.high:before{background:#111;box-shadow:none}
+#analogPins{position:absolute;left:18px;right:18px;bottom:10px;height:38px;display:flex;gap:5px}
+.analogPin{flex:1;background:#25282b;border:1px solid #111;border-radius:3px;color:#999;display:flex;align-items:center;justify-content:center;font:9px monospace}
+
+/* Breadboard */
+#breadboard{position:absolute;width:620px;height:470px;left:50%;top:750px;transform:translateX(-50%);background:linear-gradient(145deg,#f4f2e9,#deddd5);border:3px solid #aab3b6;border-radius:13px;box-shadow:0 16px 35px rgba(0,0,0,.5),inset 0 0 0 5px rgba(255,255,255,.35);padding:20px}
+#breadboardTitle{position:absolute;left:18px;top:8px;color:#77736a;font:bold 12px monospace}
+#breadboardRailTop,#breadboardRailBottom{position:absolute;left:18px;right:18px;height:9px;border-radius:4px;background:linear-gradient(to bottom,transparent 0 3px,#d84c4c 3px 5px,transparent 5px),repeating-linear-gradient(to right,#c9c9c1 0,#c9c9c1 4px,transparent 4px,transparent 10px)}
+#breadboardRailTop{top:35px}#breadboardRailBottom{bottom:18px}
+#breadboardHoles{position:absolute;left:28px;right:28px;top:58px;bottom:47px;display:grid;grid-template-columns:repeat(30,1fr);grid-template-rows:repeat(10,1fr);gap:5px 4px}
+.breadHole{width:7px;height:7px;align-self:center;justify-self:center;border-radius:50%;background:#78828a;box-shadow:inset 0 1px 2px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.4)}
+#components{position:absolute;inset:0;pointer-events:none}
+#joystick{position:absolute;left:27px;top:48px;width:90px;height:95px;background:#202124;border:2px solid #555;border-radius:7px;pointer-events:auto;cursor:grab;user-select:none}
+#joystickBase{position:absolute;left:18px;top:18px;width:50px;height:50px;border-radius:50%;background:#111;border:3px solid #444}
+#joystickStick{position:absolute;left:31px;top:12px;width:24px;height:35px;border-radius:10px;background:#333;border:2px solid #666;transition:transform .08s}
+#joystickLabel{position:absolute;bottom:6px;width:100%;text-align:center;color:#aaa;font:8px monospace}
+#joystick.active{cursor:grabbing;border-color:#63e879;box-shadow:0 0 12px rgba(70,255,100,.35)}
+
+/* Analog routing panel */
 #analogRouting{position:absolute;left:-105px;top:154px;width:96px;padding:7px 6px;display:grid;gap:5px;border:1px solid #506268;border-radius:7px;background:linear-gradient(145deg,#34454a,#1e2b30);box-shadow:0 3px 8px #0005;color:#e5eeee;font:7px monospace;pointer-events:auto;z-index:12}
 #analogRouting strong{font-size:8px;letter-spacing:.3px;color:#78d4c5}
 #analogRouting label{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#dce7e5}
 #analogRouting small{color:#aab9ba;font:7px/1.3 Arial,sans-serif}
 
-#joystick.active{
-    cursor:grabbing;
-    border-color:#63e879;
-    box-shadow:0 0 12px rgba(70,255,100,.35);
-}
+/* LED bank */
+#ledBank{position:absolute;left:20px;bottom:105px;display:grid;grid-template-columns:repeat(6,26px);gap:13px 12px}
+.externalLed{position:relative;width:20px;height:20px;border-radius:50%;background:#555;border:2px solid #444;box-shadow:inset 0 0 5px #222}
+.externalLed:after{content:"";position:absolute;left:7px;top:18px;width:2px;height:12px;background:#777}
+.externalLed.on{box-shadow:0 0 12px currentColor;filter:brightness(4)}
+.externalLed span{position:absolute;left:50%;top:24px;transform:translateX(-50%);color:#625f58;font:7px monospace;white-space:nowrap}
+.externalLed.on span{color:#222;font-weight:bold}
+.ledRed{color:#ff3030;background:#752020}.ledOrange{color:#ff8c20;background:#75451b}.ledYellow{color:#ffe340;background:#75691d}.ledGreen{color:#35e86d;background:#1e702f}.ledBlue{color:#329dff;background:#214f75}.ledPurple{color:#bd63ff;background:#552276}.ledPink{color:#ff55b8;background:#742451}.ledCyan{color:#38eaff;background:#20717a}.ledWhite{color:#fff;background:#888}.ledLime{color:#b7ff3c;background:#57751d}.ledTeal{color:#38d8bb;background:#21695e}.ledWarm{color:#ffbf45;background:#78531d}
 
-/* ============================================================
-   SENSORS
-   ============================================================ */
+/* Buttons */
+#buttonBank{position:absolute;left:95px;top:210px;display:grid;grid-template-columns:repeat(4,60px);gap:10px;pointer-events:auto}
+.pinButton{width:60px;height:52px;background:#292b2d;border:2px solid #555;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;user-select:none;transition:.1s}
+.pinButton span{color:#aaa;font:7px monospace}
+.buttonCap{width:27px;height:27px;border-radius:50%;background:#a33;border:2px solid #622;color:#eee;display:flex;align-items:center;justify-content:center;font:bold 5px monospace;transition:.1s}
+.pinButton.active{border-color:#61df7b;box-shadow:0 0 10px rgba(70,255,100,.4)}
+.pinButton.active .buttonCap{background:#48e878;border-color:#21763b;color:#102015;transform:scale(.88)}
+.toggleButton .buttonCap{border-radius:4px;background:#555;border-color:#333}
 
-.sensor{
-    position:absolute;
-    width:72px;
-    height:48px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:4px;
-    color:#aaa;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    font:8px monospace;
-}
+/* Potentiometer */
+#potentiometer{position:absolute;left:270px;bottom:52px;width:82px;height:82px;background:#292b2d;border:2px solid #555;border-radius:7px;pointer-events:auto;user-select:none}
+#potKnob{position:absolute;left:17px;top:8px;width:44px;height:44px;border-radius:50%;background:#18191b;border:4px solid #666;cursor:grab;transform:rotate(-45deg)}
+#potKnob:after{content:"";position:absolute;left:17px;top:3px;width:3px;height:14px;background:#ddd;border-radius:2px}
+#potValue{position:absolute;bottom:5px;width:100%;text-align:center;color:#aaa;font:7px monospace}
 
-#sensor1{
-    left:135px;
-    top:155px;
-}
+/* OLED displays */
+#oled4{position:absolute;left:180px;top:43px;width:105px;height:90px;background:#111;border:3px solid #333;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.5);box-sizing:border-box}
+.oledTypeLabel{position:absolute;left:0;right:0;top:-16px;text-align:center;color:#829ca0;font:bold 7px monospace;letter-spacing:.2px;white-space:nowrap}
+#oled4 .oledScreen{position:absolute;left:8px;top:7px;width:83px;height:55px;background:#050505;border:3px solid #111;border-radius:3px;overflow:hidden;box-sizing:border-box}
+#oled4Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#050505}
+#oled4Canvas.active{box-shadow:0 0 8px rgba(255,255,255,.15)}
+.oledPins{position:absolute;left:8px;right:8px;bottom:5px;display:flex;justify-content:space-between;gap:2px;color:#aaa;font:6px monospace;text-align:center}
+#oled16{position:absolute;left:297px;top:43px;width:125px;height:90px;background:#101112;border:3px solid #333;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.5);box-sizing:border-box}
+#oled16Screen{position:absolute;left:10px;top:8px;right:10px;bottom:19px;background:#061313;border:1px solid #173f3f;color:#49ffff;font:8px monospace;padding:6px;box-sizing:border-box}
+.oled16Pins{position:absolute;left:8px;right:8px;display:flex;justify-content:space-between}
+.oled16Pins.top{top:1px}.oled16Pins.bottom{bottom:3px}
+.oled16Pins i{width:4px;height:4px;display:block;border-radius:1px;background:linear-gradient(180deg,#d5c18d,#897644);box-shadow:0 0 0 1px #4f492f}
+#oled16Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#061313}
 
-#sensor2{
-    left:220px;
-    top:155px;
-}
+/* Sensors and buzzer */
+.sensor{position:absolute;width:72px;height:48px;background:#292b2d;border:2px solid #555;border-radius:4px;color:#aaa;display:flex;align-items:center;justify-content:center;text-align:center;font:8px monospace}
+#sensor1{left:135px;top:155px}#sensor2{left:220px;top:155px}#sensor3{left:305px;top:155px}
+#buzzer{position:absolute;right:25px;top:285px;width:75px;height:65px;background:#292b2d;border:2px solid #555;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:#aaa;font:8px monospace;text-align:center;pointer-events:auto}
+#buzzerTop{width:35px;height:35px;border-radius:50%;background:#111;border:3px solid #444;box-shadow:inset 0 0 8px #000}
+#buzzer.active #buzzerTop{background:#e5b93f;border-color:#fff0a0;box-shadow:0 0 8px #e5c34f,0 0 18px rgba(255,210,70,.7)}
 
-#sensor3{
-    left:305px;
-    top:155px;
-}
+/* Labels and workbench info */
+.componentLabel{position:absolute;color:#666158;font:7px monospace;text-align:center}
+#ledLabel{left:20px;bottom:38px}#componentLabel{left:25px;top:145px}
+#pinInfo{position:absolute;left:18px;bottom:20px;color:#777d86;font:9px monospace}
+#simulatorVersion{position:absolute;right:20px;bottom:20px;color:#626871;font:9px monospace}
 
-#buzzer{
-    position:absolute;
-    right:25px;
-    top:285px;
-    width:75px;
-    height:65px;
-    background:#292b2d;
-    border:2px solid #555;
-    border-radius:6px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    color:#aaa;
-    font:8px monospace;
-    text-align:center;
-    pointer-events:auto;
-}
-
-#buzzerTop{
-    width:35px;
-    height:35px;
-    border-radius:50%;
-    background:#111;
-    border:3px solid #444;
-    box-shadow:inset 0 0 8px #000;
-}
-
-#buzzer.active #buzzerTop{
-    background:#e5b93f;
-    border-color:#fff0a0;
-    box-shadow:
-        0 0 8px #e5c34f,
-        0 0 18px rgba(255,210,70,.7);
-}
-
-
-
-/* ============================================================
-   LABELS
-   ============================================================ */
-
-.componentLabel{
-    position:absolute;
-    color:#666158;
-    font:7px monospace;
-    text-align:center;
-}
-
-#ledLabel{
-    left:20px;
-    bottom:38px;
-}
-
-#componentLabel{
-    left:25px;
-    top:145px;
-}
-
-/* ============================================================
-   WORKBENCH INFO
-   ============================================================ */
-
-#pinInfo{
-    position:absolute;
-    left:18px;
-    bottom:20px;
-    color:#777d86;
-    font:9px monospace;
-}
-
-#simulatorVersion{
-    position:absolute;
-    right:20px;
-    bottom:20px;
-    color:#626871;
-    font:9px monospace;
-}
-
-
-/* Interactive servo visual for GSE sketches */
-#usbPort{position:absolute;left:-24px;top:146px;width:32px;height:66px;border:3px solid #677783;border-radius:5px 0 0 5px;background:linear-gradient(90deg,#cbd2d7,#647681 38%,#263843 42% 70%,#a9b4ba 74%);box-shadow:0 3px 6px #003c42;display:flex;align-items:center;justify-content:center}
+/* USB connector */
+#usbPort{position:absolute;left:-24px;top:146px;width:32px;height:66px;border:3px solid #677783;border-radius:5px 0 0 5px;background:linear-gradient(90deg,#cbd2d7,#647681 38%,#263843 42% 70%,#a9b4ba);box-shadow:0 3px 6px #003c42;display:flex;align-items:center;justify-content:center}
 #usbPort span{position:absolute;left:-1px;top:23px;transform:translateX(-100%);font:7px monospace;color:#d6ecee;letter-spacing:1px}
-#usbPort::after{content:"";position:absolute;left:7px;right:7px;top:17px;bottom:17px;border-radius:2px;background:#162b35;box-shadow:inset 0 0 0 2px #a4afb5}
+#usbPort:after{content:"";position:absolute;left:7px;right:7px;top:17px;bottom:17px;border-radius:2px;background:#162b35;box-shadow:inset 0 0 0 2px #a4afb5}
 
-#powerKit{position:absolute;left:732px;top:27px;width:174px;min-height:252px;padding:10px 10px 8px;border:1px solid #8c9ea2;border-radius:10px;background:linear-gradient(145deg,#fcfdf9,#dce5e3);box-shadow:0 6px 13px #26373d4d;color:#21353d;pointer-events:auto;font:8px Arial,sans-serif;z-index:7}
+/* Power and voltage lab */
+#powerKit{position:absolute;left:790px;top:27px;width:174px;min-height:252px;padding:10px 10px 8px;border:1px solid #8c9ea2;border-radius:10px;background:linear-gradient(145deg,#fcfdf9,#dce5e3);box-shadow:0 6px 13px #26373d4d;color:#21353d;pointer-events:auto;font:8px Arial,sans-serif;z-index:20}
 .powerKitHeading{display:flex;justify-content:space-between;align-items:center;color:#354b56;font:bold 8px monospace;letter-spacing:.2px}
 .powerSources{display:flex;gap:5px;margin:7px 0 5px}
 .sourceButton{flex:1;padding:5px 3px;border:1px solid #9aabae;border-radius:5px;background:#f8faf8;color:#485a62;font:bold 7px Arial;cursor:pointer}
@@ -963,13 +132,13 @@ body{
 .potSourceVisual i{position:absolute;left:18px;top:3px;width:3px;height:13px;border-radius:3px;background:#f4cf59;transform:rotate(-45deg);transform-origin:50% 19px}
 .batteryVisual{display:none;position:relative;width:35px;height:42px;border:2px solid #48545b;border-radius:5px;background:linear-gradient(90deg,#566268,#1e2b32 45%,#38444a);box-shadow:2px 3px 0 #aab5b7;color:#f4da69;text-align:center;font:bold 11px Arial;padding-top:10px}
 .batteryVisual span{position:absolute;left:8px;top:-7px;width:14px;height:6px;border:2px solid #667278;border-bottom:0;background:#bcc5c7}
-.batteryVisual i{position:absolute;left:5px;top:3px;width:4px;height:3px;background:#e9eced}.batteryVisual b{position:absolute;bottom:3px;left:0;width:100%;font:4px Arial;color:#c1cbd0}
-#powerKit[data-source="battery"] .solarVisual{display:none}
+.batteryVisual i{position:absolute;left:5px;top:3px;width:4px;height:3px;background:#e9eced}
+.batteryVisual b{position:absolute;bottom:3px;left:0;width:100%;font:4px Arial;color:#c1cbd0}
+#powerKit[data-source="battery"] .solarVisual,#powerKit[data-source="pot"] .solarVisual{display:none}
 #powerKit[data-source="battery"] .batteryVisual{display:block}
-#powerKit[data-source="pot"] .solarVisual{display:none}
 #powerKit[data-source="pot"] .potSourceVisual{display:block}
 .solarControl{display:flex;justify-content:space-between;align-items:center;color:#54656b;font-weight:bold}
-.solarControl output{color:#0c7974;font: bold 8px monospace}
+.solarControl output{color:#0c7974;font:bold 8px monospace}
 #solarVoltage{width:100%;height:13px;margin:3px 0 4px;accent-color:#138f87;cursor:pointer}
 #solarVoltage:disabled{opacity:.45;cursor:not-allowed}
 .resistorControls{display:flex;align-items:center;justify-content:center;gap:5px;margin:3px 0 6px;color:#56656b;font:bold 8px monospace}
@@ -978,7 +147,7 @@ body{
 .scrollSelect{position:relative;display:inline-flex;vertical-align:middle;min-width:0;z-index:1}
 .scrollSelectNative{position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;padding:0!important;margin:0!important;border:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;opacity:0!important;pointer-events:none!important}
 .scrollSelectButton{display:flex;align-items:center;justify-content:space-between;gap:4px;width:76px;min-height:23px;padding:3px 5px;border:1px solid #8f9fa0;border-radius:4px;background:linear-gradient(#fff,#e8efec);color:#24363a;font:8px monospace;text-align:left;cursor:pointer}
-.scrollSelectButton::after{content:"▾";color:#197d77;font-size:9px}
+.scrollSelectButton:after{content:"▾";color:#197d77;font-size:9px}
 .scrollSelectButton:focus-visible,.scrollSelectOption:focus-visible{outline:2px solid #19a89e;outline-offset:1px}
 .scrollSelectMenu{position:absolute;top:calc(100% + 2px);left:0;min-width:100%;max-height:114px;overflow-y:auto;overscroll-behavior:contain;padding:2px;border:1px solid #728887;border-radius:5px;background:#f8fbf8;box-shadow:0 5px 12px #101b1c55;z-index:50;scrollbar-width:thin;scrollbar-color:#6a9993 #e2eae7}
 .scrollSelectMenu[hidden]{display:none}
@@ -998,7 +167,8 @@ body{
 .powerNote{display:block;margin-top:5px;color:#66767a;font:7px/1.3 Arial,sans-serif}
 .powerNote.overvoltage{color:#a62828;font-weight:bold}
 
-#servoUnit{position:absolute;left:386px;top:290px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
+/* Servo */
+#servoUnit{position:absolute;left:790px;top:315px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
 .servoTopLabel{font-weight:bold;letter-spacing:.3px;margin-bottom:6px;color:#425463;background:#f0f4f2cc;border-radius:3px;padding:3px}
 #servoCase{position:relative;width:82px;height:72px;margin:0 auto;background:linear-gradient(145deg,#61b6e8,#1f5c8a);border:3px solid #19415e;border-radius:9px;box-shadow:inset 0 2px 4px #ffffff66,0 3px 5px #0004}
 #servoHub{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);border-radius:50%;background:#dce6ec;border:4px solid #7c929f;box-sizing:border-box;z-index:2}
@@ -1008,7 +178,10 @@ body{
 #servoUnit.attached #servoStatus{color:#087b3e}
 #servoUnit.attached #servoCase{box-shadow:0 0 12px #39c87999,inset 0 2px 4px #ffffff44}
 
-@media(max-width:700px){#powerKit{transform:scale(.9);transform-origin:top right;left:432px}#servoUnit{transform:scale(.92);transform-origin:top left}}
-#oled16Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#061313}
-
+/* Keep the power controls and servo in a dedicated right-hand column. */
+@media(max-width:700px){
+    #simulator{min-width:1100px}
+    #powerKit{transform:none;left:790px;transform-origin:top left}
+    #servoUnit{transform:none;left:790px;top:315px;transform-origin:top left}
+}
 
