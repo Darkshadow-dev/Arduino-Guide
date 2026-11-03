@@ -57,7 +57,7 @@ body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
 #joystick.active{cursor:grabbing;border-color:#63e879;box-shadow:0 0 12px rgba(70,255,100,.35)}
 
 /* Analog routing panel */
-#analogRouting{position:absolute;left:-105px;top:154px;width:96px;padding:7px 6px;display:grid;gap:5px;border:1px solid #506268;border-radius:7px;background:linear-gradient(145deg,#34454a,#1e2b30);box-shadow:0 3px 8px #0005;color:#e5eeee;font:7px monospace;pointer-events:auto;z-index:12}
+#analogRouting{position:absolute;left:-105px;top:15px;width:96px;padding:7px 6px;display:grid;gap:5px;border:1px solid #506268;border-radius:7px;background:linear-gradient(145deg,#34454a,#1e2b30);box-shadow:0 3px 8px #0005;color:#e5eeee;font:7px monospace;pointer-events:auto;z-index:12}
 #analogRouting strong{font-size:8px;letter-spacing:.3px;color:#78d4c5}
 #analogRouting label{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#dce7e5}
 #analogRouting small{color:#aab9ba;font:7px/1.3 Arial,sans-serif}
@@ -119,7 +119,7 @@ body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
 #usbPort:after{content:"";position:absolute;left:7px;right:7px;top:17px;bottom:17px;border-radius:2px;background:#162b35;box-shadow:inset 0 0 0 2px #a4afb5}
 
 /* Power and voltage lab */
-#powerKit{position:absolute;left:790px;top:27px;width:174px;min-height:252px;padding:10px 10px 8px;border:1px solid #8c9ea2;border-radius:10px;background:linear-gradient(145deg,#fcfdf9,#dce5e3);box-shadow:0 6px 13px #26373d4d;color:#21353d;pointer-events:auto;font:8px Arial,sans-serif;z-index:20}
+#powerKit{position:absolute;left:720px;top:7px;width:174px;min-height:252px;padding:10px 10px 8px;border:1px solid #8c9ea2;border-radius:10px;background:linear-gradient(145deg,#fcfdf9,#dce5e3);box-shadow:0 6px 13px #26373d4d;color:#21353d;pointer-events:auto;font:8px Arial,sans-serif;z-index:20}
 .powerKitHeading{display:flex;justify-content:space-between;align-items:center;color:#354b56;font:bold 8px monospace;letter-spacing:.2px}
 .powerSources{display:flex;gap:5px;margin:7px 0 5px}
 .sourceButton{flex:1;padding:5px 3px;border:1px solid #9aabae;border-radius:5px;background:#f8faf8;color:#485a62;font:bold 7px Arial;cursor:pointer}
@@ -168,7 +168,7 @@ body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
 .powerNote.overvoltage{color:#a62828;font-weight:bold}
 
 /* Servo */
-#servoUnit{position:absolute;left:790px;top:315px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
+#servoUnit{position:absolute;left:230px;top:60px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
 .servoTopLabel{font-weight:bold;letter-spacing:.3px;margin-bottom:6px;color:#425463;background:#f0f4f2cc;border-radius:3px;padding:3px}
 #servoCase{position:relative;width:82px;height:72px;margin:0 auto;background:linear-gradient(145deg,#61b6e8,#1f5c8a);border:3px solid #19415e;border-radius:9px;box-shadow:inset 0 2px 4px #ffffff66,0 3px 5px #0004}
 #servoHub{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);border-radius:50%;background:#dce6ec;border:4px solid #7c929f;box-sizing:border-box;z-index:2}
