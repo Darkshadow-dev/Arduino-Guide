@@ -81,7 +81,7 @@ body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
 .toggleButton .buttonCap{border-radius:4px;background:#555;border-color:#333}
 
 /* Potentiometer */
-#potentiometer{position:absolute;left:270px;bottom:52px;width:82px;height:82px;background:#292b2d;border:2px solid #555;border-radius:7px;pointer-events:auto;user-select:none}
+#potentiometer{position:absolute;left:270px;bottom:82px;width:82px;height:82px;background:#292b2d;border:2px solid #555;border-radius:7px;pointer-events:auto;user-select:none}
 #potKnob{position:absolute;left:17px;top:8px;width:44px;height:44px;border-radius:50%;background:#18191b;border:4px solid #666;cursor:grab;transform:rotate(-45deg)}
 #potKnob:after{content:"";position:absolute;left:17px;top:3px;width:3px;height:14px;background:#ddd;border-radius:2px}
 #potValue{position:absolute;bottom:5px;width:100%;text-align:center;color:#aaa;font:7px monospace}
@@ -168,7 +168,7 @@ body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
 .powerNote.overvoltage{color:#a62828;font-weight:bold}
 
 /* Servo */
-#servoUnit{position:absolute;left:530px;top:60px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
+#servoUnit{position:absolute;left:430px;top:60px;width:126px;height:138px;pointer-events:none;user-select:none;text-align:center;color:#d7e6ef;font:8px monospace;z-index:5}
 .servoTopLabel{font-weight:bold;letter-spacing:.3px;margin-bottom:6px;color:#425463;background:#f0f4f2cc;border-radius:3px;padding:3px}
 #servoCase{position:relative;width:82px;height:72px;margin:0 auto;background:linear-gradient(145deg,#61b6e8,#1f5c8a);border:3px solid #19415e;border-radius:9px;box-shadow:inset 0 2px 4px #ffffff66,0 3px 5px #0004}
 #servoHub{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%);border-radius:50%;background:#dce6ec;border:4px solid #7c929f;box-sizing:border-box;z-index:2}
