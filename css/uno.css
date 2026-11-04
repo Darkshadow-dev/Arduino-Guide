@@ -93,7 +93,7 @@ body{background:#17191d;font-family:Arial,Helvetica,sans-serif;color:#fff}
 #oled4Canvas{display:block;width:100%;height:100%;image-rendering:pixelated;background:#050505}
 #oled4Canvas.active{box-shadow:0 0 8px rgba(255,255,255,.15)}
 .oledPins{position:absolute;left:8px;right:8px;bottom:5px;display:flex;justify-content:space-between;gap:2px;color:#aaa;font:6px monospace;text-align:center}
-#oled16{position:absolute;left:297px;top:43px;width:325px;height:90px;background:#101112;border:3px solid #333;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.5);box-sizing:border-box}
+#oled16{position:absolute;left:297px;top:43px;width:125px;height:90px;background:#101112;border:3px solid #333;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.5);box-sizing:border-box}
 #oled16Screen{position:absolute;left:10px;top:8px;right:10px;bottom:19px;background:#061313;border:1px solid #173f3f;color:#49ffff;font:8px monospace;padding:6px;box-sizing:border-box}
 .oled16Pins{position:absolute;left:8px;right:8px;display:flex;justify-content:space-between}
 .oled16Pins.top{top:1px}.oled16Pins.bottom{bottom:3px}
