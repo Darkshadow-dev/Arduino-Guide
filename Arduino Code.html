@@ -4,9 +4,474 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="Images/Website-Guide.png">
 <title>Arduino IDE Web</title>
-<link rel="stylesheet" href="css/code.css">
 </head>
+<style>
+*{
+  box-sizing:border-box;
+}
 
+html,
+body{
+  width:100%;
+  height:100%;
+  margin:0;
+}
+
+
+body{
+  font-family:monospace;
+  background:#0b0f1a;
+  color:#fff;
+  overflow:hidden;
+}
+
+button,
+select,
+input,
+textarea{
+  font-family:inherit;
+}
+
+button{
+  border:1px solid #263653;
+  background:#172238;
+  color:#fff;
+  padding:7px 12px;
+  border-radius:5px;
+  cursor:pointer;
+  transition:.15s;
+}
+
+button:hover{
+  background:#243657;
+  border-color:#3b5685;
+}
+
+button:active{
+  transform:translateY(1px);
+}
+
+button.primary{
+  background:#087f83;
+  border-color:#0aaeb3;
+}
+
+button.primary:hover{
+  background:#099da2;
+}
+
+button.success{
+  background:#116b42;
+  border-color:#18a865;
+}
+
+button.success:hover{
+  background:#168653;
+}
+
+button.danger{
+  background:#652c35;
+  border-color:#98404c;
+}
+
+button.danger:hover{
+  background:#7b3540;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+header{
+  height:58px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 10px;
+  background:#111827;
+  border-bottom:1px solid #263044;
+  white-space:nowrap;
+  overflow-x:auto;
+}
+
+header::-webkit-scrollbar{
+  height:0;
+}
+
+#brand{
+  font-weight:bold;
+  color:#00d8c9;
+  padding:0 8px;
+  margin-right:4px;
+}
+
+#filename{
+  width:125px;
+  padding:7px 9px;
+  border:1px solid #263653;
+  border-radius:5px;
+  background:#0b1220;
+  color:#fff;
+  outline:none;
+}
+
+#filename:focus{
+  border-color:#00aeb3;
+}
+
+.nav-separator{
+  width:1px;
+  height:26px;
+  background:#2a354b;
+  margin:0 3px;
+}
+
+#editorWrap{
+  display:flex;
+  height:calc(100vh - 178px);
+  min-height:180px;
+}
+
+#lineNums{
+  width:52px;
+  flex-shrink:0;
+  background:#0d1422;
+  border-right:1px solid #202b3f;
+  padding:10px 7px;
+  color:#58657a;
+  text-align:right;
+  font-size:14px;
+  line-height:1.4;
+  overflow:hidden;
+  user-select:none;
+}
+
+#lineNums .error-line{
+  color:#ff5f67;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#lineNums .warning-line{
+  color:#f5b942;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#lineNums .active-error{
+  background:#51232a;
+  border-radius:3px;
+}
+
+#editorBox{
+  position:relative;
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+}
+
+#editor,
+#highlight{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:10px 12px;
+  border:0;
+  outline:none;
+  font-family:monospace;
+  font-size:14px;
+  line-height:1.4;
+  white-space:pre;
+  overflow:auto;
+  tab-size:2;
+}
+
+#highlight{
+  z-index:1;
+  pointer-events:none;
+  color:#d7e2f2;
+}
+
+#editor{
+  z-index:2;
+  resize:none;
+  background:transparent;
+  color:transparent;
+  caret-color:#00ff99;
+  overflow:auto;
+}
+
+#editor::selection{
+  background:rgba(0,180,255,.25);
+}
+
+#highlight::-webkit-scrollbar,
+#editor::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+#highlight::-webkit-scrollbar-thumb,
+#editor::-webkit-scrollbar-thumb{
+  background:#26344d;
+  border-radius:4px;
+}
+
+#highlight::-webkit-scrollbar-track,
+#editor::-webkit-scrollbar-track{
+  background:#0b111d;
+}
+
+#errorMarkers{
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.error-marker{
+  position:absolute;
+  left:12px;
+  right:12px;
+  height:20px;
+  border-bottom:2px solid #ff4d5a;
+  background:rgba(255,70,80,.06);
+}
+
+#errorTooltip{
+  position:absolute;
+  z-index:30;
+  display:none;
+  max-width:420px;
+  padding:6px 9px;
+  border:1px solid #7d3942;
+  border-radius:5px;
+  background:#24151a;
+  color:#ffd7da;
+  box-shadow:0 5px 18px rgba(0,0,0,.45);
+  font-size:12px;
+  line-height:1.35;
+  pointer-events:none;
+  white-space:normal;
+}
+/* =========================
+   AUTOCOMPLETE
+========================= */
+
+#autocomplete{
+  position:absolute;
+  z-index:20;
+  display:none;
+  width:260px;
+  max-height:230px;
+  overflow:auto;
+  background:#111827;
+  border:1px solid #344563;
+  border-radius:6px;
+  box-shadow:0 8px 25px rgba(0,0,0,.45);
+  font-size:13px;
+}
+
+#autocomplete.visible{
+  display:block;
+}
+
+.autocomplete-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:6px 9px;
+  cursor:pointer;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected{
+  background:#1d3150;
+}
+
+.autocomplete-name{
+  color:#dce8f8;
+}
+
+.autocomplete-type{
+  color:#7185a3;
+  font-size:11px;
+}
+
+.autocomplete-help{
+  padding:7px 9px;
+  border-top:1px solid #293650;
+  color:#647994;
+  font-size:10px;
+}
+
+/* =========================
+   BOTTOM
+========================= */
+
+#bottomBar{
+  height:140px;
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-rows:37px minmax(0,1fr);
+  background:#0d1420;
+  border-top:1px solid #263044;
+}
+
+#consoleHeader{
+  grid-column:1 / -1;
+  grid-row:1;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 10px;
+  background:#111827;
+  border-bottom:1px solid #263044;
+  color:#aab7ca;
+  font-size:13px;
+}
+
+#consoleTitle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+#statusDot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#64748b;
+}
+
+#statusDot.success{
+  background:#22c55e;
+}
+
+#statusDot.error{
+  background:#ef4444;
+}
+
+#statusDot.running{
+  background:#f59e0b;
+}
+
+#consoleButtons{
+  display:flex;
+  gap:5px;
+}
+
+#consoleButtons button{
+  padding:3px 8px;
+  font-size:12px;
+}
+
+#console{
+  grid-column:1;
+  grid-row:2;
+  min-width:0;
+  min-height:0;
+  margin:0;
+  padding:8px 10px;
+  overflow:auto;
+  color:#b8ffcc;
+  background:#080d15;
+  font-size:13px;
+  line-height:1.4;
+  white-space:pre-wrap;
+}
+
+#errorPanel{
+  grid-column:2;
+  grid-row:2;
+}
+
+#liveCounter{
+  margin-left:auto;
+  color:#8ea0b9;
+  font-size:12px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.live-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 7px rgba(34,197,94,.7);
+}
+
+#compileInfo{
+  color:#7890ad;
+  font-size:12px;
+  margin-left:5px;
+}
+
+.output-error{
+  color:#ff7a83;
+}
+
+.output-success{
+  color:#5ee68c;
+}
+
+@media(max-width:900px){
+
+  #brand{
+    display:none;
+  }
+
+  header{
+    gap:5px;
+  }
+
+  #filename{
+    width:105px;
+  }
+}
+
+@media(max-width:650px){
+
+  header{
+    height:52px;
+  }
+
+  #editorWrap{
+    height:calc(100vh - 172px);
+  }
+
+  #bottomBar{
+    height:120px;
+  }
+
+  header button{
+    padding:6px 8px;
+  }
+
+  #lineNums{
+    width:42px;
+    font-size:12px;
+  }
+
+  #editor,
+  #highlight{
+    font-size:13px;
+  }
+
+  #autocomplete{
+    width:220px;
+  }
+}
+
+</style>
 <body>
 
 <header>
