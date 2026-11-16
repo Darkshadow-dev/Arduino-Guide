@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="Images/Website-Guide.png">
+
+<title>Arduino Guide</title>
+
+<link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+
+<div id="header"></div>
+<div id="rotateWarning">
+</div>
+<main><!-- Insert this complete page section inside <main>, before the #notfound page. -->
+<section id="esp32" class="page active">
+            <div class="extended-hero">
+                <h2>Getting Started with ESP32</h2>
+                <p>
+                    A companion mini-guide to the Arduino basics. Learn what an ESP32 is, install board support with Arduino CLI,
+                    create your first <code>.ino</code> project, and upload a program.
+                </p>
+            </div>
+
+            <nav class="tutorial-library" aria-label="On this page">
+                <div class="library-header">
+                    <h2>On this page</h2>
+                    <p>Use these links to jump to a topic.</p>
+                </div>
+                <div class="tutorial-filters">
+                    <a class="level-button" href="#about">What is ESP32?</a>
+                    <a class="level-button" href="#requirements">What you need</a>
+                    <a class="level-button" href="#install">Install support</a>
+                    <a class="level-button" href="#project">First project</a>
+                    <a class="level-button" href="#upload">Compile & upload</a>
+                    <a class="level-button" href="#commands">CLI commands</a>
+                    <a class="level-button" href="#pins">Pins & safety</a>
+                </div>
+            </nav>
+
+            <section class="extended-card" id="about">
+                <div class="card-content">
+                    <span class="card-level">01 • INTRODUCTION</span>
+                    <h2>What is an ESP32?</h2>
+                    <p>
+                        The ESP32 is a microcontroller family commonly used in electronics,
+                        robotics and Internet of Things projects. Many ESP32 boards include
+                        Wi-Fi and Bluetooth, alongside GPIO pins for connecting components.
+                    </p>
+                    <p>
+                        This guide is written for a classic ESP32 development board such as
+                        the ESP32-WROOM-32S, including common 30-pin boards. Other ESP32
+                        models can have different pins and features.
+                    </p>
+                    <div class="tutorial-levels">
+                        <div class="level-panel">
+                            <div class="level-top">
+                                <h3>Wi-Fi & Bluetooth</h3>
+                                <span class="level-tag">Wireless</span>
+                            </div>
+                            <p>Connect devices to networks or communicate wirelessly.</p>
+                        </div>
+                        <div class="level-panel">
+                            <div class="level-top">
+                                <h3>GPIO</h3>
+                                <span class="level-tag">Hardware</span>
+                            </div>
+                            <p>Read buttons and sensors or control LEDs and other circuits.</p>
+                        </div>
+                        <div class="level-panel">
+                            <div class="level-top">
+                                <h3>Arduino-style code</h3>
+                                <span class="level-tag">Programming</span>
+                            </div>
+                            <p>Use C++ sketches with <code>setup()</code> and <code>loop()</code>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extended-card" id="requirements">
+                <div class="card-content">
+                    <span class="card-level">02 • PREPARATION</span>
+                    <h2>What you need</h2>
+                    <ul>
+                        <li>An ESP32 development board and its USB cable.</li>
+                        <li>A computer with Arduino CLI installed.</li>
+                        <li>A USB data cable (some cables provide power only).</li>
+                        <li>Optional: a breadboard, LED and suitable resistor.</li>
+                    </ul>
+                    <p>
+                        Your board may use a USB-to-serial chip such as CP210x or CH340.
+                        If Windows does not show a new COM port when you connect the board,
+                        you may need the correct USB-to-serial driver for your board.
+                    </p>
+                </div>
+            </section>
+
+            <section class="extended-card" id="install">
+                <div class="card-content">
+                    <span class="card-level">03 • INSTALLATION</span>
+                    <h2>Install ESP32 support in Arduino CLI</h2>
+                    <p>
+                        Arduino CLI can compile and upload ESP32 sketches. You do not need
+                        to use the Arduino IDE if you prefer working from Command Prompt,
+                        scripts or another editor.
+                    </p>
+
+                    <h3>Step 1 — Add the Espressif board package URL</h3>
+                    <pre><code>arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json</code></pre>
+
+                    <h3>Step 2 — Update the board index</h3>
+                    <pre><code>arduino-cli core update-index</code></pre>
+
+                    <h3>Step 3 — Install the ESP32 platform</h3>
+                    <pre><code>arduino-cli core install esp32:esp32</code></pre>
+
+                    <h3>Step 4 — Check that it is installed</h3>
+                    <pre><code>arduino-cli core list</code></pre>
+                    <p>
+                        The platform should appear in the list as <code>esp32:esp32</code>.
+                        The first installation can take a while because CLI downloads the
+                        compiler, tools and board definitions.
+                    </p>
+                </div>
+            </section>
+
+            <section class="extended-card" id="project">
+                <div class="card-content">
+                    <span class="card-level">04 • FIRST SKETCH</span>
+                    <h2>Create your first .ino project</h2>
+                    <p>
+                        Arduino sketches use the <code>.ino</code> extension. The sketch
+                        file should be inside a folder with the same name.
+                    </p>
+                    <pre><code>ESP32_Test/
+└── ESP32_Test.ino</code></pre>
+
+                    <h3>ESP32_Test.ino</h3>
+                    <pre><code>#define LED_PIN 2
+
+void setup() {
+    Serial.begin(115200);
+
+    pinMode(LED_PIN, OUTPUT);
+
+    Serial.println("ESP32 started!");
+}
+
+void loop() {
+    digitalWrite(LED_PIN, HIGH);
+    Serial.println("LED ON");
+    delay(1000);
+
+    digitalWrite(LED_PIN, LOW);
+    Serial.println("LED OFF");
+    delay(1000);
+}</code></pre>
+                    <p>
+                        This sketch starts serial communication, configures GPIO 2 as an
+                        output, and switches it on and off every second. GPIO 2 is used as
+                        an onboard LED pin on some boards, but not all. If your board has
+                        no LED connected to GPIO 2, use an external LED with a resistor
+                        and the correct wiring for your board.
+                    </p>
+                    <div class="level-panel">
+                        <div class="level-top">
+                            <h3>What the functions do</h3>
+                            <span class="level-tag">Code basics</span>
+                        </div>
+                        <ul>
+                            <li><code>setup()</code> runs once after startup or reset.</li>
+                            <li><code>loop()</code> repeats while the board is running.</li>
+                            <li><code>pinMode()</code> configures a GPIO pin.</li>
+                            <li><code>digitalWrite()</code> sets a digital output HIGH or LOW.</li>
+                            <li><code>delay(1000)</code> waits approximately one second.</li>
+                            <li><code>Serial.println()</code> sends text to the serial monitor.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extended-card" id="upload">
+                <div class="card-content">
+                    <span class="card-level">05 • BUILD & UPLOAD</span>
+                    <h2>Find, compile and upload your board</h2>
+
+                    <h3>Step 1 — Connect the ESP32</h3>
+                    <p>Connect the board with USB, then list detected ports:</p>
+                    <pre><code>arduino-cli board list</code></pre>
+
+                    <h3>Step 2 — Select a board configuration</h3>
+                    <p>
+                        For a classic ESP32-WROOM-32S development board, the generic
+                        <code>ESP32 Dev Module</code> configuration is a useful starting
+                        point. Its FQBN is:
+                    </p>
+                    <pre><code>esp32:esp32:esp32</code></pre>
+                    <p>To see other available ESP32 board definitions:</p>
+                    <pre><code>arduino-cli board listall esp32</code></pre>
+
+                    <h3>Step 3 — Compile the sketch</h3>
+                    <pre><code>arduino-cli compile --fqbn esp32:esp32:esp32 ESP32_Test</code></pre>
+
+                    <h3>Step 4 — Upload it</h3>
+                    <p>Replace <code>COM5</code> with the port shown on your computer:</p>
+                    <pre><code>arduino-cli upload -p COM5 --fqbn esp32:esp32:esp32 ESP32_Test</code></pre>
+
+                    <h3>Step 5 — Open the serial monitor</h3>
+                    <pre><code>arduino-cli monitor -p COM5 -c baudrate=115200</code></pre>
+                    <p>
+                        You should see <code>ESP32 started!</code>, followed by
+                        <code>LED ON</code> and <code>LED OFF</code> messages.
+                        Close the serial monitor before uploading again if the port is busy.
+                    </p>
+
+                    <div class="level-panel">
+                        <div class="level-top">
+                            <h3>If upload does not start</h3>
+                            <span class="level-tag">Troubleshooting</span>
+                        </div>
+                        <ul>
+                            <li>Check that you selected the correct COM port.</li>
+                            <li>Try another USB cable; it must support data.</li>
+                            <li>Close other programs using the serial port.</li>
+                            <li>On some boards, hold the BOOT button while the uploader connects, then release it when writing begins.</li>
+                            <li>Check the board's USB-to-serial driver if no port appears.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="extended-card" id="commands">
+                <div class="card-content">
+                    <span class="card-level">06 • COMMAND REFERENCE</span>
+                    <h2>Useful Arduino CLI commands</h2>
+                    <div class="tutorial-library">
+                        <div class="library-header">
+                            <h3>Board & platform</h3>
+                        </div>
+                        <pre><code>arduino-cli board list
+arduino-cli board listall esp32
+arduino-cli core list
+arduino-cli core update-index</code></pre>
+                    </div>
+                    <div class="tutorial-library">
+                        <div class="library-header">
+                            <h3>Compile, upload & monitor</h3>
+                        </div>
+                        <pre><code>arduino-cli compile --fqbn esp32:esp32:esp32 ESP32_Test
+arduino-cli upload -p COM5 --fqbn esp32:esp32:esp32 ESP32_Test
+arduino-cli monitor -p COM5 -c baudrate=115200</code></pre>
+                    </div>
+                    <div class="tutorial-library">
+                        <div class="library-header">
+                            <h3>Libraries</h3>
+                        </div>
+                        <pre><code>arduino-cli lib search "library name"
+arduino-cli lib install "library name"
+arduino-cli lib list</code></pre>
+                    </div>
+                    <p>
+                        Replace example folder names, COM ports and library names with
+                        the values for your own project.
+                    </p>
+                </div>
+            </section>
+
+            <section class="extended-card" id="pins">
+                <div class="card-content">
+                    <span class="card-level">07 • HARDWARE BASICS</span>
+                    <h2>GPIO pins and safety</h2>
+                    <p>
+                        A classic ESP32 uses 3.3V logic. Its GPIO pins are not 5V tolerant:
+                        never connect a 5V signal directly to an ESP32 GPIO.
+                    </p>
+                    <ul>
+                        <li><strong>GPIO 6–11:</strong> normally used by the module's flash memory; avoid using them as ordinary GPIO.</li>
+                        <li><strong>GPIO 34–39:</strong> input-only on the classic ESP32.</li>
+                        <li><strong>GPIO 0, 2, 5, 12 and 15:</strong> strapping pins; their levels during startup can affect booting.</li>
+                        <li><strong>GPIO 1 and 3:</strong> commonly used for UART serial communication and programming.</li>
+                    </ul>
+                    <p>
+                        Pin availability varies by board. Check the pinout for your exact
+                        ESP32 module before wiring components. Use a suitable driver for
+                        motors, relays and other loads; do not power them directly from GPIO.
+                    </p>
+                </div>
+            </section>
+
+            <section class="extended-card">
+                <div class="card-content">
+                    <span class="card-level">NEXT STEPS</span>
+                    <h2>What to test next</h2>
+                    <p>After your first sketch uploads successfully, test the board one feature at a time:</p>
+                    <div class="tutorial-levels">
+                        <div class="level-panel">
+                            <div class="level-top"><h3>GPIO input & output</h3><span class="level-tag">Beginner</span></div>
+                            <p>Read a push button and control an LED.</p>
+                        </div>
+                        <div class="level-panel">
+                            <div class="level-top"><h3>ADC & PWM</h3><span class="level-tag">Beginner</span></div>
+                            <p>Read an analog signal and control LED brightness.</p>
+                        </div>
+                        <div class="level-panel">
+                            <div class="level-top"><h3>Wi-Fi & Bluetooth</h3><span class="level-tag">Next level</span></div>
+                            <p>Scan for networks and explore wireless communication.</p>
+                        </div>
+                    </div>
+                    <a class="next-link nl-green nl-nounderline" href="#esp32">Back to top ↑</a>
+                </div>
+            </section>
+</section>
+
+
+</main>
+
+<div id="footer"></div>
+<script src="js/main.js"></script>
+<script type="module" src="js/Live.js"></script>
+<script src="js/components.js"></script>
+<div class="live-counter" id="liveCounter">
+  <span class="dot"></span>
+  Online: <span id="onlineCount">0</span>
+</div>
+
+<div id="zoomOverlay" class="zoom-overlay">
+  <img id="zoomImg">
+</div>
+
+</body>
+</html>
+
+
+
