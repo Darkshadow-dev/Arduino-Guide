@@ -469,7 +469,51 @@ header::-webkit-scrollbar{
     width:220px;
   }
 }
+.code-blocks-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
 
+    width: 20%;
+    height: 100%;
+
+    background: white;
+    border-left: 1px solid #ccc;
+    z-index: 99999;
+
+    display: flex;
+    flex-direction: column;
+
+    transform: translateX(100%);
+    transition: transform 0.3s ease, width 0.3s ease;
+}
+
+.code-blocks-overlay.active {
+    transform: translateX(0);
+}
+
+.code-blocks-overlay.minimized {
+    width: 5%;
+}
+
+.code-blocks-header {
+    height: 40px;
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 10px;
+    background: #e9f4ff;
+    border-bottom: 1px solid #ccc;
+}
+
+#codeBlocksFrame {
+    width: 100%;
+    flex: 1;
+    border: none;
+}
 </style>
 </head>
 <body>
@@ -481,7 +525,7 @@ header::-webkit-scrollbar{
   <button onclick="newProject()">New</button>
   <button onclick="document.getElementById('fileInput').click()">Open</button>
   <button onclick="saveFile()">Save</button>
-  <button onclick="">Code Blocks</button>
+<button onclick="openCodeBlocks()">Code Blocks</button>
 
   <div class="nav-separator"></div>
 
@@ -524,7 +568,6 @@ header::-webkit-scrollbar{
   </div>
 
 </header>
-
 <input
   type="file"
   id="fileInput"
@@ -597,7 +640,17 @@ header::-webkit-scrollbar{
   <pre id="console"></pre>
 
 </div>
+<div id="codeBlocksOverlay" class="code-blocks-overlay">
 
+    <div class="code-blocks-header">
+        <button onclick="toggleCodeBlocksSize()">⇔</button>
+        <span>Code Blocks</span>
+        <button onclick="closeCodeBlocks()">✕</button>
+    </div>
+
+    <iframe src="Code Blocks.html" id="codeBlocksFrame"></iframe>
+
+</div>
 <script>
 
 const API =
@@ -4143,6 +4196,241 @@ function clearConsole(){
   setStatus("idle");
 
 }
+function openCodeBlocks() {
+    document.getElementById("codeBlocksOverlay")
+        .classList.add("active");
+}
+
+function closeCodeBlocks() {
+    document.getElementById("codeBlocksOverlay")
+        .classList.remove("active");
+}
+
+function toggleCodeBlocksSize() {
+    document.getElementById("codeBlocksOverlay")
+        .classList.toggle("minimized");
+}
+
+window.addEventListener("message", function(event) {
+
+    if (event.origin !== window.location.origin) return;
+
+    if (event.source !== document.getElementById("codeBlocksFrame")?.contentWindow) return;
+
+    if (event.data?.type === "CODE_BLOCKS_INSERT") {
+
+        editor.value = event.data.code;
+
+        editor.dispatchEvent(
+            new Event("input", { bubbles: true })
+        );
+
+        editor.focus();
+    }
+
+});
+
+
+
+(function setupCodeBlocksDragDrop() {
+
+    const editor = document.getElementById("editor");
+    const STORAGE_KEY = "codeBlocks_dragData";
+
+    if (!editor) {
+        console.error("Code Blocks: Editor not found.");
+        return;
+    }
+
+    // Find a function and its opening/closing braces
+    function findFunction(code, name) {
+
+        const regex = new RegExp(
+            "\\bvoid\\s+" + name + "\\s*\\(\\s*\\)\\s*\\{",
+            "g"
+        );
+
+        const match = regex.exec(code);
+
+        if (!match) return null;
+
+        const open = code.indexOf("{", match.index);
+        let depth = 0;
+
+        for (let i = open; i < code.length; i++) {
+
+            if (code[i] === "{") depth++;
+            if (code[i] === "}") depth--;
+
+            if (depth === 0) {
+                return {
+                    open: open,
+                    close: i
+                };
+            }
+        }
+
+        return null;
+    }
+
+    // Create setup() or loop() if missing
+    function ensureFunction(name) {
+
+        if (findFunction(editor.value, name)) {
+            return;
+        }
+
+        if (editor.value.length && !editor.value.endsWith("\n")) {
+            editor.value += "\n";
+        }
+
+        editor.value +=
+            "\nvoid " + name + "() {\n\n}\n";
+    }
+
+    // Insert code inside an existing Arduino function
+    function insertIntoFunction(name, code, marker) {
+
+        let source = editor.value;
+
+        const range = findFunction(source, name);
+
+        if (!range) return false;
+
+        const body = source.substring(
+            range.open + 1,
+            range.close
+        );
+
+        // Prevent inserting the same block twice
+        if (marker && body.includes(marker)) {
+            return false;
+        }
+
+        const insertion =
+            "\n    " + code.split("\n").join("\n    ") + "\n";
+
+        editor.value =
+            source.substring(0, range.close) +
+            insertion +
+            source.substring(range.close);
+
+        return true;
+    }
+
+    // Handle dropped blocks
+    editor.addEventListener("dragover", function(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+    });
+
+    editor.addEventListener("drop", function(event) {
+
+        if (
+            event.dataTransfer.getData("text/plain") !==
+            "CODE_BLOCKS"
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+
+        try {
+
+            const raw = localStorage.getItem(STORAGE_KEY);
+
+            if (!raw) {
+                console.warn("Code Blocks: No stored block data.");
+                return;
+            }
+
+            const data = JSON.parse(raw);
+
+            if (data.type === "STRUCTURE") {
+
+                if (
+                    data.structure !== "setup" &&
+                    data.structure !== "loop"
+                ) {
+                    return;
+                }
+
+                ensureFunction(data.structure);
+
+            } else if (data.type === "LED") {
+
+                if (
+                    typeof data.id !== "string" ||
+                    typeof data.setup !== "string" ||
+                    typeof data.loop !== "string"
+                ) {
+                    return;
+                }
+
+                // LED needs both Arduino functions
+                ensureFunction("setup");
+                ensureFunction("loop");
+
+                // Initialization goes into setup()
+                const setupMarker =
+                    "// CB LED SETUP " + data.id;
+
+                const setupRange =
+                    findFunction(editor.value, "setup");
+
+                if (setupRange) {
+
+                    const setupBody = editor.value.substring(
+                        setupRange.open + 1,
+                        setupRange.close
+                    );
+
+                    if (!setupBody.includes(setupMarker)) {
+
+                        if (!setupBody.includes(data.setup)) {
+
+                            insertIntoFunction(
+                                "setup",
+                                setupMarker + "\n" + data.setup
+                            );
+
+                        }
+                    }
+                }
+
+                // Blinking instructions go into loop()
+                const loopMarker =
+                    "// CB LED LOOP " + data.id;
+
+                insertIntoFunction(
+                    "loop",
+                    loopMarker + "\n" + data.loop,
+                    loopMarker
+                );
+
+            } else {
+                return;
+            }
+
+            // Trigger the existing editor's update/autosave system
+            editor.dispatchEvent(
+                new Event("input", { bubbles: true })
+            );
+
+            editor.focus();
+
+        } catch (error) {
+
+            console.error(
+                "Code Blocks drag-and-drop error:",
+                error
+            );
+
+        }
+    });
+
+})();
+
 
 </script>
 
@@ -4153,6 +4441,7 @@ function clearConsole(){
 
 </body>
 </html>
+
 
 
 

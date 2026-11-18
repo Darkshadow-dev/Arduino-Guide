@@ -1415,54 +1415,92 @@
   </div>
 </section>
 
+
 <section id="download-pdf" class="page">
 
   <h2>Download for Offline Use</h2>
-  <p>Select pages and export them as a single PDF.</p>
+  <p>Export the Arduino Guide for offline reading.</p>
 
   <hr>
 
-  <!-- PAGE LIST -->
+  <h3>Select pages</h3>
+
   <div id="downloadList">
 
     <label>
       <input type="checkbox" checked value="Arduino%20Guide.html">
-      Home  |  Required 1,861 KB (1.8 MB)
+      Arduino Guide — 1,861 KB
     </label>
 
     <label>
-      <input type="checkbox" value="Examples.html">
-      Examples  |  Required 45.7 KB (0.04 MB)
+      <input type="checkbox" checked value="Examples.html">
+      Examples — 45.7 KB
     </label>
 
     <label>
-      <input type="checkbox" value="Arduino%20Guide%20Extra.html">
-      Extra  |  Required 1737 KB (1.7 MB)
+      <input type="checkbox" checked value="Arduino%20Guide%20Extra.html">
+      Arduino Guide Extra — 1,737 KB
     </label>
 
     <label>
-      <input type="checkbox" value="Arduino%20Download.html">
-      More CLI download  |  Required 105 KB (0.1 MB)
+      <input type="checkbox" checked value="Arduino%20Download.html">
+      More CLI Download — 105 KB
     </label>
 
     <label>
-      <input type="checkbox" value="Feedback.html">
-      Feedback  | Required 1448 KB (1.4 MB)
+      <input type="checkbox" checked value="Feedback.html">
+      Feedback — 1,448 KB
     </label>
-  <p>Total download size 5196.7 KB (4.9 ~= 5.1 MB)
+
   </div>
 
   <hr>
 
-  <!-- EXPORT OPTIONS -->
+  <h3>Export format</h3>
+
+  <div class="download-formats">
+
+    <label>
+      <input type="radio" name="exportFormat"
+             value="pdf" checked>
+      PDF — Images and formatted content
+    </label>
+
+    <label>
+      <input type="radio" name="exportFormat"
+             value="doc">
+      Word — Editable document
+    </label>
+
+    <label>
+      <input type="radio" name="exportFormat"
+             value="txt">
+      TXT — Plain text and code
+    </label>
+
+  </div>
+
+  <hr>
+
   <div class="download-actions">
-    <span id="downloadMsg"></span>
-    <button class="btn-action" onclick="startDownload()" id="dlBtn">
-      Download PDF
+
+    <span id="downloadMsg">
+      Ready to export
+    </span>
+
+    <button
+      class="btn-action"
+      onclick="startDownload()"
+      id="dlBtn">
+
+      Download
+
     </button>
+
   </div>
 
 </section>
+
 
 <section id="notfound" class="page">
     <h2>404 – Page Not Found</h2>
@@ -1476,1474 +1514,1099 @@
   Arduino Guide Ⓖ  <span id="ieSecret"> 1989</span>
 </footer><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/main.js" defer></script>
 
 <script>
 
-let EXPORT_FILES = [
-    "Arduino%20Guide.html",
-    "Arduino%20Guide%20Extra.html",
-    "Feedback.html",
-    "Arduino%20Download.html",
-    "Examples.html"
-];
-
-
 /* ============================================================
-   DOWNLOAD
+   ARDUINO GUIDE — PDF EXPORTER
+   Full page export / Examples / Images / Code
    ============================================================ */
 
-async function startDownload() {
+const PDF_EXPORT = {
 
-    const checks =
-        document.querySelectorAll(
-            "#downloadList input:checked"
-        );
+    files: [
+        "Arduino%20Guide.html",
+        "Examples.html",
+        "Arduino%20Guide%20Extra.html",
+        "Arduino%20Download.html",
+        "Feedback.html"
+    ],
 
-    const btn =
-        document.getElementById("dlBtn");
+    filename: "Arduino-Guide-Offline.pdf",
 
-    const msg =
-        document.getElementById("downloadMsg");
+    width: 190,
+    height: 277,
+    margin: 10,
 
-    if (checks.length === 0) {
-        msg.textContent =
-            "Select at least one page";
-        return;
-    }
+    scale: 1.5,
 
-    EXPORT_FILES =
-        [...checks].map(c => c.value);
+    imageQuality: 0.92,
 
-    const totalTime =
-        EXPORT_FILES.length * 4;
+    exampleGroups: [
 
-    btn.classList.add("loading");
-    btn.disabled = true;
+        {
+            title: "Basic",
+            examples: [
+                "blink",
+                "button",
+                "button-led",
+                "buzzer"
+            ]
+        },
 
-    msg.textContent =
-        `Preparing... 0s / ${totalTime}s`;
+        {
+            title: "Intermediate",
+            examples: [
+                "pwm",
+                "multi-led",
+                "analog",
+                "joystick",
+                "oled"
+            ]
+        },
 
-    try {
+        {
+            title: "Advanced",
+            examples: [
+                "serial",
+                "timer",
+                "interrupts",
+                "eeprom",
+                "pwm-control"
+            ]
+        },
 
-        const timerPromise =
-            createAccurateTimer(
-                totalTime,
-                elapsed => {
-                    msg.textContent =
-                        `Preparing... ${elapsed}s / ${totalTime}s`;
-                }
-            );
+        {
+            title: "Voltage Monitor",
+            examples: [
+                "battery-monitor",
+                "usb-monitor",
+                "solar-monitor",
+                "power-supply-test",
+                "low-voltage-alert"
+            ]
+        },
 
-        const pdfPromise =
-            downloadOfflinePDF();
-
-        const results =
-            await Promise.all([
-                timerPromise,
-                pdfPromise
-            ]);
-
-        const pdf =
-            results[1];
-
-        msg.textContent =
-            "Downloading...";
-
-        pdf.save(
-            "Arduino-Guide-Offline.pdf"
-        );
-
-        msg.textContent =
-            "Download complete ✔";
-
-    }
-    catch (error) {
-
-        console.error(
-            "PDF ERROR:",
-            error
-        );
-
-        msg.textContent =
-            "PDF export failed";
-
-        alert(
-            "The PDF could not be created.\n\n" +
-            "Check the browser console for details."
-        );
-    }
-
-    btn.classList.remove("loading");
-    btn.disabled = false;
-}
-
-
-/* ============================================================
-   TIMER
-   ============================================================ */
-
-function createAccurateTimer(
-    totalTime,
-    onUpdate
-) {
-
-    const start =
-        Date.now();
-
-    return new Promise(resolve => {
-
-        function tick() {
-
-            const elapsed =
-                Math.floor(
-                    (Date.now() - start) / 1000
-                );
-
-            onUpdate(elapsed);
-
-            if (elapsed >= totalTime) {
-                resolve();
-            }
-            else {
-                requestAnimationFrame(tick);
-            }
+        {
+            title: "Test Circuits",
+            examples: [
+                "led-test",
+                "speaker-test",
+                "button-test",
+                "relay-test",
+                "sensor-test"
+            ]
         }
 
-        tick();
-    });
-}
+    ]
+
+};
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let pdfExportRunning = false;
 
 
 /* ============================================================
    HELPERS
    ============================================================ */
 
-function wait(ms) {
-    return new Promise(
-        resolve => setTimeout(resolve, ms)
+function pdfWait(ms) {
+
+    return new Promise(resolve =>
+        setTimeout(resolve, ms)
     );
+
 }
 
 
-async function loadFile(url) {
+function pdfMessage(message) {
 
-    const res =
-        await fetch(url);
+    const element =
+        document.getElementById("downloadMsg");
 
-    if (!res.ok) {
-
-        throw new Error(
-            `Could not load ${url} (${res.status})`
-        );
+    if (element) {
+        element.textContent = message;
     }
 
-    const text =
-        await res.text();
+}
 
-    const doc =
-        new DOMParser()
-            .parseFromString(
-                text,
-                "text/html"
+
+function pdfFileName(file) {
+
+    return decodeURIComponent(file)
+        .replace(".html", "");
+
+}
+
+
+function pdfCreateElement(doc, tag, className) {
+
+    const element = doc.createElement(tag);
+
+    if (className) {
+        element.className = className;
+    }
+
+    return element;
+
+}
+
+
+/* ============================================================
+   LOAD PAGE IN A REAL IFRAME
+   ============================================================ */
+
+async function pdfLoadPage(file) {
+
+    const iframe = document.createElement("iframe");
+
+    iframe.style.position = "fixed";
+    iframe.style.left = "-15000px";
+    iframe.style.top = "0";
+    iframe.style.width = "1200px";
+    iframe.style.height = "1000px";
+    iframe.style.border = "0";
+    iframe.style.visibility = "visible";
+
+    iframe.setAttribute("aria-hidden", "true");
+
+    document.body.appendChild(iframe);
+
+    try {
+
+        await new Promise((resolve, reject) => {
+
+            iframe.onload = resolve;
+            iframe.onerror = reject;
+
+            iframe.src = file;
+
+        });
+
+        const win = iframe.contentWindow;
+        const doc = iframe.contentDocument;
+
+        if (!win || !doc || !doc.body) {
+
+            throw new Error(
+                "Could not access " + file
             );
 
-    return doc.body;
-}
+        }
 
+        // Wait for external stylesheets and fonts.
 
-async function waitForImages(container) {
+        if (doc.fonts && doc.fonts.ready) {
+            await doc.fonts.ready;
+        }
 
-    const images =
-        [...container.querySelectorAll("img")];
+        await pdfWait(500);
 
-    await Promise.all(
-        images.map(img => {
+        return {
+            iframe,
+            win,
+            doc
+        };
 
-            if (img.complete) {
-                return Promise.resolve();
-            }
-
-            return new Promise(resolve => {
-
-                img.onload =
-                    resolve;
-
-                img.onerror =
-                    resolve;
-
-            });
-        })
-    );
-}
-
-
-/* ============================================================
-   EXAMPLE DATABASE
-   ============================================================ */
-
-const PDF_EXAMPLE_GROUPS = [
-
-    {
-        title: "Basic",
-        examples: [
-            "blink",
-            "button",
-            "button-led",
-            "buzzer"
-        ]
-    },
-
-    {
-        title: "Intermediate",
-        examples: [
-            "pwm",
-            "multi-led",
-            "analog",
-            "joystick",
-            "oled"
-        ]
-    },
-
-    {
-        title: "Advanced",
-        examples: [
-            "serial",
-            "timer",
-            "interrupts",
-            "eeprom",
-            "pwm-control"
-        ]
-    },
-
-    {
-        title: "Voltage Monitor",
-        examples: [
-            "battery-monitor",
-            "usb-monitor",
-            "solar-monitor",
-            "power-supply-test",
-            "low-voltage-alert"
-        ]
-    },
-
-    {
-        title: "Test Circuits",
-        examples: [
-            "led-test",
-            "speaker-test",
-            "button-test",
-            "relay-test",
-            "sensor-test"
-        ]
     }
 
-];
+    catch (error) {
+
+        iframe.remove();
+
+        throw error;
+
+    }
+
+}
 
 
 /* ============================================================
-   CREATE EXAMPLES CHAPTER
+   REMOVE UNNECESSARY ELEMENTS
    ============================================================ */
 
-async function createExamplesChapter() {
+function pdfCleanContent(element, options = {}) {
 
-    /*
-        Hidden iframe loads the REAL Examples.html.
+    const doc = element.ownerDocument;
 
-        This means Examples.js actually executes.
-    */
+    // Remove website-only components.
 
-    const iframe =
-        document.createElement("iframe");
+    element.querySelectorAll(
+        "script, iframe, noscript, " +
+        "nav, footer, " +
+        ".live-counter, #liveCounter, " +
+        "#copyPopup, #rotateWarning, " +
+        ".community-editor, .community-chat, " +
+        ".code-editor, .editor-container, " +
+        ".online-counter"
+    ).forEach(el => el.remove());
 
-    iframe.style.position =
-        "fixed";
 
-    iframe.style.left =
-        "-100000px";
+    // Remove community and editor sections.
 
-    iframe.style.top =
-        "0";
+    element.querySelectorAll(
+        "#community, #community-page, " +
+        "#code-editor, #code, " +
+        ".community-page, .editor-page"
+    ).forEach(el => el.remove());
 
-    iframe.style.width =
-        "1200px";
 
-    iframe.style.height =
-        "1000px";
+    // Remove 3D viewers.
 
-    iframe.style.border =
-        "0";
+    element.querySelectorAll(
+        "model-viewer, " +
+        ".three-container, " +
+        ".model-viewer, " +
+        ".arduino-3d, " +
+        "#arduino3D, " +
+        "[data-3d-model]"
+    ).forEach(el => {
 
-    iframe.style.visibility =
-        "hidden";
+        const placeholder = doc.createElement("p");
 
-    document.body.appendChild(
-        iframe
+        placeholder.textContent =
+            "[Interactive 3D model not included in PDF]";
+
+        el.replaceWith(placeholder);
+
+    });
+
+
+    // Remove canvases.
+
+    element.querySelectorAll("canvas").forEach(el => {
+
+        const placeholder = doc.createElement("p");
+
+        placeholder.textContent =
+            "[Interactive visualization not included]";
+
+        el.replaceWith(placeholder);
+
+    });
+
+
+    // Remove interactive controls.
+
+    element.querySelectorAll(
+        "button, input, select, textarea"
+    ).forEach(el => {
+
+        if (!el.classList.contains("pdf-keep")) {
+            el.remove();
+        }
+
+    });
+
+
+    // Expand documentation details.
+
+    element.querySelectorAll("details").forEach(el => {
+        el.open = true;
+    });
+
+
+    // Hardware Visual: only one image.
+
+    if (options.hardwareVisual) {
+
+        const images = [
+            ...element.querySelectorAll("img")
+        ];
+
+        images.slice(1).forEach(img => img.remove());
+
+    }
+
+
+    // Text and code must remain selectable in source.
+    // Images remain in PDF mode.
+
+    return element;
+
+}
+
+
+/* ============================================================
+   IMAGE WAITING
+   ============================================================ */
+
+async function pdfWaitForImages(element) {
+
+    const images = [
+        ...element.querySelectorAll("img")
+    ];
+
+    for (const img of images) {
+
+        if (!img.complete) {
+
+            await new Promise(resolve => {
+
+                img.onload = resolve;
+                img.onerror = resolve;
+
+                // Avoid waiting forever.
+
+                setTimeout(resolve, 10000);
+
+            });
+
+        }
+
+    }
+
+}
+
+
+/* ============================================================
+   CREATE PDF DOCUMENT
+   ============================================================ */
+
+function pdfCreateDocument() {
+
+    const { jsPDF } = window.jspdf;
+
+    return new jsPDF(
+        "p",
+        "mm",
+        "a4"
     );
 
-    await new Promise(
-        (resolve, reject) => {
+}
 
-            iframe.onload =
-                resolve;
 
-            iframe.onerror =
-                reject;
+/* ============================================================
+   ADD CONTENT TO PDF
+   ============================================================ */
 
-            iframe.src =
-                "Examples.html";
+async function pdfAddElement(pdf, element, state) {
+
+    if (!element || !element.isConnected) {
+        return;
+    }
+
+    const canvas = await html2canvas(
+        element,
+        {
+            scale: PDF_EXPORT.scale,
+
+            useCORS: true,
+
+            allowTaint: false,
+
+            backgroundColor: "#ffffff",
+
+            logging: false,
+
+            imageTimeout: 15000,
+
+            windowWidth: 1200
         }
     );
 
-    const win =
-        iframe.contentWindow;
-
-    const doc =
-        iframe.contentDocument;
-
-    if (
-        !win ||
-        !doc
-    ) {
-
-        document.body.removeChild(
-            iframe
-        );
-
-        throw new Error(
-            "Could not access Examples.html"
-        );
+    if (!canvas.width || !canvas.height) {
+        return;
     }
 
-    await wait(500);
+    const image = canvas.toDataURL(
+        "image/jpeg",
+        PDF_EXPORT.imageQuality
+    );
 
+    const width = PDF_EXPORT.width;
 
-    /*
-        Main Examples chapter.
-    */
+    const height =
+        canvas.height * width / canvas.width;
 
-    const chapter =
-        document.createElement("div");
+    const usableHeight = PDF_EXPORT.height;
 
-    chapter.className =
-        "pdf-chapter pdf-examples-chapter";
+    let remaining = height;
+    let position = 0;
 
+    while (remaining > 0) {
 
-    /*
-        Chapter title.
-    */
+        if (state.hasPage) {
 
-    chapter.innerHTML = `
+            pdf.addPage();
 
-        <div class="pdf-chapter-cover">
+        }
 
-            <div class="pdf-chapter-label">
-                CHAPTER
-            </div>
-
-            <h1>
-                Arduino Examples
-            </h1>
-
-            <p>
-                Practical Arduino examples,
-                explanations, code and commands.
-            </p>
-
-        </div>
-
-    `;
-
-
-    /*
-        Render every category.
-    */
-
-    for (
-        const group
-        of PDF_EXAMPLE_GROUPS
-    ) {
-
-        /*
-            Category heading.
-        */
-
-        const category =
-            document.createElement(
-                "div"
-            );
-
-        category.className =
-            "pdf-example-category";
-
-
-        category.innerHTML = `
-
-            <div class="pdf-category-title">
-
-                <span>
-                    EXAMPLES
-                </span>
-
-                <h2>
-                    ${group.title}
-                </h2>
-
-            </div>
-
-        `;
-
-        chapter.appendChild(
-            category
+        pdf.addImage(
+            image,
+            "JPEG",
+            PDF_EXPORT.margin,
+            PDF_EXPORT.margin + position,
+            width,
+            height,
+            undefined,
+            "FAST"
         );
 
+        remaining -= usableHeight;
 
-        /*
-            Open every example.
-        */
+        position -= usableHeight;
 
-        for (
-            const name
-            of group.examples
+        state.hasPage = true;
+
+    }
+
+    state.completed++;
+
+    pdfMessage(
+        `Rendering PDF... ${state.completed}/${state.total}`
+    );
+
+}
+
+
+/* ============================================================
+   CHAPTER TITLE
+   ============================================================ */
+
+function pdfCreateChapter(doc, name) {
+
+    const chapter = pdfCreateElement(
+        doc,
+        "section",
+        "pdf-export-chapter"
+    );
+
+    const title = pdfCreateElement(
+        doc,
+        "h1"
+    );
+
+    title.textContent = name;
+
+    title.style.fontSize = "30px";
+    title.style.marginBottom = "25px";
+    title.style.borderBottom = "2px solid #00979d";
+    title.style.paddingBottom = "12px";
+
+    chapter.appendChild(title);
+
+    return chapter;
+
+}
+
+
+/* ============================================================
+   NORMAL PAGE EXPORT
+   ============================================================ */
+
+async function pdfExportNormalPage(
+    pdf,
+    pageData,
+    file,
+    state
+) {
+
+    const {
+        doc
+    } = pageData;
+
+    const body = doc.body;
+
+    const staging = pdfCreateElement(
+        doc,
+        "div",
+        "pdf-export-staging"
+    );
+
+    staging.style.display = "block";
+    staging.style.position = "absolute";
+    staging.style.left = "0";
+    staging.style.top = "0";
+    staging.style.width = "1100px";
+    staging.style.background = "#ffffff";
+    staging.style.color = "#111111";
+    staging.style.padding = "25px";
+    staging.style.boxSizing = "border-box";
+    staging.style.zIndex = "-1";
+
+    body.appendChild(staging);
+
+    const pages = [
+        ...body.querySelectorAll(".page")
+    ].filter(page => {
+
+        if (
+            page.id === "download-pdf" ||
+            page.id === "notfound"
         ) {
+            return false;
+        }
 
-            if (
-                typeof win.loadExample !==
-                "function"
-            ) {
+        if (
+            page.id === "community" ||
+            page.id === "code-editor"
+        ) {
+            return false;
+        }
 
-                console.error(
-                    "loadExample() not found."
-                );
+        return true;
 
-                continue;
+    });
+
+
+    // Fallback if the page has no .page elements.
+
+    const sourcePages = pages.length
+        ? pages
+        : [body];
+
+
+    for (let i = 0; i < sourcePages.length; i++) {
+
+        const source = sourcePages[i];
+
+        const clone = source.cloneNode(true);
+
+        clone.classList.add("active");
+
+        clone.style.display = "block";
+        clone.style.visibility = "visible";
+        clone.style.position = "static";
+        clone.style.width = "100%";
+        clone.style.height = "auto";
+        clone.style.maxHeight = "none";
+        clone.style.overflow = "visible";
+        clone.style.background = "#ffffff";
+        clone.style.color = "#111111";
+
+        const isHardwareVisual =
+            source.id === "hardwarevi" ||
+            source.id === "hardware-visual";
+
+        pdfCleanContent(
+            clone,
+            {
+                hardwareVisual: isHardwareVisual
             }
+        );
+
+        const chapter = pdfCreateChapter(
+            doc,
+            i === 0
+                ? pdfFileName(file)
+                : source.querySelector("h1, h2")?.textContent ||
+                  pdfFileName(file)
+        );
+
+        chapter.appendChild(clone);
+
+        staging.appendChild(chapter);
+
+        await pdfWaitForImages(chapter);
+
+        await pdfAddElement(
+            pdf,
+            chapter,
+            state
+        );
+
+        chapter.remove();
+
+    }
+
+    staging.remove();
+
+}
 
 
-            /*
-                Actually open the example
-                in the real Examples page.
-            */
+/* ============================================================
+   EXAMPLES EXPORT
+   ============================================================ */
+
+async function pdfExportExamples(
+    pdf,
+    pageData,
+    state
+) {
+
+    const {
+        win,
+        doc
+    } = pageData;
+
+    const staging = pdfCreateElement(
+        doc,
+        "div",
+        "pdf-export-staging"
+    );
+
+    staging.style.position = "absolute";
+    staging.style.left = "0";
+    staging.style.top = "0";
+    staging.style.width = "1100px";
+    staging.style.padding = "25px";
+    staging.style.background = "#ffffff";
+    staging.style.color = "#111111";
+    staging.style.zIndex = "-1";
+
+    doc.body.appendChild(staging);
+
+
+    // Examples cover.
+
+    const cover = pdfCreateChapter(
+        doc,
+        "Arduino Examples"
+    );
+
+    const description = pdfCreateElement(
+        doc,
+        "p"
+    );
+
+    description.textContent =
+        "Practical Arduino examples, explanations, code and commands.";
+
+    cover.appendChild(description);
+
+    staging.appendChild(cover);
+
+    await pdfAddElement(pdf, cover, state);
+
+    cover.remove();
+
+
+    if (typeof win.loadExample !== "function") {
+
+        throw new Error(
+            "Examples.html does not expose loadExample()."
+        );
+
+    }
+
+
+    for (const group of PDF_EXPORT.exampleGroups) {
+
+        const heading = pdfCreateChapter(
+            doc,
+            group.title
+        );
+
+        staging.appendChild(heading);
+
+        await pdfAddElement(
+            pdf,
+            heading,
+            state
+        );
+
+        heading.remove();
+
+
+        for (const name of group.examples) {
+
+            pdfMessage(
+                "Loading example: " + name
+            );
+
+            // Load the real example.
 
             win.loadExample(name);
 
-            await wait(120);
+            // Allow dynamic content to update.
 
+            await pdfWait(350);
 
-            const source =
-                doc.getElementById(
-                    "exampleBox"
-                );
+            const source = doc.getElementById(
+                "exampleBox"
+            );
 
             if (!source) {
+
+                console.warn(
+                    "Missing exampleBox:",
+                    name
+                );
+
                 continue;
+
             }
 
 
-            /*
-                Create a completely clean
-                PDF example container.
+            const article = pdfCreateElement(
+                doc,
+                "article",
+                "pdf-example"
+            );
 
-                We DO NOT copy the website's
-                left/right layout.
-            */
-
-            const example =
-                document.createElement(
-                    "article"
-                );
-
-            example.className =
-                "pdf-example";
+            article.style.padding = "20px";
+            article.style.marginBottom = "25px";
+            article.style.border = "1px solid #cccccc";
+            article.style.background = "#ffffff";
+            article.style.color = "#111111";
 
 
-            /*
-                TITLE
-            */
+            // Title.
 
-            const title =
-                source.querySelector(
-                    "#exampleTitle"
-                );
+            const title = source.querySelector(
+                "#exampleTitle"
+            );
 
             if (title) {
 
-                const h3 =
-                    document.createElement(
-                        "h3"
-                    );
+                const h2 = pdfCreateElement(
+                    doc,
+                    "h2"
+                );
 
-                h3.textContent =
+                h2.textContent =
                     title.textContent.trim();
 
-                example.appendChild(
-                    h3
-                );
+                article.appendChild(h2);
+
             }
 
 
-            /*
-                SUMMARY / EXPLANATION
-            */
+            // Explanation.
 
-            const text =
-                source.querySelector(
-                    "#exampleText"
-                );
+            const text = source.querySelector(
+                "#exampleText"
+            );
 
             if (text) {
 
-                const summary =
-                    document.createElement(
-                        "div"
-                    );
-
-                summary.className =
-                    "pdf-example-summary";
-
-                summary.innerHTML = `
-                    <strong>
-                        Summary
-                    </strong>
-                `;
-
-                const p =
-                    document.createElement(
-                        "p"
-                    );
-
-                p.textContent =
-                    text.textContent.trim();
-
-                summary.appendChild(
-                    p
+                const summary = pdfCreateElement(
+                    doc,
+                    "div"
                 );
 
-                example.appendChild(
-                    summary
+                const label = pdfCreateElement(
+                    doc,
+                    "h3"
                 );
+
+                label.textContent = "Explanation";
+
+                summary.appendChild(label);
+
+                const content = text.cloneNode(true);
+
+                pdfCleanContent(content);
+
+                summary.appendChild(content);
+
+                article.appendChild(summary);
+
             }
 
 
-            /*
-                CODE
-            */
+            // Code.
 
-            const codeBlock =
-                source.querySelector(
-                    ".code-block"
+            const code = source.querySelector(
+                ".code-block"
+            );
+
+            if (code) {
+
+                const section = pdfCreateElement(
+                    doc,
+                    "div"
                 );
 
-            if (codeBlock) {
-
-                const codeSection =
-                    document.createElement(
-                        "div"
-                    );
-
-                codeSection.className =
-                    "pdf-example-code";
-
-
-                const codeTitle =
-                    document.createElement(
-                        "strong"
-                    );
-
-                codeTitle.textContent =
-                    "Example Code";
-
-                codeSection.appendChild(
-                    codeTitle
+                const label = pdfCreateElement(
+                    doc,
+                    "h3"
                 );
 
+                label.textContent = "Arduino Code";
 
-                const pre =
-                    codeBlock.querySelector(
-                        "pre"
-                    );
+                section.appendChild(label);
+
+                const pre = code.querySelector("pre");
 
                 if (pre) {
 
-                    const newPre =
-                        document.createElement(
-                            "pre"
-                        );
+                    const newPre = pdfCreateElement(
+                        doc,
+                        "pre"
+                    );
 
                     newPre.textContent =
                         pre.textContent;
 
-                    codeSection.appendChild(
-                        newPre
-                    );
+                    newPre.style.background = "#f1f1f1";
+                    newPre.style.padding = "15px";
+                    newPre.style.fontSize = "11px";
+                    newPre.style.whiteSpace = "pre-wrap";
+                    newPre.style.overflowWrap = "anywhere";
+
+                    section.appendChild(newPre);
+
                 }
 
-                example.appendChild(
-                    codeSection
-                );
+                article.appendChild(section);
+
             }
 
 
-            /*
-                CLI / COMMANDS
-            */
+            // CLI commands.
 
-            const cli =
-                source.querySelector(
-                    ".cli-cmd-container"
-                );
+            const cli = source.querySelector(
+                ".cli-cmd-container"
+            );
 
             if (cli) {
 
-                const commands =
-                    document.createElement(
-                        "div"
-                    );
-
-                commands.className =
-                    "pdf-example-commands";
-
-
-                const heading =
-                    document.createElement(
-                        "strong"
-                    );
-
-                heading.textContent =
-                    "CLI Commands";
-
-                commands.appendChild(
-                    heading
+                const section = pdfCreateElement(
+                    doc,
+                    "div"
                 );
 
-
-                const text =
-                    document.createElement(
-                        "p"
-                    );
-
-                text.textContent =
-                    cli.textContent
-                        .replace(/\s+/g, " ")
-                        .trim();
-
-                commands.appendChild(
-                    text
+                const label = pdfCreateElement(
+                    doc,
+                    "h3"
                 );
 
-                example.appendChild(
-                    commands
+                label.textContent = "CLI Commands";
+
+                section.appendChild(label);
+
+                const commands = pdfCreateElement(
+                    doc,
+                    "pre"
                 );
+
+                commands.textContent =
+                    cli.innerText.trim();
+
+                commands.style.whiteSpace = "pre-wrap";
+                commands.style.background = "#f5f5f5";
+                commands.style.padding = "12px";
+
+                section.appendChild(commands);
+
+                article.appendChild(section);
+
             }
 
 
-            /*
-                Add the complete example.
-            */
-
-            if (
-                example.children.length
-            ) {
-
-                category.appendChild(
-                    example
-                );
+            if (!article.children.length) {
+                continue;
             }
-        }
-    }
 
+            staging.appendChild(article);
 
-    document.body.removeChild(
-        iframe
-    );
+            await pdfWaitForImages(article);
 
-    return chapter;
-}
-
-
-/* ============================================================
-   NORMAL GUIDE CHAPTER
-   ============================================================ */
-
-async function createNormalChapter(
-    file
-) {
-
-    const body =
-        await loadFile(file);
-
-    const chapter =
-        document.createElement(
-            "div"
-        );
-
-    chapter.className =
-        "pdf-file-chapter";
-
-
-    const pages =
-        body.querySelectorAll(
-            ".page"
-        );
-
-
-    for (
-        const page
-        of pages
-    ) {
-
-        const section =
-            page.cloneNode(true);
-
-        section.classList.add(
-            "active"
-        );
-
-        section.style.display =
-            "block";
-
-        section.style.visibility =
-            "visible";
-
-        section.style.position =
-            "static";
-
-        section.style.width =
-            "100%";
-
-
-        /*
-            Open details.
-        */
-
-        section
-            .querySelectorAll(
-                "details"
-            )
-            .forEach(details => {
-                details.open = true;
-            });
-
-
-        /*
-            Remove interactive controls.
-        */
-
-        section
-            .querySelectorAll(
-                "button, select, input, textarea"
-            )
-            .forEach(el => {
-
-                if (
-                    !el.classList.contains(
-                        "pdf-keep"
-                    )
-                ) {
-                    el.remove();
-                }
-            });
-
-
-        /*
-            Remove website-only elements.
-        */
-
-        section
-            .querySelectorAll(
-                "#liveCounter, " +
-                "#copyPopup, " +
-                ".live-counter, " +
-                "#rotateWarning"
-            )
-            .forEach(el =>
-                el.remove()
+            await pdfAddElement(
+                pdf,
+                article,
+                state
             );
 
+            article.remove();
 
-        chapter.appendChild(
-            section
-        );
+        }
+
     }
 
+    staging.remove();
 
-    return chapter;
 }
 
 
 /* ============================================================
-   PDF
+   MAIN PDF GENERATOR
    ============================================================ */
 
 async function downloadOfflinePDF() {
 
-    const {
-        jsPDF
-    } = window.jspdf;
+    const selected = [
+        ...document.querySelectorAll(
+            "#downloadList input:checked"
+        )
+    ].map(input => input.value);
 
+    if (!selected.length) {
 
-    const pdf =
-        new jsPDF(
-            "p",
-            "mm",
-            "a4"
+        throw new Error(
+            "No pages selected."
         );
 
-
-    /*
-        A4 content area.
-    */
-
-    const pageWidth =
-        190;
-
-    const pageHeight =
-        277;
-
-
-    /*
-        First page is created by jsPDF.
-    */
-
-    let firstPage =
-        true;
-
-
-    /*
-        Temporary HTML container.
-    */
-
-    const container =
-        document.createElement(
-            "div"
-        );
-
-    container.id =
-        "pdfExportContainer";
-
-
-    /*
-        PDF-only CSS.
-    */
-
-    const style =
-        document.createElement(
-            "style"
-        );
-
-    style.textContent = `
-
-        #pdfExportContainer {
-
-            width: 190mm;
-
-            max-width: 190mm;
-
-            margin: 0 auto;
-
-            padding: 0;
-
-            background: #fff;
-
-            color: #111;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            overflow: visible;
-        }
-
-
-        #pdfExportContainer * {
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-
-
-        /* =========================================
-           NORMAL PAGE
-           ========================================= */
-
-        #pdfExportContainer
-        .pdf-file-chapter {
-
-            width: 100%;
-
-            display: block;
-        }
-
-
-        #pdfExportContainer
-        .pdf-file-chapter
-        > .page {
-
-            width: 100%;
-
-            max-width: 100%;
-
-            display: block;
-
-            overflow: visible;
-        }
-
-
-        /* =========================================
-           CHAPTER
-           ========================================= */
-
-        #pdfExportContainer
-        .pdf-chapter-cover {
-
-            width: 100%;
-
-            min-height: 100mm;
-
-            padding-top: 35mm;
-
-            border-bottom:
-                2px solid #222;
-
-            margin-bottom: 15mm;
-
-            break-after: page;
-
-            page-break-after: always;
-        }
-
-
-        .pdf-chapter-label {
-
-            font-size: 11px;
-
-            letter-spacing: 2px;
-
-            font-weight: bold;
-
-            margin-bottom: 6mm;
-        }
-
-
-        .pdf-chapter-cover h1 {
-
-            font-size: 28px;
-
-            margin: 0 0 6mm 0;
-        }
-
-
-        .pdf-chapter-cover p {
-
-            font-size: 13px;
-
-            margin: 0;
-        }
-
-
-        /* =========================================
-           EXAMPLE CATEGORY
-           ========================================= */
-
-        .pdf-example-category {
-
-            width: 100%;
-
-            display: block;
-
-            margin-bottom: 12mm;
-        }
-
-
-        .pdf-category-title {
-
-            width: 100%;
-
-            margin-bottom: 7mm;
-
-            padding-bottom: 3mm;
-
-            border-bottom:
-                1px solid #aaa;
-
-            break-after: avoid;
-
-            page-break-after: avoid;
-        }
-
-
-        .pdf-category-title span {
-
-            display: block;
-
-            font-size: 9px;
-
-            letter-spacing: 1.5px;
-
-            color: #666;
-
-            margin-bottom: 2mm;
-        }
-
-
-        .pdf-category-title h2 {
-
-            margin: 0;
-
-            font-size: 21px;
-        }
-
-
-        /* =========================================
-           COMPLETE EXAMPLE
-           ========================================= */
-
-        .pdf-example {
-
-            width: 100%;
-
-            max-width: 100%;
-
-            margin-bottom: 12mm;
-
-            padding: 6mm;
-
-            border:
-                1px solid #ccc;
-
-            background: #fff;
-
-            overflow: visible;
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-        }
-
-
-        .pdf-example h3 {
-
-            margin:
-                0 0 5mm 0;
-
-            font-size: 17px;
-
-            break-after: avoid;
-
-            page-break-after: avoid;
-        }
-
-
-        /* =========================================
-           SUMMARY
-           ========================================= */
-
-        .pdf-example-summary {
-
-            width: 100%;
-
-            margin-bottom: 5mm;
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-        }
-
-
-        .pdf-example-summary strong {
-
-            display: block;
-
-            margin-bottom: 2mm;
-
-            font-size: 11px;
-        }
-
-
-        .pdf-example-summary p {
-
-            margin: 0;
-
-            font-size: 11px;
-
-            line-height: 1.5;
-
-            overflow-wrap: break-word;
-        }
-
-
-        /* =========================================
-           CODE
-           ========================================= */
-
-        .pdf-example-code {
-
-            width: 100%;
-
-            max-width: 100%;
-
-            margin-bottom: 5mm;
-
-            padding: 5mm;
-
-            background: #f3f3f3;
-
-            border:
-                1px solid #ccc;
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-
-            overflow: hidden;
-        }
-
-
-        .pdf-example-code strong {
-
-            display: block;
-
-            margin-bottom: 3mm;
-
-            font-size: 10px;
-        }
-
-
-        .pdf-example-code pre {
-
-            width: 100%;
-
-            max-width: 100%;
-
-            margin: 0;
-
-            font-family:
-                Consolas,
-                "Courier New",
-                monospace;
-
-            font-size: 8.5px;
-
-            line-height: 1.45;
-
-            white-space:
-                pre-wrap !important;
-
-            overflow-wrap:
-                anywhere;
-
-            word-break:
-                break-word;
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-        }
-
-
-        /* =========================================
-           CLI
-           ========================================= */
-
-        .pdf-example-commands {
-
-            width: 100%;
-
-            padding: 4mm;
-
-            background: #fafafa;
-
-            border-left:
-                3px solid #777;
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-        }
-
-
-        .pdf-example-commands strong {
-
-            display: block;
-
-            margin-bottom: 2mm;
-
-            font-size: 10px;
-        }
-
-
-        .pdf-example-commands p {
-
-            margin: 0;
-
-            font-size: 9px;
-
-            line-height: 1.4;
-
-            overflow-wrap:
-                anywhere;
-
-            word-break:
-                break-word;
-        }
-
-
-        /* =========================================
-           IMAGES
-           ========================================= */
-
-        #pdfExportContainer img {
-
-            max-width: 100% !important;
-
-            width: auto;
-
-            height: auto;
-
-            display: block;
-
-            margin-left: auto;
-
-            margin-right: auto;
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-        }
-
-
-        /* =========================================
-           TEXT
-           ========================================= */
-
-        #pdfExportContainer p {
-
-            overflow-wrap:
-                break-word;
-
-            word-wrap:
-                break-word;
-        }
-
-
-        #pdfExportContainer
-        h1,
-        #pdfExportContainer
-        h2,
-        #pdfExportContainer
-        h3,
-        #pdfExportContainer
-        h4 {
-
-            break-after: avoid;
-
-            page-break-after: avoid;
-        }
-
-
-        /*
-            Keep logical content together.
-        */
-
-        #pdfExportContainer
-        figure,
-        #pdfExportContainer
-        table,
-        #pdfExportContainer
-        pre,
-        #pdfExportContainer
-        .code-block {
-
-            break-inside: avoid;
-
-            page-break-inside: avoid;
-        }
-
-    `;
-
-    container.appendChild(
-        style
-    );
-
-    document.body.appendChild(
-        container
-    );
-
-
-    /* ========================================================
-       BUILD CHAPTERS
-       ======================================================== */
-
-    for (
-        const file
-        of EXPORT_FILES
-    ) {
-
-        /*
-            Examples gets its own
-            special renderer.
-        */
-
-        if (
-            decodeURIComponent(file) ===
-            "Examples.html"
-        ) {
-
-            const examples =
-                await createExamplesChapter();
-
-            container.appendChild(
-                examples
-            );
-
-            continue;
-        }
-
-
-        /*
-            Normal guide page.
-        */
-
-        const chapter =
-            await createNormalChapter(
-                file
-            );
-
-        container.appendChild(
-            chapter
-        );
     }
 
+    const pdf = pdfCreateDocument();
 
-    /*
-        Wait for all images.
-    */
-
-    await waitForImages(
-        container
-    );
-
-    await wait(500);
+    const state = {
+        hasPage: false,
+        completed: 0,
+        total: selected.length * 3
+    };
 
 
-    /* ========================================================
-       RENDER HTML TO PDF
-       ======================================================== */
+    for (let i = 0; i < selected.length; i++) {
 
-    const canvas =
-        await html2canvas(
-            container,
-            {
-                scale: 1.5,
+        const file = selected[i];
 
-                useCORS: true,
+        pdfMessage(
+            `Loading ${pdfFileName(file)}...`
+        );
 
-                allowTaint: false,
+        const pageData = await pdfLoadPage(file);
 
-                backgroundColor:
-                    "#ffffff",
+        try {
 
-                windowWidth:
-                    1200,
+            if (
+                decodeURIComponent(file) ===
+                "Examples.html"
+            ) {
 
-                logging: false
+                await pdfExportExamples(
+                    pdf,
+                    pageData,
+                    state
+                );
+
+            } else {
+
+                await pdfExportNormalPage(
+                    pdf,
+                    pageData,
+                    file,
+                    state
+                );
+
             }
-        );
 
+        }
 
-    const imgData =
-        canvas.toDataURL(
-            "image/jpeg",
-            0.92
-        );
+        finally {
 
+            pageData.iframe.remove();
 
-    /*
-        Calculate image dimensions.
-    */
+        }
 
-    const imgWidth =
-        pageWidth;
-
-    const imgHeight =
-        canvas.height *
-        imgWidth /
-        canvas.width;
-
-
-    /*
-        IMPORTANT:
-
-        The image is still rendered as one
-        continuous document, but we now insert
-        explicit chapter/page boundaries in
-        the HTML.
-
-        This also keeps the Examples chapter
-        separate from the website layout.
-    */
-
-    let heightLeft =
-        imgHeight;
-
-    let position = 0;
-
-
-    /*
-        First page.
-    */
-
-    pdf.addImage(
-        imgData,
-        "JPEG",
-        10,
-        10,
-        imgWidth,
-        imgHeight
-    );
-
-    heightLeft -=
-        pageHeight;
-
-
-    /*
-        Remaining pages.
-    */
-
-    while (
-        heightLeft > 0
-    ) {
-
-        position -=
-            pageHeight;
-
-        pdf.addPage();
-
-        pdf.addImage(
-            imgData,
-            "JPEG",
-            10,
-            position + 10,
-            imgWidth,
-            imgHeight
-        );
-
-        heightLeft -=
-            pageHeight;
     }
 
 
-    /*
-        Remove temporary HTML.
-    */
+    if (!state.hasPage) {
 
-    document.body.removeChild(
-        container
+        throw new Error(
+            "No content was generated."
+        );
+
+    }
+
+    pdfMessage("Saving PDF...");
+
+    pdf.save(PDF_EXPORT.filename);
+
+}
+
+
+/* ============================================================
+   DOWNLOAD BUTTON
+   ============================================================ */
+
+async function startDownload() {
+
+    if (pdfExportRunning) {
+        return;
+    }
+
+    const button = document.getElementById("dlBtn");
+
+    if (!button) {
+        return;
+    }
+
+    const selected = document.querySelectorAll(
+        "#downloadList input:checked"
     );
 
+    if (!selected.length) {
 
-    return pdf;
+        pdfMessage(
+            "Select at least one page."
+        );
+
+        return;
+
+    }
+
+    if (
+        !window.jspdf ||
+        typeof html2canvas !== "function"
+    ) {
+
+        pdfMessage(
+            "PDF libraries failed to load."
+        );
+
+        return;
+
+    }
+
+    pdfExportRunning = true;
+
+    button.disabled = true;
+
+    button.classList.add("loading");
+
+    const oldText = button.textContent;
+
+    button.textContent = "Preparing...";
+
+    try {
+
+        await downloadOfflinePDF();
+
+        pdfMessage(
+            "PDF download complete ✔"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PDF EXPORT ERROR:",
+            error
+        );
+
+        pdfMessage(
+            "PDF export failed."
+        );
+
+        alert(
+            "PDF export failed:\n\n" +
+            error.message +
+            "\n\nCheck the browser console for details."
+        );
+
+    }
+
+    finally {
+
+        pdfExportRunning = false;
+
+        button.disabled = false;
+
+        button.classList.remove("loading");
+
+        button.textContent = oldText;
+
+    }
+
 }
+
+
+/* ============================================================
+   END PDF EXPORTER
+   ============================================================ */
 
 
 /* ============================================================
@@ -3006,6 +2669,7 @@ Secrets Found: unknown`
 </div>
 </body>
 </html>
+
 
 
 

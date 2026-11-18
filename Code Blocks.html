@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arduino Code Blocks</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 12px;
+    font-family: Arial, sans-serif;
+    background: #f5faff;
+    color: #172b45;
+}
+
+h2 { font-size: 19px; margin: 0; }
+
+.category {
+    margin-top: 16px;
+}
+
+.category-title {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.category select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #b7cce0;
+    border-radius: 6px;
+    background: white;
+}
+
+.block {
+    border-radius: 9px;
+    padding: 10px;
+    margin: 9px 0;
+    border: 2px solid;
+}
+
+.setup-block, .loop-block {
+    background: #dcecff;
+    border-color: #76aee8;
+}
+
+.led-block {
+    background: #d9f4df;
+    border-color: #85d6a0;
+}
+
+.drag-handle {
+    padding: 9px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: grab;
+    user-select: none;
+    background: #ffffffa8;
+}
+
+.drag-handle:active { cursor: grabbing; }
+
+.block-description {
+    font-size: 11px;
+    margin-top: 6px;
+    color: #45627e;
+}
+
+.field { margin-top: 10px; }
+
+.field label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input, .field select {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #a8bfd8;
+    border-radius: 6px;
+    background: white;
+    color: #172b45;
+}
+
+.duration {
+    margin-top: 10px;
+    padding: 9px;
+    border-radius: 7px;
+}
+
+.on-block {
+    background: #c9efd5;
+}
+
+.off-block {
+    background: #ffe1e1;
+}
+
+.duration-row {
+    display: flex;
+    gap: 6px;
+}
+
+.duration-row input { flex: 1; min-width: 0; }
+.duration-row select { width: 65px; }
+
+.remove-button {
+    width: 100%;
+    padding: 7px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #ffe0e0;
+    color: #a52c2c;
+    cursor: pointer;
+}
+
+.preview {
+    margin-top: 10px;
+}
+
+.preview summary {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.preview pre {
+    background: #172b45;
+    color: #d5f4df;
+    padding: 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.info {
+    color: #71869c;
+    font-size: 11px;
+    text-align: center;
+    margin-top: 15px;
+}
+.led-toolbar {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.led-toolbar button {
+    flex: 1;
+    padding: 8px 5px;
+    border: 1px solid #b7cce0;
+    border-radius: 6px;
+    background: white;
+    color: #172b45;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.led-toolbar button:hover {
+    background: #e9f4ff;
+}
+
+.led-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.led-header .drag-handle {
+    flex: 1;
+}
+
+.collapse-button {
+    border: 0;
+    border-radius: 6px;
+    background: #ffffffc9;
+    padding: 8px 11px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.led-content[hidden] {
+    display: none;
+}
+
+.validation-status {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    background: #e9f4ff;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.validation-status.error {
+    background: #ffe1e1;
+    color: #a52c2c;
+}
+
+.validation-status.warning {
+    background: #fff0d4;
+    color: #805514;
+}
+
+.validation-status.success {
+    background: #d9f4df;
+    color: #236b39;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Code Blocks</h2>
+
+<div class="category">
+    <div class="category-title">Categories</div>
+    <select id="categorySelect" onchange="showCategory()">
+        <option value="setup">Setup</option>
+        <option value="basic">Basic</option>
+    </select>
+</div>
+
+<section id="setupCategory" class="category">
+
+    <div class="category-title">Program structure</div>
+
+    <div class="block setup-block">
+        <div class="drag-handle"
+             draggable="true"
+             ondragstart="dragStructure(event, 'setup')">
+            ⠿ SETUP — void setup()
+        </div>
+        <div class="block-description">
+            Runs once when Arduino starts.
+        </div>
+    </div>
+
+    <div class="block loop-block">
+        <div class="drag-handle"
+             draggable="true"
+             ondragstart="dragStructure(event, 'loop')">
+            ⠿ LOOP — void loop()
+        </div>
+        <div class="block-description">
+            Runs repeatedly.
+        </div>
+    </div>
+
+</section>
+
+<section id="basicCategory" class="category" hidden>
+
+    <div class="category-title">Basic components</div>
+
+    <button type="button"
+            onclick="addLED()"
+            style="width:100%;padding:10px;background:#00979d;color:white;border:0;border-radius:6px;cursor:pointer;">
+        + Add LED
+    </button>
+<div class="led-toolbar">
+    <button type="button" onclick="setAllLEDs(true)">− Collapse all</button>
+    <button type="button" onclick="setAllLEDs(false)">+ Expand all</button>
+</div>
+
+<div id="validationStatus" class="validation-status">
+    Checking blocks...
+</div>
+
+<div id="ledContainer"></div>
+    <div id="ledContainer"></div>
+
+</section>
+
+<div class="info">
+    Drag a block handle into the Arduino editor.
+</div>
+
+<script>
+const STORAGE_KEY = "codeBlocks_dragData";
+
+let ledCount = 0;
+let nextId = 1;
+
+function showCategory() {
+    const category = document.getElementById("categorySelect").value;
+
+    document.getElementById("setupCategory").hidden =
+        category !== "setup";
+
+    document.getElementById("basicCategory").hidden =
+        category !== "basic";
+}
+
+// Store the selected block data for the editor
+function saveDragData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// Setup and loop block dragging
+function dragStructure(event, structure) {
+
+    const payload = {
+        type: "STRUCTURE",
+        structure: structure
+    };
+
+    saveDragData(payload);
+
+    event.dataTransfer.setData("text/plain", "CODE_BLOCKS");
+    event.dataTransfer.effectAllowed = "copy";
+}
+
+function getLEDData(block) {
+    return {
+        id: block.dataset.blockId,
+        name: block.querySelector(".led-name").value,
+        type: block.querySelector(".led-type").value,
+        pin: block.querySelector(".led-pin").value,
+        onValue: block.querySelector(".on-value").value,
+        onUnit: block.querySelector(".on-unit").value,
+        offValue: block.querySelector(".off-value").value,
+        offUnit: block.querySelector(".off-unit").value
+    };
+}
+
+function generateLEDCode(data) {
+
+    const name = (data.name || "LED").replace(/[\r\n]/g, " ");
+    const pin = data.pin || "LED_BUILTIN";
+
+    const on = Math.max(0, Number(data.onValue) || 0);
+    const off = Math.max(0, Number(data.offValue) || 0);
+
+    const onMs = data.onUnit === "s" ? on * 1000 : on;
+    const offMs = data.offUnit === "s" ? off * 1000 : off;
+
+    return {
+        setup: `pinMode(${pin}, OUTPUT);`,
+
+        loop: `// ${name} — Pin ${pin}
+digitalWrite(${pin}, HIGH);
+delay(${onMs});
+digitalWrite(${pin}, LOW);
+delay(${offMs});`
+    };
+}
+
+// Update localStorage whenever LED settings change
+function updateLED(block) {
+    const data = getLEDData(block);
+    const code = generateLEDCode(data);
+
+    const payload = {
+        type: "LED",
+        id: data.id,
+        name: data.name,
+        setup: code.setup,
+        loop: code.loop
+    };
+
+    saveDragData(payload);
+
+    block.querySelector(".code-output").textContent =
+        `SETUP:\n${code.setup}\n\nLOOP:\n${code.loop}`;
+validateBlocks();
+}
+function renumberLEDs() {
+    const blocks = document.querySelectorAll("#ledContainer .led-block");
+
+    blocks.forEach((block, index) => {
+        const number = index + 1;
+
+        block.querySelector(".drag-handle").textContent =
+            `⠿ LED ${number} — Drag`;
+
+        const nameInput = block.querySelector(".led-name");
+
+        // Only rename automatically generated names
+        if (block.dataset.autoName !== "false") {
+            nameInput.value = `LED ${number}`;
+        }
+
+        nameInput.placeholder = `LED ${number}`;
+        block.dataset.number = number;
+    });
+
+    ledCount = blocks.length;
+validateBlocks();
+}
+
+function toggleLED(block) {
+    const content = block.querySelector(".led-content");
+    const button = block.querySelector(".collapse-button");
+
+    content.hidden = !content.hidden;
+    button.textContent = content.hidden ? "+" : "−";
+    button.title = content.hidden ? "Expand LED" : "Minimize LED";
+}
+
+function setAllLEDs(minimize) {
+    document.querySelectorAll("#ledContainer .led-block")
+        .forEach(block => {
+            const content = block.querySelector(".led-content");
+            const button = block.querySelector(".collapse-button");
+
+            content.hidden = minimize;
+            button.textContent = minimize ? "+" : "−";
+            button.title = minimize ? "Expand LED" : "Minimize LED";
+        });
+}
+
+function validateBlocks() {
+    const blocks = document.querySelectorAll("#ledContainer .led-block");
+    const status = document.getElementById("validationStatus");
+
+    const errors = [];
+    const warnings = [];
+
+    blocks.forEach((block, index) => {
+        const number = index + 1;
+        const data = getLEDData(block);
+        const code = generateLEDCode(data);
+
+        if (!data.pin) {
+            errors.push(`LED ${number}: Missing pin.`);
+        }
+
+        if (!code.setup || !code.loop) {
+            errors.push(`LED ${number}: Missing setup or loop code.`);
+        }
+
+        if (
+            data.onValue === "" ||
+            !Number.isFinite(Number(data.onValue)) ||
+            Number(data.onValue) < 0
+        ) {
+            errors.push(`LED ${number}: Invalid ON duration.`);
+        }
+
+        if (
+            data.offValue === "" ||
+            !Number.isFinite(Number(data.offValue)) ||
+            Number(data.offValue) < 0
+        ) {
+            errors.push(`LED ${number}: Invalid OFF duration.`);
+        }
+
+        if (data.type !== "Standard LED") {
+            warnings.push(
+                `LED ${number}: ${data.type} is not implemented yet.`
+            );
+        }
+    });
+
+    status.className = "validation-status";
+
+    if (errors.length) {
+        status.classList.add("error");
+        status.innerHTML = "<b>Errors found:</b><br>" +
+            errors.join("<br>");
+    } else if (warnings.length) {
+        status.classList.add("warning");
+        status.innerHTML = "<b>Warnings:</b><br>" +
+            warnings.join("<br>");
+    } else {
+        status.classList.add("success");
+        status.textContent = blocks.length
+            ? "✓ All blocks passed validation."
+            : "✓ No blocks to validate.";
+    }
+
+    return errors.length === 0;
+}
+
+function addLED() {
+    const container = document.getElementById("ledContainer");
+
+    const empty = document.getElementById("emptyMessage");
+    if (empty) empty.remove();
+
+    const id = "led-" + nextId++;
+
+    const block = document.createElement("div");
+    block.className = "block led-block";
+    block.dataset.blockId = id;
+block.dataset.autoName = "true";
+block.innerHTML = `
+    <div class="led-header">
+        <div class="drag-handle" draggable="true">
+            ⠿ LED
+        </div>
+
+        <button type="button" class="collapse-button"
+                title="Minimize LED">
+            −
+        </button>
+    </div>
+
+    <div class="led-content">
+
+        <div class="block-description">
+            Initializes in setup and blinks in loop.
+        </div>
+
+        <div class="field">
+            <label>LED Name</label>
+            <input class="led-name" value="LED">
+        </div>
+
+        <div class="field">
+            <label>LED Type</label>
+            <select class="led-type">
+                <option value="Standard LED">Standard LED</option>
+                <option value="RGB LED">RGB LED</option>
+                <option value="LED Strip">LED Strip</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Arduino Pin</label>
+            <select class="led-pin">
+                <option value="LED_BUILTIN">Built-in LED</option>
+                ${Array.from({length: 14}, (_, i) =>
+                    `<option value="${i}">Digital Pin ${i}</option>`
+                ).join("")}
+            </select>
+        </div>
+
+        <div class="duration on-block">
+            <div class="field">
+                <label>ON FOR</label>
+                <div class="duration-row">
+                    <input class="on-value" type="number"
+                           min="0" step="any" value="1000">
+                    <select class="on-unit">
+                        <option value="ms">ms</option>
+                        <option value="s">s</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="duration off-block">
+            <div class="field">
+                <label>OFF FOR</label>
+                <div class="duration-row">
+                    <input class="off-value" type="number"
+                           min="0" step="any" value="500">
+                    <select class="off-unit">
+                        <option value="ms">ms</option>
+                        <option value="s">s</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <details class="preview">
+            <summary>Generated code</summary>
+            <pre class="code-output"></pre>
+        </details>
+
+        <button class="remove-button" type="button">
+            Remove LED
+        </button>
+
+    </div>
+`;
+
+    container.appendChild(block);
+block.querySelector(".collapse-button")
+    .addEventListener("click", () => toggleLED(block));
+block.addEventListener("input", function(event) {
+    if (event.target.classList.contains("led-name")) {
+        block.dataset.autoName = "false";
+    }
+
+    updateLED(block);
+});
+    block.addEventListener("change", () => updateLED(block));
+
+    block.querySelector(".drag-handle")
+        .addEventListener("dragstart", function(event) {
+            updateLED(block);
+            event.dataTransfer.setData("text/plain", "CODE_BLOCKS");
+            event.dataTransfer.effectAllowed = "copy";
+        });
+
+block.querySelector(".remove-button")
+    .addEventListener("click", function() {
+
+        // Check whether this LED is currently stored
+        try {
+            const stored = JSON.parse(
+                localStorage.getItem(STORAGE_KEY) || "null"
+            );
+
+            if (stored && stored.id === id) {
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        } catch (error) {
+            console.error("Could not clear LED data:", error);
+        }
+
+        // Remove the block
+        block.remove();
+
+        // Update numbering
+        renumberLEDs();
+    });
+
+    renumberLEDs();
+    updateLED(block);
+}
+
+</script>
+
+</body>
+</html>
+
