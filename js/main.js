@@ -399,28 +399,19 @@ document.querySelectorAll("[data-wire-gallery]").forEach(gallery=>{
    CLOSE ZOOM
 ========================================= */
 
-wireOverlay.addEventListener("click",(e)=>{
+if (wireOverlay) {
+    wireOverlay.addEventListener("click", (e) => {
 
-  if(
-    e.target === wireOverlay ||
-    e.target === wireZoomImg
-  ){
-    wireOverlay.classList.remove("active");
-  }
+        if (
+            e.target === wireOverlay ||
+            e.target === wireZoomImg
+        ) {
+            wireOverlay.classList.remove("active");
+        }
 
-});
+    });
+}
 
-
-/*-------------- 3D model renderer--------------- */
-
-//const renderer = new THREE.WebGLRenderer({
-  //canvas: document.getElementById("uno3d"),
-  //antialias: true,
-  //alpha: true // <- this removes black background
-//});
-
-//renderer.setClearColor(0x000000, 0); // fully transparent
-//It all works <---------------------------------With out it! <-------------------
 /*--------------___ Feedback functiones ___---------------------*/
 
 function toggleCustomType(){
@@ -478,8 +469,6 @@ function submitFeedback(){
 /*-------------------___ pdf download ___-------------------------------*/
 
 /* Go to Feedback.html for the script leave it there*/
-
-
 
 /*--------------------___ CLI download ___-----------------------------------*/
 function DownloadScript(){
@@ -658,18 +647,6 @@ function toggleView(){
     cliMode ? "Normal View" : "CLI / IDE";
 }
 
-
-
-/*--------------------------___ More page JS ___---------------------------*/
-
-
-
-
-
-
-
-
-
 /* =========================================================   MOBILE TOUCH SUPPORT   ========================================================= */
 
 if(window.matchMedia("(hover:none)").matches){
@@ -749,17 +726,19 @@ if(window.matchMedia("(hover:none)").matches){
   }
 
 }
-function checkOrientation(){
+function checkOrientation() {
 
-  const mobile = window.innerWidth <= 900;
+    const rotateWarning = document.getElementById("rotateWarning");
 
-  const portrait =
-    window.innerHeight > window.innerWidth;
+    // Skip pages without the rotation warning
+    if (!rotateWarning) return;
 
-  document.getElementById("rotateWarning").style.display =
-    (mobile && portrait)
-      ? "flex"
-      : "none";
+    const mobile = window.innerWidth <= 900;
+
+    const portrait = window.innerHeight > window.innerWidth;
+
+    rotateWarning.style.display =
+        (mobile && portrait) ? "flex" : "none";
 }
 
 window.addEventListener("load", checkOrientation);
@@ -768,43 +747,136 @@ window.addEventListener("orientationchange", checkOrientation);
 
 
 /* ================================================================   Account   ================================================================ */
+/*
+    Explicitly synchronized localStorage keys.
+
+    Add new standalone storage IDs here whenever a new
+    feature needs to be included in the Guide Account.
+*/
 
 const GUIDE_ACCOUNT_KEYS = [
+
+    /* ------------------------------------------------------------
+       Tutorial progress
+       ------------------------------------------------------------ */
+
     "arduinoTutorialProgress",
+
+    /* ------------------------------------------------------------
+       User / account information
+       ------------------------------------------------------------ */
+
     "secret_ie",
-    "arduino_code",
-    "progress",
     "secret_ip",
     "secret_id",
-    "arduinoExampleMode",
-    "arduinoExample",
-    "arduinoExampleCategory",
-    "firebase:host:arduino-guideg-default-rtdb.europe-west1.firebasedatabase.app",
+
     "communityUser",
     "userId",
     "arduino_name",
 
-    /* Quiz Hub / Code Challenge */
+    /* ------------------------------------------------------------
+       Main guide navigation
+       ------------------------------------------------------------ */
+
+    "arduino-last-page",
+    "workspace",
+
+    /* ------------------------------------------------------------
+       Arduino examples — original selection system
+       ------------------------------------------------------------ */
+
+    "arduinoExampleMode",
+    "arduinoExample",
+    "arduinoExampleCategory",
+
+    /* Arduino examples — newer selection system */
+
+    "arduinoGuide_examplesCategory",
+    "arduinoGuide_selectedExample",
+
+    /* ------------------------------------------------------------
+       Arduino Code Editor
+       ------------------------------------------------------------ */
+
+    "arduino_code",
+
+    /* Compilation state */
+
+    "arduino_compiled",
+    "arduino_compiled_code",
+    "arduino_compiled_name",
+    "arduino_compile_success",
+
+    /* Code editor progress */
+
+    "arduino-code-progress",
+
+    /* ------------------------------------------------------------
+       Quiz Hub / Code Challenge
+       ------------------------------------------------------------ */
+
     "arduino-saved-projects",
-    "arduino-code-progress"
+
+    /* ------------------------------------------------------------
+       General progress
+       ------------------------------------------------------------ */
+
+    "progress",
+
+    /* ------------------------------------------------------------
+       Firebase
+       ------------------------------------------------------------ */
+
+    "firebase:host:arduino-guideg-default-rtdb.europe-west1.firebasedatabase.app"
+
 ];
 
-/*
-   Keys beginning with these prefixes are also stored
-   inside the Arduino Guide Account.
-*/
+
+/* ================================================================
+   AUTOMATIC STORAGE PREFIXES
+   ================================================================ */
 const GUIDE_ACCOUNT_KEY_PREFIXES = [
+
+    /* Arduino Code system */
     "arduino-code-",
+
+    /* Arduino projects */
     "arduino-project-"
+
 ];
+
+
+/* ================================================================
+   ACCOUNT FILE SETTINGS
+   ================================================================ */
 
 const GUIDE_ACCOUNT_FILENAME =
     "Arduino-Guide-Account.json";
 
+
+/* ================================================================
+   ACCOUNT STATE
+   ================================================================ */
+
 let guideAccountFile = null;
+
 let guideAccountLastModified = 0;
+
 let guideAccountSaving = false;
+
 let guideAccountLoading = false;
+
+
+/* ================================================================
+   EXCLUDED TEMPORARY STORAGE
+   ================================================================ */
+
+const GUIDE_ACCOUNT_EXCLUDED_KEYS = [
+
+    // Code Blocks -> Editor drag-and-drop communication
+    "codeBlocks_dragData",
+"arduino-code-blocks-basic-leds"
+];
 
 
 /* ================================================================
@@ -1674,6 +1746,55 @@ window.addEventListener(
 
     }
 );
+
+
+/* ================================================================
+   Workspace
+================================================================ */
+
+function updateWorkspace() {
+
+    const mode = localStorage.getItem("workspaceMode") || "auto";
+
+    const online = navigator.onLine;
+
+    let enabled;
+
+    if (mode === "on") {
+        enabled = true;
+    } else if (mode === "off") {
+        enabled = false;
+    } else {
+        enabled = !online;
+    }
+
+    localStorage.setItem("workspace", enabled ? "on" : "off");
+
+    if (enabled) {
+        startWorkspace();
+    } else {
+        stopWorkspace();
+    }
+}
+
+window.addEventListener("online", updateWorkspace);
+window.addEventListener("offline", updateWorkspace);
+
+window.addEventListener("load", updateWorkspace);
+
+function toggleWorkspace() {
+
+    const enabled = localStorage.getItem("workspace") === "on";
+
+    localStorage.setItem(
+        "workspaceMode",
+        enabled ? "off" : "on"
+    );
+
+    updateWorkspace();
+}
+
+
 
 
 

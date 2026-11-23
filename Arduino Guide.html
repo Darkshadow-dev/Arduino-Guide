@@ -2025,8 +2025,17 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 <script type="module" src="js/Live.js"></script>
 <script src="js/components.js"></script>
 <div class="live-counter" id="liveCounter">
-  <span class="dot"></span>
-  Online: <span id="onlineCount">0</span>
+
+    <span class="dot"></span>
+
+    <span>Online:</span>
+    <span id="onlineCount">0</span>
+
+    <span class="counter-separator">|</span>
+
+    <span>Offline:</span>
+    <span id="offlineCount">0</span>
+
 </div>
 
 <div id="zoomOverlay" class="zoom-overlay">
@@ -2035,6 +2044,7 @@ arduino-cli.exe upload -p COM8 --fqbn arduino:avr:uno blink
 
 </body>
 </html>
+
 
 
 
