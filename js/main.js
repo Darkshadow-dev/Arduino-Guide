@@ -412,6 +412,81 @@ if (wireOverlay) {
     });
 }
 
+
+/* ================= IMAGE ZOOM ================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const overlay =
+            document.getElementById(
+                "zoomOverlay"
+            );
+
+        const overlayImg =
+            document.getElementById(
+                "zoomImg"
+            );
+        if (
+            !overlay ||
+            !overlayImg
+        ) {
+            console.log(
+                "Image zoom elements not found. Skipping image zoom."
+            );
+
+            return;
+        }
+
+        /* OPEN */
+
+        document.body.addEventListener(
+            "click",
+            (e) => {
+
+                const box =
+                    e.target.closest(
+                        "[data-tut]"
+                    );
+
+                const img =
+                    e.target.closest(
+                        "img"
+                    );
+
+                if (
+                    box &&
+                    img
+                ) {
+
+                    overlayImg.src =
+                        img.src;
+
+                    overlay.classList.add(
+                        "active"
+                    );
+                }
+
+            }
+        );
+
+        /* CLOSE */
+
+        overlay.addEventListener(
+            "click",
+            () => {
+
+                overlay.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+    }
+);
+
 /*--------------___ Feedback functiones ___---------------------*/
 
 function toggleCustomType(){
@@ -1749,14 +1824,72 @@ window.addEventListener(
 
 
 /* ================================================================
-   Workspace
+   Workspace System
 ================================================================ */
 
+// Workspace state
+let workspaceActive = false;
+let workspaceCount = Number(
+    localStorage.getItem("workspaceCount") || 0
+);
+
+
+// Update the visible counter
+function updateWorkspaceCounter() {
+
+    const counter = document.getElementById("workspaceCount");
+
+    if (counter) {
+        counter.textContent = workspaceCount;
+    }
+
+}
+
+
+// Activate Workspace
+function startWorkspace() {
+
+    if (workspaceActive) return;
+
+    workspaceActive = true;
+
+    workspaceCount++;
+
+    localStorage.setItem("workspaceCount", workspaceCount);
+    localStorage.setItem("workspace", "on");
+
+    document.body.classList.add("workspace-active");
+
+    updateWorkspaceCounter();
+
+    console.log("Workspace activated");
+}
+
+
+// Deactivate Workspace
+function stopWorkspace() {
+
+    if (!workspaceActive) return;
+
+    workspaceActive = false;
+
+    workspaceCount = Math.max(0, workspaceCount - 1);
+
+    localStorage.setItem("workspaceCount", workspaceCount);
+    localStorage.setItem("workspace", "off");
+
+    document.body.classList.remove("workspace-active");
+
+    updateWorkspaceCounter();
+
+    console.log("Workspace deactivated");
+}
+
+
+// Detect whether Workspace should be active
 function updateWorkspace() {
 
     const mode = localStorage.getItem("workspaceMode") || "auto";
-
-    const online = navigator.onLine;
 
     let enabled;
 
@@ -1765,42 +1898,60 @@ function updateWorkspace() {
     } else if (mode === "off") {
         enabled = false;
     } else {
-        enabled = !online;
+        enabled = !navigator.onLine;
     }
-
-    localStorage.setItem("workspace", enabled ? "on" : "off");
 
     if (enabled) {
         startWorkspace();
     } else {
         stopWorkspace();
     }
+
 }
 
+
+// Manual Workspace toggle
+function toggleWorkspace() {
+
+    const mode = localStorage.getItem("workspaceMode") || "auto";
+
+    const currentlyEnabled = workspaceActive;
+
+    if (currentlyEnabled) {
+        localStorage.setItem("workspaceMode", "off");
+    } else {
+        localStorage.setItem("workspaceMode", "on");
+    }
+
+    updateWorkspace();
+
+}
+
+
+// Reset to automatic mode
+function resetWorkspaceMode() {
+
+    localStorage.setItem("workspaceMode", "auto");
+
+    updateWorkspace();
+
+}
+
+
+// Internet detection
 window.addEventListener("online", updateWorkspace);
 window.addEventListener("offline", updateWorkspace);
 
-window.addEventListener("load", updateWorkspace);
 
-function toggleWorkspace() {
+// Initial setup
+window.addEventListener("load", function () {
 
-    const enabled = localStorage.getItem("workspace") === "on";
+    workspaceActive =
+        localStorage.getItem("workspace") === "on";
 
-    localStorage.setItem(
-        "workspaceMode",
-        enabled ? "off" : "on"
-    );
+    updateWorkspaceCounter();
 
     updateWorkspace();
-}
 
-
-
-
-
-
-
-
-
-
+});
 

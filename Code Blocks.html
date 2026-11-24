@@ -532,7 +532,7 @@ body {
 
             <button class="category-toggle"
                     type="button"
-                    data-category="program">
+                    data-category="program" data-items="programItems">
                 Program
                 <span class="arrow">▼</span>
             </button>
@@ -558,7 +558,7 @@ body {
 
             <button class="category-toggle"
                     type="button"
-                    data-category="leds">
+                    data-category="leds" data-items="ledItems">
                 LEDs
                 <span class="arrow">▼</span>
             </button>
@@ -595,6 +595,22 @@ body {
                     RGB LED Strip
                 </button>
 
+            </div>
+        </div>
+
+        <div class="nav-category">
+            <button class="category-toggle" type="button"
+                    data-category="simple-outputs" data-items="simpleOutputItems">
+                Simple Outputs
+                <span class="arrow">▼</span>
+            </button>
+            <div class="nav-items" id="simpleOutputItems">
+                <button class="nav-item" data-type="component" data-value="buzzer">Buzzer</button>
+                <button class="nav-item" data-type="component" data-value="vibration-motor">Vibration Motor</button>
+                <button class="nav-item" data-type="component" data-value="relay">Relay</button>
+                <button class="nav-item" data-type="component" data-value="mosfet-output">MOSFET Output</button>
+                <button class="nav-item" data-type="component" data-value="dc-fan">DC Fan</button>
+                <button class="nav-item" data-type="component" data-value="solenoid">Solenoid</button>
             </div>
         </div>
 
@@ -658,6 +674,42 @@ const componentList = {
         description: "Control an analogue RGB LED strip using three MOSFET channels and an external power supply.",
         storage: "arduino-code-blocks-rgb-strips",
         kind: "rgbStrip"
+    },
+    "buzzer": {
+        title: "Buzzer",
+        description: "Control an active buzzer or generate tones with a passive buzzer.",
+        storage: "arduino-code-blocks-buzzer",
+        kind: "buzzer"
+    },
+    "vibration-motor": {
+        title: "Vibration Motor",
+        description: "Pulse a vibration motor for a selected ON and OFF duration.",
+        storage: "arduino-code-blocks-vibration-motors",
+        kind: "vibration"
+    },
+    "relay": {
+        title: "Relay",
+        description: "Switch a relay module on and off with selectable trigger polarity.",
+        storage: "arduino-code-blocks-relays",
+        kind: "relay"
+    },
+    "mosfet-output": {
+        title: "MOSFET Output",
+        description: "Switch an external load through a logic-level MOSFET driver.",
+        storage: "arduino-code-blocks-mosfet-outputs",
+        kind: "mosfet"
+    },
+    "dc-fan": {
+        title: "DC Fan",
+        description: "Switch a DC fan through a suitable transistor or MOSFET driver.",
+        storage: "arduino-code-blocks-dc-fans",
+        kind: "fan"
+    },
+    "solenoid": {
+        title: "Solenoid",
+        description: "Pulse a solenoid through a suitable driver and external power supply.",
+        storage: "arduino-code-blocks-solenoids",
+        kind: "solenoid"
     }
 };
 
@@ -672,7 +724,13 @@ const componentData = {
     pwm: [],
     rgb: [],
     strip: [],
-    rgbStrip: []
+    rgbStrip: [],
+    buzzer: [],
+    vibration: [],
+    relay: [],
+    mosfet: [],
+    fan: [],
+    solenoid: []
 };
 
 const nextIds = {
@@ -680,7 +738,13 @@ const nextIds = {
     pwm: 1,
     rgb: 1,
     strip: 1,
-    rgbStrip: 1
+    rgbStrip: 1,
+    buzzer: 1,
+    vibration: 1,
+    relay: 1,
+    mosfet: 1,
+    fan: 1,
+    solenoid: 1
 };
 
 /* =========================================================
@@ -745,7 +809,7 @@ function loadComponentData(kind) {
 }
 
 function saveAllComponentData() {
-    ["basic", "pwm", "rgb", "strip", "rgbStrip"].forEach(saveComponentData);
+    ["basic", "pwm", "rgb", "strip", "rgbStrip", "buzzer", "vibration", "relay", "mosfet", "fan", "solenoid"].forEach(saveComponentData);
 }
 
 function renumberItems(kind) {
@@ -757,7 +821,13 @@ function renumberItems(kind) {
                 pwm: "PWM LED",
                 rgb: "RGB LED",
                 strip: "LED Strip",
-                rgbStrip: "RGB Strip"
+                rgbStrip: "RGB Strip",
+                buzzer: "Buzzer",
+                vibration: "Vibration Motor",
+                relay: "Relay",
+                mosfet: "MOSFET Output",
+                fan: "DC Fan",
+                solenoid: "Solenoid"
             }[kind] || "Component";
             item.name = `${prefix} ${index + 1}`;
         }
@@ -765,17 +835,16 @@ function renumberItems(kind) {
 }
 
 function createItem(kind) {
-    const number = componentData[kind].length + 1;
     const prefixes = {
-        basic: "LED",
-        pwm: "PWM LED",
-        rgb: "RGB LED",
-        strip: "LED Strip",
-        rgbStrip: "RGB Strip"
+        basic: "LED", pwm: "PWM LED", rgb: "RGB LED",
+        strip: "LED Strip", rgbStrip: "RGB Strip",
+        buzzer: "Buzzer", vibration: "Vibration Motor",
+        relay: "Relay", mosfet: "MOSFET Output",
+        fan: "DC Fan", solenoid: "Solenoid"
     };
     const item = {
         id: nextIds[kind]++,
-        name: `${prefixes[kind]} ${number}`,
+        name: `${prefixes[kind] || "Component"} ${componentData[kind].length + 1}`,
         autoName: true,
         collapsed: true
     };
@@ -796,6 +865,16 @@ function createItem(kind) {
             color: "#ff0000",
             commonAnode: kind === "rgbStrip",
             duration: 500
+        });
+    } else if (kind === "buzzer") {
+        Object.assign(item, {
+            pin: "6", buzzerType: "passive", frequency: 500,
+            onDuration: 500, offDuration: 200
+        });
+    } else if (["vibration", "relay", "mosfet", "fan", "solenoid"].includes(kind)) {
+        Object.assign(item, {
+            pin: "6", activeLevel: "HIGH",
+            onDuration: 500, offDuration: 200
         });
     }
 
@@ -909,6 +988,61 @@ delay(${duration});`
         };
     }
 
+    if (kind === "buzzer") {
+        const pin = DIGITAL_PINS.includes(String(item.pin)) && Number(item.pin) >= 2
+            ? String(item.pin) : "6";
+        const on = durationMs(item.onDuration);
+        const off = durationMs(item.offDuration);
+        const frequency = Math.max(31, Math.min(5000, Math.round(Number(item.frequency) || 500)));
+        const setup = `pinMode(${pin}, OUTPUT);\ndigitalWrite(${pin}, LOW);`;
+
+        if (item.buzzerType === "active") {
+            return {
+                setup,
+                loop: `// ${safeComment(item.name)} — Active buzzer, Pin ${pin}
+digitalWrite(${pin}, HIGH);
+delay(${on});
+digitalWrite(${pin}, LOW);
+delay(${off});`
+            };
+        }
+
+        return {
+            setup,
+            loop: `// ${safeComment(item.name)} — Passive buzzer, Pin ${pin}
+tone(${pin}, ${frequency});
+delay(${on});
+noTone(${pin});
+delay(${off});`
+        };
+    }
+
+    if (["vibration", "relay", "mosfet", "fan", "solenoid"].includes(kind)) {
+        const pin = DIGITAL_PINS.includes(String(item.pin)) && Number(item.pin) >= 2
+            ? String(item.pin) : "6";
+        const active = item.activeLevel === "LOW" ? "LOW" : "HIGH";
+        const inactive = active === "HIGH" ? "LOW" : "HIGH";
+        const on = durationMs(item.onDuration);
+        const off = durationMs(item.offDuration);
+        const labels = {
+            vibration: "Vibration motor",
+            relay: "Relay",
+            mosfet: "MOSFET output",
+            fan: "DC fan",
+            solenoid: "Solenoid"
+        };
+
+        return {
+            setup: `pinMode(${pin}, OUTPUT);
+digitalWrite(${pin}, ${inactive});`,
+            loop: `// ${safeComment(item.name)} — ${labels[kind]}, Pin ${pin}
+digitalWrite(${pin}, ${active});
+delay(${on});
+digitalWrite(${pin}, ${inactive});
+delay(${off});`
+        };
+    }
+
     return { setup: "", loop: "" };
 }
 
@@ -928,7 +1062,8 @@ function hexToRgb(hex) {
 
 document.querySelectorAll(".category-toggle").forEach(button => {
     button.addEventListener("click", () => {
-        const id = button.dataset.category === "program" ? "programItems" : "ledItems";
+        const id = button.dataset.items ||
+            (button.dataset.category === "program" ? "programItems" : "ledItems");
         const items = document.getElementById(id);
         if (!items) return;
 
@@ -1036,7 +1171,13 @@ function renderComponentPanel(content, kind) {
         pwm: "Add PWM LED",
         rgb: "Add RGB LED",
         strip: "Add LED Strip",
-        rgbStrip: "Add RGB LED Strip"
+        rgbStrip: "Add RGB LED Strip",
+        buzzer: "Add Buzzer",
+        vibration: "Add Vibration Motor",
+        relay: "Add Relay",
+        mosfet: "Add MOSFET Output",
+        fan: "Add DC Fan",
+        solenoid: "Add Solenoid"
     };
 
     content.innerHTML = `
@@ -1203,6 +1344,84 @@ function renderFields(kind, item) {
         `;
     }
 
+    if (kind === "buzzer") {
+        const pins = DIGITAL_PINS.filter(pin => Number(pin) >= 2);
+        return `
+            <div class="led-field">
+                <label>Buzzer Name</label>
+                <input type="text" data-field="name" value="${escapeHTML(item.name)}">
+            </div>
+            <div class="led-field">
+                <label>Buzzer Type</label>
+                <select data-field="buzzerType">
+                    <option value="active" ${item.buzzerType === "active" ? "selected" : ""}>Active — simple ON / OFF</option>
+                    <option value="passive" ${item.buzzerType !== "active" ? "selected" : ""}>Passive — play a tone</option>
+                </select>
+            </div>
+            <div class="led-field">
+                <label>Digital Pin</label>
+                <select data-field="pin">${makeOptions(pins, item.pin, pin => `Digital Pin ${pin}`)}</select>
+            </div>
+            <div class="led-field" data-buzzer-frequency ${item.buzzerType === "active" ? "hidden" : ""}>
+                <label>Tone Frequency (Hz)</label>
+                <input type="number" min="31" max="5000" step="1" data-field="frequency" value="${item.frequency}">
+            </div>
+            <div class="led-field">
+                <label>ON Duration (ms)</label>
+                <input type="number" min="0" max="2147483647" step="1" data-field="onDuration" value="${item.onDuration}">
+            </div>
+            <div class="led-field">
+                <label>OFF Duration (ms)</label>
+                <input type="number" min="0" max="2147483647" step="1" data-field="offDuration" value="${item.offDuration}">
+            </div>
+            <div class="placeholder">An active buzzer makes its built-in tone when powered. A passive buzzer uses tone() to generate the selected frequency.</div>
+        `;
+    }
+
+    if (["vibration", "relay", "mosfet", "fan", "solenoid"].includes(kind)) {
+        const names = {
+            vibration: "Vibration Motor",
+            relay: "Relay",
+            mosfet: "MOSFET Output",
+            fan: "DC Fan",
+            solenoid: "Solenoid"
+        };
+        const notes = {
+            vibration: "Drive the motor through a transistor or motor-driver module. Do not connect a bare motor directly to an Arduino pin.",
+            relay: "Use a relay module or a properly driven relay coil. Check whether your module is active-high or active-low before connecting a load.",
+            mosfet: "Use a logic-level MOSFET driver suitable for the load. Share ground between the Arduino and the external supply where required.",
+            fan: "Use a suitable transistor or logic-level MOSFET, external fan supply and flyback protection where applicable. Never power a fan directly from an Arduino pin.",
+            solenoid: "Use a suitable transistor or MOSFET driver, an external supply and a flyback diode across a DC solenoid coil. Never drive the coil directly from an Arduino pin."
+        };
+        const pinOptions = DIGITAL_PINS.filter(pin => Number(pin) >= 2);
+        return `
+            <div class="led-field">
+                <label>${names[kind]} Name</label>
+                <input type="text" data-field="name" value="${escapeHTML(item.name)}">
+            </div>
+            <div class="led-field">
+                <label>Digital Control Pin</label>
+                <select data-field="pin">${makeOptions(pinOptions, item.pin, pin => `Digital Pin ${pin}`)}</select>
+            </div>
+            <div class="led-field">
+                <label>Active Signal</label>
+                <select data-field="activeLevel">
+                    <option value="HIGH" ${item.activeLevel !== "LOW" ? "selected" : ""}>HIGH — active when pin is HIGH</option>
+                    <option value="LOW" ${item.activeLevel === "LOW" ? "selected" : ""}>LOW — active when pin is LOW</option>
+                </select>
+            </div>
+            <div class="led-field">
+                <label>ON Duration (ms)</label>
+                <input type="number" min="0" max="2147483647" step="1" data-field="onDuration" value="${item.onDuration}">
+            </div>
+            <div class="led-field">
+                <label>OFF Duration (ms)</label>
+                <input type="number" min="0" max="2147483647" step="1" data-field="offDuration" value="${item.offDuration}">
+            </div>
+            <div class="placeholder">${notes[kind]}</div>
+        `;
+    }
+
     return `
         <div class="led-field">
             <label>RGB LED Name</label>
@@ -1293,6 +1512,11 @@ function bindCardEvents(card, item, kind, index) {
             const valueLabel = card.querySelector(`[data-value-label="${field}"]`);
             if (valueLabel) valueLabel.textContent = input.value;
 
+            if (field === "buzzerType") {
+                const frequencyField = card.querySelector("[data-buzzer-frequency]");
+                if (frequencyField) frequencyField.hidden = item.buzzerType === "active";
+            }
+
             updatePreview(card, item, kind);
             saveComponentData(kind);
         };
@@ -1308,7 +1532,13 @@ function bindCardEvents(card, item, kind, index) {
             pwm: "PWM_LED",
             rgb: "RGB_LED",
             strip: "LED_STRIP",
-            rgbStrip: "RGB_LED_STRIP"
+            rgbStrip: "RGB_LED_STRIP",
+            buzzer: "BUZZER",
+            vibration: "VIBRATION_MOTOR",
+            relay: "RELAY",
+            mosfet: "MOSFET_OUTPUT",
+            fan: "DC_FAN",
+            solenoid: "SOLENOID"
         }[kind];
 
         dragPayload(event, {
@@ -1346,6 +1576,12 @@ loadComponentData("pwm");
 loadComponentData("rgb");
 loadComponentData("strip");
 loadComponentData("rgbStrip");
+loadComponentData("buzzer");
+loadComponentData("vibration");
+loadComponentData("relay");
+loadComponentData("mosfet");
+loadComponentData("fan");
+loadComponentData("solenoid");
 
 /* Categories and individual component cards start collapsed. */
 document.querySelectorAll(".nav-items").forEach(items => items.classList.remove("open"));
