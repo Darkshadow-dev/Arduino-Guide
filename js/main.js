@@ -1824,111 +1824,127 @@ window.addEventListener(
 
 
 /* ================================================================
-   Workspace System
+   WORKSPACE SYSTEM
+   Auto / Manual / Offline / Firebase Presence
 ================================================================ */
 
-// Workspace state
+// Current state
 let workspaceActive = false;
-let workspaceCount = Number(
-    localStorage.getItem("workspaceCount") || 0
-);
 
 
-// Update the visible counter
-function updateWorkspaceCounter() {
+// Read saved mode
+function getWorkspaceMode() {
+    return localStorage.getItem("workspaceMode") || "auto";
+}
 
-    const counter = document.getElementById("workspaceCount");
 
-    if (counter) {
-        counter.textContent = workspaceCount;
+// Save workspace state
+function setWorkspaceState(enabled) {
+
+    const newState = enabled ? "on" : "off";
+
+    const changed = workspaceActive !== enabled;
+
+    workspaceActive = enabled;
+
+    localStorage.setItem("workspace", newState);
+
+    // Apply visual state
+    document.body.classList.toggle(
+        "workspace-active",
+        enabled
+    );
+
+    // Notify Firebase only when state changes
+    if (changed) {
+
+        window.dispatchEvent(
+            new Event("workspace-state-changed")
+        );
+
+        console.log(
+            enabled
+                ? "Workspace activated"
+                : "Workspace deactivated"
+        );
+
     }
 
 }
 
 
-// Activate Workspace
+// Start Workspace
 function startWorkspace() {
 
     if (workspaceActive) return;
 
-    workspaceActive = true;
+    setWorkspaceState(true);
 
-    workspaceCount++;
-
-    localStorage.setItem("workspaceCount", workspaceCount);
-    localStorage.setItem("workspace", "on");
-
-    document.body.classList.add("workspace-active");
-
-    updateWorkspaceCounter();
-
-    console.log("Workspace activated");
 }
 
 
-// Deactivate Workspace
+// Stop Workspace
 function stopWorkspace() {
 
     if (!workspaceActive) return;
 
-    workspaceActive = false;
+    setWorkspaceState(false);
 
-    workspaceCount = Math.max(0, workspaceCount - 1);
-
-    localStorage.setItem("workspaceCount", workspaceCount);
-    localStorage.setItem("workspace", "off");
-
-    document.body.classList.remove("workspace-active");
-
-    updateWorkspaceCounter();
-
-    console.log("Workspace deactivated");
 }
 
 
-// Detect whether Workspace should be active
+// Determine whether Workspace should run
 function updateWorkspace() {
 
-    const mode = localStorage.getItem("workspaceMode") || "auto";
+    const mode = getWorkspaceMode();
 
-    let enabled;
+    let enabled = false;
 
     if (mode === "on") {
+
         enabled = true;
+
     } else if (mode === "off") {
+
         enabled = false;
+
     } else {
+
+        // Automatic mode
         enabled = !navigator.onLine;
+
     }
 
     if (enabled) {
+
         startWorkspace();
+
     } else {
+
         stopWorkspace();
+
     }
 
 }
 
 
-// Manual Workspace toggle
+// Manual toggle
 function toggleWorkspace() {
 
-    const mode = localStorage.getItem("workspaceMode") || "auto";
+    const enabled = workspaceActive;
 
-    const currentlyEnabled = workspaceActive;
-
-    if (currentlyEnabled) {
-        localStorage.setItem("workspaceMode", "off");
-    } else {
-        localStorage.setItem("workspaceMode", "on");
-    }
+    // Manual selection overrides automatic mode
+    localStorage.setItem(
+        "workspaceMode",
+        enabled ? "off" : "on"
+    );
 
     updateWorkspace();
 
 }
 
 
-// Reset to automatic mode
+// Return to automatic mode
 function resetWorkspaceMode() {
 
     localStorage.setItem("workspaceMode", "auto");
@@ -1938,20 +1954,60 @@ function resetWorkspaceMode() {
 }
 
 
-// Internet detection
+// Internet connection events
 window.addEventListener("online", updateWorkspace);
+
 window.addEventListener("offline", updateWorkspace);
 
 
-// Initial setup
-window.addEventListener("load", function () {
+// Other tabs changing the preference
+window.addEventListener("storage", (event) => {
 
-    workspaceActive =
-        localStorage.getItem("workspace") === "on";
+    if (
+        event.key === "workspaceMode" ||
+        event.key === "workspace"
+    ) {
+        updateWorkspace();
+    }
 
-    updateWorkspaceCounter();
+});
+
+
+// Initialize Workspace
+function initializeWorkspace() {
 
     updateWorkspace();
 
-});
+}
+
+
+// Run initialization
+if (document.readyState === "loading") {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeWorkspace,
+        { once: true }
+    );
+
+} else {
+
+    initializeWorkspace();
+
+}
+
+
+/* ================================================================
+   WORKSPACE DEBUG
+================================================================ */
+
+window.getWorkspaceStatus = function () {
+
+    return {
+        active: workspaceActive,
+        mode: getWorkspaceMode(),
+        online: navigator.onLine
+    };
+
+};
 

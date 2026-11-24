@@ -8,18 +8,18 @@ import {
     ref,
     onValue,
     set,
+    remove,
     onDisconnect
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
-
-import {
-    getAuth,
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-
 import {
     getAnalytics
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
 
+import {
+    getAuth,
+    onAuthStateChanged,
+    signInAnonymously
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 /* ================= FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
@@ -33,7 +33,9 @@ const firebaseConfig = {
     measurementId: "G-V3ZB157P0R"
 };
 
-/* ================= INIT ================= */
+
+
+/* ================= INITIALIZATION ================= */
 
 const app = initializeApp(firebaseConfig);
 
@@ -41,86 +43,187 @@ getAnalytics(app);
 
 const db = getDatabase(app);
 const auth = getAuth(app);
+window.firebaseDebug = function () {
+    return {
+        workspace: localStorage.getItem("workspace"),
+        mode: localStorage.getItem("workspaceMode"),
+        user: auth.currentUser?.uid || "NOT SIGNED IN",
+        connected: firebaseConnected,
+        presence: currentPresence
+    };
+};
 
-/* ================= LIVE COUNTER ================= */
+/* ================= DATABASE REFERENCES ================= */
 
-const usersRef =
-    ref(db, "onlineUsers");
+const onlineUsersRef = ref(db, "onlineUsers");
+const workspaceUsersRef = ref(db, "workspaceUsers");
+const connectionRef = ref(db, ".info/connected");
 
-onAuthStateChanged(auth, (user) => {
+let currentUser = null;
+let firebaseConnected = false;
+let currentPresence = null;
 
-    if (!user) {
-        console.log(
-            "Live counter: no Firebase user signed in."
-        );
-        return;
+
+/* ================= COUNTER DISPLAY ================= */
+
+function updateCounter(elementId, value) {
+
+    const element = document.getElementById(elementId);
+
+    if (element) {
+        element.textContent = value;
     }
 
-    const userId = user.uid;
+}
 
-    const userRef =
-        ref(db, "onlineUsers/" + userId);
 
-    /* mark online */
+/* ================= ONLINE COUNT ================= */
 
-    set(userRef, true)
-        .then(() => {
+onValue(onlineUsersRef, (snapshot) => {
 
-            console.log(
-                "Live counter: user online:",
-                userId
-            );
+    const data = snapshot.val();
 
-        })
-        .catch((error) => {
-
-            console.error(
-                "Live counter: could not mark user online:",
-                error
-            );
-
-        });
-
-    /* remove automatically when connection closes */
-
-    onDisconnect(userRef)
-        .remove()
-        .then(() => {
-
-            console.log(
-                "Live counter: disconnect handler registered."
-            );
-
-        })
-        .catch((error) => {
-
-            console.error(
-                "Live counter: could not register disconnect:",
-                error
-            );
-
-        });
-});
-
-/* ================= UPDATE COUNT ================= */
-
-onValue(usersRef, (snapshot) => {
-
-    const data =
-        snapshot.val();
-
-    const count =
-        data
+    const count = data
         ? Object.keys(data).length
         : 0;
 
-    const counter =
-        document.getElementById("onlineCount");
+    updateCounter("onlineCount", count);
 
-    if (counter) {
-        counter.textContent =
-            count;
+});
+
+
+/* ================= WORKSPACE COUNT ================= */
+
+onValue(workspaceUsersRef, (snapshot) => {
+
+    const data = snapshot.val();
+
+    const count = data
+        ? Object.keys(data).length
+        : 0;
+
+    updateCounter("workspaceCount", count);
+
+});
+
+
+/* ================= PRESENCE MANAGEMENT ================= */
+
+function syncLivePresence() {
+
+    if (!currentUser || !firebaseConnected) return;
+
+    const userId = currentUser.uid;
+
+    const onlineRef = ref(db, "onlineUsers/" + userId);
+    const workspaceRef = ref(db, "workspaceUsers/" + userId);
+
+    const workspaceEnabled =
+        localStorage.getItem("workspace") === "on";
+
+    const desiredPresence = workspaceEnabled
+        ? "workspace"
+        : "online";
+
+    // No unnecessary database writes
+    if (currentPresence === desiredPresence) return;
+
+    currentPresence = desiredPresence;
+
+    if (desiredPresence === "workspace") {
+
+        remove(onlineRef);
+
+        set(workspaceRef, true)
+            .catch(error => {
+                console.error("Workspace presence error:", error);
+            });
+
+    } else {
+
+        remove(workspaceRef);
+
+        set(onlineRef, true)
+            .catch(error => {
+                console.error("Online presence error:", error);
+            });
+
     }
+
+}
+
+
+/* ================= CONNECTION DETECTION ================= */
+
+onValue(connectionRef, async (snapshot) => {
+
+    firebaseConnected = snapshot.val() === true;
+
+    currentPresence = null;
+
+    if (!firebaseConnected || !currentUser) return;
+
+    const userId = currentUser.uid;
+
+    const onlineRef = ref(db, "onlineUsers/" + userId);
+    const workspaceRef = ref(db, "workspaceUsers/" + userId);
+
+    try {
+
+        // Register disconnect cleanup BEFORE writing presence
+        await onDisconnect(onlineRef).remove();
+        await onDisconnect(workspaceRef).remove();
+
+        syncLivePresence();
+
+    } catch (error) {
+
+        console.error("Presence setup error:", error);
+
+    }
+
+});
+
+
+/* ================= AUTHENTICATION ================= */
+
+onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+
+        try {
+
+            await signInAnonymously(auth);
+
+            console.log("Anonymous Firebase login successful");
+
+        } catch (error) {
+
+            console.error("Anonymous login failed:", error);
+
+        }
+
+        return;
+    }
+
+    currentUser = user;
+    currentPresence = null;
+
+    console.log("Live counter user:", user.uid);
+
+    syncLivePresence();
+
+});
+
+
+/* ================= WORKSPACE STATE CHANGES ================= */
+
+// Called whenever Workspace changes state
+window.addEventListener("workspace-state-changed", () => {
+
+    currentPresence = null;
+
+    syncLivePresence();
 
 });
 
